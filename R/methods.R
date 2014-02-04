@@ -6,40 +6,7 @@
 # Soundtrack:
 # Notes:
 
-# fwdElement class
-
-setClass('fwdElement',
-	representation(
-		element='data.frame',
-		iters='array'),
-	prototype(
-		element=data.frame(year=1, min=NA, value=0, max=NA, quantity=NA,
-			season='all', area='unique', unit='all',
-			relYear=NA, relSeason=NA, relArea=NA, relUnit=NA),
-		iters=array(NA, dimnames=list(row=1, val=c('min', 'value', 'max'), iter=1),
-			dim=c(1,3,1))),
-	# VALIDITY
-	validity=function(object) {
-		# rows in element == rows in iters
-		if(nrow(object@element) != dim(object@iters)[1])
-			return("")
-		# if value, no min/max,
-		if(all(is.na(object@element[,'value'])) &
-			 any(is.na(object@element[,'max']), is.na(object@element[,'min'])))
-			return("Only value or min/max")
-		# and viceversa
-		if(any(is.na(object@element[,'value'])) &
-			 all(is.na(object@element[,'max']), is.na(object@element[,'min'])))
-			return("Only value or min/max")
-	}
-)
-
-# fwdControl class
-
-setClass('fwdControl', representation(
-	target='fwdElement'),
-	prototype(target=new('fwdElement')))
-
+# fwdControl() {{{
 setGeneric('fwdControl', function(target, ...) standardGeneric("fwdControl"))
 
 setMethod('fwdControl', signature(target='fwdElement'),
@@ -76,12 +43,46 @@ setMethod('fwdControl', signature(target='data.frame'),
 	}
 )
 
-target <- new('fwdElement')@element
-target <- rbind(target, target, target)
-
-fwdControl(target=target)
-
 setMethod('fwdControl', signature(target='list'))
 
 setMethod('fwdControl', signature(target='missing'))
 
+# }}}
+
+# show {{{
+setMethod("show", signature("fwdControl"),
+	function(object) {
+		#
+		cat("An object of class \"fwdControl\"\n", sep="")
+		cat("@target:\n", sep="")
+
+		# SHOW always year, min, value, max, quantity
+		nms <- names(object@target@element)
+		# FIND relevant cols (!unique)
+		idx <- apply(object@target@element[,-c(1:5)], 2, function(x) length(unique(x))==1)
+		nms <- c(nms[1:5], nms[-c(1:5)][!idx])
+		
+		# SELECT cols
+		df <- object@target@element[, nms]
+
+		# WITH iters
+		if(dim(object@target@iters)[3] > 1) {
+			
+			# SWAP median and mad from iters
+			df[,c('min', 'value', 'max')] <- 
+				apply(object@target@iters, 1:2, function(x)
+					if(all(is.na(x)))
+						sprintf("%s", "NA")
+					else
+						paste0(
+				sprintf("%4.3f", median(x, na.rm=TRUE)), '(',
+				sprintf("%4.3f", mad(x, na.rm=TRUE)), ')'))
+
+			print(df)
+			
+			cat("   iters: ", dim(object@target@iters)[3],"\n\n")
+		} else {
+			print(object@target@element[, nms])
+		}
+	}
+) # }}}
