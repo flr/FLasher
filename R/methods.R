@@ -6,49 +6,6 @@
 # Soundtrack:
 # Notes:
 
-# fwdControl() {{{
-setGeneric('fwdControl', function(target, ...) standardGeneric("fwdControl"))
-
-setMethod('fwdControl', signature(target='fwdElement'),
-	function(target, ...) {
-		return(new('fwdControl', target=target))
-	}
-)
-
-setMethod('fwdControl', signature(target='data.frame'),
-	function(target, ...) {
-	
-		# COMPLETE df
-		# repeat empty as needed
-		ele <- new('fwdElement')@element[rep(1, nrow(target)),]
-		# HACK: drop rownames
-		rownames(ele) <- NULL
-		# assign
-		ele[,names(target)] <- target
-
-		# extract iters
-		args <- list(...)
-		if("iters" %in% names(args))
-			iters <- args[['iters']]
-		# or build and fill
-		else {
-			iters <- array(NA, dim=c(nrow(target),3,1),
-				dimnames=list(row=seq(nrow(target)), val=c('min', 'value', 'max'), iter=1))
-			iters[,'value',] <- target$value
-		}
-
-		#
-		return(fwdControl(target=new('fwdElement', element=target, iters=iters)))
-		
-	}
-)
-
-#setMethod('fwdControl', signature(target='list'))
-
-#setMethod('fwdControl', signature(target='missing'))
-
-# }}}
-
 # show {{{
 setMethod("show", signature("fwdElement"),
 	function(object) {
@@ -72,11 +29,13 @@ setMethod("show", signature("fwdElement"),
 				apply(object@iters, 1:2, function(x)
 					if(all(is.na(x)))
 						sprintf("%s", "NA")
+					else if(length(unique(x)) == 1)
+						sprintf("%4.3f", x[1])
 					else
 						paste0(
-				sprintf("%4.3f", median(x, na.rm=TRUE)), '(',
-				sprintf("%4.3f", mad(x, na.rm=TRUE)), ')'))
-
+							sprintf("%4.3f", median(x, na.rm=TRUE)), '(',
+							sprintf("%4.3f", mad(x, na.rm=TRUE)), ')')
+				)
 			print(df)
 			
 			cat("   iters: ", dim(object@iters)[3],"\n\n")

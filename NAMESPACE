@@ -1,0 +1,9 @@
+import("FLCore")
+exportClasses(
+	"fwdElement",
+	"fwdControl")
+exportMethods(
+	"[",
+	"[<-",
+	"fwdControl",
+	"show")

@@ -7,7 +7,6 @@
 # Notes:
 
 # fwdElement class {{{
-
 setClass('fwdElement',
 	representation(
 		element='data.frame',
