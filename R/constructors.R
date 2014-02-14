@@ -1,5 +1,5 @@
 # constructors.R - DESC
-# constructors.R
+# FLasher/R/constructors.R
 
 # Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later
 # Maintainer: Iago Mosqueira, JRC
@@ -108,4 +108,3 @@ setMethod('fwdControl', signature(target='data.frame', iters='missing'),
 	}
 )
 # }}}
-
