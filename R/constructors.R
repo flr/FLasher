@@ -56,6 +56,39 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
 	}
 ) # }}}
 
+# fwdControl(target='data.frame', iters='matrix') {{{
+setMethod('fwdControl', signature(target='data.frame', iters='matrix'),
+	function(target, iters) {
+
+		dni <- dimnames(iters)
+
+		# NO dimnames in iters, assume dims are 'row' & 'iter' for 'value'
+		if(is.null(dni)) {
+			dimnames(iters) <- list(row=1:dim(iters)[1], iter=1:dim(iters)[2])
+			dni <- dimnames(iters)
+		}
+
+		dms <- list(row=1, val=c('min', 'value', 'max'), iter=1)
+		dms[names(dni)] <- dni
+
+		ite <- array(NA, dimnames=dms, dim=unlist(lapply(dms, length)))
+
+		# MISSING 'val' dimension, assume val='value'
+		if(!"val" %in% names(dni)) {
+			ite[,'value',] <- iters
+		}
+		# MISSING row
+		else if (!"row" %in% names(dni)) {
+			ite[1,,] <- iters
+		}
+		# MISSING iter
+		if(!"iter" %in% names(dni))
+			stop("No 'iter' dimname in iters, cannot create object")
+
+		return(fwdControl(target=target, iters=ite))
+	}
+) # }}}
+
 # fwdControl(target='data.frame', iters='missing') {{{
 setMethod('fwdControl', signature(target='data.frame', iters='missing'),
 	function(target) {

@@ -1,10 +1,10 @@
 Package: FLasher
 Title: What can I say?
-Version: 0.1.20140205
-Date: 20140205
+Version: 0.1.20140214
+Date: 20140214
 Author: Finlay Scott & Iago Mosqueira, FLR Team
 Description: The very best
-Collate: classes.R accessors.R methods.R fwd.R
+Collate: classes.R accessors.R methods.R fwd.R constructors.R
 Depends: methods, FLCore(>= 2.5.0)
 Maintainer: FLR Team <flr-team@flr-project.org>
 License: GPL-2

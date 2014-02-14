@@ -25,15 +25,14 @@ target <- data.frame(year=2000:2010, value=rlnorm(11), quantity='f')
 # missing 'min' and 'max' columns
 iters <- array(rlnorm(110), dim=c(11, 1, 100), dimnames=list(row=1:11, val='value', iter=1:100))
 
-fwdControl(target=df, iters=iters)
+fwdControl(target=target, iters=iters)
 
 # less rows than target
-iters <- array(rlnorm(110), dim=c(5, 1, 100), dimnames=list(row=c(1,3,5,7,9), val='value', iter=1:100))
+iters <- array(rlnorm(110), dim=c(4, 1, 100), dimnames=list(row=c(1, 4, 6, 7), val='value', iter=1:100))
 
-fwdControl(target=df, iters=iters)
+fwdControl(target=target, iters=iters)
 
-
-
-
+# matrix missing 'val'
+fwdControl(target=target, iters=iters[c(2,3,4),,])
 
 # }}}
