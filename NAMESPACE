@@ -6,4 +6,8 @@ exportMethods(
 	"[",
 	"[<-",
 	"fwdControl",
-	"show")
+	"fwdElement",
+	"show",
+	"target",
+	"target<-"
+	)

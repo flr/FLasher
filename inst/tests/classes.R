@@ -1,5 +1,5 @@
 # classes.R - DESC
-# classes.R
+# FLasher/inst/tests/classes.R
 
 # Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later
 # Maintainer: Iago Mosqueira, JRC
@@ -73,12 +73,31 @@ test_that("fwdElement(element=data.frame, iters=array) short iters", {
 	expect_equal(fwe@element[,'year'], element[,'year'])
 	expect_equal(fwe@element[,'quantity'], element[,'quantity'])
 	# iters 1, 4, 6 & 7
-	expect_equal(fwe@@iters[c(1,4,6,7),'value',], iters[,'value',])
+	expect_equal(fwe@iters[c(1,4,6,7),'value',], iters[,'value',])
 
 }) # }}}
 
-# matrix missing 'val'
-fwdElement(element=element, iters=iters[c(2,3,4),,])
+# fwdElement(element=data.frame, iters=matrix) {{{
+test_that("fwdElement(element=data.frame, iters=matrix)", {
+
+	element <- data.frame(year=2000:2010, value=rlnorm(11), quantity='f')
+	# iters only for rows 1, 4, 6 & 7
+	iters <- matrix(rlnorm(11*100), nrow=11, ncol=100, dimnames=list(row=1:11, iter=1:100))
+
+	fwe <- fwdElement(element=element, iters=iters)
+	
+	# fwdElement is of class fwdElement
+	expect_is(fwe, 'fwdElement')
+	
+	# fwdElement() is a validObject
+	expect_true(validObject(fwe))
+	
+	# result has right elements
+	expect_equal(fwe@element[,'value'], element[,'value'])
+	expect_equal(fwe@element[,'year'], element[,'year'])
+	expect_equal(fwe@element[,'quantity'], element[,'quantity'])
+
+}) # }}}
 
 # }}}
 
@@ -133,9 +152,5 @@ test_that("fwdControl(target=data.frame, iters=array) short iters", {
 	expect_equal(fwc@target@iters[c(1,4,6,7),'value',], iters[,'value',])
 
 })
-
-
-# matrix missing 'val'
-fwdControl(target=target, iters=iters[c(2,3,4),,])
 
 # }}}

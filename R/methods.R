@@ -92,59 +92,48 @@ setMethod("[", signature(x="fwdControl"),
 	}
 ) # }}}
 
-# [<- {{{ TODO
-setMethod("[<-", signature(x="fwdElement", value="ANY"),
-  function(x, i, j, k, value) {
+# [<- {{{
 
+# vector
+setMethod("[<-", signature(x="fwdElement", value="vector"),
+  function(x, i, j, k, ..., value) {
+		
 		arge <- lapply(as.list(dim(x@element)), seq)
 		argi <- lapply(as.list(dim(x@iters)), seq)
 
+		# i 
 		if(!missing(i)) {
 			arge[[1]] <- i
 			argi[[1]] <- i
 		}
+		# j
 		if(!missing(j)) {
+			# ONLY one column
+			if(length(j) > 1)
+				stop("vector can only be assigned to a single column, none selected")
 			arge[[2]] <- j
 			if(any(j %in% c('min', 'value', 'max') | j %in% c(3:5))) {
 				argi[[2]] <- j[j %in% c('min', 'value', 'max') | j %in% c(3:5)]
 			}
 		}
+		# k
 		if(!missing(k)) {
 			argi[[3]] <- k
 		}
 
-		# element
-		ele <- do.call('[<-', c(list(x@element), arge, list(value=value)))
-
-		# iters, if min, value or max changed
+		# if min, value or max changed
 		if(any(j %in% c('min', 'value', 'max') | j %in% c(3:5))) {
-			ite <- do.call('[<-', c(list(x@iters), argi, list(value=value)))
-			x@iters <- ite
-			# TODO update element
+			x@iters <- do.call('[<-', c(list(x@iters), argi, list(value=value)))
+			# UPDATE element
+			x@element <- do.call('[<-', c(list(x@element), arge,
+				list(value=mean(do.call('[', c(list(x@iters), argi)), na.rm=TRUE))))
+		# other columns
+		} else {
+			x@element <- do.call('[<-', c(list(x@element), arge, list(value=value)))
 		}
-
-		x@element <- ele
 
 		return(x)
 	}
 )
 
-setMethod("[<-", signature(x="fwdControl", value="ANY"),
-  function(x, i, j, value) {
-
-		args <- list()
-
-		# 'i' selected?
-		if(!missing(i))
-			args[[1]] <- i
-
-		# 'j' selected?
-		if(!missing(j))
-			args[[2]] <- j
-
-		# apply to each slot
-		x@target <- do.call('[', c(list(x@target), args))
-
-		return(x)
-	}
-) # }}}
+# }}}
