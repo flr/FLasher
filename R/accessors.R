@@ -8,10 +8,21 @@
 
 # target
 setGeneric('target', function(object, ...) standardGeneric('target'))
-setGeneric('target<-', function(object, ..., value) standardGeneric('target<-'))
 
 setMethod("target", signature(object="fwdControl"),
 	function(object) {
 		return(object@target)
+	}
+)
+
+setGeneric('target<-', function(object, ..., value) standardGeneric('target<-'))
+
+setReplaceMethod("target", signature(object="fwdControl", value="fwdElement"),
+	function(object, value) {
+	}
+)
+
+setReplaceMethod("target", signature(object="fwdControl", value="data.frame"),
+	function(object, value) {
 	}
 )

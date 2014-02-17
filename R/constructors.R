@@ -6,25 +6,18 @@
 # Soundtrack:
 # Notes:
 
-setGeneric('fwdControl', function(target, iters, ...) standardGeneric("fwdControl"))
+setGeneric('fwdElement', function(element, iters, ...) standardGeneric("fwdElement"))
 
-# fwdControl(target=fwdElement, iters='missing') {{{
-setMethod('fwdControl', signature(target='fwdElement', iters='missing'),
-	function(target) {
-		return(new('fwdControl', target=target))
-	}
-) # }}}
-
-# fwdControl(target='data.frame', iters='array') {{{
-setMethod('fwdControl', signature(target='data.frame', iters='array'),
-	function(target, iters) {
+# fwdElement(element='data.frame', iters='array') {{{
+setMethod('fwdElement', signature(element='data.frame', iters='array'),
+	function(element, iters) {
 	
 		# COMPLETE df
-		ele <- new('fwdElement')@element[rep(1, nrow(target)),]
+		ele <- new('fwdElement')@element[rep(1, nrow(element)),]
 		# HACK: drop rownames
 		rownames(ele) <- NULL
 		# assign
-		ele[,names(target)] <- target
+		ele[,names(element)] <- element
 
 		# COMPLETE iters
 		dit <- dim(iters)
@@ -52,13 +45,13 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
 			iters <- ite
 		}
 
-		return(fwdControl(target=new('fwdElement', element=ele, iters=iters)))
+		return(new('fwdElement', element=ele, iters=iters))
 	}
 ) # }}}
 
-# fwdControl(target='data.frame', iters='matrix') {{{
-setMethod('fwdControl', signature(target='data.frame', iters='matrix'),
-	function(target, iters) {
+# fwdElement(element='data.frame', iters='matrix') {{{
+setMethod('fwdElement', signature(element='data.frame', iters='matrix'),
+	function(element, iters) {
 
 		dni <- dimnames(iters)
 
@@ -85,26 +78,68 @@ setMethod('fwdControl', signature(target='data.frame', iters='matrix'),
 		if(!"iter" %in% names(dni))
 			stop("No 'iter' dimname in iters, cannot create object")
 
-		return(fwdControl(target=target, iters=ite))
+		return(fwdElement(element=element, iters=ite))
+	}
+) # }}}
+
+# fwdElement(element='data.frame', iters='missing') {{{
+setMethod('fwdElement', signature(element='data.frame', iters='missing'),
+	function(element) {
+	
+
+		# CREATE iters
+		dti <- dim(element)
+		ite <- array(NA, dim=c(dti[1], 3, 1), dimnames=list(row=1:dti[1], 
+			val=c('min', 'value', 'max'), iter=1))
+
+		# FIND val names n element
+		vns <- c('min', 'value', 'max')
+		nms <- vns %in% colnames(element)
+		ite[, vns[nms],] <- element[,vns[nms]]
+
+		return(fwdElement(element=element, iters=ite))
+	}
+)
+# }}}
+
+setGeneric('fwdControl', function(target, iters, ...) standardGeneric("fwdControl"))
+
+# fwdControl(target=fwdElement, iters='missing') {{{
+setMethod('fwdControl', signature(target='fwdElement', iters='missing'),
+	function(target) {
+		return(new('fwdControl', target=target))
+	}
+) # }}}
+
+# fwdControl(target='data.frame', iters='array') {{{
+setMethod('fwdControl', signature(target='data.frame', iters='array'),
+	function(target, iters) {
+
+		ele <- fwdElement(element=target, iters=iters)
+
+		return(new("fwdControl", target=ele))
+	}
+) # }}}
+
+# fwdControl(target='data.frame', iters='matrix') {{{
+setMethod('fwdControl', signature(target='data.frame', iters='matrix'),
+	function(target, iters) {
+		
+		ele <- fwdElement(element=target, iters=iters)
+
+		return(new("fwdControl", target=ele))
 	}
 ) # }}}
 
 # fwdControl(target='data.frame', iters='missing') {{{
 setMethod('fwdControl', signature(target='data.frame', iters='missing'),
 	function(target) {
-	
+		
+		ele <- fwdElement(element=target)
 
-		# CREATE iters
-		dti <- dim(target)
-		ite <- array(NA, dim=c(dti[1], 3, 1), dimnames=list(row=1:dti[1], 
-			val=c('min', 'value', 'max'), iter=1))
-
-		# FIND val names n target
-		vns <- c('min', 'value', 'max')
-		nms <- vns %in% colnames(target)
-		ite[, vns[nms],] <- target[,vns[nms]]
-
-		return(fwdControl(target=target, iters=ite))
+		return(new("fwdControl", target=ele))
 	}
 )
 # }}}
+
+

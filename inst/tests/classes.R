@@ -25,6 +25,63 @@ context("test.fwdControl.class")
 
 # }}}
 
+# Constructor fwdElement() {{{
+context("test.fwdElement.constructor")
+
+# fwdElement(target=data.frame, iters=array) full objects {{{
+test_that("fwdElement(element=data.frame, iters=array) full objects", {
+
+	element <- data.frame(year=2000:2010, value=rlnorm(11), quantity='f')
+	iters <- array(rlnorm(110), dim=c(11, 1, 100),
+		dimnames=list(row=1:11, val='value', iter=1:100))
+
+	fwe <- fwdElement(element=element, iters=iters)
+	
+	# fwdElement is of class fwdElement
+	expect_is(fwe, 'fwdElement')
+	
+	# fwdElement() is a validObject
+	expect_true(validObject(fwe))
+	
+	# result has right elements
+	expect_equal(fwe@element[,'value'], element[,'value'])
+	expect_equal(fwe@element[,'year'], element[,'year'])
+	expect_equal(fwe@element[,'quantity'], element[,'quantity'])
+	# iters
+	expect_equal(fwe@iters[,'value',], iters[,'value',])
+
+}) # }}}
+
+# fwdElement(element=data.frame, iters=array) short iters {{{
+test_that("fwdElement(element=data.frame, iters=array) short iters", {
+
+	element <- data.frame(year=2000:2010, value=rlnorm(11), quantity='f')
+	# iters only for rows 1, 4, 6 & 7
+	iters <- array(rlnorm(110), dim=c(4, 1, 100), dimnames=list(row=c(1, 4, 6, 7), 
+		val='value', iter=1:100))
+
+	fwe <- fwdElement(element=element, iters=iters)
+	
+	# fwdElement is of class fwdElement
+	expect_is(fwe, 'fwdElement')
+	
+	# fwdElement() is a validObject
+	expect_true(validObject(fwe))
+	
+	# result has right elements
+	expect_equal(fwe@element[,'value'], element[,'value'])
+	expect_equal(fwe@element[,'year'], element[,'year'])
+	expect_equal(fwe@element[,'quantity'], element[,'quantity'])
+	# iters 1, 4, 6 & 7
+	expect_equal(fwe@@iters[c(1,4,6,7),'value',], iters[,'value',])
+
+}) # }}}
+
+# matrix missing 'val'
+fwdElement(element=element, iters=iters[c(2,3,4),,])
+
+# }}}
+
 # Constructor fwdControl() {{{
 context("test.fwdControl.constructor")
 
