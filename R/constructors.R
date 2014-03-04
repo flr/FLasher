@@ -6,8 +6,6 @@
 # Soundtrack:
 # Notes:
 
-setGeneric('fwdElement', function(element, iters, ...) standardGeneric("fwdElement"))
-
 # fwdElement(element='data.frame', iters='array') {{{
 setMethod('fwdElement', signature(element='data.frame', iters='array'),
 	function(element, iters) {
@@ -16,8 +14,13 @@ setMethod('fwdElement', signature(element='data.frame', iters='array'),
 		ele <- new('fwdElement')@element[rep(1, nrow(element)),]
 		# HACK: drop rownames
 		rownames(ele) <- NULL
+		# CONVERT year
+		if('year' %in% names(element))
+			element$year <- as.integer(element$year)
 		# assign
 		ele[,names(element)] <- element
+		# HACK: reassign quantity to keep factors
+		ele[,'quantity']  <- factor(element$quantity, levels=FLasher:::qlevels)
 
 		# COMPLETE iters
 		dit <- dim(iters)
@@ -44,7 +47,6 @@ setMethod('fwdElement', signature(element='data.frame', iters='array'),
 			ite[mro,'max',] <- rep(ele[mro, 'max'], dit[3])
 			iters <- ite
 		}
-
 		return(new('fwdElement', element=ele, iters=iters))
 	}
 ) # }}}
@@ -102,8 +104,6 @@ setMethod('fwdElement', signature(element='data.frame', iters='missing'),
 )
 # }}}
 
-setGeneric('fwdControl', function(target, iters, ...) standardGeneric("fwdControl"))
-
 # fwdControl(target=fwdElement, iters='missing') {{{
 setMethod('fwdControl', signature(target='fwdElement', iters='missing'),
 	function(target) {
@@ -141,5 +141,3 @@ setMethod('fwdControl', signature(target='data.frame', iters='missing'),
 	}
 )
 # }}}
-
-
