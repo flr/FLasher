@@ -1,7 +1,13 @@
 # FLasher
 
-New version of Flash
+FLasher provides the necessary classes and methods for carrying out
+stochastic and deterministic projections of fisheries, both fish stocks
+and fish population plus fleets.
 
-## TODO
+- PROJECTION
 
-- [ ] ADD roxygen documentation
+- CLASSES
+
+- METHODS
+
+- MORE INFO
