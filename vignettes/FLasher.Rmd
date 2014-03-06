@@ -17,5 +17,3 @@
 # Setting up targets and limits
 
 ## Creating a fwdControl object
-
-# The fwdControl class
