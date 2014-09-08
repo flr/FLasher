@@ -637,6 +637,214 @@ test_FLCatchesAD_set_single_index_default_accessor <- function(flcs, flc) {
     .Call('FLasher_test_FLCatchesAD_set_single_index_default_accessor', PACKAGE = 'FLasher', flcs, flc)
 }
 
+test_FLFishery_empty_constructor <- function() {
+    invisible(.Call('FLasher_test_FLFishery_empty_constructor', PACKAGE = 'FLasher'))
+}
+
+test_simple_FLFishery_sexp_constructor <- function(flf_sexp) {
+    .Call('FLasher_test_simple_FLFishery_sexp_constructor', PACKAGE = 'FLasher', flf_sexp)
+}
+
+test_FLFishery_sexp_constructor <- function(flf_sexp) {
+    .Call('FLasher_test_FLFishery_sexp_constructor', PACKAGE = 'FLasher', flf_sexp)
+}
+
+test_FLFishery_as_wrap <- function(flf) {
+    .Call('FLasher_test_FLFishery_as_wrap', PACKAGE = 'FLasher', flf)
+}
+
+test_FLFishery_copy_constructor <- function(flf1) {
+    .Call('FLasher_test_FLFishery_copy_constructor', PACKAGE = 'FLasher', flf1)
+}
+
+test_FLFishery_assignment_operator <- function(flf1) {
+    .Call('FLasher_test_FLFishery_assignment_operator', PACKAGE = 'FLasher', flf1)
+}
+
+test_FLFishery_const_catches_get_accessors <- function(flf, catches, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFishery_const_catches_get_accessors', PACKAGE = 'FLasher', flf, catches, quant, year, unit, season, area, iter)
+}
+
+test_FLFishery_catches_get_accessors <- function(flf, catches, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFishery_catches_get_accessors', PACKAGE = 'FLasher', flf, catches, quant, year, unit, season, area, iter)
+}
+
+test_FLFishery_const_economics_get_accessors <- function(flf, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFishery_const_economics_get_accessors', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
+}
+
+test_FLFishery_economics_get_accessors <- function(flf, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFishery_economics_get_accessors', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
+}
+
+test_FLFishery_set_accessors <- function(flf, catches, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLFishery_set_accessors', PACKAGE = 'FLasher', flf, catches, quant, year, unit, season, area, iter, value)
+}
+
+test_FLFishery_copy_constructor2 <- function(flf1, element, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLFishery_copy_constructor2', PACKAGE = 'FLasher', flf1, element, quant, year, unit, season, area, iter, value)
+}
+
+test_FLFishery_assignment_operator2 <- function(flf1, element, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLFishery_assignment_operator2', PACKAGE = 'FLasher', flf1, element, quant, year, unit, season, area, iter, value)
+}
+
+test_FLFisheryAD_empty_constructor <- function() {
+    invisible(.Call('FLasher_test_FLFisheryAD_empty_constructor', PACKAGE = 'FLasher'))
+}
+
+test_simple_FLFisheryAD_sexp_constructor <- function(flf_sexp) {
+    .Call('FLasher_test_simple_FLFisheryAD_sexp_constructor', PACKAGE = 'FLasher', flf_sexp)
+}
+
+test_FLFisheryAD_sexp_constructor <- function(flf_sexp) {
+    .Call('FLasher_test_FLFisheryAD_sexp_constructor', PACKAGE = 'FLasher', flf_sexp)
+}
+
+test_FLFisheryAD_as_wrap <- function(flf) {
+    .Call('FLasher_test_FLFisheryAD_as_wrap', PACKAGE = 'FLasher', flf)
+}
+
+test_FLFisheryAD_copy_constructor <- function(flf1) {
+    .Call('FLasher_test_FLFisheryAD_copy_constructor', PACKAGE = 'FLasher', flf1)
+}
+
+test_FLFisheryAD_assignment_operator <- function(flf1) {
+    .Call('FLasher_test_FLFisheryAD_assignment_operator', PACKAGE = 'FLasher', flf1)
+}
+
+test_FLFisheryAD_const_catches_get_accessors <- function(flf, catches, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFisheryAD_const_catches_get_accessors', PACKAGE = 'FLasher', flf, catches, quant, year, unit, season, area, iter)
+}
+
+test_FLFisheryAD_catches_get_accessors <- function(flf, catches, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFisheryAD_catches_get_accessors', PACKAGE = 'FLasher', flf, catches, quant, year, unit, season, area, iter)
+}
+
+test_FLFisheryAD_const_economics_get_accessors <- function(flf, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFisheryAD_const_economics_get_accessors', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
+}
+
+test_FLFisheryAD_economics_get_accessors <- function(flf, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFisheryAD_economics_get_accessors', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
+}
+
+test_FLFisheryAD_set_accessors <- function(flf, catches, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLFisheryAD_set_accessors', PACKAGE = 'FLasher', flf, catches, quant, year, unit, season, area, iter, value)
+}
+
+test_FLFisheryAD_copy_constructor2 <- function(flf1, element, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLFisheryAD_copy_constructor2', PACKAGE = 'FLasher', flf1, element, quant, year, unit, season, area, iter, value)
+}
+
+test_FLFisheryAD_assignment_operator2 <- function(flf1, element, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLFisheryAD_assignment_operator2', PACKAGE = 'FLasher', flf1, element, quant, year, unit, season, area, iter, value)
+}
+
+test_FLFisheries_sexp_constructor <- function(flfs_sexp1) {
+    .Call('FLasher_test_FLFisheries_sexp_constructor', PACKAGE = 'FLasher', flfs_sexp1)
+}
+
+test_FLFisheries_as_wrap <- function(flfs) {
+    .Call('FLasher_test_FLFisheries_as_wrap', PACKAGE = 'FLasher', flfs)
+}
+
+test_FLFisheries_get_nfisheries <- function(flfs) {
+    .Call('FLasher_test_FLFisheries_get_nfisheries', PACKAGE = 'FLasher', flfs)
+}
+
+test_FLFisheries_copy_constructor <- function(flfs) {
+    .Call('FLasher_test_FLFisheries_copy_constructor', PACKAGE = 'FLasher', flfs)
+}
+
+test_FLFisheries_copy_constructor2 <- function(flfs1, fishery, catches, indices, value) {
+    .Call('FLasher_test_FLFisheries_copy_constructor2', PACKAGE = 'FLasher', flfs1, fishery, catches, indices, value)
+}
+
+test_FLFisheries_assignment_operator <- function(flfs) {
+    .Call('FLasher_test_FLFisheries_assignment_operator', PACKAGE = 'FLasher', flfs)
+}
+
+test_FLFisheries_assignment_operator2 <- function(flfs1, fishery, catches, indices, value) {
+    .Call('FLasher_test_FLFisheries_assignment_operator2', PACKAGE = 'FLasher', flfs1, fishery, catches, indices, value)
+}
+
+test_FLFisheries_const_get_single <- function(flfs, fishery, catches, indices) {
+    .Call('FLasher_test_FLFisheries_const_get_single', PACKAGE = 'FLasher', flfs, fishery, catches, indices)
+}
+
+test_FLFisheries_get_single <- function(flfs, fishery, catches, indices) {
+    .Call('FLasher_test_FLFisheries_get_single', PACKAGE = 'FLasher', flfs, fishery, catches, indices)
+}
+
+test_FLFisheries_const_get_double <- function(flfs, fishery, catches, indices) {
+    .Call('FLasher_test_FLFisheries_const_get_double', PACKAGE = 'FLasher', flfs, fishery, catches, indices)
+}
+
+test_FLFisheries_get_double <- function(flfs, fishery, catches, indices) {
+    .Call('FLasher_test_FLFisheries_get_double', PACKAGE = 'FLasher', flfs, fishery, catches, indices)
+}
+
+test_FLFisheries_set_single <- function(flfs, fishery, catches, indices, value) {
+    .Call('FLasher_test_FLFisheries_set_single', PACKAGE = 'FLasher', flfs, fishery, catches, indices, value)
+}
+
+test_FLFisheries_set_double <- function(flfs, fishery, catches, indices, value) {
+    .Call('FLasher_test_FLFisheries_set_double', PACKAGE = 'FLasher', flfs, fishery, catches, indices, value)
+}
+
+test_FLFisheriesAD_sexp_constructor <- function(flfs_sexp1) {
+    .Call('FLasher_test_FLFisheriesAD_sexp_constructor', PACKAGE = 'FLasher', flfs_sexp1)
+}
+
+test_FLFisheriesAD_as_wrap <- function(flfs) {
+    .Call('FLasher_test_FLFisheriesAD_as_wrap', PACKAGE = 'FLasher', flfs)
+}
+
+test_FLFisheriesAD_get_nfisheries <- function(flfs) {
+    .Call('FLasher_test_FLFisheriesAD_get_nfisheries', PACKAGE = 'FLasher', flfs)
+}
+
+test_FLFisheriesAD_copy_constructor <- function(flfs) {
+    .Call('FLasher_test_FLFisheriesAD_copy_constructor', PACKAGE = 'FLasher', flfs)
+}
+
+test_FLFisheriesAD_copy_constructor2 <- function(flfs1, fishery, catches, indices, value) {
+    .Call('FLasher_test_FLFisheriesAD_copy_constructor2', PACKAGE = 'FLasher', flfs1, fishery, catches, indices, value)
+}
+
+test_FLFisheriesAD_assignment_operator <- function(flfs) {
+    .Call('FLasher_test_FLFisheriesAD_assignment_operator', PACKAGE = 'FLasher', flfs)
+}
+
+test_FLFisheriesAD_assignment_operator2 <- function(flfs1, fishery, catches, indices, value) {
+    .Call('FLasher_test_FLFisheriesAD_assignment_operator2', PACKAGE = 'FLasher', flfs1, fishery, catches, indices, value)
+}
+
+test_FLFisheriesAD_const_get_single <- function(flfs, fishery, catches, indices) {
+    .Call('FLasher_test_FLFisheriesAD_const_get_single', PACKAGE = 'FLasher', flfs, fishery, catches, indices)
+}
+
+test_FLFisheriesAD_get_single <- function(flfs, fishery, catches, indices) {
+    .Call('FLasher_test_FLFisheriesAD_get_single', PACKAGE = 'FLasher', flfs, fishery, catches, indices)
+}
+
+test_FLFisheriesAD_const_get_double <- function(flfs, fishery, catches, indices) {
+    .Call('FLasher_test_FLFisheriesAD_const_get_double', PACKAGE = 'FLasher', flfs, fishery, catches, indices)
+}
+
+test_FLFisheriesAD_get_double <- function(flfs, fishery, catches, indices) {
+    .Call('FLasher_test_FLFisheriesAD_get_double', PACKAGE = 'FLasher', flfs, fishery, catches, indices)
+}
+
+test_FLFisheriesAD_set_single <- function(flfs, fishery, catches, indices, value) {
+    .Call('FLasher_test_FLFisheriesAD_set_single', PACKAGE = 'FLasher', flfs, fishery, catches, indices, value)
+}
+
+test_FLFisheriesAD_set_double <- function(flfs, fishery, catches, indices, value) {
+    .Call('FLasher_test_FLFisheriesAD_set_double', PACKAGE = 'FLasher', flfs, fishery, catches, indices, value)
+}
+
 test_FLQuantAD_as_wrap <- function(flq) {
     .Call('FLasher_test_FLQuantAD_as_wrap', PACKAGE = 'FLasher', flq)
 }
