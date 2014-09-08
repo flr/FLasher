@@ -65,7 +65,7 @@ std::vector<double> poly(unsigned int k_in, double x_in)
     Y[0] = Poly(a, X[0]);      // value during recording of operations
 
     // Check X value here?
-    Rprintf("X value while taping: %f\n", Value(X[0]));
+	// Rprintf("X value while taping: %f\n", Value(X[0]));
     // Seems OK
     // http://www.coin-or.org/CppAD/Doc/value.cpp.xml 
     // Suggested it would fail
