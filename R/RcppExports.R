@@ -13,3 +13,607 @@ rcpp_hello_world <- function() {
     .Call('FLasher_rcpp_hello_world', PACKAGE = 'FLasher')
 }
 
+test_FLQuant_FLQuant_multiplier_assignment_operator <- function(flq1, flq2) {
+    .Call('FLasher_test_FLQuant_FLQuant_multiplier_assignment_operator', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_FLQuantAD_FLQuant_multiplier_assignment_operator <- function(flqad1, flq2) {
+    .Call('FLasher_test_FLQuantAD_FLQuant_multiplier_assignment_operator', PACKAGE = 'FLasher', flqad1, flq2)
+}
+
+test_FLQuantAD_FLQuantAD_multiplier_assignment_operator <- function(flqad1, flqad2) {
+    .Call('FLasher_test_FLQuantAD_FLQuantAD_multiplier_assignment_operator', PACKAGE = 'FLasher', flqad1, flqad2)
+}
+
+test_FLQuant_double_multiplier_assignment_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuant_double_multiplier_assignment_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_FLQuantAD_double_multiplier_assignment_operator <- function(flqad1, value) {
+    .Call('FLasher_test_FLQuantAD_double_multiplier_assignment_operator', PACKAGE = 'FLasher', flqad1, value)
+}
+
+test_FLQuantAD_adouble_multiplier_assignment_operator <- function(flqad1, value) {
+    .Call('FLasher_test_FLQuantAD_adouble_multiplier_assignment_operator', PACKAGE = 'FLasher', flqad1, value)
+}
+
+test_FLQuant_FLQuant_multiplier_operator <- function(flq1, flq2) {
+    .Call('FLasher_test_FLQuant_FLQuant_multiplier_operator', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_FLQuantAD_FLQuant_multiplier_operator <- function(flqad1, flq2) {
+    .Call('FLasher_test_FLQuantAD_FLQuant_multiplier_operator', PACKAGE = 'FLasher', flqad1, flq2)
+}
+
+test_FLQuant_FLQuantAD_multiplier_operator <- function(flq1, flqad2) {
+    .Call('FLasher_test_FLQuant_FLQuantAD_multiplier_operator', PACKAGE = 'FLasher', flq1, flqad2)
+}
+
+test_FLQuantAD_FLQuantAD_multiplier_operator <- function(flqad1, flqad2) {
+    .Call('FLasher_test_FLQuantAD_FLQuantAD_multiplier_operator', PACKAGE = 'FLasher', flqad1, flqad2)
+}
+
+test_FLQuant_double_multiplier_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuant_double_multiplier_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_double_FLQuant_multiplier_operator <- function(value, flq1) {
+    .Call('FLasher_test_double_FLQuant_multiplier_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_double_FLQuantAD_multiplier_operator <- function(value, flq1) {
+    .Call('FLasher_test_double_FLQuantAD_multiplier_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_FLQuantAD_double_multiplier_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuantAD_double_multiplier_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_FLQuant_adouble_multiplier_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuant_adouble_multiplier_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_adouble_FLQuant_multiplier_operator <- function(value, flq1) {
+    .Call('FLasher_test_adouble_FLQuant_multiplier_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_FLQuantAD_adouble_multiplier_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuantAD_adouble_multiplier_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_adouble_FLQuantAD_multiplier_operator <- function(value, flq1) {
+    .Call('FLasher_test_adouble_FLQuantAD_multiplier_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_FLQuant_FLQuant_division_assignment_operator <- function(flq1, flq2) {
+    .Call('FLasher_test_FLQuant_FLQuant_division_assignment_operator', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_FLQuantAD_FLQuant_division_assignment_operator <- function(flqad1, flq2) {
+    .Call('FLasher_test_FLQuantAD_FLQuant_division_assignment_operator', PACKAGE = 'FLasher', flqad1, flq2)
+}
+
+test_FLQuantAD_FLQuantAD_division_assignment_operator <- function(flqad1, flqad2) {
+    .Call('FLasher_test_FLQuantAD_FLQuantAD_division_assignment_operator', PACKAGE = 'FLasher', flqad1, flqad2)
+}
+
+test_FLQuant_double_division_assignment_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuant_double_division_assignment_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_FLQuantAD_double_division_assignment_operator <- function(flqad1, value) {
+    .Call('FLasher_test_FLQuantAD_double_division_assignment_operator', PACKAGE = 'FLasher', flqad1, value)
+}
+
+test_FLQuantAD_adouble_division_assignment_operator <- function(flqad1, value) {
+    .Call('FLasher_test_FLQuantAD_adouble_division_assignment_operator', PACKAGE = 'FLasher', flqad1, value)
+}
+
+test_FLQuant_FLQuant_division_operator <- function(flq1, flq2) {
+    .Call('FLasher_test_FLQuant_FLQuant_division_operator', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_FLQuantAD_FLQuant_division_operator <- function(flqad1, flq2) {
+    .Call('FLasher_test_FLQuantAD_FLQuant_division_operator', PACKAGE = 'FLasher', flqad1, flq2)
+}
+
+test_FLQuant_FLQuantAD_division_operator <- function(flq1, flqad2) {
+    .Call('FLasher_test_FLQuant_FLQuantAD_division_operator', PACKAGE = 'FLasher', flq1, flqad2)
+}
+
+test_FLQuantAD_FLQuantAD_division_operator <- function(flqad1, flqad2) {
+    .Call('FLasher_test_FLQuantAD_FLQuantAD_division_operator', PACKAGE = 'FLasher', flqad1, flqad2)
+}
+
+test_FLQuant_double_division_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuant_double_division_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_double_FLQuant_division_operator <- function(value, flq1) {
+    .Call('FLasher_test_double_FLQuant_division_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_double_FLQuantAD_division_operator <- function(value, flq1) {
+    .Call('FLasher_test_double_FLQuantAD_division_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_FLQuantAD_double_division_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuantAD_double_division_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_FLQuant_adouble_division_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuant_adouble_division_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_adouble_FLQuant_division_operator <- function(value, flq1) {
+    .Call('FLasher_test_adouble_FLQuant_division_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_FLQuantAD_adouble_division_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuantAD_adouble_division_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_adouble_FLQuantAD_division_operator <- function(value, flq1) {
+    .Call('FLasher_test_adouble_FLQuantAD_division_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_FLQuant_FLQuant_subtraction_assignment_operator <- function(flq1, flq2) {
+    .Call('FLasher_test_FLQuant_FLQuant_subtraction_assignment_operator', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_FLQuantAD_FLQuant_subtraction_assignment_operator <- function(flqad1, flq2) {
+    .Call('FLasher_test_FLQuantAD_FLQuant_subtraction_assignment_operator', PACKAGE = 'FLasher', flqad1, flq2)
+}
+
+test_FLQuantAD_FLQuantAD_subtraction_assignment_operator <- function(flqad1, flqad2) {
+    .Call('FLasher_test_FLQuantAD_FLQuantAD_subtraction_assignment_operator', PACKAGE = 'FLasher', flqad1, flqad2)
+}
+
+test_FLQuant_double_subtraction_assignment_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuant_double_subtraction_assignment_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_FLQuantAD_double_subtraction_assignment_operator <- function(flqad1, value) {
+    .Call('FLasher_test_FLQuantAD_double_subtraction_assignment_operator', PACKAGE = 'FLasher', flqad1, value)
+}
+
+test_FLQuantAD_adouble_subtraction_assignment_operator <- function(flqad1, value) {
+    .Call('FLasher_test_FLQuantAD_adouble_subtraction_assignment_operator', PACKAGE = 'FLasher', flqad1, value)
+}
+
+test_FLQuant_FLQuant_subtraction_operator <- function(flq1, flq2) {
+    .Call('FLasher_test_FLQuant_FLQuant_subtraction_operator', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_FLQuantAD_FLQuant_subtraction_operator <- function(flqad1, flq2) {
+    .Call('FLasher_test_FLQuantAD_FLQuant_subtraction_operator', PACKAGE = 'FLasher', flqad1, flq2)
+}
+
+test_FLQuant_FLQuantAD_subtraction_operator <- function(flq1, flqad2) {
+    .Call('FLasher_test_FLQuant_FLQuantAD_subtraction_operator', PACKAGE = 'FLasher', flq1, flqad2)
+}
+
+test_FLQuantAD_FLQuantAD_subtraction_operator <- function(flqad1, flqad2) {
+    .Call('FLasher_test_FLQuantAD_FLQuantAD_subtraction_operator', PACKAGE = 'FLasher', flqad1, flqad2)
+}
+
+test_FLQuant_double_subtraction_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuant_double_subtraction_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_double_FLQuant_subtraction_operator <- function(value, flq1) {
+    .Call('FLasher_test_double_FLQuant_subtraction_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_double_FLQuantAD_subtraction_operator <- function(value, flq1) {
+    .Call('FLasher_test_double_FLQuantAD_subtraction_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_FLQuantAD_double_subtraction_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuantAD_double_subtraction_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_FLQuant_adouble_subtraction_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuant_adouble_subtraction_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_adouble_FLQuant_subtraction_operator <- function(value, flq1) {
+    .Call('FLasher_test_adouble_FLQuant_subtraction_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_FLQuantAD_adouble_subtraction_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuantAD_adouble_subtraction_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_adouble_FLQuantAD_subtraction_operator <- function(value, flq1) {
+    .Call('FLasher_test_adouble_FLQuantAD_subtraction_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_FLQuant_FLQuant_addition_assignment_operator <- function(flq1, flq2) {
+    .Call('FLasher_test_FLQuant_FLQuant_addition_assignment_operator', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_FLQuantAD_FLQuant_addition_assignment_operator <- function(flqad1, flq2) {
+    .Call('FLasher_test_FLQuantAD_FLQuant_addition_assignment_operator', PACKAGE = 'FLasher', flqad1, flq2)
+}
+
+test_FLQuantAD_FLQuantAD_addition_assignment_operator <- function(flqad1, flqad2) {
+    .Call('FLasher_test_FLQuantAD_FLQuantAD_addition_assignment_operator', PACKAGE = 'FLasher', flqad1, flqad2)
+}
+
+test_FLQuant_double_addition_assignment_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuant_double_addition_assignment_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_FLQuantAD_double_addition_assignment_operator <- function(flqad1, value) {
+    .Call('FLasher_test_FLQuantAD_double_addition_assignment_operator', PACKAGE = 'FLasher', flqad1, value)
+}
+
+test_FLQuantAD_adouble_addition_assignment_operator <- function(flqad1, value) {
+    .Call('FLasher_test_FLQuantAD_adouble_addition_assignment_operator', PACKAGE = 'FLasher', flqad1, value)
+}
+
+test_FLQuant_FLQuant_addition_operator <- function(flq1, flq2) {
+    .Call('FLasher_test_FLQuant_FLQuant_addition_operator', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_FLQuantAD_FLQuant_addition_operator <- function(flqad1, flq2) {
+    .Call('FLasher_test_FLQuantAD_FLQuant_addition_operator', PACKAGE = 'FLasher', flqad1, flq2)
+}
+
+test_FLQuant_FLQuantAD_addition_operator <- function(flq1, flqad2) {
+    .Call('FLasher_test_FLQuant_FLQuantAD_addition_operator', PACKAGE = 'FLasher', flq1, flqad2)
+}
+
+test_FLQuantAD_FLQuantAD_addition_operator <- function(flqad1, flqad2) {
+    .Call('FLasher_test_FLQuantAD_FLQuantAD_addition_operator', PACKAGE = 'FLasher', flqad1, flqad2)
+}
+
+test_FLQuant_double_addition_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuant_double_addition_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_double_FLQuant_addition_operator <- function(value, flq1) {
+    .Call('FLasher_test_double_FLQuant_addition_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_double_FLQuantAD_addition_operator <- function(value, flq1) {
+    .Call('FLasher_test_double_FLQuantAD_addition_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_FLQuantAD_double_addition_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuantAD_double_addition_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_FLQuant_adouble_addition_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuant_adouble_addition_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_adouble_FLQuant_addition_operator <- function(value, flq1) {
+    .Call('FLasher_test_adouble_FLQuant_addition_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_FLQuantAD_adouble_addition_operator <- function(flq1, value) {
+    .Call('FLasher_test_FLQuantAD_adouble_addition_operator', PACKAGE = 'FLasher', flq1, value)
+}
+
+test_adouble_FLQuantAD_addition_operator <- function(value, flq1) {
+    .Call('FLasher_test_adouble_FLQuantAD_addition_operator', PACKAGE = 'FLasher', value, flq1)
+}
+
+test_FLQuant_log <- function(flq) {
+    .Call('FLasher_test_FLQuant_log', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_log <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_log', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_exp <- function(flq) {
+    .Call('FLasher_test_FLQuant_exp', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_exp <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_exp', PACKAGE = 'FLasher', flq)
+}
+
+test_composite_arithmetic_operators <- function(flqad, flq, value) {
+    .Call('FLasher_test_composite_arithmetic_operators', PACKAGE = 'FLasher', flqad, flq, value)
+}
+
+test_FLQuant_quant_sum <- function(flq) {
+    .Call('FLasher_test_FLQuant_quant_sum', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_quant_sum <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_quant_sum', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_quant_mean <- function(flq) {
+    .Call('FLasher_test_FLQuant_quant_mean', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_quant_mean <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_quant_mean', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_as_wrap <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_as_wrap', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_basic_constructor <- function() {
+    invisible(.Call('FLasher_test_FLQuantAD_basic_constructor', PACKAGE = 'FLasher'))
+}
+
+test_FLQuantAD_sexp_constructor <- function(flq_sexp) {
+    .Call('FLasher_test_FLQuantAD_sexp_constructor', PACKAGE = 'FLasher', flq_sexp)
+}
+
+test_FLQuantAD_dim_constructor <- function(nquant, nyear, nunit, nseason, narea, niter) {
+    .Call('FLasher_test_FLQuantAD_dim_constructor', PACKAGE = 'FLasher', nquant, nyear, nunit, nseason, narea, niter)
+}
+
+test_FLQuantAD_copy_constructor <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_copy_constructor', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_copy_constructor2 <- function(flq1, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLQuantAD_copy_constructor2', PACKAGE = 'FLasher', flq1, quant, year, unit, season, area, iter, value)
+}
+
+test_FLQuantAD_assignment_operator <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_assignment_operator', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_assignment_operator2 <- function(flq1, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLQuantAD_assignment_operator2', PACKAGE = 'FLasher', flq1, quant, year, unit, season, area, iter, value)
+}
+
+test_FLQuantAD_from_FLQuant_constructor <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_from_FLQuant_constructor', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_get_units <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_get_units', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_get_dim <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_get_dim', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_get_dimnames <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_get_dimnames', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_get_size <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_get_size', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_get_nquant <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_get_nquant', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_get_nyear <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_get_nyear', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_get_nunit <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_get_nunit', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_get_nseason <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_get_nseason', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_get_narea <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_get_narea', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_get_niter <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_get_niter', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_get_data_element <- function(flq, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLQuantAD_get_data_element', PACKAGE = 'FLasher', flq, quant, year, unit, season, area, iter)
+}
+
+test_FLQuantAD_get_const_single_index_accessor <- function(flq, element) {
+    .Call('FLasher_test_FLQuantAD_get_const_single_index_accessor', PACKAGE = 'FLasher', flq, element)
+}
+
+test_FLQuantAD_get_single_index_accessor <- function(flq, element) {
+    .Call('FLasher_test_FLQuantAD_get_single_index_accessor', PACKAGE = 'FLasher', flq, element)
+}
+
+test_FLQuantAD_set_single_index_accessor <- function(flq, element, value) {
+    .Call('FLasher_test_FLQuantAD_set_single_index_accessor', PACKAGE = 'FLasher', flq, element, value)
+}
+
+test_FLQuantAD_const_get_accessor <- function(flq, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLQuantAD_const_get_accessor', PACKAGE = 'FLasher', flq, quant, year, unit, season, area, iter)
+}
+
+test_FLQuantAD_get_accessor <- function(flq, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLQuantAD_get_accessor', PACKAGE = 'FLasher', flq, quant, year, unit, season, area, iter)
+}
+
+test_FLQuantAD_set_accessor <- function(flq, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLQuantAD_set_accessor', PACKAGE = 'FLasher', flq, quant, year, unit, season, area, iter, value)
+}
+
+test_FLQuantAD_get_const_indices_accessor <- function(flq, indices) {
+    .Call('FLasher_test_FLQuantAD_get_const_indices_accessor', PACKAGE = 'FLasher', flq, indices)
+}
+
+test_FLQuantAD_get_indices_accessor <- function(flq, indices) {
+    .Call('FLasher_test_FLQuantAD_get_indices_accessor', PACKAGE = 'FLasher', flq, indices)
+}
+
+test_FLQuantAD_set_indices_accessor <- function(flq, indices, value) {
+    .Call('FLasher_test_FLQuantAD_set_indices_accessor', PACKAGE = 'FLasher', flq, indices, value)
+}
+
+test_FLQuantAD_set_dimnames <- function(flq, new_dimnames) {
+    .Call('FLasher_test_FLQuantAD_set_dimnames', PACKAGE = 'FLasher', flq, new_dimnames)
+}
+
+test_FLQuantAD_FLQuantAD_match_dims <- function(flq1, flq2) {
+    .Call('FLasher_test_FLQuantAD_FLQuantAD_match_dims', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_FLQuantAD_FLQuant_match_dims <- function(flq1, flq2) {
+    .Call('FLasher_test_FLQuantAD_FLQuant_match_dims', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_FLQuant_FLQuantAD_match_dims <- function(flq1, flq2) {
+    .Call('FLasher_test_FLQuant_FLQuantAD_match_dims', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_FLQuant_as_wrap <- function(flq) {
+    .Call('FLasher_test_FLQuant_as_wrap', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_basic_constructor <- function() {
+    invisible(.Call('FLasher_test_FLQuant_basic_constructor', PACKAGE = 'FLasher'))
+}
+
+test_FLQuant_sexp_constructor <- function(flq_sexp) {
+    .Call('FLasher_test_FLQuant_sexp_constructor', PACKAGE = 'FLasher', flq_sexp)
+}
+
+test_FLQuant_dim_constructor <- function(nquant, nyear, nunit, nseason, narea, niter) {
+    .Call('FLasher_test_FLQuant_dim_constructor', PACKAGE = 'FLasher', nquant, nyear, nunit, nseason, narea, niter)
+}
+
+test_FLQuant_copy_constructor <- function(flq) {
+    .Call('FLasher_test_FLQuant_copy_constructor', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_copy_constructor2 <- function(flq1, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLQuant_copy_constructor2', PACKAGE = 'FLasher', flq1, quant, year, unit, season, area, iter, value)
+}
+
+test_FLQuant_assignment_operator <- function(flq) {
+    .Call('FLasher_test_FLQuant_assignment_operator', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_assignment_operator2 <- function(flq1, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLQuant_assignment_operator2', PACKAGE = 'FLasher', flq1, quant, year, unit, season, area, iter, value)
+}
+
+test_FLQuant_get_data <- function(flq) {
+    .Call('FLasher_test_FLQuant_get_data', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_get_units <- function(flq) {
+    .Call('FLasher_test_FLQuant_get_units', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_get_dim <- function(flq) {
+    .Call('FLasher_test_FLQuant_get_dim', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_get_dimnames <- function(flq) {
+    .Call('FLasher_test_FLQuant_get_dimnames', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_get_dimnames2 <- function(flq) {
+    .Call('FLasher_test_FLQuant_get_dimnames2', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_get_size <- function(flq) {
+    .Call('FLasher_test_FLQuant_get_size', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_get_nquant <- function(flq) {
+    .Call('FLasher_test_FLQuant_get_nquant', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_get_nyear <- function(flq) {
+    .Call('FLasher_test_FLQuant_get_nyear', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_get_nunit <- function(flq) {
+    .Call('FLasher_test_FLQuant_get_nunit', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_get_nseason <- function(flq) {
+    .Call('FLasher_test_FLQuant_get_nseason', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_get_narea <- function(flq) {
+    .Call('FLasher_test_FLQuant_get_narea', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_get_niter <- function(flq) {
+    .Call('FLasher_test_FLQuant_get_niter', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_get_data_element <- function(flq, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLQuant_get_data_element', PACKAGE = 'FLasher', flq, quant, year, unit, season, area, iter)
+}
+
+test_FLQuant_get_const_single_index_accessor <- function(flq, element) {
+    .Call('FLasher_test_FLQuant_get_const_single_index_accessor', PACKAGE = 'FLasher', flq, element)
+}
+
+test_FLQuant_get_single_index_accessor <- function(flq, element) {
+    .Call('FLasher_test_FLQuant_get_single_index_accessor', PACKAGE = 'FLasher', flq, element)
+}
+
+test_FLQuant_set_single_index_accessor <- function(flq, element, value) {
+    .Call('FLasher_test_FLQuant_set_single_index_accessor', PACKAGE = 'FLasher', flq, element, value)
+}
+
+test_FLQuant_const_get_accessor <- function(flq, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLQuant_const_get_accessor', PACKAGE = 'FLasher', flq, quant, year, unit, season, area, iter)
+}
+
+test_FLQuant_get_accessor <- function(flq, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLQuant_get_accessor', PACKAGE = 'FLasher', flq, quant, year, unit, season, area, iter)
+}
+
+test_FLQuant_set_accessor <- function(flq, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLQuant_set_accessor', PACKAGE = 'FLasher', flq, quant, year, unit, season, area, iter, value)
+}
+
+test_FLQuant_get_const_indices_accessor <- function(flq, indices) {
+    .Call('FLasher_test_FLQuant_get_const_indices_accessor', PACKAGE = 'FLasher', flq, indices)
+}
+
+test_FLQuant_get_indices_accessor <- function(flq, indices) {
+    .Call('FLasher_test_FLQuant_get_indices_accessor', PACKAGE = 'FLasher', flq, indices)
+}
+
+test_FLQuant_set_indices_accessor <- function(flq, indices, value) {
+    .Call('FLasher_test_FLQuant_set_indices_accessor', PACKAGE = 'FLasher', flq, indices, value)
+}
+
+test_FLQuant_get_all_iters <- function(flq, quant, year, unit, season, area) {
+    .Call('FLasher_test_FLQuant_get_all_iters', PACKAGE = 'FLasher', flq, quant, year, unit, season, area)
+}
+
+test_FLQuant_set_data <- function(flq, data_in) {
+    .Call('FLasher_test_FLQuant_set_data', PACKAGE = 'FLasher', flq, data_in)
+}
+
+test_FLQuant_set_dimnames <- function(flq, new_dimnames) {
+    .Call('FLasher_test_FLQuant_set_dimnames', PACKAGE = 'FLasher', flq, new_dimnames)
+}
+
+test_FLQuant_set_units <- function(flq, new_units) {
+    .Call('FLasher_test_FLQuant_set_units', PACKAGE = 'FLasher', flq, new_units)
+}
+
+test_FLQuant_subset <- function(flq, quant_min, quant_max, year_min, year_max, unit_min, unit_max, season_min, season_max, area_min, area_max, iter_min, iter_max) {
+    .Call('FLasher_test_FLQuant_subset', PACKAGE = 'FLasher', flq, quant_min, quant_max, year_min, year_max, unit_min, unit_max, season_min, season_max, area_min, area_max, iter_min, iter_max)
+}
+
+test_FLQuant_propagate_iters <- function(flq, iters) {
+    .Call('FLasher_test_FLQuant_propagate_iters', PACKAGE = 'FLasher', flq, iters)
+}
+
+test_FLQuant_FLQuant_match_dims <- function(flq1, flq2) {
+    .Call('FLasher_test_FLQuant_FLQuant_match_dims', PACKAGE = 'FLasher', flq1, flq2)
+}
+
