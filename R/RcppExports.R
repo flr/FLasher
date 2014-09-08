@@ -633,3 +633,31 @@ test_FLQuant_FLQuant_match_dims <- function(flq1, flq2) {
     .Call('FLasher_test_FLQuant_FLQuant_match_dims', PACKAGE = 'FLasher', flq1, flq2)
 }
 
+test_FLQ_in_FLS <- function(flq) {
+    .Call('FLasher_test_FLQ_in_FLS', PACKAGE = 'FLasher', flq)
+}
+
+test_FLStock_sexp_constructor <- function(fls_sexp) {
+    .Call('FLasher_test_FLStock_sexp_constructor', PACKAGE = 'FLasher', fls_sexp)
+}
+
+test_FLStock_wrap <- function(fls_sexp) {
+    .Call('FLasher_test_FLStock_wrap', PACKAGE = 'FLasher', fls_sexp)
+}
+
+test_FLStock_as <- function(fls) {
+    .Call('FLasher_test_FLStock_as', PACKAGE = 'FLasher', fls)
+}
+
+test_FLStock_as_wrap <- function(fls) {
+    .Call('FLasher_test_FLStock_as_wrap', PACKAGE = 'FLasher', fls)
+}
+
+test_FLStock_copy_constructor <- function(fls1, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLStock_copy_constructor', PACKAGE = 'FLasher', fls1, quant, year, unit, season, area, iter, value)
+}
+
+test_FLStock_assignment_operator <- function(fls1, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLStock_assignment_operator', PACKAGE = 'FLasher', fls1, quant, year, unit, season, area, iter, value)
+}
+

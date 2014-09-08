@@ -4,7 +4,7 @@
  */
 
 #include "FLQuant_base.h"
-//#include "FLStock.h"
+#include "FLStock.h"
 //#include "fwdBiol.h"
 //#include "FLQuant_multidim.h"
 //#include "FLCatch.h"
