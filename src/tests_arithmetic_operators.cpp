@@ -610,7 +610,6 @@ FLQuantAD test_FLQuantAD_quant_mean(FLQuantAD flq){
 }
 
 // max_quant
-/*
 // [[Rcpp::export]]
 FLQuant test_FLQuant_max_quant(FLQuant flq){
     FLQuant flq_out = max_quant(flq);
@@ -635,7 +634,6 @@ FLQuantAD test_FLQuantAD_scale_by_max_quant(FLQuantAD flq){
     FLQuantAD flq_out = scale_by_max_quant(flq);
     return flq_out;
 }
-*/
 
 
 

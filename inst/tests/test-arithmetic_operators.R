@@ -282,23 +282,23 @@ test_that("FLQuant and FLQuantAD summary functions", {
     expect_that(units(flq_out), is_identical_to(units(flq_mean)))
     expect_that(flq_out, equals(flq_mean)) # Not using identical as small numeric differences as + mathematical operation - see above
 
-    ## max_quant
-    #flq_in <- random_FLQuant_generator()
-    #max_flq_in <- apply(flq_in,2:6, max)
-    #max_flq_out <- test_FLQuant_max_quant(flq_in)
-    #expect_that(max_flq_in, is_identical_to(max_flq_out))
-    #max_flq_out <- test_FLQuantAD_max_quant(flq_in)
-    #expect_that(max_flq_in, is_identical_to(max_flq_out))
-    #
-    ## scale_by_max_quant
-    #flq_in <- abs(random_FLQuant_generator())
-    #scaled_in <- flq_in %/% apply(flq_in, 2:6, max)
-    #scaled_out <- test_FLQuant_scale_by_max_quant(flq_in)
-    #expect_that(dimnames(scaled_in), is_identical_to(dimnames(scaled_out)))
-    #expect_that(scaled_in@.Data, is_identical_to(scaled_out@.Data))
-    #scaled_out <- test_FLQuantAD_scale_by_max_quant(flq_in)
-    #expect_that(dimnames(scaled_in), is_identical_to(dimnames(scaled_out)))
-    #expect_that(scaled_in@.Data, is_identical_to(scaled_out@.Data))
+    # max_quant
+    flq_in <- random_FLQuant_generator()
+    max_flq_in <- apply(flq_in,2:6, max)
+    max_flq_out <- test_FLQuant_max_quant(flq_in)
+    expect_that(max_flq_in, is_identical_to(max_flq_out))
+    max_flq_out <- test_FLQuantAD_max_quant(flq_in)
+    expect_that(max_flq_in, is_identical_to(max_flq_out))
+    
+    # scale_by_max_quant
+    flq_in <- abs(random_FLQuant_generator())
+    scaled_in <- flq_in %/% apply(flq_in, 2:6, max)
+    scaled_out <- test_FLQuant_scale_by_max_quant(flq_in)
+    expect_that(dimnames(scaled_in), is_identical_to(dimnames(scaled_out)))
+    expect_that(scaled_in@.Data, is_identical_to(scaled_out@.Data))
+    scaled_out <- test_FLQuantAD_scale_by_max_quant(flq_in)
+    expect_that(dimnames(scaled_in), is_identical_to(dimnames(scaled_out)))
+    expect_that(scaled_in@.Data, is_identical_to(scaled_out@.Data))
 })
 
 test_that("Multiplication: iter = 1 or n", {

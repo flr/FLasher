@@ -1336,6 +1336,66 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// test_FLQuant_max_quant
+FLQuant test_FLQuant_max_quant(FLQuant flq);
+RcppExport SEXP FLasher_test_FLQuant_max_quant(SEXP flqSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP );
+        FLQuant __result = test_FLQuant_max_quant(flq);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLQuantAD_max_quant
+FLQuantAD test_FLQuantAD_max_quant(FLQuantAD flq);
+RcppExport SEXP FLasher_test_FLQuantAD_max_quant(SEXP flqSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLQuantAD >::type flq(flqSEXP );
+        FLQuantAD __result = test_FLQuantAD_max_quant(flq);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLQuant_scale_by_max_quant
+FLQuant test_FLQuant_scale_by_max_quant(FLQuant flq);
+RcppExport SEXP FLasher_test_FLQuant_scale_by_max_quant(SEXP flqSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP );
+        FLQuant __result = test_FLQuant_scale_by_max_quant(flq);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLQuantAD_scale_by_max_quant
+FLQuantAD test_FLQuantAD_scale_by_max_quant(FLQuantAD flq);
+RcppExport SEXP FLasher_test_FLQuantAD_scale_by_max_quant(SEXP flqSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLQuantAD >::type flq(flqSEXP );
+        FLQuantAD __result = test_FLQuantAD_scale_by_max_quant(flq);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // test_FLQuantAD_as_wrap
 FLQuantAD test_FLQuantAD_as_wrap(FLQuantAD flq);
 RcppExport SEXP FLasher_test_FLQuantAD_as_wrap(SEXP flqSEXP) {

@@ -1173,7 +1173,6 @@ FLQuant_base<T> quant_mean(const FLQuant_base<T>& flq){
 // But we have to be careful when using conditionals and Adolc / CppAD adouble
 // So we do it using the fmax() function from Adolc
 // Might be possible to use template functions if we moved to CppAD
-/*
 template <typename T>
 FLQuant_base<T> max_quant(const FLQuant_base<T>& flq){
     Rcpp::IntegerVector dim = flq.get_dim();
@@ -1193,17 +1192,16 @@ FLQuant_base<T> max_quant(const FLQuant_base<T>& flq){
                     for (int years=1; years <= flq.get_nyear(); ++years){
                         max = flq(1, years, units, seasons, areas, iters);
                         for (int quants=1; quants <= flq.get_nquant(); ++quants){
-                            max = fmax(max, flq(quants, years, units, seasons, areas, iters));
+                            //max = fmax(max, flq(quants, years, units, seasons, areas, iters));
+                            max = CppAD::CondExpGe(max,flq(quants, years, units, seasons, areas, iters),max, flq(quants, years, units, seasons, areas, iters));
                         }
                         max_flq(1, years, units, seasons, areas, iters) = max;
     }}}}}
     return max_flq;
 }
-*/
 
 
 // This only makes sense if all the values are positive
-/*
 template <typename T>
 FLQuant_base<T> scale_by_max_quant(const FLQuant_base<T>& flq){
     FLQuant_base<T> max_quant_flq = max_quant(flq);
@@ -1217,12 +1215,10 @@ FLQuant_base<T> scale_by_max_quant(const FLQuant_base<T>& flq){
                     for (int years=1; years <= flq.get_nyear(); ++years){
                         for (int quants=1; quants <= flq.get_nquant(); ++quants){
                             scaled_flq(quants, years, units, seasons, areas, iters)  = flq(quants, years, units, seasons, areas, iters) / max_quant_flq(1, years, units, seasons, areas, iters);
-                            //scaled_flq(quants, years, units, seasons, areas, iters)  = flq(quants, years, units, seasons, areas, iters); 
                         }
     }}}}}
     return scaled_flq;
 }
-*/
 
 template <typename T>
 std::string number_to_string (T number) {
@@ -1300,9 +1296,9 @@ template FLQuant_base<adouble> quant_sum(const FLQuant_base<adouble>& flq);
 template FLQuant_base<double> quant_mean(const FLQuant_base<double>& flq);
 template FLQuant_base<adouble> quant_mean(const FLQuant_base<adouble>& flq);
 
-//template FLQuant_base<double> max_quant(const FLQuant_base<double>& flq);
-//template FLQuant_base<adouble> max_quant(const FLQuant_base<adouble>& flq);
+template FLQuant_base<double> max_quant(const FLQuant_base<double>& flq);
+template FLQuant_base<adouble> max_quant(const FLQuant_base<adouble>& flq);
 
-//template FLQuant_base<double> scale_by_max_quant(const FLQuant_base<double>& flq);
-//template FLQuant_base<adouble> scale_by_max_quant(const FLQuant_base<adouble>& flq);
+template FLQuant_base<double> scale_by_max_quant(const FLQuant_base<double>& flq);
+template FLQuant_base<adouble> scale_by_max_quant(const FLQuant_base<adouble>& flq);
 

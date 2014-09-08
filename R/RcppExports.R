@@ -337,6 +337,22 @@ test_FLQuantAD_quant_mean <- function(flq) {
     .Call('FLasher_test_FLQuantAD_quant_mean', PACKAGE = 'FLasher', flq)
 }
 
+test_FLQuant_max_quant <- function(flq) {
+    .Call('FLasher_test_FLQuant_max_quant', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_max_quant <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_max_quant', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuant_scale_by_max_quant <- function(flq) {
+    .Call('FLasher_test_FLQuant_scale_by_max_quant', PACKAGE = 'FLasher', flq)
+}
+
+test_FLQuantAD_scale_by_max_quant <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_scale_by_max_quant', PACKAGE = 'FLasher', flq)
+}
+
 test_FLQuantAD_as_wrap <- function(flq) {
     .Call('FLasher_test_FLQuantAD_as_wrap', PACKAGE = 'FLasher', flq)
 }
