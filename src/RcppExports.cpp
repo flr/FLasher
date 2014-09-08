@@ -5,6 +5,33 @@
 
 using namespace Rcpp;
 
+// cppad_found
+void cppad_found();
+RcppExport SEXP FLasher_cppad_found() {
+BEGIN_RCPP
+    {
+        Rcpp::RNGScope __rngScope;
+        cppad_found();
+    }
+    return R_NilValue;
+END_RCPP
+}
+// poly
+std::vector<double> poly(unsigned int k_in, double x_in);
+RcppExport SEXP FLasher_poly(SEXP k_inSEXP, SEXP x_inSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< unsigned int >::type k_in(k_inSEXP );
+        Rcpp::traits::input_parameter< double >::type x_in(x_inSEXP );
+        std::vector<double> __result = poly(k_in, x_in);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // rcpp_hello_world
 List rcpp_hello_world();
 RcppExport SEXP FLasher_rcpp_hello_world() {
