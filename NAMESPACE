@@ -1,3 +1,7 @@
+useDynLib(FLasher)
+exportPattern("^[[:alpha:]]+")
+importFrom(Rcpp, evalCpp)
+
 import("FLCore")
 exportClasses(
 	"fwdElement",

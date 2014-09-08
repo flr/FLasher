@@ -1,13 +1,16 @@
 Package: FLasher
+Type: Package
 Title: What can I say?
 Version: 0.1.20140304
 Date: 20140304
 Author: Finlay Scott & Iago Mosqueira, FLR Team
+Maintainer: FLR Team <flr-team@flr-project.org>
 Description: The very best
 Collate: classes.R generics.R accessors.R methods.R fwd.R constructors.R
 Depends: FLCore(>= 2.5.0)
+Imports: Rcpp (>= 0.11.2)
+LinkingTo: Rcpp
 Suggests: testthat, knitr
-Maintainer: FLR Team <flr-team@flr-project.org>
 License: GPL-2
 VignetteBuilder: knitr
 LazyLoad: Yes
