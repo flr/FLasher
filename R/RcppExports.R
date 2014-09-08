@@ -845,3 +845,127 @@ test_FLStock_assignment_operator <- function(fls1, quant, year, unit, season, ar
     .Call('FLasher_test_FLStock_assignment_operator', PACKAGE = 'FLasher', fls1, quant, year, unit, season, area, iter, value)
 }
 
+test_fwdBiol_sexp_constructor <- function(flb_sexp) {
+    .Call('FLasher_test_fwdBiol_sexp_constructor', PACKAGE = 'FLasher', flb_sexp)
+}
+
+test_fwdBiolAD_sexp_constructor <- function(flb_sexp) {
+    .Call('FLasher_test_fwdBiolAD_sexp_constructor', PACKAGE = 'FLasher', flb_sexp)
+}
+
+test_fwdBiol_as_wrap <- function(fwdb) {
+    .Call('FLasher_test_fwdBiol_as_wrap', PACKAGE = 'FLasher', fwdb)
+}
+
+test_fwdBiolAD_as_wrap <- function(fwdb) {
+    .Call('FLasher_test_fwdBiolAD_as_wrap', PACKAGE = 'FLasher', fwdb)
+}
+
+test_fwdBiol_fwdSR_constructor <- function(flb_sexp, model_name, params, timelag, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiol_fwdSR_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, timelag, residuals, residuals_mult)
+}
+
+test_fwdBiol_FLSR_bits_constructor <- function(flb_sexp, model_name, params, timelag, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiol_FLSR_bits_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, timelag, residuals, residuals_mult)
+}
+
+test_fwdBiolAD_fwdSRAD_constructor <- function(flb_sexp, model_name, params, timelag, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiolAD_fwdSRAD_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, timelag, residuals, residuals_mult)
+}
+
+test_fwdBiolAD_FLSR_bits_constructor <- function(flb_sexp, model_name, params, timelag, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiolAD_FLSR_bits_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, timelag, residuals, residuals_mult)
+}
+
+test_fwdBiol_copy_constructor <- function(fwdb1) {
+    .Call('FLasher_test_fwdBiol_copy_constructor', PACKAGE = 'FLasher', fwdb1)
+}
+
+test_fwdBiolAD_copy_constructor <- function(fwdb1) {
+    .Call('FLasher_test_fwdBiolAD_copy_constructor', PACKAGE = 'FLasher', fwdb1)
+}
+
+test_fwdBiol_copy_constructor2 <- function(fwdb1, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_fwdBiol_copy_constructor2', PACKAGE = 'FLasher', fwdb1, quant, year, unit, season, area, iter, value)
+}
+
+test_fwdBiolAD_copy_constructor2 <- function(fwdb1, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_fwdBiolAD_copy_constructor2', PACKAGE = 'FLasher', fwdb1, quant, year, unit, season, area, iter, value)
+}
+
+test_fwdBiol_assignment_operator <- function(fwdb1) {
+    .Call('FLasher_test_fwdBiol_assignment_operator', PACKAGE = 'FLasher', fwdb1)
+}
+
+test_fwdBiolAD_assignment_operator <- function(fwdb1) {
+    .Call('FLasher_test_fwdBiolAD_assignment_operator', PACKAGE = 'FLasher', fwdb1)
+}
+
+test_fwdBiol_assignment_operator2 <- function(fwdb1, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_fwdBiol_assignment_operator2', PACKAGE = 'FLasher', fwdb1, quant, year, unit, season, area, iter, value)
+}
+
+test_fwdBiolAD_assignment_operator2 <- function(fwdb1, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_fwdBiolAD_assignment_operator2', PACKAGE = 'FLasher', fwdb1, quant, year, unit, season, area, iter, value)
+}
+
+test_fwdBiol_const_get_accessors <- function(fwdb, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_fwdBiol_const_get_accessors', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter)
+}
+
+test_fwdBiol_get_accessors <- function(fwdb, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_fwdBiol_get_accessors', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter)
+}
+
+test_fwdBiolAD_const_get_accessors <- function(fwdb, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_fwdBiolAD_const_get_accessors', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter)
+}
+
+test_fwdBiolAD_get_accessors <- function(fwdb, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_fwdBiolAD_get_accessors', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter)
+}
+
+test_fwdBiol_set_accessors <- function(fwdb, quant, year, unit, season, area, iter, values) {
+    .Call('FLasher_test_fwdBiol_set_accessors', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter, values)
+}
+
+test_fwdBiolAD_set_accessors <- function(fwdb, quant, year, unit, season, area, iter, values) {
+    .Call('FLasher_test_fwdBiolAD_set_accessors', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter, values)
+}
+
+test_fwdSR_empty_constructor <- function() {
+    invisible(.Call('FLasher_test_fwdSR_empty_constructor', PACKAGE = 'FLasher'))
+}
+
+test_fwdSR_constructor_wrap <- function(model_name, params, timelag, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdSR_constructor_wrap', PACKAGE = 'FLasher', model_name, params, timelag, residuals, residuals_mult)
+}
+
+test_fwdSR_constructor_value <- function(model_name, params, timelag, residuals, residuals_mult, ssb) {
+    .Call('FLasher_test_fwdSR_constructor_value', PACKAGE = 'FLasher', model_name, params, timelag, residuals, residuals_mult, ssb)
+}
+
+test_fwdSR_get_nparams <- function(model_name, params, timelag, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdSR_get_nparams', PACKAGE = 'FLasher', model_name, params, timelag, residuals, residuals_mult)
+}
+
+test_fwdSR_eval_simple <- function(model_name, params, timelag, residuals, residuals_mult, ssb) {
+    .Call('FLasher_test_fwdSR_eval_simple', PACKAGE = 'FLasher', model_name, params, timelag, residuals, residuals_mult, ssb)
+}
+
+test_fwdSR_eval_full <- function(model_name, params, timelag, residuals, residuals_mult, ssb, year, unit, season, area, iter) {
+    .Call('FLasher_test_fwdSR_eval_full', PACKAGE = 'FLasher', model_name, params, timelag, residuals, residuals_mult, ssb, year, unit, season, area, iter)
+}
+
+test_fwdSR_copy_constructor <- function(model_name, params, timelag, residuals, residuals_mult, ssb) {
+    .Call('FLasher_test_fwdSR_copy_constructor', PACKAGE = 'FLasher', model_name, params, timelag, residuals, residuals_mult, ssb)
+}
+
+test_fwdSR_assignment_operator <- function(model_name, params, timelag, residuals, residuals_mult, ssb) {
+    .Call('FLasher_test_fwdSR_assignment_operator', PACKAGE = 'FLasher', model_name, params, timelag, residuals, residuals_mult, ssb)
+}
+
+test_fwdSR_get_timelag <- function(model_name, params, timelag, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdSR_get_timelag', PACKAGE = 'FLasher', model_name, params, timelag, residuals, residuals_mult)
+}
+
