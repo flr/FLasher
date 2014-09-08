@@ -1396,6 +1396,1225 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// test_simple_FLCatch_sexp_constructor
+int test_simple_FLCatch_sexp_constructor(SEXP flc_sexp);
+RcppExport SEXP FLasher_test_simple_FLCatch_sexp_constructor(SEXP flc_sexpSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type flc_sexp(flc_sexpSEXP );
+        int __result = test_simple_FLCatch_sexp_constructor(flc_sexp);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_sexp_constructor
+FLCatch test_FLCatch_sexp_constructor(SEXP flc_sexp);
+RcppExport SEXP FLasher_test_FLCatch_sexp_constructor(SEXP flc_sexpSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type flc_sexp(flc_sexpSEXP );
+        FLCatch __result = test_FLCatch_sexp_constructor(flc_sexp);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_sexp_constructor
+FLCatchAD test_FLCatchAD_sexp_constructor(SEXP flc_sexp);
+RcppExport SEXP FLasher_test_FLCatchAD_sexp_constructor(SEXP flc_sexpSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type flc_sexp(flc_sexpSEXP );
+        FLCatchAD __result = test_FLCatchAD_sexp_constructor(flc_sexp);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_as_wrap
+FLCatch test_FLCatch_as_wrap(FLCatch flc);
+RcppExport SEXP FLasher_test_FLCatch_as_wrap(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatch >::type flc(flcSEXP );
+        FLCatch __result = test_FLCatch_as_wrap(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_as_wrap
+FLCatchAD test_FLCatchAD_as_wrap(FLCatchAD flc);
+RcppExport SEXP FLasher_test_FLCatchAD_as_wrap(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchAD >::type flc(flcSEXP );
+        FLCatchAD __result = test_FLCatchAD_as_wrap(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_copy_constructor
+FLCatch test_FLCatch_copy_constructor(FLCatch flc1);
+RcppExport SEXP FLasher_test_FLCatch_copy_constructor(SEXP flc1SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatch >::type flc1(flc1SEXP );
+        FLCatch __result = test_FLCatch_copy_constructor(flc1);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_copy_constructor
+FLCatchAD test_FLCatchAD_copy_constructor(FLCatchAD flc1);
+RcppExport SEXP FLasher_test_FLCatchAD_copy_constructor(SEXP flc1SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchAD >::type flc1(flc1SEXP );
+        FLCatchAD __result = test_FLCatchAD_copy_constructor(flc1);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_copy_constructor2
+Rcpp::List test_FLCatch_copy_constructor2(FLCatch flc1, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_FLCatch_copy_constructor2(SEXP flc1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatch >::type flc1(flc1SEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::traits::input_parameter< double >::type value(valueSEXP );
+        Rcpp::List __result = test_FLCatch_copy_constructor2(flc1, quant, year, unit, season, area, iter, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_copy_constructor2
+Rcpp::List test_FLCatchAD_copy_constructor2(FLCatchAD flc1, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_FLCatchAD_copy_constructor2(SEXP flc1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchAD >::type flc1(flc1SEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::traits::input_parameter< double >::type value(valueSEXP );
+        Rcpp::List __result = test_FLCatchAD_copy_constructor2(flc1, quant, year, unit, season, area, iter, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_assignment_operator
+FLCatch test_FLCatch_assignment_operator(FLCatch flc1);
+RcppExport SEXP FLasher_test_FLCatch_assignment_operator(SEXP flc1SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatch >::type flc1(flc1SEXP );
+        FLCatch __result = test_FLCatch_assignment_operator(flc1);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_assignment_operator
+FLCatchAD test_FLCatchAD_assignment_operator(FLCatchAD flc1);
+RcppExport SEXP FLasher_test_FLCatchAD_assignment_operator(SEXP flc1SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchAD >::type flc1(flc1SEXP );
+        FLCatchAD __result = test_FLCatchAD_assignment_operator(flc1);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_assignment_operator2
+Rcpp::List test_FLCatch_assignment_operator2(FLCatch flc1, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_FLCatch_assignment_operator2(SEXP flc1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatch >::type flc1(flc1SEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::traits::input_parameter< double >::type value(valueSEXP );
+        Rcpp::List __result = test_FLCatch_assignment_operator2(flc1, quant, year, unit, season, area, iter, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_assignment_operator2
+Rcpp::List test_FLCatchAD_assignment_operator2(FLCatchAD flc1, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_FLCatchAD_assignment_operator2(SEXP flc1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchAD >::type flc1(flc1SEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::traits::input_parameter< double >::type value(valueSEXP );
+        Rcpp::List __result = test_FLCatchAD_assignment_operator2(flc1, quant, year, unit, season, area, iter, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_const_get_accessors
+Rcpp::NumericVector test_FLCatch_const_get_accessors(const FLCatch flc, int quant, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_FLCatch_const_get_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::NumericVector __result = test_FLCatch_const_get_accessors(flc, quant, year, unit, season, area, iter);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_const_get_accessors
+Rcpp::NumericVector test_FLCatchAD_const_get_accessors(const FLCatchAD flc, int quant, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_FLCatchAD_const_get_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::NumericVector __result = test_FLCatchAD_const_get_accessors(flc, quant, year, unit, season, area, iter);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_get_accessors
+Rcpp::NumericVector test_FLCatch_get_accessors(FLCatch flc, int quant, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_FLCatch_get_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatch >::type flc(flcSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::NumericVector __result = test_FLCatch_get_accessors(flc, quant, year, unit, season, area, iter);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_get_accessors
+Rcpp::NumericVector test_FLCatchAD_get_accessors(FLCatchAD flc, int quant, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_FLCatchAD_get_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchAD >::type flc(flcSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::NumericVector __result = test_FLCatchAD_get_accessors(flc, quant, year, unit, season, area, iter);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_set_accessors
+FLCatch test_FLCatch_set_accessors(FLCatch flc, int quant, int year, int unit, int season, int area, int iter, Rcpp::NumericVector values);
+RcppExport SEXP FLasher_test_FLCatch_set_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valuesSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatch >::type flc(flcSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::traits::input_parameter< Rcpp::NumericVector >::type values(valuesSEXP );
+        FLCatch __result = test_FLCatch_set_accessors(flc, quant, year, unit, season, area, iter, values);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_set_accessors
+FLCatchAD test_FLCatchAD_set_accessors(FLCatchAD flc, int quant, int year, int unit, int season, int area, int iter, Rcpp::NumericVector values);
+RcppExport SEXP FLasher_test_FLCatchAD_set_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valuesSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchAD >::type flc(flcSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::traits::input_parameter< Rcpp::NumericVector >::type values(valuesSEXP );
+        FLCatchAD __result = test_FLCatchAD_set_accessors(flc, quant, year, unit, season, area, iter, values);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_landings
+FLQuant test_FLCatch_landings(const FLCatch flc);
+RcppExport SEXP FLasher_test_FLCatch_landings(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP );
+        FLQuant __result = test_FLCatch_landings(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_landings
+FLQuantAD test_FLCatchAD_landings(const FLCatchAD flc);
+RcppExport SEXP FLasher_test_FLCatchAD_landings(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP );
+        FLQuantAD __result = test_FLCatchAD_landings(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_discards
+FLQuant test_FLCatch_discards(const FLCatch flc);
+RcppExport SEXP FLasher_test_FLCatch_discards(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP );
+        FLQuant __result = test_FLCatch_discards(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_discards
+FLQuantAD test_FLCatchAD_discards(const FLCatchAD flc);
+RcppExport SEXP FLasher_test_FLCatchAD_discards(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP );
+        FLQuantAD __result = test_FLCatchAD_discards(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_catch_n
+FLQuant test_FLCatch_catch_n(const FLCatch flc);
+RcppExport SEXP FLasher_test_FLCatch_catch_n(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP );
+        FLQuant __result = test_FLCatch_catch_n(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_catch_n
+FLQuantAD test_FLCatchAD_catch_n(const FLCatchAD flc);
+RcppExport SEXP FLasher_test_FLCatchAD_catch_n(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP );
+        FLQuantAD __result = test_FLCatchAD_catch_n(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_catch_wt
+FLQuant test_FLCatch_catch_wt(const FLCatch flc);
+RcppExport SEXP FLasher_test_FLCatch_catch_wt(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP );
+        FLQuant __result = test_FLCatch_catch_wt(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_catch_wt
+FLQuantAD test_FLCatchAD_catch_wt(const FLCatchAD flc);
+RcppExport SEXP FLasher_test_FLCatchAD_catch_wt(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP );
+        FLQuantAD __result = test_FLCatchAD_catch_wt(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_catches
+FLQuant test_FLCatch_catches(const FLCatch flc);
+RcppExport SEXP FLasher_test_FLCatch_catches(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP );
+        FLQuant __result = test_FLCatch_catches(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_catches
+FLQuantAD test_FLCatchAD_catches(const FLCatchAD flc);
+RcppExport SEXP FLasher_test_FLCatchAD_catches(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP );
+        FLQuantAD __result = test_FLCatchAD_catches(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_discards_ratio
+FLQuant test_FLCatch_discards_ratio(const FLCatch flc);
+RcppExport SEXP FLasher_test_FLCatch_discards_ratio(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP );
+        FLQuant __result = test_FLCatch_discards_ratio(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_discards_ratio
+FLQuantAD test_FLCatchAD_discards_ratio(const FLCatchAD flc);
+RcppExport SEXP FLasher_test_FLCatchAD_discards_ratio(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP );
+        FLQuantAD __result = test_FLCatchAD_discards_ratio(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_landings_sel
+FLQuant test_FLCatch_landings_sel(const FLCatch flc);
+RcppExport SEXP FLasher_test_FLCatch_landings_sel(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP );
+        FLQuant __result = test_FLCatch_landings_sel(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_landings_sel
+FLQuantAD test_FLCatchAD_landings_sel(const FLCatchAD flc);
+RcppExport SEXP FLasher_test_FLCatchAD_landings_sel(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP );
+        FLQuantAD __result = test_FLCatchAD_landings_sel(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatch_discards_sel
+FLQuant test_FLCatch_discards_sel(const FLCatch flc);
+RcppExport SEXP FLasher_test_FLCatch_discards_sel(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP );
+        FLQuant __result = test_FLCatch_discards_sel(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchAD_discards_sel
+FLQuantAD test_FLCatchAD_discards_sel(const FLCatchAD flc);
+RcppExport SEXP FLasher_test_FLCatchAD_discards_sel(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP );
+        FLQuantAD __result = test_FLCatchAD_discards_sel(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_as_wrap
+FLCatches test_FLCatches_as_wrap(FLCatches flcs);
+RcppExport SEXP FLasher_test_FLCatches_as_wrap(SEXP flcsSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatches >::type flcs(flcsSEXP );
+        FLCatches __result = test_FLCatches_as_wrap(flcs);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_sexp_constructor
+FLCatches test_FLCatches_sexp_constructor(SEXP flcs_sexp1);
+RcppExport SEXP FLasher_test_FLCatches_sexp_constructor(SEXP flcs_sexp1SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type flcs_sexp1(flcs_sexp1SEXP );
+        FLCatches __result = test_FLCatches_sexp_constructor(flcs_sexp1);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_FLCatch_constructor
+FLCatches test_FLCatches_FLCatch_constructor(FLCatch flc);
+RcppExport SEXP FLasher_test_FLCatches_FLCatch_constructor(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatch >::type flc(flcSEXP );
+        FLCatches __result = test_FLCatches_FLCatch_constructor(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_copy_constructor
+FLCatches test_FLCatches_copy_constructor(FLCatches flcs);
+RcppExport SEXP FLasher_test_FLCatches_copy_constructor(SEXP flcsSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatches >::type flcs(flcsSEXP );
+        FLCatches __result = test_FLCatches_copy_constructor(flcs);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_copy_constructor2
+Rcpp::List test_FLCatches_copy_constructor2(FLCatches flcs1, int catches, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_FLCatches_copy_constructor2(SEXP flcs1SEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatches >::type flcs1(flcs1SEXP );
+        Rcpp::traits::input_parameter< int >::type catches(catchesSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::traits::input_parameter< double >::type value(valueSEXP );
+        Rcpp::List __result = test_FLCatches_copy_constructor2(flcs1, catches, quant, year, unit, season, area, iter, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_assignment_operator
+FLCatches test_FLCatches_assignment_operator(FLCatches flcs);
+RcppExport SEXP FLasher_test_FLCatches_assignment_operator(SEXP flcsSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatches >::type flcs(flcsSEXP );
+        FLCatches __result = test_FLCatches_assignment_operator(flcs);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_assignment_operator2
+Rcpp::List test_FLCatches_assignment_operator2(FLCatches flcs1, int catches, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_FLCatches_assignment_operator2(SEXP flcs1SEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatches >::type flcs1(flcs1SEXP );
+        Rcpp::traits::input_parameter< int >::type catches(catchesSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::traits::input_parameter< double >::type value(valueSEXP );
+        Rcpp::List __result = test_FLCatches_assignment_operator2(flcs1, catches, quant, year, unit, season, area, iter, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_function_operator
+FLCatches test_FLCatches_function_operator(FLCatches flcs, FLCatch flc);
+RcppExport SEXP FLasher_test_FLCatches_function_operator(SEXP flcsSEXP, SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatches >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< FLCatch >::type flc(flcSEXP );
+        FLCatches __result = test_FLCatches_function_operator(flcs, flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_get_ncatches
+int test_FLCatches_get_ncatches(SEXP flc_sexp1);
+RcppExport SEXP FLasher_test_FLCatches_get_ncatches(SEXP flc_sexp1SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type flc_sexp1(flc_sexp1SEXP );
+        int __result = test_FLCatches_get_ncatches(flc_sexp1);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_const_get_single_index_accessor
+FLCatch test_FLCatches_const_get_single_index_accessor(const FLCatches flcs, const int element);
+RcppExport SEXP FLasher_test_FLCatches_const_get_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatches >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< const int >::type element(elementSEXP );
+        FLCatch __result = test_FLCatches_const_get_single_index_accessor(flcs, element);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_get_single_index_accessor
+FLCatch test_FLCatches_get_single_index_accessor(FLCatches flcs, const int element);
+RcppExport SEXP FLasher_test_FLCatches_get_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatches >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< const int >::type element(elementSEXP );
+        FLCatch __result = test_FLCatches_get_single_index_accessor(flcs, element);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_const_get_value_accessor
+double test_FLCatches_const_get_value_accessor(const FLCatches flcs, const int catches, int quant, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_FLCatches_const_get_value_accessor(SEXP flcsSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatches >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< const int >::type catches(catchesSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        double __result = test_FLCatches_const_get_value_accessor(flcs, catches, quant, year, unit, season, area, iter);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_get_value_accessor
+double test_FLCatches_get_value_accessor(FLCatches flcs, const int catches, int quant, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_FLCatches_get_value_accessor(SEXP flcsSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatches >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< const int >::type catches(catchesSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        double __result = test_FLCatches_get_value_accessor(flcs, catches, quant, year, unit, season, area, iter);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_set_single_index_accessor
+FLCatches test_FLCatches_set_single_index_accessor(FLCatches flcs, const int element, const FLCatch flc);
+RcppExport SEXP FLasher_test_FLCatches_set_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP, SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatches >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< const int >::type element(elementSEXP );
+        Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP );
+        FLCatches __result = test_FLCatches_set_single_index_accessor(flcs, element, flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_set_value_accessor
+FLCatches test_FLCatches_set_value_accessor(FLCatches flcs, const int element, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_FLCatches_set_value_accessor(SEXP flcsSEXP, SEXP elementSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatches >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< const int >::type element(elementSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::traits::input_parameter< double >::type value(valueSEXP );
+        FLCatches __result = test_FLCatches_set_value_accessor(flcs, element, quant, year, unit, season, area, iter, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_const_get_single_index_default_accessor
+FLCatch test_FLCatches_const_get_single_index_default_accessor(const FLCatches flcs);
+RcppExport SEXP FLasher_test_FLCatches_const_get_single_index_default_accessor(SEXP flcsSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatches >::type flcs(flcsSEXP );
+        FLCatch __result = test_FLCatches_const_get_single_index_default_accessor(flcs);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_get_single_index_default_accessor
+FLCatch test_FLCatches_get_single_index_default_accessor(FLCatches flcs);
+RcppExport SEXP FLasher_test_FLCatches_get_single_index_default_accessor(SEXP flcsSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatches >::type flcs(flcsSEXP );
+        FLCatch __result = test_FLCatches_get_single_index_default_accessor(flcs);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatches_set_single_index_default_accessor
+FLCatches test_FLCatches_set_single_index_default_accessor(FLCatches flcs, const FLCatch flc);
+RcppExport SEXP FLasher_test_FLCatches_set_single_index_default_accessor(SEXP flcsSEXP, SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatches >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP );
+        FLCatches __result = test_FLCatches_set_single_index_default_accessor(flcs, flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_as_wrap
+FLCatchesAD test_FLCatchesAD_as_wrap(FLCatchesAD flcs);
+RcppExport SEXP FLasher_test_FLCatchesAD_as_wrap(SEXP flcsSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchesAD >::type flcs(flcsSEXP );
+        FLCatchesAD __result = test_FLCatchesAD_as_wrap(flcs);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_sexp_constructor
+FLCatchesAD test_FLCatchesAD_sexp_constructor(SEXP flcs_sexp1);
+RcppExport SEXP FLasher_test_FLCatchesAD_sexp_constructor(SEXP flcs_sexp1SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type flcs_sexp1(flcs_sexp1SEXP );
+        FLCatchesAD __result = test_FLCatchesAD_sexp_constructor(flcs_sexp1);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_FLCatchAD_constructor
+FLCatchesAD test_FLCatchesAD_FLCatchAD_constructor(FLCatchAD flc);
+RcppExport SEXP FLasher_test_FLCatchesAD_FLCatchAD_constructor(SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchAD >::type flc(flcSEXP );
+        FLCatchesAD __result = test_FLCatchesAD_FLCatchAD_constructor(flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_copy_constructor
+FLCatchesAD test_FLCatchesAD_copy_constructor(FLCatchesAD flcs);
+RcppExport SEXP FLasher_test_FLCatchesAD_copy_constructor(SEXP flcsSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchesAD >::type flcs(flcsSEXP );
+        FLCatchesAD __result = test_FLCatchesAD_copy_constructor(flcs);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_copy_constructor2
+Rcpp::List test_FLCatchesAD_copy_constructor2(FLCatchesAD flcs1, int catches, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_FLCatchesAD_copy_constructor2(SEXP flcs1SEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchesAD >::type flcs1(flcs1SEXP );
+        Rcpp::traits::input_parameter< int >::type catches(catchesSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::traits::input_parameter< double >::type value(valueSEXP );
+        Rcpp::List __result = test_FLCatchesAD_copy_constructor2(flcs1, catches, quant, year, unit, season, area, iter, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_assignment_operator
+FLCatchesAD test_FLCatchesAD_assignment_operator(FLCatchesAD flcs);
+RcppExport SEXP FLasher_test_FLCatchesAD_assignment_operator(SEXP flcsSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchesAD >::type flcs(flcsSEXP );
+        FLCatchesAD __result = test_FLCatchesAD_assignment_operator(flcs);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_assignment_operator2
+Rcpp::List test_FLCatchesAD_assignment_operator2(FLCatchesAD flcs1, int catches, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_FLCatchesAD_assignment_operator2(SEXP flcs1SEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchesAD >::type flcs1(flcs1SEXP );
+        Rcpp::traits::input_parameter< int >::type catches(catchesSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::traits::input_parameter< double >::type value(valueSEXP );
+        Rcpp::List __result = test_FLCatchesAD_assignment_operator2(flcs1, catches, quant, year, unit, season, area, iter, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_function_operator
+FLCatchesAD test_FLCatchesAD_function_operator(FLCatchesAD flcs, FLCatchAD flc);
+RcppExport SEXP FLasher_test_FLCatchesAD_function_operator(SEXP flcsSEXP, SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchesAD >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< FLCatchAD >::type flc(flcSEXP );
+        FLCatchesAD __result = test_FLCatchesAD_function_operator(flcs, flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_get_ncatches
+int test_FLCatchesAD_get_ncatches(SEXP flc_sexp1);
+RcppExport SEXP FLasher_test_FLCatchesAD_get_ncatches(SEXP flc_sexp1SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type flc_sexp1(flc_sexp1SEXP );
+        int __result = test_FLCatchesAD_get_ncatches(flc_sexp1);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_const_get_single_index_accessor
+FLCatchAD test_FLCatchesAD_const_get_single_index_accessor(const FLCatchesAD flcs, const int element);
+RcppExport SEXP FLasher_test_FLCatchesAD_const_get_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatchesAD >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< const int >::type element(elementSEXP );
+        FLCatchAD __result = test_FLCatchesAD_const_get_single_index_accessor(flcs, element);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_get_single_index_accessor
+FLCatchAD test_FLCatchesAD_get_single_index_accessor(FLCatchesAD flcs, const int element);
+RcppExport SEXP FLasher_test_FLCatchesAD_get_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchesAD >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< const int >::type element(elementSEXP );
+        FLCatchAD __result = test_FLCatchesAD_get_single_index_accessor(flcs, element);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_const_get_value_accessor
+double test_FLCatchesAD_const_get_value_accessor(const FLCatchesAD flcs, const int catches, int quant, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_FLCatchesAD_const_get_value_accessor(SEXP flcsSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatchesAD >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< const int >::type catches(catchesSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        double __result = test_FLCatchesAD_const_get_value_accessor(flcs, catches, quant, year, unit, season, area, iter);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_get_value_accessor
+double test_FLCatchesAD_get_value_accessor(FLCatchesAD flcs, const int catches, int quant, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_FLCatchesAD_get_value_accessor(SEXP flcsSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchesAD >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< const int >::type catches(catchesSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        double __result = test_FLCatchesAD_get_value_accessor(flcs, catches, quant, year, unit, season, area, iter);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_set_single_index_accessor
+FLCatchesAD test_FLCatchesAD_set_single_index_accessor(FLCatchesAD flcs, const int element, const FLCatchAD flc);
+RcppExport SEXP FLasher_test_FLCatchesAD_set_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP, SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchesAD >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< const int >::type element(elementSEXP );
+        Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP );
+        FLCatchesAD __result = test_FLCatchesAD_set_single_index_accessor(flcs, element, flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_set_value_accessor
+FLCatchesAD test_FLCatchesAD_set_value_accessor(FLCatchesAD flcs, const int element, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_FLCatchesAD_set_value_accessor(SEXP flcsSEXP, SEXP elementSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchesAD >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< const int >::type element(elementSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::traits::input_parameter< double >::type value(valueSEXP );
+        FLCatchesAD __result = test_FLCatchesAD_set_value_accessor(flcs, element, quant, year, unit, season, area, iter, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_const_get_single_index_default_accessor
+FLCatchAD test_FLCatchesAD_const_get_single_index_default_accessor(const FLCatchesAD flcs);
+RcppExport SEXP FLasher_test_FLCatchesAD_const_get_single_index_default_accessor(SEXP flcsSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatchesAD >::type flcs(flcsSEXP );
+        FLCatchAD __result = test_FLCatchesAD_const_get_single_index_default_accessor(flcs);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_get_single_index_default_accessor
+FLCatchAD test_FLCatchesAD_get_single_index_default_accessor(FLCatchesAD flcs);
+RcppExport SEXP FLasher_test_FLCatchesAD_get_single_index_default_accessor(SEXP flcsSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchesAD >::type flcs(flcsSEXP );
+        FLCatchAD __result = test_FLCatchesAD_get_single_index_default_accessor(flcs);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLCatchesAD_set_single_index_default_accessor
+FLCatchesAD test_FLCatchesAD_set_single_index_default_accessor(FLCatchesAD flcs, const FLCatchAD flc);
+RcppExport SEXP FLasher_test_FLCatchesAD_set_single_index_default_accessor(SEXP flcsSEXP, SEXP flcSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLCatchesAD >::type flcs(flcsSEXP );
+        Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP );
+        FLCatchesAD __result = test_FLCatchesAD_set_single_index_default_accessor(flcs, flc);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // test_FLQuantAD_as_wrap
 FLQuantAD test_FLQuantAD_as_wrap(FLQuantAD flq);
 RcppExport SEXP FLasher_test_FLQuantAD_as_wrap(SEXP flqSEXP) {

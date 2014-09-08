@@ -353,6 +353,290 @@ test_FLQuantAD_scale_by_max_quant <- function(flq) {
     .Call('FLasher_test_FLQuantAD_scale_by_max_quant', PACKAGE = 'FLasher', flq)
 }
 
+test_simple_FLCatch_sexp_constructor <- function(flc_sexp) {
+    .Call('FLasher_test_simple_FLCatch_sexp_constructor', PACKAGE = 'FLasher', flc_sexp)
+}
+
+test_FLCatch_sexp_constructor <- function(flc_sexp) {
+    .Call('FLasher_test_FLCatch_sexp_constructor', PACKAGE = 'FLasher', flc_sexp)
+}
+
+test_FLCatchAD_sexp_constructor <- function(flc_sexp) {
+    .Call('FLasher_test_FLCatchAD_sexp_constructor', PACKAGE = 'FLasher', flc_sexp)
+}
+
+test_FLCatch_as_wrap <- function(flc) {
+    .Call('FLasher_test_FLCatch_as_wrap', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatchAD_as_wrap <- function(flc) {
+    .Call('FLasher_test_FLCatchAD_as_wrap', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatch_copy_constructor <- function(flc1) {
+    .Call('FLasher_test_FLCatch_copy_constructor', PACKAGE = 'FLasher', flc1)
+}
+
+test_FLCatchAD_copy_constructor <- function(flc1) {
+    .Call('FLasher_test_FLCatchAD_copy_constructor', PACKAGE = 'FLasher', flc1)
+}
+
+test_FLCatch_copy_constructor2 <- function(flc1, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLCatch_copy_constructor2', PACKAGE = 'FLasher', flc1, quant, year, unit, season, area, iter, value)
+}
+
+test_FLCatchAD_copy_constructor2 <- function(flc1, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLCatchAD_copy_constructor2', PACKAGE = 'FLasher', flc1, quant, year, unit, season, area, iter, value)
+}
+
+test_FLCatch_assignment_operator <- function(flc1) {
+    .Call('FLasher_test_FLCatch_assignment_operator', PACKAGE = 'FLasher', flc1)
+}
+
+test_FLCatchAD_assignment_operator <- function(flc1) {
+    .Call('FLasher_test_FLCatchAD_assignment_operator', PACKAGE = 'FLasher', flc1)
+}
+
+test_FLCatch_assignment_operator2 <- function(flc1, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLCatch_assignment_operator2', PACKAGE = 'FLasher', flc1, quant, year, unit, season, area, iter, value)
+}
+
+test_FLCatchAD_assignment_operator2 <- function(flc1, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLCatchAD_assignment_operator2', PACKAGE = 'FLasher', flc1, quant, year, unit, season, area, iter, value)
+}
+
+test_FLCatch_const_get_accessors <- function(flc, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLCatch_const_get_accessors', PACKAGE = 'FLasher', flc, quant, year, unit, season, area, iter)
+}
+
+test_FLCatchAD_const_get_accessors <- function(flc, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLCatchAD_const_get_accessors', PACKAGE = 'FLasher', flc, quant, year, unit, season, area, iter)
+}
+
+test_FLCatch_get_accessors <- function(flc, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLCatch_get_accessors', PACKAGE = 'FLasher', flc, quant, year, unit, season, area, iter)
+}
+
+test_FLCatchAD_get_accessors <- function(flc, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLCatchAD_get_accessors', PACKAGE = 'FLasher', flc, quant, year, unit, season, area, iter)
+}
+
+test_FLCatch_set_accessors <- function(flc, quant, year, unit, season, area, iter, values) {
+    .Call('FLasher_test_FLCatch_set_accessors', PACKAGE = 'FLasher', flc, quant, year, unit, season, area, iter, values)
+}
+
+test_FLCatchAD_set_accessors <- function(flc, quant, year, unit, season, area, iter, values) {
+    .Call('FLasher_test_FLCatchAD_set_accessors', PACKAGE = 'FLasher', flc, quant, year, unit, season, area, iter, values)
+}
+
+test_FLCatch_landings <- function(flc) {
+    .Call('FLasher_test_FLCatch_landings', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatchAD_landings <- function(flc) {
+    .Call('FLasher_test_FLCatchAD_landings', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatch_discards <- function(flc) {
+    .Call('FLasher_test_FLCatch_discards', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatchAD_discards <- function(flc) {
+    .Call('FLasher_test_FLCatchAD_discards', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatch_catch_n <- function(flc) {
+    .Call('FLasher_test_FLCatch_catch_n', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatchAD_catch_n <- function(flc) {
+    .Call('FLasher_test_FLCatchAD_catch_n', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatch_catch_wt <- function(flc) {
+    .Call('FLasher_test_FLCatch_catch_wt', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatchAD_catch_wt <- function(flc) {
+    .Call('FLasher_test_FLCatchAD_catch_wt', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatch_catches <- function(flc) {
+    .Call('FLasher_test_FLCatch_catches', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatchAD_catches <- function(flc) {
+    .Call('FLasher_test_FLCatchAD_catches', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatch_discards_ratio <- function(flc) {
+    .Call('FLasher_test_FLCatch_discards_ratio', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatchAD_discards_ratio <- function(flc) {
+    .Call('FLasher_test_FLCatchAD_discards_ratio', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatch_landings_sel <- function(flc) {
+    .Call('FLasher_test_FLCatch_landings_sel', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatchAD_landings_sel <- function(flc) {
+    .Call('FLasher_test_FLCatchAD_landings_sel', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatch_discards_sel <- function(flc) {
+    .Call('FLasher_test_FLCatch_discards_sel', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatchAD_discards_sel <- function(flc) {
+    .Call('FLasher_test_FLCatchAD_discards_sel', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatches_as_wrap <- function(flcs) {
+    .Call('FLasher_test_FLCatches_as_wrap', PACKAGE = 'FLasher', flcs)
+}
+
+test_FLCatches_sexp_constructor <- function(flcs_sexp1) {
+    .Call('FLasher_test_FLCatches_sexp_constructor', PACKAGE = 'FLasher', flcs_sexp1)
+}
+
+test_FLCatches_FLCatch_constructor <- function(flc) {
+    .Call('FLasher_test_FLCatches_FLCatch_constructor', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatches_copy_constructor <- function(flcs) {
+    .Call('FLasher_test_FLCatches_copy_constructor', PACKAGE = 'FLasher', flcs)
+}
+
+test_FLCatches_copy_constructor2 <- function(flcs1, catches, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLCatches_copy_constructor2', PACKAGE = 'FLasher', flcs1, catches, quant, year, unit, season, area, iter, value)
+}
+
+test_FLCatches_assignment_operator <- function(flcs) {
+    .Call('FLasher_test_FLCatches_assignment_operator', PACKAGE = 'FLasher', flcs)
+}
+
+test_FLCatches_assignment_operator2 <- function(flcs1, catches, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLCatches_assignment_operator2', PACKAGE = 'FLasher', flcs1, catches, quant, year, unit, season, area, iter, value)
+}
+
+test_FLCatches_function_operator <- function(flcs, flc) {
+    .Call('FLasher_test_FLCatches_function_operator', PACKAGE = 'FLasher', flcs, flc)
+}
+
+test_FLCatches_get_ncatches <- function(flc_sexp1) {
+    .Call('FLasher_test_FLCatches_get_ncatches', PACKAGE = 'FLasher', flc_sexp1)
+}
+
+test_FLCatches_const_get_single_index_accessor <- function(flcs, element) {
+    .Call('FLasher_test_FLCatches_const_get_single_index_accessor', PACKAGE = 'FLasher', flcs, element)
+}
+
+test_FLCatches_get_single_index_accessor <- function(flcs, element) {
+    .Call('FLasher_test_FLCatches_get_single_index_accessor', PACKAGE = 'FLasher', flcs, element)
+}
+
+test_FLCatches_const_get_value_accessor <- function(flcs, catches, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLCatches_const_get_value_accessor', PACKAGE = 'FLasher', flcs, catches, quant, year, unit, season, area, iter)
+}
+
+test_FLCatches_get_value_accessor <- function(flcs, catches, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLCatches_get_value_accessor', PACKAGE = 'FLasher', flcs, catches, quant, year, unit, season, area, iter)
+}
+
+test_FLCatches_set_single_index_accessor <- function(flcs, element, flc) {
+    .Call('FLasher_test_FLCatches_set_single_index_accessor', PACKAGE = 'FLasher', flcs, element, flc)
+}
+
+test_FLCatches_set_value_accessor <- function(flcs, element, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLCatches_set_value_accessor', PACKAGE = 'FLasher', flcs, element, quant, year, unit, season, area, iter, value)
+}
+
+test_FLCatches_const_get_single_index_default_accessor <- function(flcs) {
+    .Call('FLasher_test_FLCatches_const_get_single_index_default_accessor', PACKAGE = 'FLasher', flcs)
+}
+
+test_FLCatches_get_single_index_default_accessor <- function(flcs) {
+    .Call('FLasher_test_FLCatches_get_single_index_default_accessor', PACKAGE = 'FLasher', flcs)
+}
+
+test_FLCatches_set_single_index_default_accessor <- function(flcs, flc) {
+    .Call('FLasher_test_FLCatches_set_single_index_default_accessor', PACKAGE = 'FLasher', flcs, flc)
+}
+
+test_FLCatchesAD_as_wrap <- function(flcs) {
+    .Call('FLasher_test_FLCatchesAD_as_wrap', PACKAGE = 'FLasher', flcs)
+}
+
+test_FLCatchesAD_sexp_constructor <- function(flcs_sexp1) {
+    .Call('FLasher_test_FLCatchesAD_sexp_constructor', PACKAGE = 'FLasher', flcs_sexp1)
+}
+
+test_FLCatchesAD_FLCatchAD_constructor <- function(flc) {
+    .Call('FLasher_test_FLCatchesAD_FLCatchAD_constructor', PACKAGE = 'FLasher', flc)
+}
+
+test_FLCatchesAD_copy_constructor <- function(flcs) {
+    .Call('FLasher_test_FLCatchesAD_copy_constructor', PACKAGE = 'FLasher', flcs)
+}
+
+test_FLCatchesAD_copy_constructor2 <- function(flcs1, catches, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLCatchesAD_copy_constructor2', PACKAGE = 'FLasher', flcs1, catches, quant, year, unit, season, area, iter, value)
+}
+
+test_FLCatchesAD_assignment_operator <- function(flcs) {
+    .Call('FLasher_test_FLCatchesAD_assignment_operator', PACKAGE = 'FLasher', flcs)
+}
+
+test_FLCatchesAD_assignment_operator2 <- function(flcs1, catches, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLCatchesAD_assignment_operator2', PACKAGE = 'FLasher', flcs1, catches, quant, year, unit, season, area, iter, value)
+}
+
+test_FLCatchesAD_function_operator <- function(flcs, flc) {
+    .Call('FLasher_test_FLCatchesAD_function_operator', PACKAGE = 'FLasher', flcs, flc)
+}
+
+test_FLCatchesAD_get_ncatches <- function(flc_sexp1) {
+    .Call('FLasher_test_FLCatchesAD_get_ncatches', PACKAGE = 'FLasher', flc_sexp1)
+}
+
+test_FLCatchesAD_const_get_single_index_accessor <- function(flcs, element) {
+    .Call('FLasher_test_FLCatchesAD_const_get_single_index_accessor', PACKAGE = 'FLasher', flcs, element)
+}
+
+test_FLCatchesAD_get_single_index_accessor <- function(flcs, element) {
+    .Call('FLasher_test_FLCatchesAD_get_single_index_accessor', PACKAGE = 'FLasher', flcs, element)
+}
+
+test_FLCatchesAD_const_get_value_accessor <- function(flcs, catches, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLCatchesAD_const_get_value_accessor', PACKAGE = 'FLasher', flcs, catches, quant, year, unit, season, area, iter)
+}
+
+test_FLCatchesAD_get_value_accessor <- function(flcs, catches, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLCatchesAD_get_value_accessor', PACKAGE = 'FLasher', flcs, catches, quant, year, unit, season, area, iter)
+}
+
+test_FLCatchesAD_set_single_index_accessor <- function(flcs, element, flc) {
+    .Call('FLasher_test_FLCatchesAD_set_single_index_accessor', PACKAGE = 'FLasher', flcs, element, flc)
+}
+
+test_FLCatchesAD_set_value_accessor <- function(flcs, element, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLCatchesAD_set_value_accessor', PACKAGE = 'FLasher', flcs, element, quant, year, unit, season, area, iter, value)
+}
+
+test_FLCatchesAD_const_get_single_index_default_accessor <- function(flcs) {
+    .Call('FLasher_test_FLCatchesAD_const_get_single_index_default_accessor', PACKAGE = 'FLasher', flcs)
+}
+
+test_FLCatchesAD_get_single_index_default_accessor <- function(flcs) {
+    .Call('FLasher_test_FLCatchesAD_get_single_index_default_accessor', PACKAGE = 'FLasher', flcs)
+}
+
+test_FLCatchesAD_set_single_index_default_accessor <- function(flcs, flc) {
+    .Call('FLasher_test_FLCatchesAD_set_single_index_default_accessor', PACKAGE = 'FLasher', flcs, flc)
+}
+
 test_FLQuantAD_as_wrap <- function(flq) {
     .Call('FLasher_test_FLQuantAD_as_wrap', PACKAGE = 'FLasher', flq)
 }

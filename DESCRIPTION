@@ -7,7 +7,9 @@ Author: Finlay Scott & Iago Mosqueira, FLR Team
 Maintainer: FLR Team <flr-team@flr-project.org>
 Description: The very best
 Collate: classes.R generics.R accessors.R methods.R fwd.R constructors.R RcppExports.R help.R test_helper_functions.R
-Depends: FLCore(>= 2.5.0)
+Depends:
+    FLCore(>= 2.5.0),
+    FLFishery(>= 0.1)
 Imports: Rcpp (>= 0.11.2)
 LinkingTo: Rcpp
 Suggests: testthat, knitr

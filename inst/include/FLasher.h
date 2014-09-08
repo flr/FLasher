@@ -7,7 +7,7 @@
 #include "FLStock.h"
 #include "FLQuant_multidim.h"
 #include "fwdBiol.h"
-//#include "FLCatch.h"
+#include "FLCatch.h"
 //#include "FLFishery.h"
 //#include "projection.h"
 
