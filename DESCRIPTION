@@ -3,8 +3,12 @@ Type: Package
 Title: What can I say?
 Version: 0.1.20140909
 Date: 20140909
+Authors@R: c(person(given = 'Finlay', family = 'Scott', role = c('aut', 'cre'),
+            email = 'finlay.scott@jrc.ec.europa.eu'),
+		person(given = 'Iago', family = 'Mosqueira', role = c('aut', 'cre'),
+            email = 'iago.mosqueira@jrc.ec.europa.eu'))
 Author: Finlay Scott & Iago Mosqueira, EC JRC G03.
-Maintainer: Finlay Scott & Iago Mosqueira, <iago.mosqueira@jrc.ec.europa.eu>
+Maintainer: Iago Mosqueira, <iago.mosqueira@jrc.ec.europa.eu>
 Copyright: European Union
 Description: The very best
 Collate: classes.R generics.R accessors.R methods.R fwd.R constructors.R RcppExports.R help.R test_helper_functions.R
