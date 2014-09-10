@@ -286,6 +286,17 @@ simple_fisheries_project <- function(flfs, flb, flsr, f, f_spwn, sr_residuals, s
     return(list(flfs = flfs, flb = flb))
 }
 
+setClass("fwdControlTest",
+    representation(
+        target = "data.frame",
+        target_iters = "array"
+    ),
+    prototype = prototype(
+        target_iters= array(NA, dim=c(1,3,1), dimnames=list(target_no=1, c("min","value","max"), iter=1))
+    )
+)
+
+
 
 # This should use the fwdControl constructor (when we have one)
 #' Dummy fwdControl object creator
@@ -297,7 +308,7 @@ simple_fisheries_project <- function(flfs, flb, flsr, f, f_spwn, sr_residuals, s
 #' 
 #' @export
 #' @return A fwdControl object
-dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=1,max=10)), niters = round(runif(1,min=1,max=10))){
+dummy_fwdControlTest_generator <- function(years = 1:round(runif(1, min=1,max=10)), niters = round(runif(1,min=1,max=10))){
     # We need to have a proper R version of the class
     # And an automatic generator
     ctrl_df <- data.frame(
@@ -331,7 +342,7 @@ dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=1,max=10)), 
     ctrl_df$year <- as.integer(ctrl_df$year)
     ctrl_df$season <- as.integer(ctrl_df$season)
 
-    fc <- new("fwdControl",
+    fc <- new("fwdControlTest",
         target = ctrl_df,
         target_iters = target_iters)
     return(fc)

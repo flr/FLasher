@@ -9,6 +9,7 @@
 #include "fwdBiol.h"
 #include "FLCatch.h"
 #include "FLFishery.h"
+#include "operating_model.h"
 //#include "projection.h"
 
 
