@@ -98,35 +98,24 @@ test_that("operatingModel constructors and updaters",{
     expect_that(test_operatingModel_full_constructor(flfs, flb, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult, new_f, f_spwn, fc), throws_error())
     expect_that(test_operatingModel_full_constructor(flfs, flb, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult, f, new_f_spwn, fc), throws_error())
 
-    # load_ad_members
-    year <- round(runif(1, min = 1, max = dim(n(flb))[2]))
-    season <- round(runif(1, min = 1, max = dim(n(flb))[4]))
-    timestep <- (year-1) * dim(n(flb))[4] + season
-    out <- test_operatingModel_load_ad_members_year_season(flfs, flb, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult, f, f_spwn, fc, year, season)
-    out2 <- test_operatingModel_load_ad_members_timestep(flfs, flb, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult, f, f_spwn, fc, timestep)
-    expect_that(out[["n"]], is_identical_to(n(flb)[,year,,season,,]))
-    expect_that(out2[["n"]], is_identical_to(n(flb)[,year,,season,,]))
+    # load_ad_and update members
+    timestep <- round(runif(1,min=2,max=dim(n(flb))[2] * dim(n(flb))[4])) - 1
+    year <-  (timestep-1) / dim(n(flb))[4] + 1 
+    season <- (timestep-1) %%  dim(n(flb))[4]+ 1;
+    next_year <-  (timestep) / dim(n(flb))[4] + 1 
+    next_season <- (timestep) %%  dim(n(flb))[4]+ 1;
+    # load  - only f
+    out <- test_operatingModel_load_ad_members_timestep(flfs, flb, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult, f, f_spwn, fc, timestep)
     for (i in 1:length(flfs)){
-        expect_that(out[["landings_n"]][[i]], is_identical_to(landings.n(flfs[[i]][[1]])[,year,,season,,]))
-        expect_that(out[["discards_n"]][[i]], is_identical_to(discards.n(flfs[[i]][[1]])[,year,,season,,]))
         expect_that(out[["fad"]][[i]], is_identical_to(f[[i]][,year,,season,,]))
-        expect_that(out2[["landings_n"]][[i]], is_identical_to(landings.n(flfs[[i]][[1]])[,year,,season,,]))
-        expect_that(out2[["discards_n"]][[i]], is_identical_to(discards.n(flfs[[i]][[1]])[,year,,season,,]))
-        expect_that(out2[["fad"]][[i]], is_identical_to(f[[i]][,year,,season,,]))
     }
-
-    out <- test_operatingModel_update_from_ad_members_year_season(flfs, flb, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult, f, f_spwn, fc, year, season)
-    out2 <- test_operatingModel_update_from_ad_members_timestep(flfs, flb, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult, f, f_spwn, fc, timestep)
-
-    expect_that(c(out[["n"]]), is_identical_to(c(n(out[["biol"]])[,year,,season,,])))
-    expect_that(c(out2[["n"]]), is_identical_to(c(n(out2[["biol"]])[,year,,season,,])))
+    # update - f, landings, discards and n
+    out <- test_operatingModel_update_from_ad_members_timestep(flfs, flb, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult, f, f_spwn, fc, timestep)
+    expect_that(c(out[["n"]]), is_identical_to(c(n(out[["biol"]])[,next_year,,next_season,,])))
     for (i in 1:length(flfs)){
         expect_that(c(out[["landings_n"]][[i]]), is_identical_to(c(landings.n(out[["fisheries"]][[i]][[1]])[,year,,season,,])))
         expect_that(c(out[["discards_n"]][[i]]), is_identical_to(c(discards.n(out[["fisheries"]][[i]][[1]])[,year,,season,,])))
         expect_that(c(out[["fad"]][[i]]), is_identical_to(c(out[["f"]][[i]][,year,,season,,])))
-        expect_that(c(out2[["landings_n"]][[i]]), is_identical_to(c(landings.n(out2[["fisheries"]][[i]][[1]])[,year,,season,,])))
-        expect_that(c(out2[["discards_n"]][[i]]), is_identical_to(c(discards.n(out2[["fisheries"]][[i]][[1]])[,year,,season,,])))
-        expect_that(c(out2[["fad"]][[i]]), is_identical_to(c(out2[["f"]][[i]][,year,,season,,])))
     }
 
 

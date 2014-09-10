@@ -6432,32 +6432,6 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
-// test_operatingModel_load_ad_members_year_season
-operatingModel test_operatingModel_load_ad_members_year_season(FLFisheries flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7 f, const FLQuant7 f_spwn, const fwdControl ctrl, const unsigned int year, const unsigned int season);
-RcppExport SEXP FLasher_test_operatingModel_load_ad_members_year_season(SEXP flfsSEXP, SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP timelagSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP fSEXP, SEXP f_spwnSEXP, SEXP ctrlSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< FLFisheries >::type flfs(flfsSEXP );
-        Rcpp::traits::input_parameter< SEXP >::type flb_sexp(flb_sexpSEXP );
-        Rcpp::traits::input_parameter< const std::string >::type model_name(model_nameSEXP );
-        Rcpp::traits::input_parameter< const FLQuant >::type params(paramsSEXP );
-        Rcpp::traits::input_parameter< const int >::type timelag(timelagSEXP );
-        Rcpp::traits::input_parameter< const FLQuant >::type residuals(residualsSEXP );
-        Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP );
-        Rcpp::traits::input_parameter< const FLQuant7 >::type f(fSEXP );
-        Rcpp::traits::input_parameter< const FLQuant7 >::type f_spwn(f_spwnSEXP );
-        Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP );
-        Rcpp::traits::input_parameter< const unsigned int >::type year(yearSEXP );
-        Rcpp::traits::input_parameter< const unsigned int >::type season(seasonSEXP );
-        operatingModel __result = test_operatingModel_load_ad_members_year_season(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, year, season);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
 // test_operatingModel_load_ad_members_timestep
 operatingModel test_operatingModel_load_ad_members_timestep(FLFisheries flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7 f, const FLQuant7 f_spwn, const fwdControl ctrl, const int timestep);
 RcppExport SEXP FLasher_test_operatingModel_load_ad_members_timestep(SEXP flfsSEXP, SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP timelagSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP fSEXP, SEXP f_spwnSEXP, SEXP ctrlSEXP, SEXP timestepSEXP) {
@@ -6477,32 +6451,6 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP );
         Rcpp::traits::input_parameter< const int >::type timestep(timestepSEXP );
         operatingModel __result = test_operatingModel_load_ad_members_timestep(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, timestep);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// test_operatingModel_update_from_ad_members_year_season
-operatingModel test_operatingModel_update_from_ad_members_year_season(FLFisheries flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7 f, const FLQuant7 f_spwn, const fwdControl ctrl, const unsigned int year, const unsigned int season);
-RcppExport SEXP FLasher_test_operatingModel_update_from_ad_members_year_season(SEXP flfsSEXP, SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP timelagSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP fSEXP, SEXP f_spwnSEXP, SEXP ctrlSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< FLFisheries >::type flfs(flfsSEXP );
-        Rcpp::traits::input_parameter< SEXP >::type flb_sexp(flb_sexpSEXP );
-        Rcpp::traits::input_parameter< const std::string >::type model_name(model_nameSEXP );
-        Rcpp::traits::input_parameter< const FLQuant >::type params(paramsSEXP );
-        Rcpp::traits::input_parameter< const int >::type timelag(timelagSEXP );
-        Rcpp::traits::input_parameter< const FLQuant >::type residuals(residualsSEXP );
-        Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP );
-        Rcpp::traits::input_parameter< const FLQuant7 >::type f(fSEXP );
-        Rcpp::traits::input_parameter< const FLQuant7 >::type f_spwn(f_spwnSEXP );
-        Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP );
-        Rcpp::traits::input_parameter< const unsigned int >::type year(yearSEXP );
-        Rcpp::traits::input_parameter< const unsigned int >::type season(seasonSEXP );
-        operatingModel __result = test_operatingModel_update_from_ad_members_year_season(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, year, season);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

@@ -196,47 +196,57 @@ operatingModel::operator SEXP() const{
 }
 
 
-// load up the landings_n, discards_n, fad and n members with the correct timestep data
-void operatingModel::load_ad_members(const int year, const int season){
-    Rcpp::IntegerVector dim = biol.n().get_dim();
-    n = biol.n()(1,dim[0],year,year,1,dim[2],season,season,1,dim[4],1,dim[5]);
-    for (unsigned int fishery_counter = 1; fishery_counter <= fisheries.get_nfisheries(); ++fishery_counter){
-        landings_n(fishery_counter) =  fisheries(fishery_counter)(1).landings_n()(1,dim[0],year,year,1,dim[2],season,season,1,dim[4],1,dim[5]);
-        discards_n(fishery_counter) =  fisheries(fishery_counter)(1).discards_n()(1,dim[0],year,year,1,dim[2],season,season,1,dim[4],1,dim[5]);
-        fad(fishery_counter) =  f(fishery_counter)(1,dim[0],year,year,1,dim[2],season,season,1,dim[4],1,dim[5]);
-    }
-}
-
+// load up the fad member with the correct timestep data
 void operatingModel::load_ad_members(const int timestep){
     int year;
     int season;
     timestep_to_year_season(timestep, biol.n().get_nseason(), year, season);
-    load_ad_members(year, season);
+    // Check that timestep does not exceed f dimensions
+    if ((year > f(1).get_nyear()) | (season > f(1).get_nseason())){
+        Rcpp::stop("In load_ad_members. Trying to access year or season larger than in f.\n");
+    }
+    Rcpp::IntegerVector dim = f(1).get_dim();
+    for (unsigned int fishery_counter = 1; fishery_counter <= fisheries.get_nfisheries(); ++fishery_counter){
+        fad(fishery_counter) =  f(fishery_counter)(1,dim[0],year,year,1,dim[2],season,season,1,dim[4],1,dim[5]);
+    }
+    return;
 }
 
+// Updates f, landings, discards and n
 // Assumes that dims of n and landings and f are the same
 // Only 1 biol
-void operatingModel::update_from_ad_members(const int year, const int season){
+void operatingModel::update_from_ad_members(const int timestep){
+    int year;
+    int season;
+    int next_year;
+    int next_season;
+    timestep_to_year_season(timestep, f(1).get_nseason(), year, season);
+    timestep_to_year_season(timestep+1, biol.n().get_nseason(), next_year, next_season);
+    // Check that timestep does not exceed biol
+    if ((next_year > biol.n().get_nyear()) | (next_season > biol.n().get_nseason())){
+        Rcpp::stop("In update_from_ad_members. Trying to access year or season larger than biol.\n");
+    }
+    // Check that timestep does not exceed f dimensions
+    if ((year > f(1).get_nyear()) | (season > f(1).get_nseason())){
+        Rcpp::stop("In load_ad_members. Trying to access year or season larger than in f.\n");
+    }
     // n -> biol.n
     // Ugly nested for loops - sorry
     for (unsigned int quant_counter = 1; quant_counter <= n.get_nquant(); ++quant_counter){
         for (unsigned int unit_counter = 1; unit_counter <= n.get_nunit(); ++unit_counter){
             for (unsigned int area_counter = 1; area_counter <= n.get_narea(); ++area_counter){
                 for (unsigned int iter_counter = 1; iter_counter <= n.get_niter(); ++iter_counter){
-                    biol.n()(quant_counter, year, unit_counter, season, area_counter, iter_counter) = Value(n(quant_counter, 1, unit_counter, 1, area_counter, iter_counter));
+                    // Biol is updated in the following year - in project it is TS+1 that is calculated
+                    biol.n()(quant_counter, next_year, unit_counter, next_season, area_counter, iter_counter) = Value(n(quant_counter, 1, unit_counter, 1, area_counter, iter_counter));
                     for (unsigned int fishery_counter = 1; fishery_counter <= fisheries.get_nfisheries(); ++fishery_counter){
+                        // F, landings and discards are calculated in TS
                         fisheries(fishery_counter)(1).landings_n()(quant_counter, year, unit_counter, season, area_counter, iter_counter) = Value(landings_n(quant_counter, 1, unit_counter, 1, area_counter, iter_counter, fishery_counter));
                         fisheries(fishery_counter)(1).discards_n()(quant_counter, year, unit_counter, season, area_counter, iter_counter) = Value(discards_n(quant_counter, 1, unit_counter, 1, area_counter, iter_counter, fishery_counter));
                         f(quant_counter, year, unit_counter, season, area_counter, iter_counter,fishery_counter) = Value(fad(quant_counter, 1, unit_counter, 1, area_counter, iter_counter, fishery_counter));
                     }
     }}}}
-}
 
-void operatingModel::update_from_ad_members(const int timestep){
-    int year;
-    int season;
-    timestep_to_year_season(timestep, biol.n().get_nseason(), year, season);
-    update_from_ad_members(year, season);
+    return;
 }
 
 /*
@@ -254,7 +264,6 @@ int operatingModel::get_target_fmult_timestep(const int target_no){
 }
 */
 
-/*
 // Currently only for a single biol and a single catch
 // Updates catch in timestep and biol in timestep+1
 // Timestep is based on year / season
@@ -274,14 +283,15 @@ void operatingModel::project_timestep(const int timestep, const int min_iter, co
     if (min_iter < 1){
         Rcpp::stop("project_timestep: min_iter is less than 1\n");
     }
-    if (max_iter > biol.n().get_niter()){
+    if (max_iter > n.get_niter()){
         Rcpp::stop("project_timestep: max_iter is greater than number of iters\n");
     }
+
     // In preparation for multiple fisheries and catches!
-    int fishery_count = 1;
     int catches_count = 1;
     int biol_no = 1;
-    // Time placeholders
+
+    // Time indices
     int year = 0;
     int season = 0;
     int next_year = 0;
@@ -290,30 +300,35 @@ void operatingModel::project_timestep(const int timestep, const int min_iter, co
     int ssb_season = 0;
     timestep_to_year_season(timestep, biol.n(), year, season);
     timestep_to_year_season(timestep+1, biol.n(), next_year, next_season); 
-    // Check that timestep does not exceed biol
-    if (next_year > biol.n().get_nyear()){
-        Rcpp::stop("In project_timestep. Trying to access year larger than biol years.\n");
-    }
+
     adouble rec_temp = 0.0;
     adouble catch_temp = 0.0;
     adouble z = 0.0;
     adouble ssb_temp = 0.0;
-    FLQuantAdolc ssb_flq;
-    const int max_quant = f(1).get_nquant();
-    FLQuantAdolc discards_ratio_temp = fisheries(fishery_count)(catches_count).discards_ratio();
+    FLQuantAD ssb_flq;
+    const int max_quant = fad(1).get_nquant();
 
+    FLQuantAD discards_ratio_temp; // DN / (DN + LN)
     // Loop over iters - or should we do iter in Run loop?
     for (int iter_count = min_iter; iter_count <= max_iter; ++iter_count){
+
+        // We could reduce this if we did all iters at same time and subsetted biol.m and n
         // Calculate the landings and discards
-        // quant_count is over the first dimension which is age
-        // for looping when could add FLQuant - but need to subset by year and season
-        for (int quant_count = 1; quant_count <= max_quant; ++quant_count){
-            z =  f(quant_count, year, 1, season, 1, iter_count, 1) + biol.m()(quant_count, year, 1, season, 1, iter_count);
-            catch_temp = (f(quant_count, year, 1, season, 1, iter_count, 1) / z) * (1 - exp(-z)) * biol.n()(quant_count, year, 1, season, 1, iter_count);
-            fisheries(fishery_count)(catches_count).landings_n()(quant_count, year, 1, season, 1, iter_count) = (1 - discards_ratio_temp(quant_count, year, 1, season, 1, iter_count)) * catch_temp;
-            fisheries(fishery_count)(catches_count).discards_n()(quant_count, year, 1, season, 1, iter_count) = discards_ratio_temp(quant_count, year, 1, season, 1, iter_count) * catch_temp;
+        for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++ fisheries_count){
+            discards_ratio_temp = discards_n(fisheries_count) / (discards_n(fisheries_count) + landings_n(fisheries_count));
+            // quant_count is over the first dimension which is age
+            // using for looping when could add FLQuant - but need to subset by year and season
+            for (int quant_count = 1; quant_count <= max_quant; ++quant_count){
+
+                z =  fad(fisheries_count)(quant_count, 1, 1, 1, 1, iter_count) + biol.m()(quant_count, year, 1, season, 1, iter_count);
+                catch_temp = (fad(fisheries_count)(quant_count, 1, 1, 1, 1, iter_count) / z) * (1 - exp(-z)) * biol.n()(quant_count, year, 1, season, 1, iter_count);
+
+                landings_n(fisheries_count)(quant_count, 1, 1, 1, 1, iter_count) = (1 - discards_ratio_temp(quant_count, 1, 1, 1, 1, iter_count)) * catch_temp;
+                discards_n(fisheries_count)(quant_count, 1, 1, 1, 1, iter_count) = discards_ratio_temp(quant_count, 1, 1, 1, 1, iter_count) * catch_temp;
         }
     }
+    }
+       /*
     // Get SSB - all iters
     //ssb_flq = ssb(biol_no);
     // Get the year and season of the SSB that results in recruitment in the next timestep
@@ -351,10 +366,9 @@ void operatingModel::project_timestep(const int timestep, const int min_iter, co
 
 //end_time = clock();
 //Rprintf("Time in project: %f\n", (float)(end_time - start_time)/CLOCKS_PER_SEC);
-
+*/
     return;
 }
-*/
 
 
 
@@ -502,6 +516,17 @@ std::vector<double> operatingModel::calc_target_value(const int target_no) const
 void operatingModel::run(){
 
     Rprintf("In run\n");
+
+    // What timestep do we need to project over
+    int target_timestep = 10;
+    // load the fad AD member
+    load_ad_members(target_timestep);
+    // fad = fad * fmult
+    //
+    // Project all iters
+    project_timestep(target_timestep);
+    // Copy data back
+    update_from_ad_members(target_timestep);
 
     /*
     const int ntarget = ctrl.get_ntarget();

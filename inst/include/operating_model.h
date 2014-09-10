@@ -64,12 +64,14 @@ class operatingModel {
         //void run_all_iters(); 
         void project_timestep(const int timestep, const int min_iter=1, const int max_iter=1);
 
+        // These are not actually needed - so long as they have been set up to be right size in the constructor
+        //void load_ad_members(const int year, const int season);
+        void load_ad_members(const int timestep);
+        //void update_from_ad_members(const int year, const int season);
+        void update_from_ad_members(const int timestep);
+        
         // Timestep in which to use fmult to affect the target value
         // int get_target_fmult_timestep(const int target_no);
-        void load_ad_members(const int year, const int season);
-        void load_ad_members(const int timestep);
-        void update_from_ad_members(const int year, const int season);
-        void update_from_ad_members(const int timestep);
         
         /*
         // age range indices for the f based targets
