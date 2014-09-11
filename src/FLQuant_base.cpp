@@ -71,12 +71,10 @@ template<>
 FLQuant_base<double>::operator SEXP() const{
     //Rprintf("Specialised wrapping FLQuant_base<double>\n");
     Rcpp::S4 flq_s4("FLQuant");
-    // Make and fill the NumericVector that will be the 'data' slot 
-    Rcpp::NumericVector data_nv;
-    // reserve() space?
-    // Rcpp::NumericVector data_nv(number of elements);nquant * nyear * nunit * nseason * narea * niter
-    for (std::vector<double>::const_iterator data_iterator = data.begin(); data_iterator != data.end(); ++data_iterator){ // iterator must be const because the method is const
-        data_nv.push_back(*data_iterator);
+    //// Make and fill the NumericVector that will be the 'data' slot 
+    Rcpp::NumericVector data_nv(data.size(),0.0);
+    for (int i = 0; i < data.size(); ++i){
+        data_nv[i] = data[i];
     }
     // Apply dims and dimnames
 	data_nv.attr("dim") = dim;
@@ -94,10 +92,9 @@ FLQuant_base<adouble>::operator SEXP() const{
     //Rprintf("Specialised wrapping FLQuant_base<adouble>\n");
     Rcpp::S4 flq_s4("FLQuant");
     // Make and fill the NumericVector that will be the 'data' slot 
-    Rcpp::NumericVector data_nv;
-    for (std::vector<adouble>::const_iterator data_iterator = data.begin(); data_iterator != data.end(); ++data_iterator){ // iterator must be const because the method is const
-        //data_nv.push_back((*data_iterator).value()); // ADOLC
-        data_nv.push_back(Value((*data_iterator))); // CppAD
+    Rcpp::NumericVector data_nv(data.size(), 0.0);
+    for (int i = 0; i < data.size(); ++i){
+        data_nv[i] = Value(data[i]);
     }
     // Apply dims and dimnames
 	data_nv.attr("dim") = dim;
