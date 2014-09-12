@@ -10,7 +10,6 @@
 
 // [[Rcpp::export]]
 FLQuant test_FLQuant_as_wrap(FLQuant flq){
-    Rprintf("asdkjsa\n");
 	return flq;
 }
 

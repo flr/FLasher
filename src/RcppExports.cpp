@@ -52,20 +52,20 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_run
-operatingModel test_run(const FLFisheries fisheries, SEXP FLBiolSEXP, const std::string srr_model_name, const FLQuant srr_params, const FLQuant srr_residuals, const bool srr_residuals_mult, const int srr_timelag, FLQuant7 f, FLQuant7 f_spwn, fwdControl ctrl);
+operatingModel test_run(const FLFisheriesAD fisheries, SEXP FLBiolSEXP, const std::string srr_model_name, const FLQuant srr_params, const FLQuant srr_residuals, const bool srr_residuals_mult, const int srr_timelag, FLQuant7AD f, FLQuant7 f_spwn, fwdControl ctrl);
 RcppExport SEXP FLasher_test_run(SEXP fisheriesSEXP, SEXP FLBiolSEXPSEXP, SEXP srr_model_nameSEXP, SEXP srr_paramsSEXP, SEXP srr_residualsSEXP, SEXP srr_residuals_multSEXP, SEXP srr_timelagSEXP, SEXP fSEXP, SEXP f_spwnSEXP, SEXP ctrlSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const FLFisheries >::type fisheries(fisheriesSEXP );
+        Rcpp::traits::input_parameter< const FLFisheriesAD >::type fisheries(fisheriesSEXP );
         Rcpp::traits::input_parameter< SEXP >::type FLBiolSEXP(FLBiolSEXPSEXP );
         Rcpp::traits::input_parameter< const std::string >::type srr_model_name(srr_model_nameSEXP );
         Rcpp::traits::input_parameter< const FLQuant >::type srr_params(srr_paramsSEXP );
         Rcpp::traits::input_parameter< const FLQuant >::type srr_residuals(srr_residualsSEXP );
         Rcpp::traits::input_parameter< const bool >::type srr_residuals_mult(srr_residuals_multSEXP );
         Rcpp::traits::input_parameter< const int >::type srr_timelag(srr_timelagSEXP );
-        Rcpp::traits::input_parameter< FLQuant7 >::type f(fSEXP );
+        Rcpp::traits::input_parameter< FLQuant7AD >::type f(fSEXP );
         Rcpp::traits::input_parameter< FLQuant7 >::type f_spwn(f_spwnSEXP );
         Rcpp::traits::input_parameter< fwdControl >::type ctrl(ctrlSEXP );
         operatingModel __result = test_run(fisheries, FLBiolSEXP, srr_model_name, srr_params, srr_residuals, srr_residuals_mult, srr_timelag, f, f_spwn, ctrl);
@@ -6409,20 +6409,20 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_operatingModel_full_constructor
-operatingModel test_operatingModel_full_constructor(FLFisheries flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7 f, const FLQuant7 f_spwn, const fwdControl ctrl);
+operatingModel test_operatingModel_full_constructor(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl);
 RcppExport SEXP FLasher_test_operatingModel_full_constructor(SEXP flfsSEXP, SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP timelagSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP fSEXP, SEXP f_spwnSEXP, SEXP ctrlSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< FLFisheries >::type flfs(flfsSEXP );
+        Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP );
         Rcpp::traits::input_parameter< SEXP >::type flb_sexp(flb_sexpSEXP );
         Rcpp::traits::input_parameter< const std::string >::type model_name(model_nameSEXP );
         Rcpp::traits::input_parameter< const FLQuant >::type params(paramsSEXP );
         Rcpp::traits::input_parameter< const int >::type timelag(timelagSEXP );
         Rcpp::traits::input_parameter< const FLQuant >::type residuals(residualsSEXP );
         Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP );
-        Rcpp::traits::input_parameter< const FLQuant7 >::type f(fSEXP );
+        Rcpp::traits::input_parameter< const FLQuant7AD >::type f(fSEXP );
         Rcpp::traits::input_parameter< const FLQuant7 >::type f_spwn(f_spwnSEXP );
         Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP );
         operatingModel __result = test_operatingModel_full_constructor(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl);
@@ -6432,50 +6432,25 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
-// test_operatingModel_load_ad_members_timestep
-operatingModel test_operatingModel_load_ad_members_timestep(FLFisheries flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7 f, const FLQuant7 f_spwn, const fwdControl ctrl, const int timestep);
-RcppExport SEXP FLasher_test_operatingModel_load_ad_members_timestep(SEXP flfsSEXP, SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP timelagSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP fSEXP, SEXP f_spwnSEXP, SEXP ctrlSEXP, SEXP timestepSEXP) {
+// test_operatingModel_project_timestep
+operatingModel test_operatingModel_project_timestep(const FLFisheriesAD fisheries, SEXP FLBiolSEXP, const std::string srr_model_name, const FLQuant srr_params, const int srr_timelag, const FLQuant srr_residuals, const bool srr_residuals_mult, FLQuant7AD f, FLQuant7 f_spwn, fwdControl ctrl, const int timestep);
+RcppExport SEXP FLasher_test_operatingModel_project_timestep(SEXP fisheriesSEXP, SEXP FLBiolSEXPSEXP, SEXP srr_model_nameSEXP, SEXP srr_paramsSEXP, SEXP srr_timelagSEXP, SEXP srr_residualsSEXP, SEXP srr_residuals_multSEXP, SEXP fSEXP, SEXP f_spwnSEXP, SEXP ctrlSEXP, SEXP timestepSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< FLFisheries >::type flfs(flfsSEXP );
-        Rcpp::traits::input_parameter< SEXP >::type flb_sexp(flb_sexpSEXP );
-        Rcpp::traits::input_parameter< const std::string >::type model_name(model_nameSEXP );
-        Rcpp::traits::input_parameter< const FLQuant >::type params(paramsSEXP );
-        Rcpp::traits::input_parameter< const int >::type timelag(timelagSEXP );
-        Rcpp::traits::input_parameter< const FLQuant >::type residuals(residualsSEXP );
-        Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP );
-        Rcpp::traits::input_parameter< const FLQuant7 >::type f(fSEXP );
-        Rcpp::traits::input_parameter< const FLQuant7 >::type f_spwn(f_spwnSEXP );
-        Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP );
+        Rcpp::traits::input_parameter< const FLFisheriesAD >::type fisheries(fisheriesSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type FLBiolSEXP(FLBiolSEXPSEXP );
+        Rcpp::traits::input_parameter< const std::string >::type srr_model_name(srr_model_nameSEXP );
+        Rcpp::traits::input_parameter< const FLQuant >::type srr_params(srr_paramsSEXP );
+        Rcpp::traits::input_parameter< const int >::type srr_timelag(srr_timelagSEXP );
+        Rcpp::traits::input_parameter< const FLQuant >::type srr_residuals(srr_residualsSEXP );
+        Rcpp::traits::input_parameter< const bool >::type srr_residuals_mult(srr_residuals_multSEXP );
+        Rcpp::traits::input_parameter< FLQuant7AD >::type f(fSEXP );
+        Rcpp::traits::input_parameter< FLQuant7 >::type f_spwn(f_spwnSEXP );
+        Rcpp::traits::input_parameter< fwdControl >::type ctrl(ctrlSEXP );
         Rcpp::traits::input_parameter< const int >::type timestep(timestepSEXP );
-        operatingModel __result = test_operatingModel_load_ad_members_timestep(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, timestep);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// test_operatingModel_update_from_ad_members_timestep
-operatingModel test_operatingModel_update_from_ad_members_timestep(FLFisheries flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7 f, const FLQuant7 f_spwn, const fwdControl ctrl, const int timestep);
-RcppExport SEXP FLasher_test_operatingModel_update_from_ad_members_timestep(SEXP flfsSEXP, SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP timelagSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP fSEXP, SEXP f_spwnSEXP, SEXP ctrlSEXP, SEXP timestepSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< FLFisheries >::type flfs(flfsSEXP );
-        Rcpp::traits::input_parameter< SEXP >::type flb_sexp(flb_sexpSEXP );
-        Rcpp::traits::input_parameter< const std::string >::type model_name(model_nameSEXP );
-        Rcpp::traits::input_parameter< const FLQuant >::type params(paramsSEXP );
-        Rcpp::traits::input_parameter< const int >::type timelag(timelagSEXP );
-        Rcpp::traits::input_parameter< const FLQuant >::type residuals(residualsSEXP );
-        Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP );
-        Rcpp::traits::input_parameter< const FLQuant7 >::type f(fSEXP );
-        Rcpp::traits::input_parameter< const FLQuant7 >::type f_spwn(f_spwnSEXP );
-        Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP );
-        Rcpp::traits::input_parameter< const int >::type timestep(timestepSEXP );
-        operatingModel __result = test_operatingModel_update_from_ad_members_timestep(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, timestep);
+        operatingModel __result = test_operatingModel_project_timestep(fisheries, FLBiolSEXP, srr_model_name, srr_params, srr_timelag, srr_residuals, srr_residuals_mult, f, f_spwn, ctrl, timestep);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

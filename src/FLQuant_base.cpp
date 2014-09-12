@@ -32,6 +32,7 @@ FLQuant_base<T>::FLQuant_base(SEXP flq_sexp){
 	units = Rcpp::as<std::string>(flq_s4.slot("units"));
 	dim = data_nv.attr("dim");
 	dimnames = data_nv.attr("dimnames");
+    //Rprintf("Finishing FLQ_base constructor\n");
 }
 
 // Make an FLQuant of a certain size filled with 0

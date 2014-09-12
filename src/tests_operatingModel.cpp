@@ -69,15 +69,25 @@ void test_operatingModel_empty_constructor(){
     return;
 }
 
+/*
 // [[Rcpp::export]]
 operatingModel test_operatingModel_full_constructor(FLFisheries flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7 f, const FLQuant7 f_spwn, const fwdControl ctrl){
     fwdBiol biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
     operatingModel om(flfs, biol, f, f_spwn, ctrl);
     return om;
 }
+*/
+
+// [[Rcpp::export]]
+operatingModel test_operatingModel_full_constructor(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl){
+    fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
+    operatingModel om(flfs, biol, f, f_spwn, ctrl);
+    return om;
+}
 
 /*---------- Member updaters --------------- */
 
+/*
 // [[Rcpp::export]]
 operatingModel test_operatingModel_load_ad_members_timestep(FLFisheries flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7 f, const FLQuant7 f_spwn, const fwdControl ctrl, const int timestep){
     fwdBiol biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
@@ -93,6 +103,25 @@ operatingModel test_operatingModel_update_from_ad_members_timestep(FLFisheries f
     om.update_from_ad_members(timestep);
     return om;
 }
+*/
+
+
+/*----------- Project timestep --------------*/
+
+// [[Rcpp::export]]
+operatingModel test_operatingModel_project_timestep(const FLFisheriesAD fisheries, SEXP FLBiolSEXP, const std::string srr_model_name, const FLQuant srr_params, const int srr_timelag, const FLQuant srr_residuals, const bool srr_residuals_mult, FLQuant7AD f, FLQuant7 f_spwn, fwdControl ctrl, const int timestep){
+
+    // Make the fwdBiol from the FLBiol and SRR bits
+    fwdBiolAD biol(FLBiolSEXP, srr_model_name, srr_params, srr_timelag, srr_residuals, TRUE); 
+    // Make the OM
+    operatingModel om(fisheries, biol, f, f_spwn, ctrl);
+    //om.load_ad_members(timestep);
+    om.project_timestep(timestep);
+
+    return om;
+
+}
+
 
 /*
 

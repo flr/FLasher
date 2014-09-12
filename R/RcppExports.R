@@ -1509,11 +1509,7 @@ test_operatingModel_full_constructor <- function(flfs, flb_sexp, model_name, par
     .Call('FLasher_test_operatingModel_full_constructor', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl)
 }
 
-test_operatingModel_load_ad_members_timestep <- function(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, timestep) {
-    .Call('FLasher_test_operatingModel_load_ad_members_timestep', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, timestep)
-}
-
-test_operatingModel_update_from_ad_members_timestep <- function(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, timestep) {
-    .Call('FLasher_test_operatingModel_update_from_ad_members_timestep', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, timestep)
+test_operatingModel_project_timestep <- function(fisheries, FLBiolSEXP, srr_model_name, srr_params, srr_timelag, srr_residuals, srr_residuals_mult, f, f_spwn, ctrl, timestep) {
+    .Call('FLasher_test_operatingModel_project_timestep', PACKAGE = 'FLasher', fisheries, FLBiolSEXP, srr_model_name, srr_params, srr_timelag, srr_residuals, srr_residuals_mult, f, f_spwn, ctrl, timestep)
 }
 

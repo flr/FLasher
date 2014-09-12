@@ -56,19 +56,16 @@ class operatingModel {
         /* Not really possible to write an 'as' as there is no corresponding class in FLR - need to write wrapper function - see bottom of cpp script */
 		operatingModel();
         operator SEXP() const; // Used as intrusive 'wrap' - returns a list of stuff
-        operatingModel(const FLFisheries fisheries_in, const fwdBiol biol_in, const FLQuant7 f_in, const FLQuant7 f_spwn_in, const fwdControl ctrl_in);
+        operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolAD biol_in, const FLQuant7AD f_in, const FLQuant7 f_spwn_in, const fwdControl ctrl_in);
 		operatingModel(const operatingModel& operatingModel_source); // copy constructor to ensure that copy is a deep copy - used when passing FLSs into functions
 		operatingModel& operator = (const operatingModel& operatingModel_source); // Assignment operator for a deep copy
 
         void run(); 
         //void run_all_iters(); 
-        void project_timestep(const int timestep, const int min_iter=1, const int max_iter=1);
+        void project_timestep(const int timestep);
 
-        // These are not actually needed - so long as they have been set up to be right size in the constructor
-        //void load_ad_members(const int year, const int season);
-        void load_ad_members(const int timestep);
-        //void update_from_ad_members(const int year, const int season);
-        void update_from_ad_members(const int timestep);
+        //void load_ad_members(const int timestep);
+        //void update_from_ad_members(const int timestep);
         
         // Timestep in which to use fmult to affect the target value
         // int get_target_fmult_timestep(const int target_no);
@@ -94,6 +91,7 @@ class operatingModel {
         FLQuantAdolc catches(const int fishery_no, const int catch_no, const int biol_no = 1) const;
         // Total catches from a biol
         FLQuantAdolc catches(const int biol_no = 1) const;
+
         // Various ways of calculating reproductive potential
         FLQuantAdolc ssb(const int biol_no) const;
         FLQuantAdolc ssb(const int timestep, const int unit, const int area, const int biol_no) const; // all iters in a timestep, unit and area
@@ -105,18 +103,19 @@ class operatingModel {
 
     private:
         /* These are not AD to save memory - we only need AD for solving each timestep */
-        FLFisheries fisheries;
-        FLQuant7 f;
+        FLFisheriesAD fisheries;
+        FLQuant7AD f;
         FLQuant7 f_spwn;
         fwdControl ctrl;
         /* members for temporary storage of a timestep - needed for AD bit */
+        /* Maybe not needed */
         FLQuant7AD landings_n; // will increase to 8D if we have multiple biols
         FLQuant7AD discards_n;
         FLQuant7AD fad;
         FLQuantAD n; // will be FLQuant7AD if we have mutiple biols
 
     protected:
-        fwdBiol biol; // This is protected because operatingModel is a friend of fwdBiol so we can access the SRR
+        fwdBiolAD biol; // This is protected because operatingModel is a friend of fwdBiol so we can access the SRR
 };
 
 
