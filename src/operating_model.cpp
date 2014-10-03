@@ -608,7 +608,10 @@ void operatingModel::run(){
 
     int niter = biol.n().get_niter();
 
-    std::vector<CppAD::AD<double> > fmult(niter, 1); // Set to 1
+    int nfmult = 1; // The number of fmults that we solve at a time be careful with this
+
+    // Here we go
+    std::vector<CppAD::AD<double> > fmult(niter * nfmult, 1); // Set to 1
     Rprintf("Turning on tape\n");
     // Set independent
     CppAD::Independent(fmult);
@@ -644,36 +647,43 @@ void operatingModel::run(){
 
     /*--------- Newton Raphson bit ----------------*/
 
-    // We should offer the option of doing iterations in chunks - i.e. if 5000 iters, do 1000 at a time
+    // We should offer the option of doing iterations in chunks - i.e. if 5000 iters, do 1000 at a time else Jacobian becomes massive and we hit memory problems
     // And we need to make sure that solving for multiple targets (e.g. if two fleets and we have two fmults) works
 
     // Do something to tape
     double logdet = 0.0;
-    int nfmult = 1; // The number of fmults that we solve at a time be careful with this
-    std::vector<double> new_fmult(niter, 0.5);
-    std::vector<double> new_y(niter);
-    std::vector<double> jac(niter * niter);
+    std::vector<double> new_fmult(niter * nfmult, 1.0);
+    std::vector<double> new_y(niter * nfmult);
+    std::vector<double> jac(niter * nfmult * niter * nfmult);
     std::vector<double> small_jac(nfmult * nfmult);
     std::vector<double> small_new_y(nfmult);
+    int jac_element = 0;
 
     for (int nr_count = 0; nr_count <= 10; ++nr_count){
         Rprintf("nr_count: %i\n", nr_count);
         // Update tape with new fmult
-        Rprintf("Making another pass\n");
+        //Rprintf("Making another pass\n");
         new_y = fun.Forward(0, new_fmult);
-        Rprintf("Getting Jacobian\n");
-        //jac = fun.Jacobian(new_fmult); // it's very sparse so use SparseJacobian?
+        //Rprintf("Getting Jacobian\n");
+        //jac = fun.Jacobian(new_fmult); // it's very sparse so use SparseJacobian
         jac = fun.SparseJacobian(new_fmult); // Much faster!
         Rprintf("Solving Jacobian\n");
         // Each iteration is a distinct thing
         // LU solving takes proportional to n^2 operations - so better to solve each iteration indepdently (despite overhead of setting it up)
         for (int iter_count = 0; iter_count < niter; ++iter_count){
             // load up small jac - need for loop for multiple targets
-            small_jac[0] = jac[(iter_count * niter) + iter_count];
-            small_new_y[0] = new_y[iter_count];
+            for(int jac_count_row = 0; jac_count_row < nfmult; ++jac_count_row){
+                small_new_y[jac_count_row] = new_y[iter_count * nfmult + jac_count_row];
+                for(int jac_count_col = 0; jac_count_col < nfmult; ++jac_count_col){
+                    jac_element = (iter_count * niter * nfmult * nfmult) + (iter_count * nfmult) + jac_count_row + (jac_count_col * niter * nfmult);
+                    small_jac[jac_count_row + (jac_count_col * nfmult)] = jac[jac_element];
+                }
+            }
             CppAD::LuSolve(nfmult, nfmult, small_jac, small_new_y, small_new_y, logdet); 
             // put small_new_y back into new_y - needs for loop for 
-            new_y[iter_count] = small_new_y[0];
+            for(int jac_count = 0; jac_count < nfmult; ++jac_count){
+                new_y[iter_count * nfmult + jac_count] = small_new_y[jac_count];
+            }
         }
         
         
