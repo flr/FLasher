@@ -1,10 +1,15 @@
 Package: FLasher
 Type: Package
 Title: What can I say?
-Version: 0.1.20140304
-Date: 20140304
-Author: Finlay Scott & Iago Mosqueira, FLR Team
-Maintainer: FLR Team <flr-team@flr-project.org>
+Version: 0.1.20140909
+Date: 20140909
+Authors@R: c(person(given = 'Finlay', family = 'Scott', role = c('aut', 'cre'),
+            email = 'finlay.scott@jrc.ec.europa.eu'),
+		person(given = 'Iago', family = 'Mosqueira', role = c('aut', 'cre'),
+            email = 'iago.mosqueira@jrc.ec.europa.eu'))
+Author: Finlay Scott & Iago Mosqueira, EC JRC G03.
+Maintainer: Iago Mosqueira, <iago.mosqueira@jrc.ec.europa.eu>
+Copyright: European Union
 Description: The very best
 Collate: classes.R generics.R accessors.R methods.R fwd.R constructors.R RcppExports.R help.R test_helper_functions.R
 Depends:
@@ -13,7 +18,7 @@ Depends:
 Imports: Rcpp (>= 0.11.2)
 LinkingTo: Rcpp
 Suggests: testthat, knitr
-License: GPL-2
+License: file LICENSE
 VignetteBuilder: knitr
 LazyLoad: Yes
 LazyData: No
