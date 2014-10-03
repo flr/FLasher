@@ -109,10 +109,10 @@ class operatingModel {
         fwdControl ctrl;
         /* members for temporary storage of a timestep - needed for AD bit */
         /* Maybe not needed */
-        FLQuant7AD landings_n; // will increase to 8D if we have multiple biols
-        FLQuant7AD discards_n;
-        FLQuant7AD fad;
-        FLQuantAD n; // will be FLQuant7AD if we have mutiple biols
+        //FLQuant7AD landings_n; // will increase to 8D if we have multiple biols
+        //FLQuant7AD discards_n;
+        //FLQuant7AD fad;
+        //FLQuantAD n; // will be FLQuant7AD if we have mutiple biols
 
     protected:
         fwdBiolAD biol; // This is protected because operatingModel is a friend of fwdBiol so we can access the SRR

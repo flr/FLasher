@@ -85,27 +85,6 @@ operatingModel test_operatingModel_full_constructor(FLFisheriesAD flfs, SEXP flb
     return om;
 }
 
-/*---------- Member updaters --------------- */
-
-/*
-// [[Rcpp::export]]
-operatingModel test_operatingModel_load_ad_members_timestep(FLFisheries flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7 f, const FLQuant7 f_spwn, const fwdControl ctrl, const int timestep){
-    fwdBiol biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
-    operatingModel om(flfs, biol, f, f_spwn, ctrl);
-    om.load_ad_members(timestep);
-    return om;
-}
-
-// [[Rcpp::export]]
-operatingModel test_operatingModel_update_from_ad_members_timestep(FLFisheries flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7 f, const FLQuant7 f_spwn, const fwdControl ctrl, const int timestep){
-    fwdBiol biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
-    operatingModel om(flfs, biol, f, f_spwn, ctrl);
-    om.update_from_ad_members(timestep);
-    return om;
-}
-*/
-
-
 /*----------- Project timestep --------------*/
 
 // [[Rcpp::export]]

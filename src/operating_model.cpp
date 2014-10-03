@@ -104,15 +104,15 @@ operatingModel::operatingModel(){
     fisheries = FLFisheriesAD();
     f = FLQuant7AD();
     f_spwn = FLQuant7();
-    landings_n = FLQuant7AD();
-    discards_n = FLQuant7AD();
-    fad = FLQuant7AD();
-    n = FLQuantAD();
+    //landings_n = FLQuant7AD();
+    //discards_n = FLQuant7AD();
+    //fad = FLQuant7AD();
+    //n = FLQuantAD();
 }
 
 // Main constructor
 operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolAD biol_in, const FLQuant7AD f_in, const FLQuant7 f_spwn_in, const fwdControl ctrl_in){
-    // Check dims (1 - 5) of landings slots, F and biol are the same
+    // Checking dims (1 - 5) of landings slots, F and biol are the same
     // Single Biol at the moment.
     // The Biol can be fished by multiple Catches - but each Catch must come from a seperate Fishery
     // Here we assume that each Fishery has one Catch that fishes that Biol - this assumption will break with multiple Biols
@@ -149,14 +149,14 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolAD
     f_spwn = f_spwn_in;
     ctrl = ctrl_in;
     /* Set AD members up - reserve space - how many iters? all ot them*/
-    n = FLQuantAD(biol_dim[0], 1, biol_dim[2], 1, biol_dim[4], biol_dim[5]); // Assumes that the number of iters in the biol is the same as all objects - is that right?
-    landings_n = FLQuant7AD(n); // Add first FLQ to the list
-    // Keep adding more elements to the list - one for each fishery
-    for (unsigned int fishery_counter = 2; fishery_counter <= nfisheries; ++fishery_counter){
-        landings_n(n); // push back
-    } 
-    discards_n = landings_n;
-    fad = landings_n;
+    //n = FLQuantAD(biol_dim[0], 1, biol_dim[2], 1, biol_dim[4], biol_dim[5]); // Assumes that the number of iters in the biol is the same as all objects - is that right?
+    //landings_n = FLQuant7AD(n); // Add first FLQ to the list
+    //// Keep adding more elements to the list - one for each fishery
+    //for (unsigned int fishery_counter = 2; fishery_counter <= nfisheries; ++fishery_counter){
+    //    landings_n(n); // push back
+    //} 
+    //discards_n = landings_n;
+    //fad = landings_n;
 }
 
 // Copy constructor - else members can be pointed at by multiple instances
@@ -189,11 +189,11 @@ operatingModel::operator SEXP() const{
                             Rcpp::Named("fisheries", fisheries),
                             Rcpp::Named("f", f),
                             Rcpp::Named("f_spwn", f_spwn),
-                            Rcpp::Named("ctrl", ctrl),
-                            Rcpp::Named("landings_n", landings_n),
-                            Rcpp::Named("discards_n", discards_n),
-                            Rcpp::Named("fad", fad),
-                            Rcpp::Named("n", n));
+                            Rcpp::Named("ctrl", ctrl));
+                            //Rcpp::Named("landings_n", landings_n),
+                            //Rcpp::Named("discards_n", discards_n),
+                            //Rcpp::Named("fad", fad),
+                            //Rcpp::Named("n", n));
 }
 
 
@@ -288,32 +288,24 @@ void operatingModel::project_timestep(const int timestep){
     int unit = 1;
     int area = 1;
 
-
-    
-    // Get the timeslice of F
+    // Total F from all fisheries - just get a timestep to reduce memory overload
     FLQuantAD total_f = f(1)(1, biol_dim[0], year, year, 1, biol_dim[2], season, season, 1, biol_dim[4], 1, biol_dim[5]);
-    // Total F from all fisheries - just get a slice to reduce memory overload
     for (int fisheries_count = 2; fisheries_count <= fisheries.get_nfisheries(); ++ fisheries_count){
         total_f += f(fisheries_count)(1, biol_dim[0], year, year, 1, biol_dim[2], season, season, 1, biol_dim[4], 1, biol_dim[5]);
     }
     // Total mortality on the biol (adjust when multiple biols)
     FLQuantAD z = biol.m()(1, biol_dim[0], year, year, 1, biol_dim[2], season, season, 1, biol_dim[4], 1, biol_dim[5]) + total_f;
 
-    //FLQuantAD catch_temp;
-    //FLQuantAD landings_n_temp; 
-    //FLQuantAD discards_n_temp; 
-    //FLQuantAD discards_ratio_temp; // DN / (DN + LN)
-    
+    // Get landings and discards for each fishery
     CppAD::AD<double> catch_temp;
     CppAD::AD<double> discards_ratio_temp; // DN / (DN + LN)
     CppAD::AD<double> landings_n_temp; 
     CppAD::AD<double> discards_n_temp; 
-
-    
-    // Get landings and discards for each fishery
+    unsigned int max_quant = biol_dim[0];
     for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++ fisheries_count){
         for (int iter_count = 1; iter_count <= niter; ++iter_count){
-            for (int quant_count = 1; quant_count <= biol_dim[0]; ++quant_count){
+            for (int quant_count = 1; quant_count <= max_quant; ++quant_count){
+                // values in current timestep are used to calculate the discards ratio of that timestep, and then overwritten
                 landings_n_temp = fisheries(fisheries_count)(1).landings_n()(quant_count, year, unit, season, area, iter_count);
                 discards_n_temp = fisheries(fisheries_count)(1).discards_n()(quant_count, year, unit, season, area, iter_count);
                 discards_ratio_temp = discards_n_temp / (discards_n_temp + landings_n_temp);
@@ -324,7 +316,16 @@ void operatingModel::project_timestep(const int timestep){
         }
     }
 
-    // Then update biol
+    // Then update biol in next timestep
+    // next n = current n * exp(-z)
+    // Check if timestep is the final timestep - if so, don't update biol
+    for (int iter_count = 1; iter_count <= niter; ++iter_count){
+        for (int quant_count = 1; quant_count < max_quant; ++quant_count){
+            biol.n()(quant_count+1, next_year, 1, next_season, 1, iter_count) = biol.n()(quant_count, year, 1, season, 1, iter_count) * exp(-z(quant_count,1,1,1,1,iter_count));
+        }
+        // plus group - assume last age is a plusgroup
+        biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) = biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) + (biol.n()(max_quant, year, 1, season, 1, iter_count) * exp(-z(max_quant, 1, 1, 1, 1, iter_count)));
+    }
 
     Rprintf("Leaving project_timestep\n");
     return; 

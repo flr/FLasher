@@ -68,7 +68,7 @@ test_that("operatingModel constructors and updaters",{
     f <- lapply(f,abs)
     f_spwn <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq))
     f_spwn <- lapply(f_spwn,abs)
-    fc <- dummy_fwdControlTest_generator(years = 1, niters = dim(n(flb))[6])
+    fc <- dummy_fwdControl_generator(years = 1, niters = dim(n(flb))[6])
 
     # At last, a test
     # Full constructor with wrap
@@ -78,12 +78,6 @@ test_that("operatingModel constructors and updaters",{
     expect_that(out[["f"]], is_identical_to(f))
     expect_that(out[["f_spwn"]], is_identical_to(f_spwn))
     expect_that(out[["ctrl"]], is_identical_to(fc))
-    # Check AD bits have been set up OK
-    empty_flqad <- FLQuant(0, dimnames = dimnames(n(flb)[,1,,1,,]))
-    expect_that(dim(empty_flqad), is_identical_to(dim(out[["n"]])))
-    expect_that(lapply(out[["landings_n"]], dim), is_identical_to(rep(list(dim(empty_flqad)),length(flfs))))
-    expect_that(lapply(out[["discards_n"]], dim), is_identical_to(rep(list(dim(empty_flqad)),length(flfs))))
-    expect_that(lapply(out[["fad"]], dim), is_identical_to(rep(list(dim(empty_flqad)),length(flfs))))
 
     # Change dim of f, f_spwn and biol - dimension check
     new_dim <- dim(flq) + round(runif(6,min=1,max=3))
@@ -97,30 +91,6 @@ test_that("operatingModel constructors and updaters",{
     expect_that(test_operatingModel_full_constructor(new_flfs, flb, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult, f, f_spwn, fc), throws_error())
     expect_that(test_operatingModel_full_constructor(flfs, flb, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult, new_f, f_spwn, fc), throws_error())
     expect_that(test_operatingModel_full_constructor(flfs, flb, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult, f, new_f_spwn, fc), throws_error())
-
-    # load_ad_and update members
-    timestep <- round(runif(1,min=2,max=dim(n(flb))[2] * dim(n(flb))[4])) - 1
-    year <-  (timestep-1) / dim(n(flb))[4] + 1 
-    season <- (timestep-1) %%  dim(n(flb))[4]+ 1;
-    next_year <-  (timestep) / dim(n(flb))[4] + 1 
-    next_season <- (timestep) %%  dim(n(flb))[4]+ 1;
-    # load  - only f, landings and discards
-    out <- test_operatingModel_load_ad_members_timestep(flfs, flb, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult, f, f_spwn, fc, timestep)
-    for (i in 1:length(flfs)){
-        expect_that(out[["fad"]][[i]], is_identical_to(f[[i]][,year,,season,,]))
-        expect_that(out[["landings_n"]][[i]], is_identical_to(landings.n(flfs[[i]][[1]])[,year,,season,,]))
-        expect_that(out[["discards_n"]][[i]], is_identical_to(discards.n(flfs[[i]][[1]])[,year,,season,,]))
-    }
-    # update - f, landings, discards and n
-    out <- test_operatingModel_update_from_ad_members_timestep(flfs, flb, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult, f, f_spwn, fc, timestep)
-    expect_that(c(out[["n"]]), is_identical_to(c(n(out[["biol"]])[,next_year,,next_season,,])))
-    for (i in 1:length(flfs)){
-        expect_that(c(out[["landings_n"]][[i]]), is_identical_to(c(landings.n(out[["fisheries"]][[i]][[1]])[,year,,season,,])))
-        expect_that(c(out[["discards_n"]][[i]]), is_identical_to(c(discards.n(out[["fisheries"]][[i]][[1]])[,year,,season,,])))
-        expect_that(c(out[["fad"]][[i]]), is_identical_to(c(out[["f"]][[i]][,year,,season,,])))
-    }
-
-
 })
 
 
@@ -129,6 +99,7 @@ test_that("operatingModel project timestep",{
     flq <- random_FLQuant_generator(fixed_dims=c(NA,NA,1,NA,1,NA)) # fix unit and area to be 1
     flb <- random_FLBiol_generator(fixed_dims = dim(flq))
     m(flb) <- random_FLQuant_generator(fixed_dims = dim(flq), sd = 0.1)
+    # 2 fisheries
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
     params.ricker <- FLQuant(rnorm(2), dimnames = list(params = c("a","b")))
     residuals.ricker <- FLQuant(rnorm(100), dimnames = list(year = 1:10, iter = 1:10))
@@ -138,8 +109,7 @@ test_that("operatingModel project timestep",{
     f <- lapply(f,abs)
     f_spwn <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq))
     f_spwn <- lapply(f_spwn,abs)
-    fc <- dummy_fwdControlTest_generator(years = 1, niters = dim(n(flb))[6])
-
+    fc <- dummy_fwdControl_generator(years = 1, niters = dim(n(flb))[6])
     timestep <- round(runif(1,min=2,max=dim(n(flb))[2] * dim(n(flb))[4])) - 1
     year <-  (timestep-1) / dim(n(flb))[4] + 1 
     season <- (timestep-1) %%  dim(n(flb))[4]+ 1;
@@ -153,23 +123,22 @@ test_that("operatingModel project timestep",{
     for (i in 1:length(flfs)){
         cn <- (f[[i]] / z) * (1 - exp(-z)) * n(flb)
         dr <- discards.n(flfs[[i]][[1]]) / (landings.n(flfs[[i]][[1]]) + discards.n(flfs[[i]][[1]]))
-        # If slicing
-        #expect_that((cn * (1 - dr))[,year,,season,,]@.Data, is_identical_to(out[["landings_n"]][[i]]@.Data))
-        #expect_that((cn * dr)[,year,,season,,]@.Data, is_identical_to(out[["discards_n"]][[i]]@.Data))
-        # If Biol and Fishery are AD
         expect_that((cn * (1 - dr))[,year,,season,,]@.Data, is_identical_to(landings.n(out[["fisheries"]][[i]][[1]])[,year,,season,,]@.Data))
         expect_that((cn * dr)[,year,,season,,]@.Data, is_identical_to(discards.n(out[["fisheries"]][[i]][[1]])[,year,,season,,]@.Data))
-
     }
 
-
     # check n is OK
+    next_year <-  (timestep) / dim(n(flb))[4] + 1 
+    next_season <- (timestep) %%  dim(n(flb))[4]+ 1;
     next_n <- n(flb)[,1,,1,,]
     next_n[] <- 0
     next_n[2:dim(next_n)[1]] <- (n(flb) * exp(-z))[1:(dim(next_n)[1]-1),year,,season,,]
     next_n[dim(next_n)[1]] <- next_n[dim(next_n)[1]] + ((n(flb) * exp(-z))[dim(next_n)[1],year,,season,,])
     # Just checking first area and unit now
-    expect_that(c(next_n[,,1,,1,]), is_identical_to(c(out[["n"]][,,1,,1,])))
+    # And ages 2+
+    expect_that(c(next_n[2:dim(next_n)[1],,1,,1,]), is_identical_to(c(n(out[["biol"]])[2:dim(next_n)[1],next_year,1,next_season,1,])))
+
+    # Check SRR
 
 
 
