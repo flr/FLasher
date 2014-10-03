@@ -5,7 +5,7 @@
  * Maintainer: Finlay Scott, JRC
  */
 
-#include "../../inst/include/control.h"
+#include "../../inst/include/fwdControl.h"
 
 //Rcpp::IntegerVector v =
 //Rcpp::IntegerVector::create(7,8,9);
@@ -17,7 +17,7 @@
 //Rcpp::Named("b")=s);
 
 
-
+// maps the quantity type character string to the enumerated types
 void fwdControl::init_target_map(){
     // Fill up the map
     target_map["f"] = target_f;
@@ -26,7 +26,6 @@ void fwdControl::init_target_map(){
     target_map["biomass"] = target_biomass;
     return;
 }
-
 
 // Empty constructor
 fwdControl::fwdControl(){
@@ -37,16 +36,19 @@ fwdControl::fwdControl(){
 // Constructor used as intrinsic 'as'
 fwdControl::fwdControl(SEXP fwd_control_sexp){
 	Rcpp::S4 fwd_control_s4 = Rcpp::as<Rcpp::S4>(fwd_control_sexp);
-    target_iters = fwd_control_s4.slot("target_iters");
-    target = fwd_control_s4.slot("target");
+	Rcpp::S4 target_s4 = fwd_control_s4.slot("target");
+    target_iters = target_s4.slot("iters");
+    target = target_s4.slot("element");
     init_target_map();
 }
 
 // intrinsic 'wrap' 
 fwdControl::operator SEXP() const{
-    Rcpp::S4 fwd_control_s4("fwdControlTest");
-    fwd_control_s4.slot("target") = target;
-    fwd_control_s4.slot("target_iters") = target_iters;
+    Rcpp::S4 fwd_control_s4("fwdControl");
+    Rcpp::S4 fwd_element_s4("fwdElement");
+    fwd_element_s4.slot("element") = target;
+    fwd_element_s4.slot("iters") = target_iters;
+    fwd_control_s4.slot("target") = fwd_element_s4;
     return Rcpp::wrap(fwd_control_s4);
 }
 
@@ -72,6 +74,7 @@ Rcpp::DataFrame fwdControl::get_target() const{
 }
 
 // Returns the number of targets in the control object
+// This will need to be more sophisticated when we start dealing with simultaneous targets in a year
 int fwdControl::get_ntarget() const{
      return target.nrows();
 }
@@ -93,7 +96,7 @@ int fwdControl::get_target_year(const int target_no) const {
 }
 
 int fwdControl::get_target_rel_year(const int target_no) const {
-    Rcpp::IntegerVector rel_year = target["rel_year"];
+    Rcpp::IntegerVector rel_year = target["relYear"];
     if (target_no > rel_year.size()){
         Rcpp::stop("In fwdControl::get_target_rel_year. target_no > number of targets\n");
     }
@@ -109,9 +112,9 @@ int fwdControl::get_target_season(const int target_no) const {
 }
 
 int fwdControl::get_target_rel_season(const int target_no) const {
-    Rcpp::IntegerVector rel_season = target["rel_season"];
+    Rcpp::IntegerVector rel_season = target["relSeason"];
     if (target_no > rel_season.size()){
-        Rcpp::stop("In fwdControl::get_target_rel)season. target_no > number of targets\n");
+        Rcpp::stop("In fwdControl::get_target_rel_season. target_no > number of targets\n");
     }
     return rel_season[target_no-1];
 }
@@ -126,8 +129,8 @@ int fwdControl::get_target_fishery(const int target_no) const {
 
 // Returns the age range - literally just the values in target
 Rcpp::IntegerVector fwdControl::get_age_range(const int target_no) const{
-    Rcpp::IntegerVector min_age = target["min_age"];
-    Rcpp::IntegerVector max_age = target["max_age"];
+    Rcpp::IntegerVector min_age = target["minAge"];
+    Rcpp::IntegerVector max_age = target["maxAge"];
     if (target_no > min_age.size()){
         Rcpp::stop("In fwdControl::get_target_fishery. target_no > number of targets\n");
     }

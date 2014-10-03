@@ -1441,6 +1441,62 @@ test_fwdBiolAD_set_accessors <- function(fwdb, quant, year, unit, season, area, 
     .Call('FLasher_test_fwdBiolAD_set_accessors', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter, values)
 }
 
+test_as_wrap_fwdControl <- function(control) {
+    .Call('FLasher_test_as_wrap_fwdControl', PACKAGE = 'FLasher', control)
+}
+
+test_fwdControl_copy_constructor <- function(fc1) {
+    .Call('FLasher_test_fwdControl_copy_constructor', PACKAGE = 'FLasher', fc1)
+}
+
+test_fwdControl_assignment_operator <- function(fc) {
+    .Call('FLasher_test_fwdControl_assignment_operator', PACKAGE = 'FLasher', fc)
+}
+
+test_fwdControl_get_target <- function(control) {
+    .Call('FLasher_test_fwdControl_get_target', PACKAGE = 'FLasher', control)
+}
+
+test_fwdControl_get_ntarget <- function(control) {
+    .Call('FLasher_test_fwdControl_get_ntarget', PACKAGE = 'FLasher', control)
+}
+
+test_fwdControl_get_niter <- function(control) {
+    .Call('FLasher_test_fwdControl_get_niter', PACKAGE = 'FLasher', control)
+}
+
+test_fwdControl_get_target_fishery <- function(control, target_no) {
+    .Call('FLasher_test_fwdControl_get_target_fishery', PACKAGE = 'FLasher', control, target_no)
+}
+
+test_fwdControl_get_target_year <- function(control, target_no) {
+    .Call('FLasher_test_fwdControl_get_target_year', PACKAGE = 'FLasher', control, target_no)
+}
+
+test_fwdControl_get_target_season <- function(control, target_no) {
+    .Call('FLasher_test_fwdControl_get_target_season', PACKAGE = 'FLasher', control, target_no)
+}
+
+test_fwdControl_get_target_rel_year <- function(control, target_no) {
+    .Call('FLasher_test_fwdControl_get_target_rel_year', PACKAGE = 'FLasher', control, target_no)
+}
+
+test_fwdControl_get_target_rel_season <- function(control, target_no) {
+    .Call('FLasher_test_fwdControl_get_target_rel_season', PACKAGE = 'FLasher', control, target_no)
+}
+
+test_fwdControl_get_target_value <- function(control, target_no, col, iter) {
+    .Call('FLasher_test_fwdControl_get_target_value', PACKAGE = 'FLasher', control, target_no, col, iter)
+}
+
+test_fwdControl_get_target_quantity <- function(control, target_no) {
+    .Call('FLasher_test_fwdControl_get_target_quantity', PACKAGE = 'FLasher', control, target_no)
+}
+
+test_fwdControl_get_age_range <- function(control, target_no) {
+    .Call('FLasher_test_fwdControl_get_age_range', PACKAGE = 'FLasher', control, target_no)
+}
+
 test_fwdSR_empty_constructor <- function() {
     invisible(.Call('FLasher_test_fwdSR_empty_constructor', PACKAGE = 'FLasher'))
 }

@@ -308,42 +308,36 @@ setClass("fwdControlTest",
 #' 
 #' @export
 #' @return A fwdControl object
-dummy_fwdControlTest_generator <- function(years = 1:round(runif(1, min=1,max=10)), niters = round(runif(1,min=1,max=10))){
+dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=1,max=10)), niters = round(runif(1,min=1,max=10))){
     # We need to have a proper R version of the class
     # And an automatic generator
-    ctrl_df <- data.frame(
-                       year = years,
-                       season = 1L, # Each target must have a timestep, if season is NA it implies that no seasons in projection so only 1 season in FLQuants so season = 1 
-                       # fix this before dispatching to C++
-                       quantity = "f", # the target type
-                       value =  0.2, # this don't get used in the C++ code
-                       min_value = NA,
-                       max_value = NA,
-                       min_age = NA,
-                       max_age = NA,
-                       rel_year = NA,
-                       rel_season = NA,
-                       fishery = NA, # what is this? a number or name? Some way of referring 
-                       rel_fishery = NA, # as above
-                       catch = NA, # what is this? a number or name? Some way of referring 
-                       rel_catch = NA # as above
-                       )
-    ctrl_df$quantity <- as.character(ctrl_df$quantity)
 
-    target_iters <- array(NA, dim=c(nrow(ctrl_df),3,niters), dimnames=list(target_no=1:nrow(ctrl_df), c("min","value","max"), iter=1:niters))
-    #target_iters[,"value",] <- 0.2
-    target_iters[,"min",] <- NA#runif(dim(target_iters)[1] * dim(target_iters)[3], min=0.1, max=0.2)
+
+    target <- data.frame(year=years,
+                          value=rlnorm(length(years)),
+                          quantity='f',
+                          season = 1L, # when calling fwd() season must be an integer
+                          minAge = 1,
+                          maxAge = 5,
+                          fishery = NA,
+                          catch = NA
+
+                          )
+
+
+    # Force integers - should be done in fwd() dispatch or constructor
+    target$fishery <- as.integer(target$fishery)
+    target$catch <- as.integer(target$catch)
+    target$year <- as.integer(target$year)
+    target$season <- as.integer(target$season)
+    target$quantity <- as.character(target$quantity)
+
+    # Better creator than this too
+    target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(target_no=1:nrow(target), c("min","value","max"), iter=1:niters))
+    target_iters[,"min",] <- NA
     target_iters[,"value",] <- runif(dim(target_iters)[1] * dim(target_iters)[3], min=0.3, max=0.4)
-    target_iters[,"max",] <- NA#runif(dim(target_iters)[1] * dim(target_iters)[3], min=0.5, max=0.6)
+    target_iters[,"max",] <- NA
 
-    # Force integers
-    ctrl_df$fishery <- as.integer(ctrl_df$fishery)
-    ctrl_df$rel_fishery <- as.integer(ctrl_df$rel_fishery)
-    ctrl_df$year <- as.integer(ctrl_df$year)
-    ctrl_df$season <- as.integer(ctrl_df$season)
-
-    fc <- new("fwdControlTest",
-        target = ctrl_df,
-        target_iters = target_iters)
-    return(fc)
+    fwc <- fwdControl(target=target, iters=target_iters)
+    return(fwc)
 }

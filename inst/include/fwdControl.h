@@ -10,8 +10,8 @@
 // fwdControl class
 // no need for adoubles
 // two main components:
-// data.frame describing controls per timestep
-// array for the iterations in a timestep
+// data.frame describing controls per timestep (element)
+// array for the iterations in a timestep (iters)
 // leave these as Rcpp types for simplicity
 
 // This class won't be modified - it is a read-only class
@@ -59,6 +59,7 @@ class fwdControl {
         fwdControlTargetType get_target_type(const int target_no) const;
         void init_target_map();
     private:
+        // Not bothering with the R structure of fwdControl@target@iters and @element
         Rcpp::DataFrame target;
         Rcpp::NumericVector target_iters; 
         //std::map<std::string, fwdControlTargetType> target_map;

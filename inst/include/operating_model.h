@@ -24,7 +24,7 @@
 #endif
 
 // Need to fix control object
-#include "control.h"
+#include "fwdControl.h"
 
 
 // Converting timestep to year and season and vice versa
