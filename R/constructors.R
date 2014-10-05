@@ -149,6 +149,17 @@ setMethod('fwdControl', signature(target='data.frame', iters='matrix'),
 	}
 ) # }}}
 
+# fwdControl(target='data.frame', iters='numeric') {{{
+setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
+	function(target, iters) {
+		
+		ele <- fwdElement(element=target, iters=iters)
+
+		return(new("fwdControl", target=ele))
+	}
+)
+# }}}
+
 # fwdControl(target='data.frame', iters='missing') {{{
 setMethod('fwdControl', signature(target='data.frame', iters='missing'),
 	function(target) {
