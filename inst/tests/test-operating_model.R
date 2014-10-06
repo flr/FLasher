@@ -96,73 +96,90 @@ test_that("operatingModel constructors and updaters",{
 
 test_that("operatingModel project timestep",{
     # Set up parameters for full test - lots of things needed
-    flq <- random_FLQuant_generator(fixed_dims=c(NA,NA,1,NA,1,NA)) # fix unit and area to be 1
+    flq <- random_FLQuant_generator(fixed_dims=c(NA,10,1,NA,1,NA)) # fix unit and area to be 1, need 10 years
+    #flq <- random_FLQuant_generator(fixed_dims=c(NA,10,1,1,1,NA)) # fix unit and area to be 1, need 10 years
     flb <- random_FLBiol_generator(fixed_dims = dim(flq))
     m(flb) <- random_FLQuant_generator(fixed_dims = dim(flq), sd = 0.1)
     # 2 fisheries
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
-    params_ricker <- FLQuant(rnorm(2), dimnames = list(params = c("a","b")))
-    residuals_ricker <- FLQuant(rnorm(100), dimnames = list(year = 1:10, iter = 1:10))
+    #ple4_sr_ricker <- as.FLSR(ple4,model="ricker")
+    #params(ple4_sr_ricker) <- FLPar(abs(rnorm(2, sd = c(10,1e-6))))#FLPar(c(9.1626, 3.5459e-6))
+    params_ricker <- FLQuant(abs(rnorm(2, sd = c(10,1e-6))),dimnames=list(params=c("a","b")))
+    
+    residuals_ricker <- FLQuant(NA, dimnames = dimnames(flq[1,]))
+    residuals_ricker[] <- abs(rnorm(prod(dim(residuals_ricker))))
     residuals_mult <- TRUE
-    timelag <- 0
     f <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq), sd = 0.1)
     f <- lapply(f,abs)
     f_spwn <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq))
     f_spwn <- lapply(f_spwn,abs)
-    fc <- dummy_fwdControl_generator(years = 1, niters = dim(n(flb))[6])
-    timestep <- round(runif(1,min=2,max=dim(n(flb))[2] * dim(n(flb))[4])) - 1
-    year <-  (timestep-1) / dim(n(flb))[4] + 1 
-    season <- (timestep-1) %%  dim(n(flb))[4]+ 1;
-    out <- test_operatingModel_project_timestep(flfs, flb, "ricker", params_ricker, timelag, residuals_ricker, residuals_mult, f, f_spwn, fc, timestep)
+    fc <- dummy_fwdControl_generator(years = 1, niters = dim(n(flb))[6]) # doesn't do anything - just needed to make OM object in C
+    # Project over random timesteps
+    min_timestep <- round(runif(1,min=2,max=dim(n(flb))[2]/2 * dim(n(flb))[4])) 
+    max_timestep <- round(runif(1,min=min_timestep+1,max=dim(n(flb))[2] * dim(n(flb))[4])) - 1
+    timesteps <- min_timestep:max_timestep
+    timelag <- round(runif(1,min=1,max=min_timestep)) # random timelag for recruitment
+
+    # Run!
+    out <- test_operatingModel_project_timestep(flfs, flb, "ricker", params_ricker, timelag, residuals_ricker, residuals_mult, f, f_spwn, fc, timesteps)
     # Check landings_n and discards_n are correct
     total_f <- f[[1]]
     for (i in 2:length(flfs)){
         total_f <- total_f + f[[i]]
     }
     z <- total_f + m(flb)
-    for (i in 1:length(flfs)){
-        cn <- (f[[i]] / z) * (1 - exp(-z)) * n(flb)
-        dr <- discards.n(flfs[[i]][[1]]) / (landings.n(flfs[[i]][[1]]) + discards.n(flfs[[i]][[1]]))
-        expect_that((cn * (1 - dr))[,year,,season,,]@.Data, is_identical_to(landings.n(out[["fisheries"]][[i]][[1]])[,year,,season,,]@.Data))
-        expect_that((cn * dr)[,year,,season,,]@.Data, is_identical_to(discards.n(out[["fisheries"]][[i]][[1]])[,year,,season,,]@.Data))
+    # SSB calc
+    f_portion <- f[[1]] * f_spwn[[1]] 
+    for (i in 2:length(f)){
+        f_portion <- f_portion + f[[i]] * f_spwn[[i]]
+    }
+    ssb <- quantSums(n(out[["biol"]]) * wt(out[["biol"]]) * fec(out[["biol"]]) * exp(-f_portion - m(out[["biol"]]) * spwn(out[["biol"]])))
+    for (timestep in timesteps){
+        year <-  floor((timestep-1) / dim(flq)[4] + 1)
+        season <- (timestep-1) %%  dim(n(flb))[4]+ 1;
+        next_year <- (timestep) / dim(n(flb))[4] + 1
+        next_season <- (timestep) %%  dim(n(flb))[4]+ 1;
+        ssb_year <- (timestep - timelag) / dim(n(flb))[4] + 1
+        ssb_season <- (timestep - timelag) %%  dim(n(flb))[4]+ 1;
+        for (i in 1:length(flfs)){
+            cn <- (f[[i]] / z) * (1 - exp(-z)) * n(out[["biol"]])
+            dr <- discards.n(flfs[[i]][[1]]) / (landings.n(flfs[[i]][[1]]) + discards.n(flfs[[i]][[1]]))
+            expect_that((cn * (1 - dr))[,year,,season,,]@.Data, is_identical_to(landings.n(out[["fisheries"]][[i]][[1]])[,year,,season,,]@.Data))
+            expect_that((cn * dr)[,year,,season,,]@.Data, is_identical_to(discards.n(out[["fisheries"]][[i]][[1]])[,year,,season,,]@.Data))
+        }
+        # check n is OK - not SRR
+        next_n <- n(flb)[,1,,1,,]
+        next_n[] <- 0
+        next_n[2:dim(next_n)[1]] <- (n(out[["biol"]]) * exp(-z))[1:(dim(next_n)[1]-1),year,,season,,]
+        next_n[dim(next_n)[1]] <- next_n[dim(next_n)[1]] + ((n(out[["biol"]]) * exp(-z))[dim(next_n)[1],year,,season,,])
+        # Just checking first area and unit now
+        # And ages 2+
+        expect_that(c(next_n[2:dim(next_n)[1],,1,,1,]), is_identical_to(c(n(out[["biol"]])[2:dim(next_n)[1],next_year,1,next_season,1,])))
+        # With no time structure in SRR params, SRR is calculated every timestep
+        rec <- params_ricker["a",] * ssb[1,ssb_year,1,ssb_season,1,] * exp(-params_ricker["b",] * ssb[1,ssb_year,1,ssb_season,1,]) * residuals_ricker[1,next_year,1,next_season]
+        expect_that(c(rec), equals(c(n(out[["biol"]])[1,next_year,1,next_season,1,])))
     }
 
-    # check n is OK
-    next_year <-  (timestep) / dim(n(flb))[4] + 1 
-    next_season <- (timestep) %%  dim(n(flb))[4]+ 1;
-    next_n <- n(flb)[,1,,1,,]
-    next_n[] <- 0
-    next_n[2:dim(next_n)[1]] <- (n(flb) * exp(-z))[1:(dim(next_n)[1]-1),year,,season,,]
-    next_n[dim(next_n)[1]] <- next_n[dim(next_n)[1]] + ((n(flb) * exp(-z))[dim(next_n)[1],year,,season,,])
-    # Just checking first area and unit now
-    # And ages 2+
-    expect_that(c(next_n[2:dim(next_n)[1],,1,,1,]), is_identical_to(c(n(out[["biol"]])[2:dim(next_n)[1],next_year,1,next_season,1,])))
-
-    # Check SRR
-
-
-
+    # Test with time structure in SR params - only recruitment in first season
+    params_ricker2 <- FLQuant(0,dimnames=list(params=c("a","b"), season = dimnames(flq)$season))
+    params_ricker2[,,,1] <- abs(rnorm(2, sd = c(10,1e-6)))
+    # check over timesteps with and without recruitment
+    timesteps2 <- (dim(flq)[4]):(dim(flq)[4] * 2 + 1)
+    timelag2 <- round(runif(1,min=1,max=min(timesteps2))) # random timelag for recruitment
+    out2 <- test_operatingModel_project_timestep(flfs, flb, "ricker", params_ricker2, timelag2, residuals_ricker, residuals_mult, f, f_spwn, fc, timesteps2)
+    ssb2 <- quantSums(n(out2[["biol"]]) * wt(out2[["biol"]]) * fec(out2[["biol"]]) * exp(-f_portion - m(out2[["biol"]]) * spwn(out2[["biol"]])))
+    for (timestep in timesteps2){
+        year <-  floor((timestep-1) / dim(flq)[4] + 1)
+        season <- (timestep-1) %%  dim(n(flb))[4]+ 1;
+        next_year <- (timestep) / dim(n(flb))[4] + 1
+        next_season <- (timestep) %%  dim(n(flb))[4]+ 1;
+        ssb_year <- (timestep - timelag2) / dim(n(flb))[4] + 1
+        ssb_season <- (timestep - timelag2) %%  dim(n(flb))[4]+ 1;
+        rec2 <- params_ricker2["a",1,,next_season] * ssb2[1,ssb_year,1,ssb_season,1,] * exp(-params_ricker2["b",1,,next_season] * ssb2[1,ssb_year,1,ssb_season,1,]) * residuals_ricker[1,next_year,1,next_season]
+        expect_that(c(rec2), equals(c(n(out2[["biol"]])[1,next_year,1,next_season,1,])))
+    }
 
 })
-
-
-
-
-#test_that("operatingModel SRR methods", { #    # Bits #    data(ple4) #    ple4_sr_ricker <- fmle(as.FLSR(ple4,model="ricker"), control  = list(trace=0))
-#    params_ricker <- as.FLQuant(params(ple4_sr_ricker))
-#
-#    flq <- random_FLQuant_generator(sd=1)
-#    flb <- random_FLBiol_generator(fixed_dims = dim(flq), sd = 1 )
-#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=1, max_fisheries=1, sd=1)
-#    residuals_ricker <- FLQuant(rnorm(dim(flq)[2] * dim(flq)[6]), dimnames = list(year = 1:dim(flq)[2], iter = 1:dim(flq)[6]))
-#    residuals_mult <- TRUE
-#    f <- random_FLQuant_list_generator(max_elements=1, fixed_dims = dim(flq), sd=1)
-#    f <- lapply(f,abs)
-#    f_spwn <- random_FLQuant_list_generator(max_elements=1, fixed_dims = dim(flq), sd=1)
-#    f_spwn <- lapply(f_spwn,abs)
-#
-#})
-
 
 test_that("operatingModel SSB methods", {
     #  Lots of things needed for test

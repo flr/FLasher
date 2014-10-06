@@ -6653,8 +6653,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_operatingModel_project_timestep
-operatingModel test_operatingModel_project_timestep(const FLFisheriesAD fisheries, SEXP FLBiolSEXP, const std::string srr_model_name, const FLQuant srr_params, const int srr_timelag, const FLQuant srr_residuals, const bool srr_residuals_mult, FLQuant7AD f, FLQuant7 f_spwn, fwdControl ctrl, const int timestep);
-RcppExport SEXP FLasher_test_operatingModel_project_timestep(SEXP fisheriesSEXP, SEXP FLBiolSEXPSEXP, SEXP srr_model_nameSEXP, SEXP srr_paramsSEXP, SEXP srr_timelagSEXP, SEXP srr_residualsSEXP, SEXP srr_residuals_multSEXP, SEXP fSEXP, SEXP f_spwnSEXP, SEXP ctrlSEXP, SEXP timestepSEXP) {
+operatingModel test_operatingModel_project_timestep(const FLFisheriesAD fisheries, SEXP FLBiolSEXP, const std::string srr_model_name, const FLQuant srr_params, const int srr_timelag, const FLQuant srr_residuals, const bool srr_residuals_mult, FLQuant7AD f, FLQuant7 f_spwn, fwdControl ctrl, const std::vector<int> timesteps);
+RcppExport SEXP FLasher_test_operatingModel_project_timestep(SEXP fisheriesSEXP, SEXP FLBiolSEXPSEXP, SEXP srr_model_nameSEXP, SEXP srr_paramsSEXP, SEXP srr_timelagSEXP, SEXP srr_residualsSEXP, SEXP srr_residuals_multSEXP, SEXP fSEXP, SEXP f_spwnSEXP, SEXP ctrlSEXP, SEXP timestepsSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -6669,8 +6669,8 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< FLQuant7AD >::type f(fSEXP );
         Rcpp::traits::input_parameter< FLQuant7 >::type f_spwn(f_spwnSEXP );
         Rcpp::traits::input_parameter< fwdControl >::type ctrl(ctrlSEXP );
-        Rcpp::traits::input_parameter< const int >::type timestep(timestepSEXP );
-        operatingModel __result = test_operatingModel_project_timestep(fisheries, FLBiolSEXP, srr_model_name, srr_params, srr_timelag, srr_residuals, srr_residuals_mult, f, f_spwn, ctrl, timestep);
+        Rcpp::traits::input_parameter< const std::vector<int> >::type timesteps(timestepsSEXP );
+        operatingModel __result = test_operatingModel_project_timestep(fisheries, FLBiolSEXP, srr_model_name, srr_params, srr_timelag, srr_residuals, srr_residuals_mult, f, f_spwn, ctrl, timesteps);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

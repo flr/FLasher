@@ -333,6 +333,7 @@ void operatingModel::project_timestep(const int timestep){
         // Recruitment
         // rec is calculated in a scalar way - i.e. not passing it a vector of SSBs, so have to do one iter at a time
         ssb_temp = ssb_flq(1,ssb_year,1,ssb_season,1,iter_count);
+        Rprintf("year: %i, season: %i, ssb_year: %i, ssb_season: %i, ssb_temp: %f\n", year, season, ssb_year, ssb_season, Value(ssb_temp));
         rec_temp = biol.srr.eval_model(ssb_temp, next_year, 1, next_season, 1, iter_count);
         // Apply the residuals to rec_temp
         // Use of if statement is OK because for each taping it will only branch the same way (depending on residuals_mult)
