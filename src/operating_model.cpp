@@ -278,15 +278,18 @@ void operatingModel::project_timestep(const int timestep){
     int season = 0;
     int next_year = 0;
     int next_season = 0;
+    int ssb_year = 0;
+    int ssb_season = 0;
     timestep_to_year_season(timestep, biol.n(), year, season);
     timestep_to_year_season(timestep+1, biol.n(), next_year, next_season); 
     
     // Dims for getting time slices
     Rcpp::IntegerVector biol_dim = biol.m().get_dim();
     // CAREFUL WITH NUMBER OF ITERS
-    int niter = biol_dim[5];
-    int unit = 1;
-    int area = 1;
+    unsigned int niter = biol_dim[5];
+    unsigned int unit = 1;
+    unsigned int area = 1;
+    unsigned int biol_no = 1;
 
     // Total F from all fisheries - just get a timestep to reduce memory overload
     FLQuantAD total_f = f(1)(1, biol_dim[0], year, year, 1, biol_dim[2], season, season, 1, biol_dim[4], 1, biol_dim[5]);
@@ -316,10 +319,30 @@ void operatingModel::project_timestep(const int timestep){
         }
     }
 
+    // Get the year and season of the SSB that will result in recruitment in the next timestep
+    // Add one to timestep because we are getting the recruitment in timestep+1
+    timestep_to_year_season(timestep - biol.srr.get_timelag() + 1, biol.n(), ssb_year, ssb_season);
+    // Get SSB - all iters and years etc - could be more efficient
+    FLQuantAD ssb_flq= ssb(biol_no);
     // Then update biol in next timestep
     // next n = current n * exp(-z)
     // Check if timestep is the final timestep - if so, don't update biol
+    adouble rec_temp = 0.0;
+    adouble ssb_temp = 0.0;
     for (int iter_count = 1; iter_count <= niter; ++iter_count){
+        // Recruitment
+        // rec is calculated in a scalar way - i.e. not passing it a vector of SSBs, so have to do one iter at a time
+        ssb_temp = ssb_flq(1,ssb_year,1,ssb_season,1,iter_count);
+        rec_temp = biol.srr.eval_model(ssb_temp, next_year, 1, next_season, 1, iter_count);
+        // Apply the residuals to rec_temp
+        // Use of if statement is OK because for each taping it will only branch the same way (depending on residuals_mult)
+        if (biol.srr.get_residuals_mult()){
+            rec_temp = rec_temp * biol.srr.get_residuals()(1,next_year,1,next_season,1,iter_count);
+        }
+        else{
+            rec_temp = rec_temp + biol.srr.get_residuals()(1,next_year,1,next_season,1,iter_count);
+        }
+        biol.n()(1, next_year, 1, next_season, 1, iter_count) = rec_temp;
         for (int quant_count = 1; quant_count < max_quant; ++quant_count){
             biol.n()(quant_count+1, next_year, 1, next_season, 1, iter_count) = biol.n()(quant_count, year, 1, season, 1, iter_count) * exp(-z(quant_count,1,1,1,1,iter_count));
         }
@@ -933,46 +956,32 @@ Rprintf("Time in NR: %f\n", (float)(clk2 - clk1)/CLOCKS_PER_SEC);
 
 //---------------Target methods ----------------------------
 
-/*
-// Total biomass at the beginning of the timestep
-// biol_no not currently used
-FLQuantAdolc operatingModel::biomass(const int biol_no) const {
-    FLQuantAdolc biomass = quant_sum(biol.n() * biol.wt());
-    return biomass;
-}
-
 // SSB calculations - Actual SSB that results in recruitment
 // Return an FLQuant
 // biol_no not currently used
-FLQuantAdolc operatingModel::ssb(const int biol_no) const {
+FLQuantAD operatingModel::ssb(const int biol_no) const {
     // Loop over all the Fs that catch the biol
-    FLQuantAdolc f_portion = f(1) * f_spwn(1);
+    FLQuantAD f_portion = f(1) * f_spwn(1);
     for (unsigned int f_count = 2; f_count <= f.get_ndim7(); ++f_count){
         f_portion = f_portion + f(f_count) * f_spwn(f_count);
     }
-//clock_t clk1 = clock();
-//    FLQuantAdolc ssb_part = biol.n() * biol.wt() * biol.fec() * exp(-1.0*(biol.m() * biol.spwn() + f_portion));
-//clock_t clk2 = clock();
-    FLQuantAdolc ssb = quant_sum(biol.wt() * biol.fec() * exp(-1.0*(biol.m() * biol.spwn() + f_portion)) * biol.n());
-//    Rprintf("ssb part: %f\n", (float)(clk2 - clk1)/CLOCKS_PER_SEC);
-// AD * D takes longer than D * D
-// Goes from left to right
+    FLQuantAD ssb = quant_sum(biol.wt() * biol.fec() * exp(-1.0*(biol.m() * biol.spwn() + f_portion)) * biol.n());
     return ssb;
 }
 
 // Return all iterations but single timestep as an FLQuant
-FLQuantAdolc operatingModel::ssb(const int timestep, const int unit, const int area, const int biol_no) const {
-    FLQuantAdolc full_ssb = ssb(biol_no);
+FLQuantAD operatingModel::ssb(const int timestep, const int unit, const int area, const int biol_no) const {
+    FLQuantAD full_ssb = ssb(biol_no);
     int year = 0;
     int season = 0;
     timestep_to_year_season(timestep, full_ssb, year, season);
-    FLQuantAdolc out = full_ssb(1,1,year,year,unit,unit,season,season,area,area,1,full_ssb.get_niter());
+    FLQuantAD out = full_ssb(1,1,year,year,unit,unit,season,season,area,area,1,full_ssb.get_niter());
     return out;
 }
 
 // Return a single value given timestep, unit, area and iter
 adouble operatingModel::ssb(const int timestep, const int unit, const int area, const int iter, const int biol_no) const {
-    FLQuantAdolc full_ssb = ssb(biol_no);
+    FLQuantAD full_ssb = ssb(biol_no);
     int year = 0;
     int season = 0;
     timestep_to_year_season(timestep, full_ssb, year, season);
@@ -982,9 +991,16 @@ adouble operatingModel::ssb(const int timestep, const int unit, const int area, 
 
 // Return a single value given year, season, unit, area and iter
 adouble operatingModel::ssb(const int year, const int unit, const int season, const int area, const int iter, const int biol_no) const {
-    FLQuantAdolc full_ssb = ssb(biol_no);
+    FLQuantAD full_ssb = ssb(biol_no);
     adouble out = full_ssb(1,year,unit,season,area,iter);
     return out;
+}
+/*
+// Total biomass at the beginning of the timestep
+// biol_no not currently used
+FLQuantAdolc operatingModel::biomass(const int biol_no) const {
+    FLQuantAdolc biomass = quant_sum(biol.n() * biol.wt());
+    return biomass;
 }
 
 FLQuantAdolc operatingModel::fbar(const Rcpp::IntegerVector age_range_indices, const int fishery_no, const int catch_no, const int biol_no) const{

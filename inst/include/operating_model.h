@@ -91,12 +91,14 @@ class operatingModel {
         FLQuantAdolc catches(const int fishery_no, const int catch_no, const int biol_no = 1) const;
         // Total catches from a biol
         FLQuantAdolc catches(const int biol_no = 1) const;
+        */
 
         // Various ways of calculating reproductive potential
-        FLQuantAdolc ssb(const int biol_no) const;
-        FLQuantAdolc ssb(const int timestep, const int unit, const int area, const int biol_no) const; // all iters in a timestep, unit and area
+        FLQuantAD ssb(const int biol_no) const;
+        FLQuantAD ssb(const int timestep, const int unit, const int area, const int biol_no) const; // all iters in a timestep, unit and area
         adouble ssb(const int timestep, const int unit, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
         adouble ssb(const int year, const int unit, const int season, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
+        /*
         // Other targets
         FLQuantAdolc biomass(const int biol_no) const;
         */

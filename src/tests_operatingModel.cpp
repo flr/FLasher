@@ -101,9 +101,6 @@ operatingModel test_operatingModel_project_timestep(const FLFisheriesAD fisherie
 
 }
 
-
-/*
-
 // [[Rcpp::export]]
 FLQuantAD test_operatingModel_SSB_FLQ(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl){
     fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
@@ -127,7 +124,7 @@ double test_operatingModel_SSB_single_iter(FLFisheriesAD flfs, SEXP flb_sexp, co
     operatingModel om(flfs, biol, f, f_spwn, ctrl);
     const int biol_no = 1;
     adouble out = om.ssb(timestep, unit, area, iter, biol_no);
-    return out.value();
+    return Value(out);
 }
 
 // [[Rcpp::export]]
@@ -136,9 +133,10 @@ double test_operatingModel_SSB_single_iter_year_season(FLFisheriesAD flfs, SEXP 
     operatingModel om(flfs, biol, f, f_spwn, ctrl);
     const int biol_no = 1;
     adouble out = om.ssb(year, unit, season, area, iter, biol_no);
-    return out.value();
+    return Value(out);
 }
 
+/*
 // [[Rcpp::export]]
 operatingModel test_operating_model_project(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const int timestep, const fwdControl ctrl){
     fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);

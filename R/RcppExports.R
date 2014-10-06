@@ -1569,3 +1569,19 @@ test_operatingModel_project_timestep <- function(fisheries, FLBiolSEXP, srr_mode
     .Call('FLasher_test_operatingModel_project_timestep', PACKAGE = 'FLasher', fisheries, FLBiolSEXP, srr_model_name, srr_params, srr_timelag, srr_residuals, srr_residuals_mult, f, f_spwn, ctrl, timestep)
 }
 
+test_operatingModel_SSB_FLQ <- function(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl) {
+    .Call('FLasher_test_operatingModel_SSB_FLQ', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl)
+}
+
+test_operatingModel_SSB_iters <- function(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, timestep, unit, area, ctrl) {
+    .Call('FLasher_test_operatingModel_SSB_iters', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, timestep, unit, area, ctrl)
+}
+
+test_operatingModel_SSB_single_iter <- function(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, timestep, unit, area, iter, ctrl) {
+    .Call('FLasher_test_operatingModel_SSB_single_iter', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, timestep, unit, area, iter, ctrl)
+}
+
+test_operatingModel_SSB_single_iter_year_season <- function(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, year, unit, season, area, iter, ctrl) {
+    .Call('FLasher_test_operatingModel_SSB_single_iter_year_season', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, year, unit, season, area, iter, ctrl)
+}
+
