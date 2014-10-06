@@ -84,17 +84,35 @@ setMethod('fwdElement', signature(element='data.frame', iters='matrix'),
 	}
 ) # }}}
 
+# fwdElement(element='data.frame', iters='numeric') {{{
+setMethod('fwdElement', signature(element='data.frame', iters='numeric'),
+	function(element, iters) {
+	
+		# CREATE iters
+		dti <- dim(element)
+		ite <- array(NA, dim=c(dti[1], 3, iters), dimnames=list(row=1:dti[1], 
+			val=c('min', 'value', 'max'), iter=seq(iters)))
+
+		# FIND val names in element
+		vns <- c('min', 'value', 'max')
+		nms <- vns %in% colnames(element)
+		ite[, vns[nms],] <- element[,vns[nms]]
+
+		return(fwdElement(element=element, iters=ite))
+	}
+)
+# }}}
+
 # fwdElement(element='data.frame', iters='missing') {{{
 setMethod('fwdElement', signature(element='data.frame', iters='missing'),
 	function(element) {
 	
-
 		# CREATE iters
 		dti <- dim(element)
 		ite <- array(NA, dim=c(dti[1], 3, 1), dimnames=list(row=1:dti[1], 
 			val=c('min', 'value', 'max'), iter=1))
 
-		# FIND val names n element
+		# FIND val names in element
 		vns <- c('min', 'value', 'max')
 		nms <- vns %in% colnames(element)
 		ite[, vns[nms],] <- element[,vns[nms]]
@@ -130,6 +148,17 @@ setMethod('fwdControl', signature(target='data.frame', iters='matrix'),
 		return(new("fwdControl", target=ele))
 	}
 ) # }}}
+
+# fwdControl(target='data.frame', iters='numeric') {{{
+setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
+	function(target, iters) {
+		
+		ele <- fwdElement(element=target, iters=iters)
+
+		return(new("fwdControl", target=ele))
+	}
+)
+# }}}
 
 # fwdControl(target='data.frame', iters='missing') {{{
 setMethod('fwdControl', signature(target='data.frame', iters='missing'),

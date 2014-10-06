@@ -9,7 +9,7 @@
 
 <!--
 %\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{Plotting FLR objects with ggplot2 and ggplotFL}
+%\VignetteIndexEntry{Projecting fish populations in FLR with FLasher}
 -->
 
 # Projecting fish populations with FLasher
