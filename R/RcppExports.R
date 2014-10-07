@@ -1585,7 +1585,23 @@ test_operatingModel_SSB_single_iter_year_season <- function(flfs, flb_sexp, mode
     .Call('FLasher_test_operatingModel_SSB_single_iter_year_season', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, year, unit, season, area, iter, ctrl)
 }
 
+test_operating_model_get_target_age_range_indices <- function(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, target_no) {
+    .Call('FLasher_test_operating_model_get_target_age_range_indices', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, target_no)
+}
+
+test_operating_model_targets <- function(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, fishery_no, catch_no, target_no) {
+    .Call('FLasher_test_operating_model_targets', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, fishery_no, catch_no, target_no)
+}
+
 test_operatingModel_get_target_fmult_timestep <- function(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, target_no) {
     .Call('FLasher_test_operatingModel_get_target_fmult_timestep', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, target_no)
+}
+
+test_operatingModel_eval_target <- function(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, target_no) {
+    .Call('FLasher_test_operatingModel_eval_target', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, target_no)
+}
+
+test_operatingModel_calc_target_value <- function(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, target_no) {
+    .Call('FLasher_test_operatingModel_calc_target_value', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, target_no)
 }
 

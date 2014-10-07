@@ -371,7 +371,6 @@ void operatingModel::project_timestep(const int timestep){
 }
 
 
-/*
 // Returns the indices of the age range, starts at 0
 // biol_no not used yet
 Rcpp::IntegerVector operatingModel::get_target_age_range_indices(const int target_no, const int biol_no) const {
@@ -380,33 +379,31 @@ Rcpp::IntegerVector operatingModel::get_target_age_range_indices(const int targe
     // Convert the age names to a vector of strings
     std::vector<std::string> age_names = Rcpp::as<std::vector<std::string> >(biol.n().get_dimnames()[0]);
     // Use find() to match names - precheck in R that they exist - if not find, returns the last
-    std::vector<string>::iterator age_min_iterator = find(age_names.begin(), age_names.end(), number_to_string(age_range[0]));
+    std::vector<std::string>::iterator age_min_iterator = find(age_names.begin(), age_names.end(), number_to_string(age_range[0]));
     if(age_min_iterator != age_names.end()){
         age_range_indices[0] = std::distance(age_names.begin(), age_min_iterator);
     }
     else {
-        Rcpp::stop("min_age in control not found in dimnames of FLBiol\n");
+        Rcpp::stop("minAge in control not found in dimnames of FLBiol\n");
     }
-    std::vector<string>::iterator age_max_iterator = find(age_names.begin(), age_names.end(), number_to_string(age_range[1]));
+    std::vector<std::string>::iterator age_max_iterator = find(age_names.begin(), age_names.end(), number_to_string(age_range[1]));
     if(age_max_iterator != age_names.end()){
         age_range_indices[1] = std::distance(age_names.begin(), age_max_iterator);
     }
     else {
-        Rcpp::stop("max_age in control not found in dimnames of FLBiol\n");
+        Rcpp::stop("maxAge in control not found in dimnames of FLBiol\n");
     }
     return age_range_indices;
 }
-*/
 
 
-/*
-FLQuantAdolc operatingModel::eval_target(const int target_no) const {
+FLQuantAD operatingModel::eval_target(const int target_no) const {
     // Scrape biol, fishery and catch no from the control object
     // For the time being, assume that biol_no = 1, and fishery and catch are NA (i.e. all)
     const int biol_no = 1;
     fwdControlTargetType target_type = ctrl.get_target_type(target_no);
     Rcpp::IntegerVector age_range_indices;
-    FLQuantAdolc out;
+    FLQuantAD out;
     // Get the output depending on target type
     switch(target_type){
         case target_f:
@@ -440,9 +437,7 @@ FLQuantAdolc operatingModel::eval_target(const int target_no) const {
     }
     return out;
 }
-*/
 
-/*
 // Similar to fwdControl::get_target_value but calcs value from relative values
 // gets all iters. col: 1 = min, 2 = value, 3 = max
 std::vector<double> operatingModel::calc_target_value(const int target_no) const{
@@ -465,11 +460,13 @@ std::vector<double> operatingModel::calc_target_value(const int target_no) const
     if (!target_rel_year_na){
         Rprintf("Relative target\n");
         // Get the value we are relative to from the operatingModel
-        FLQuantAdolc rel_value = eval_target(target_no);
+        FLQuantAD rel_value = eval_target(target_no);
         // Modify it by the relative amount
         double rel_single_value = 0.0;
         for (unsigned int iter_count = 0; iter_count < value.size(); ++iter_count){
-            rel_single_value = rel_value(1,target_rel_year,1,target_rel_season, 1, iter_count+1).value();
+            //rel_single_value = rel_value(1,target_rel_year,1,target_rel_season, 1, iter_count+1).value();
+            // if rel single value depends on fmult then we cannot use Value() (http://www.coin-or.org/CppAD/Doc/value.cpp.xml)
+            rel_single_value = Value(rel_value(1,target_rel_year,1,target_rel_season, 1, iter_count+1));
             value[iter_count] = value[iter_count] * rel_single_value;
             min_value[iter_count] = min_value[iter_count] * rel_single_value;
             max_value[iter_count] = max_value[iter_count] * rel_single_value;
@@ -483,9 +480,10 @@ std::vector<double> operatingModel::calc_target_value(const int target_no) const
     // As all iterations should be either NA or a real value, just check the first iteration
     if(Rcpp::NumericVector::is_na(value[0])){
         // Annoyingly eval_target returns adouble, so we need to take the value
-        FLQuantAdolc value_ad = eval_target(target_no);
+        FLQuantAD value_ad = eval_target(target_no);
         for (unsigned int iter_count = 0; iter_count < value.size(); ++iter_count){
-            value[iter_count] = value_ad(1, target_year, 1, target_season, 1, iter_count+1).value();
+            //value[iter_count] = value_ad(1, target_year, 1, target_season, 1, iter_count+1).value();
+            value[iter_count] = Value(value_ad(1, target_year, 1, target_season, 1, iter_count+1));
         }
     }
     // If first iter of min_value is NA, then all of them are
@@ -510,7 +508,6 @@ std::vector<double> operatingModel::calc_target_value(const int target_no) const
     }
     return value;
 }
-*/
 
 void operatingModel::run(){
 
@@ -552,9 +549,12 @@ void operatingModel::run(){
     //std::vector<double> error(niter,0.0);
     //std::vector<adouble> target_value_hat(niter,0.0);
     //FLQuantAdolc target_value_hat_flq;
-    //std::vector<double> target_value(niter, 0.0); 
+    std::vector<double> target_value(niter, 0.0); //  Length will vary depending on no. simultaneous targets
     //int nr_out = 0;
-
+    
+    // Length of error will vary depending on no. simultaneous targets
+    // Initialise with 1 so we pass the first check for NR
+    std::vector<CppAD::AD<double> > error(niter, 1.0); 
 
     //for (int target_count = 1; target_count <= ntarget; ++target_count){
     int target_count = 1;
@@ -565,18 +565,29 @@ void operatingModel::run(){
         target_year = ctrl.get_target_year(target_count);
         target_season = ctrl.get_target_season(target_count);
         year_season_to_timestep(target_year, target_season, biol.n(), target_timestep);
+        Rprintf("target_year: %i\n", target_year);
+        Rprintf("target_season: %i\n", target_season);
+        Rprintf("target_timestep: %i\n", target_timestep);
         // Get timestep, year, season of which F to adjust
-//        target_fmult_timestep = get_target_fmult_timestep(target_count);
-//        timestep_to_year_season(target_fmult_timestep, biol.n(), target_fmult_year, target_fmult_season);
-//        Rprintf("target_fmult_year: %i\n", target_fmult_year);
-//        Rprintf("target_fmult_season: %i\n", target_fmult_season);
-//        Rprintf("target_fmult_timestep: %i\n", target_fmult_timestep);
-//
-//        // Get the value that we are trying to hit
-//        // This either comes directly from the control object
-//        // or is calculated if not a min / max or rel value)
-//        target_value = calc_target_value(target_count); 
+        target_fmult_timestep = get_target_fmult_timestep(target_count);
+        timestep_to_year_season(target_fmult_timestep, biol.n(), target_fmult_year, target_fmult_season);
+        Rprintf("target_fmult_year: %i\n", target_fmult_year);
+        Rprintf("target_fmult_season: %i\n", target_fmult_season);
+        Rprintf("target_fmult_timestep: %i\n", target_fmult_timestep);
 
+        // Get the value that we are trying to hit
+        // This either comes directly from the control object
+        // or is calculated if not a min / max or rel value)
+//
+//        f = f * fmult
+//        project
+//        
+
+//        target_value = calc_target_value(target_count); 
+        // target_value_hat_flq = eval_target(target_count);
+        // Could put all this in a calc_error() method
+        // error = target_value_hat - target_value
+        // CppAD::ADFun<double> fun(fmult, error);
 // }
 
 
@@ -960,26 +971,25 @@ adouble operatingModel::ssb(const int year, const int unit, const int season, co
     adouble out = full_ssb(1,year,unit,season,area,iter);
     return out;
 }
-/*
 // Total biomass at the beginning of the timestep
 // biol_no not currently used
-FLQuantAdolc operatingModel::biomass(const int biol_no) const {
-    FLQuantAdolc biomass = quant_sum(biol.n() * biol.wt());
+FLQuantAD operatingModel::biomass(const int biol_no) const {
+    FLQuantAD biomass = quant_sum(biol.n() * biol.wt());
     return biomass;
 }
 
-FLQuantAdolc operatingModel::fbar(const Rcpp::IntegerVector age_range_indices, const int fishery_no, const int catch_no, const int biol_no) const{
+FLQuantAD operatingModel::fbar(const Rcpp::IntegerVector age_range_indices, const int fishery_no, const int catch_no, const int biol_no) const{
     Rcpp::IntegerVector fdim = f(fishery_no).get_dim();
-    FLQuantAdolc f_age_trim = f(fishery_no)(age_range_indices[0]+1, age_range_indices[1]+1, 1, fdim[1], 1, fdim[2], 1, fdim[3], 1, fdim[4], 1, fdim[5]);  // subsetting
-    FLQuantAdolc fbar_out = quant_mean(f_age_trim);
+    FLQuantAD f_age_trim = f(fishery_no)(age_range_indices[0]+1, age_range_indices[1]+1, 1, fdim[1], 1, fdim[2], 1, fdim[3], 1, fdim[4], 1, fdim[5]);  // subsetting
+    FLQuantAD fbar_out = quant_mean(f_age_trim);
     return fbar_out;
 
 }
 
 // Assume that catch is catches[[1]] for the moment
-FLQuantAdolc operatingModel::fbar(const Rcpp::IntegerVector age_range_indices, const int biol_no) const{
+FLQuantAD operatingModel::fbar(const Rcpp::IntegerVector age_range_indices, const int biol_no) const{
     //// Make an empty FLQ with the right dims - based on the first fishery
-    FLQuantAdolc fbar_out = fbar(age_range_indices, 1,1,biol_no);
+    FLQuantAD fbar_out = fbar(age_range_indices, 1,1,biol_no);
     for (unsigned int fishery_count = 2; fishery_count <= fisheries.get_nfisheries(); ++fishery_count){
         fbar_out = fbar_out + fbar(age_range_indices, fishery_count,1,biol_no);
     }
@@ -987,21 +997,20 @@ FLQuantAdolc operatingModel::fbar(const Rcpp::IntegerVector age_range_indices, c
 }
 
 // Catch of a particular fishery
-FLQuantAdolc operatingModel::catches(const int fishery_no, const int catch_no, const int biol_no) const{
+FLQuantAD operatingModel::catches(const int fishery_no, const int catch_no, const int biol_no) const{
     return fisheries(fishery_no, catch_no).catches();
 }
 
 // Total catch from an FLBiol
 // Assumes the catch is the first FLCatch in the FLFishery
-FLQuantAdolc operatingModel::catches(const int biol_no) const{
+FLQuantAD operatingModel::catches(const int biol_no) const{
     // Get the catch from the first fishery
-    FLQuantAdolc catches_out = catches(1,1,biol_no);
+    FLQuantAD catches_out = catches(1,1,biol_no);
     for (unsigned int fishery_count = 2; fishery_count <= fisheries.get_nfisheries(); ++fishery_count){
         catches_out = catches_out + catches(fishery_count,1,biol_no);
     }
     return catches_out;
 }
-*/
 
 
 /*----------------------------------------------------------------------------------*/
