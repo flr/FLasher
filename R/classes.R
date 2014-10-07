@@ -16,7 +16,7 @@ setClass('fwdElement',
 	prototype(
 		element=data.frame(year=1, quantity=factor(NA, levels=FLasher:::qlevels),
 			min=as.numeric(NA), value=0, max=as.numeric(NA), season='all',
-			area='unique', unit='all', relYear=as.numeric(NA), relSeason='NA', 
+			area='unique', unit='all', relYear=as.integer(NA), relSeason=as.integer(NA), 
 			#relArea='NA', relUnit='NA', # commented out for now - we don't do areas or units yet
             stringsAsFactors=FALSE),
 		iters=array(NA, dimnames=list(row=1, val=c('min', 'value', 'max'), iter=1),
