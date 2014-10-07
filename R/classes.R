@@ -6,7 +6,7 @@
 # Soundtrack:
 # Notes:
 
-qlevels <-  c('f', 'catch', 'ssb', 'landings', 'discards', 'tsb', 'rec')
+qlevels <-  c('f', 'catch', 'ssb', 'biomass', 'landings', 'discards', 'tsb', 'rec')
 
 # fwdElement class {{{
 setClass('fwdElement',
