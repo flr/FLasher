@@ -311,64 +311,64 @@ test_that("operatingModel SSB methods", {
 #    # What about SRR on a different timestep
 #})
 #
-#
-## Biomass, SSB and other abundance based targets need to change F in the previous timestep
-#test_that("operatingModel get_target_fmult_timestep",{
-#    # Make an FLFishery with X FLFishery objects. Each FLFishery has an FLCatch that catches the FLBiol
-#    # This is all a massive faff
-#    # Have at least 5 years and 10 ages, random number of seasons
-#    nyears <- 10
-#    flq <- random_FLQuant_generator(fixed_dim=c(10,nyears,NA,NA,NA,NA), sd=1)
-#    # Single FLBiol
-#    flb <- random_FLBiol_generator(fixed_dims = dim(flq), sd = 1 )
-#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=5, min_catches = 1, max_catches = 3, sd=1)
-#    # Each element of F is F from an FLCatch attacking the same FLBiol
-#    f <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq), sd=1)
-#    f <- lapply(f,abs)
-#    f_spwn <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq), sd=1)
-#    f_spwn <- lapply(f_spwn,abs)
-#    # SRR bits
-#    srr_model_name <- "ricker"
-#    params_sr <- as.FLQuant(FLPar(a=10, b = 4))
-#    residuals_sr <- flq[1,]
-#    residuals_mult <- TRUE
-#    srr_timelag <- 1
-#
-#    fc <- dummy_fwdControl_generator(years = 1:6, niters = dim(n(flb))[6])
-#    fc@target$season <- round(runif(dim(fc@target)[1], min = 1, max = dim(flq)[4]))
-#    fc@target[2,"quantity"] <- "catch"
-#    fc@target[3,"quantity"] <- "ssb"
-#    fc@target[4,"quantity"] <- "biomass"
-#
-#    target_no <- 1
-#    fmult_timestep <- test_operatingModel_get_target_fmult_timestep(flfs, flb, srr_model_name, params_sr, srr_timelag, residuals_sr, residuals_mult, f, f_spwn, fc, target_no)
-#    year <- fc@target[target_no,"year"]
-#    season <- fc@target[target_no,"season"]
-#    ctrl_timestep <- as.integer((year-1) * dim(flq)[4] + season)
-#    expect_that(fmult_timestep, is_identical_to(ctrl_timestep))
-#
-#    target_no <- 2
-#    fmult_timestep <- test_operatingModel_get_target_fmult_timestep(flfs, flb, srr_model_name, params_sr, srr_timelag, residuals_sr, residuals_mult, f, f_spwn, fc, target_no)
-#    year <- fc@target[target_no,"year"]
-#    season <- fc@target[target_no,"season"]
-#    ctrl_timestep <- as.integer((year-1) * dim(flq)[4] + season)
-#    expect_that(fmult_timestep, is_identical_to(ctrl_timestep))
-#
-#    target_no <- 3
-#    fmult_timestep <- test_operatingModel_get_target_fmult_timestep(flfs, flb, srr_model_name, params_sr, srr_timelag, residuals_sr, residuals_mult, f, f_spwn, fc, target_no)
-#    year <- fc@target[target_no,"year"]
-#    season <- fc@target[target_no,"season"]
-#    ctrl_timestep <- as.integer((year-1) * dim(flq)[4] + season)
-#    expect_that(fmult_timestep, is_identical_to(ctrl_timestep-1L))
-#
-#    target_no <- 4
-#    fmult_timestep <- test_operatingModel_get_target_fmult_timestep(flfs, flb, srr_model_name, params_sr, srr_timelag, residuals_sr, residuals_mult, f, f_spwn, fc, target_no)
-#    year <- fc@target[target_no,"year"]
-#    season <- fc@target[target_no,"season"]
-#    ctrl_timestep <- as.integer((year-1) * dim(flq)[4] + season)
-#    expect_that(fmult_timestep, is_identical_to(ctrl_timestep-1L))
-#})
-#
+
+# Biomass, SSB and other abundance based targets need to change F in the previous timestep
+test_that("operatingModel get_target_fmult_timestep",{
+    # Make an FLFishery with X FLFishery objects. Each FLFishery has an FLCatch that catches the FLBiol
+    # This is all a massive faff
+    # Have at least 5 years and 10 ages, random number of seasons
+    nyears <- 10
+    flq <- random_FLQuant_generator(fixed_dim=c(10,nyears,NA,NA,NA,NA), sd=1)
+    # Single FLBiol
+    flb <- random_FLBiol_generator(fixed_dims = dim(flq), sd = 1 )
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=5, min_catches = 1, max_catches = 3, sd=1)
+    # Each element of F is F from an FLCatch attacking the same FLBiol
+    f <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq), sd=1)
+    f <- lapply(f,abs)
+    f_spwn <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq), sd=1)
+    f_spwn <- lapply(f_spwn,abs)
+    # SRR bits
+    srr_model_name <- "ricker"
+    params_sr <- as.FLQuant(FLPar(a=10, b = 4))
+    residuals_sr <- flq[1,]
+    residuals_mult <- TRUE
+    srr_timelag <- 1
+
+    fc <- dummy_fwdControl_generator(years = 1:6, niters = dim(n(flb))[6])
+    fc@target@element$season <- round(runif(dim(fc@target@element)[1], min = 1, max = dim(flq)[4]))
+    fc@target@element[2,"quantity"] <- "catch"
+    fc@target@element[3,"quantity"] <- "ssb"
+    fc@target@element[4,"quantity"] <- "biomass"
+
+    target_no <- 1 # F
+    fmult_timestep <- test_operatingModel_get_target_fmult_timestep(flfs, flb, srr_model_name, params_sr, srr_timelag, residuals_sr, residuals_mult, f, f_spwn, fc, target_no)
+    year <- fc@target@element[target_no,"year"]
+    season <- fc@target@element[target_no,"season"]
+    ctrl_timestep <- as.integer((year-1) * dim(flq)[4] + season)
+    expect_that(fmult_timestep, is_identical_to(ctrl_timestep))
+
+    target_no <- 2 # Catch
+    fmult_timestep <- test_operatingModel_get_target_fmult_timestep(flfs, flb, srr_model_name, params_sr, srr_timelag, residuals_sr, residuals_mult, f, f_spwn, fc, target_no)
+    year <- fc@target@element[target_no,"year"]
+    season <- fc@target@element[target_no,"season"]
+    ctrl_timestep <- as.integer((year-1) * dim(flq)[4] + season)
+    expect_that(fmult_timestep, is_identical_to(ctrl_timestep))
+
+    target_no <- 3 # SSB
+    fmult_timestep <- test_operatingModel_get_target_fmult_timestep(flfs, flb, srr_model_name, params_sr, srr_timelag, residuals_sr, residuals_mult, f, f_spwn, fc, target_no)
+    year <- fc@target@element[target_no,"year"]
+    season <- fc@target@element[target_no,"season"]
+    ctrl_timestep <- as.integer((year-1) * dim(flq)[4] + season)
+    expect_that(fmult_timestep, is_identical_to(ctrl_timestep-1L))
+
+    target_no <- 4 # Biomass
+    fmult_timestep <- test_operatingModel_get_target_fmult_timestep(flfs, flb, srr_model_name, params_sr, srr_timelag, residuals_sr, residuals_mult, f, f_spwn, fc, target_no)
+    year <- fc@target@element[target_no,"year"]
+    season <- fc@target@element[target_no,"season"]
+    ctrl_timestep <- as.integer((year-1) * dim(flq)[4] + season)
+    expect_that(fmult_timestep, is_identical_to(ctrl_timestep-1L))
+})
+
 #test_that("operatingModel target values and eval_target method", {
 #    # Make an FLFishery with X FLFishery objects. Each FLFishery has an FLCatch that catches the FLBiol
 #    # This is all a massive faff

@@ -1585,3 +1585,7 @@ test_operatingModel_SSB_single_iter_year_season <- function(flfs, flb_sexp, mode
     .Call('FLasher_test_operatingModel_SSB_single_iter_year_season', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, year, unit, season, area, iter, ctrl)
 }
 
+test_operatingModel_get_target_fmult_timestep <- function(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, target_no) {
+    .Call('FLasher_test_operatingModel_get_target_fmult_timestep', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, target_no)
+}
+

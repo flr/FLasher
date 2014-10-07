@@ -68,7 +68,7 @@ class operatingModel {
         //void update_from_ad_members(const int timestep);
         
         // Timestep in which to use fmult to affect the target value
-        // int get_target_fmult_timestep(const int target_no);
+        int get_target_fmult_timestep(const int target_no);
         
         /*
         // age range indices for the f based targets

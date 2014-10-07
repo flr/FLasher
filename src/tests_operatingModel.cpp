@@ -182,7 +182,7 @@ Rcpp::List test_operating_model_targets(FLFisheriesAD flfs, SEXP flb_sexp, const
                             Rcpp::Named("ssb",ssb_out));
 }
 
-
+*/
 // [[Rcpp::export]]
 int test_operatingModel_get_target_fmult_timestep(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl, const int target_no){
     fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
@@ -190,6 +190,7 @@ int test_operatingModel_get_target_fmult_timestep(FLFisheriesAD flfs, SEXP flb_s
     return om.get_target_fmult_timestep(target_no);
 }
 
+/*
 //// Evaluate by target no
 //// [[Rcpp::export]]
 //std::vector<double> test_operatingModel_eval_target(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl, const int target_no, const int min_iter, const int max_iter){

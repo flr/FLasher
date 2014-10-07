@@ -256,20 +256,22 @@ void operatingModel::update_from_ad_members(const int timestep){
 }
 */
 
-/*
-// the timestep that fmult affects to calculate the target value
+// The timestep that fmult affects to calculate the target value
+// e.g. if Biomass is target, then adjust the fmult in the previous timestep
+// Add more target types to it
 int operatingModel::get_target_fmult_timestep(const int target_no){
     fwdControlTargetType target_type = ctrl.get_target_type(target_no);
     int target_year = ctrl.get_target_year(target_no);
     int target_season = ctrl.get_target_season(target_no);
     int target_timestep = 0;
     year_season_to_timestep(target_year, target_season, biol.n(), target_timestep);
-    if((target_type == target_ssb) || (target_type == target_biomass)){
+    // Biomass timesteps
+    if((target_type == target_ssb) ||
+       (target_type == target_biomass)){
         target_timestep = target_timestep - 1;
     }
     return target_timestep;
 }
-*/
 
 
 void operatingModel::project_timestep(const int timestep){
@@ -282,7 +284,7 @@ void operatingModel::project_timestep(const int timestep){
     int ssb_season = 0;
     timestep_to_year_season(timestep, biol.n(), year, season);
     timestep_to_year_season(timestep+1, biol.n(), next_year, next_season); 
-    
+
     // Dims for getting time slices
     Rcpp::IntegerVector biol_dim = biol.m().get_dim();
     // CAREFUL WITH NUMBER OF ITERS
@@ -290,6 +292,11 @@ void operatingModel::project_timestep(const int timestep){
     unsigned int unit = 1;
     unsigned int area = 1;
     unsigned int biol_no = 1;
+
+    // timestep checks
+    if ((year > biol_dim[1]) | (season > biol_dim[3])){
+        Rcpp::stop("project_timestep: timestep outside of range");
+    }
 
     // Total F from all fisheries - just get a timestep to reduce memory overload
     FLQuantAD total_f = f(1)(1, biol_dim[0], year, year, 1, biol_dim[2], season, season, 1, biol_dim[4], 1, biol_dim[5]);
@@ -319,163 +326,49 @@ void operatingModel::project_timestep(const int timestep){
         }
     }
 
-    // Get the year and season of the SSB that will result in recruitment in the next timestep
-    // Add one to timestep because we are getting the recruitment in timestep+1
-    timestep_to_year_season(timestep - biol.srr.get_timelag() + 1, biol.n(), ssb_year, ssb_season);
-    // Get SSB - all iters and years etc - could be more efficient
-    FLQuantAD ssb_flq= ssb(biol_no);
-    // Then update biol in next timestep
-    // next n = current n * exp(-z)
-    // Check if timestep is the final timestep - if so, don't update biol
-    adouble rec_temp = 0.0;
-    adouble ssb_temp = 0.0;
-    for (int iter_count = 1; iter_count <= niter; ++iter_count){
-        // Recruitment
-        // rec is calculated in a scalar way - i.e. not passing it a vector of SSBs, so have to do one iter at a time
-        ssb_temp = ssb_flq(1,ssb_year,1,ssb_season,1,iter_count);
-        Rprintf("year: %i, season: %i, ssb_year: %i, ssb_season: %i, ssb_temp: %f\n", year, season, ssb_year, ssb_season, Value(ssb_temp));
-        rec_temp = biol.srr.eval_model(ssb_temp, next_year, 1, next_season, 1, iter_count);
-        // Apply the residuals to rec_temp
-        // Use of if statement is OK because for each taping it will only branch the same way (depending on residuals_mult)
-        if (biol.srr.get_residuals_mult()){
-            rec_temp = rec_temp * biol.srr.get_residuals()(1,next_year,1,next_season,1,iter_count);
+
+    // Update biol in next timestep only if within time range
+    if ((next_year <= biol_dim[1]) & (next_season <= biol_dim[3])){
+        // Get the year and season of the SSB that will result in recruitment in the next timestep
+        // Add one to timestep because we are getting the recruitment in timestep+1
+        int ssb_timestep = timestep - biol.srr.get_timelag() + 1;
+        if (ssb_timestep < 1){
+            Rcpp::stop("project_timestep: ssb timestep outside of range");
         }
-        else{
-            rec_temp = rec_temp + biol.srr.get_residuals()(1,next_year,1,next_season,1,iter_count);
+        timestep_to_year_season(ssb_timestep, biol.n(), ssb_year, ssb_season);
+        // Get SSB - all iters and years etc - could be more efficient
+        FLQuantAD ssb_flq= ssb(biol_no);
+        // Then update biol in next timestep
+        // next n = current n * exp(-z)
+        // Check if timestep is the final timestep - if so, don't update biol
+        adouble rec_temp = 0.0;
+        adouble ssb_temp = 0.0;
+        for (int iter_count = 1; iter_count <= niter; ++iter_count){
+            // Recruitment
+            // rec is calculated in a scalar way - i.e. not passing it a vector of SSBs, so have to do one iter at a time
+            ssb_temp = ssb_flq(1,ssb_year,1,ssb_season,1,iter_count);
+            //Rprintf("year: %i, season: %i, ssb_year: %i, ssb_season: %i, ssb_temp: %f\n", year, season, ssb_year, ssb_season, Value(ssb_temp));
+            rec_temp = biol.srr.eval_model(ssb_temp, next_year, 1, next_season, 1, iter_count);
+            // Apply the residuals to rec_temp
+            // Use of if statement is OK because for each taping it will only branch the same way (depending on residuals_mult)
+            if (biol.srr.get_residuals_mult()){
+                rec_temp = rec_temp * biol.srr.get_residuals()(1,next_year,1,next_season,1,iter_count);
+            }
+            else{
+                rec_temp = rec_temp + biol.srr.get_residuals()(1,next_year,1,next_season,1,iter_count);
+            }
+            biol.n()(1, next_year, 1, next_season, 1, iter_count) = rec_temp;
+            for (int quant_count = 1; quant_count < max_quant; ++quant_count){
+                biol.n()(quant_count+1, next_year, 1, next_season, 1, iter_count) = biol.n()(quant_count, year, 1, season, 1, iter_count) * exp(-z(quant_count,1,1,1,1,iter_count));
+            }
+            // plus group - assume last age is a plusgroup
+            biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) = biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) + (biol.n()(max_quant, year, 1, season, 1, iter_count) * exp(-z(max_quant, 1, 1, 1, 1, iter_count)));
         }
-        biol.n()(1, next_year, 1, next_season, 1, iter_count) = rec_temp;
-        for (int quant_count = 1; quant_count < max_quant; ++quant_count){
-            biol.n()(quant_count+1, next_year, 1, next_season, 1, iter_count) = biol.n()(quant_count, year, 1, season, 1, iter_count) * exp(-z(quant_count,1,1,1,1,iter_count));
-        }
-        // plus group - assume last age is a plusgroup
-        biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) = biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) + (biol.n()(max_quant, year, 1, season, 1, iter_count) * exp(-z(max_quant, 1, 1, 1, 1, iter_count)));
     }
 
     Rprintf("Leaving project_timestep\n");
     return; 
 }
-/*-------------------- slice project ----------------------*/
-/*
-// Currently only for a single biol and a single catch
-// Updates catch in timestep and biol in timestep+1
-// Timestep is based on year / season
-// The components of an operatingNodel (Biol and Fisheries) should all have the same time dims
-void operatingModel::project_timestep(const int timestep){
-
-//clock_t start_time;
-//clock_t end_time;
-//clock_t clk1;
-//clock_t clk2;
-//clock_t clk3;
-//
-//
-//start_time = clock();
-
-    // Check iters
-    if (min_iter < 1){
-        Rcpp::stop("project_timestep: min_iter is less than 1\n");
-    }
-    if (max_iter > n.get_niter()){
-        Rcpp::stop("project_timestep: max_iter is greater than number of iters\n");
-    }
-
-    // In preparation for multiple fisheries and catches!
-    int catches_count = 1;
-    int biol_no = 1;
-
-    // Time indices
-    int year = 0;
-    int season = 0;
-    int next_year = 0;
-    int next_season = 0;
-    int ssb_year = 0;
-    int ssb_season = 0;
-    timestep_to_year_season(timestep, biol.n(), year, season);
-    timestep_to_year_season(timestep+1, biol.n(), next_year, next_season); 
-
-    adouble rec_temp = 0.0;
-    adouble ssb_temp = 0.0;
-    FLQuantAD ssb_flq;
-    const int max_quant = fad(1).get_nquant();
-
-    FLQuantAD discards_ratio_temp; // DN / (DN + LN)
-    FLQuantAD total_fad = fad(1);
-    // Total F from all fisheries
-    for (int fisheries_count = 2; fisheries_count <= fisheries.get_nfisheries(); ++ fisheries_count){
-        total_fad += fad(fisheries_count);
-    }
-    // Total mortality on the biol (adjust when multiple biols)
-    Rcpp::IntegerVector biol_dim = biol.m().get_dim();
-    FLQuantAD z = biol.m()(1, biol_dim[0], year, year, 1, biol_dim[2], season, season, 1, biol_dim[4], 1, biol_dim[5]) + total_fad;
-    FLQuant current_n = biol.n()(1, biol_dim[0], year, year, 1, biol_dim[2], season, season, 1, biol_dim[4], 1, biol_dim[5]);
-    FLQuantAD catch_temp;
-
-    // Get landings and discards for each fishery
-    for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++ fisheries_count){
-        // Need to make sure that discards_n and landings_n hold the current timestep data
-        discards_ratio_temp = discards_n(fisheries_count) / (discards_n(fisheries_count) + landings_n(fisheries_count));
-        catch_temp = (fad(fisheries_count) / z) * (1.0 - exp(-1.0 * z)) * current_n;
-        landings_n(fisheries_count) = (1.0 - discards_ratio_temp) * catch_temp;
-        discards_n(fisheries_count) = discards_ratio_temp * catch_temp;
-    }
-
-    // Figure out recruitment
-    // Get the year and season of the SSB that will result in recruitment in the next timestep
-    // Add one to timestep because we are getting the recruitment in timestep+1
-    timestep_to_year_season(timestep - biol.srr.get_timelag() + 1, biol.n(), ssb_year, ssb_season);
-    // Get SSB - all iters and years etc - could be more efficient
-    //ssb_flq = ssb(biol_no);
-
-    // Update biology
-    // next n = current n * exp(-z)
-    // Need to loop over ages as ages shift - and therefore we need an iter loop to (subsetting not that sophisticated)
-    for (int iter_count = 1; iter_count <= biol.n().get_niter(); ++iter_count){
-        for (int quant_count = 1; quant_count < max_quant; ++quant_count){
-            n(quant_count+1, 1, 1, 1, 1, iter_count) = current_n(quant_count, 1, 1, 1, 1, iter_count) * exp(-z(quant_count, 1, 1, 1, 1, iter_count));
-        }
-        // plus group - assume last age is a plusgroup
-        n(max_quant, 1, 1, 1, 1, iter_count) = n(max_quant, 1, 1, 1, 1, iter_count) + (current_n(max_quant, 1, 1, 1, 1, iter_count) * exp(-z(max_quant, 1, 1, 1, 1, iter_count)));
-    }
-
-
-
-        // Loop over iters - or should we do iter in Run loop?
-    // Get the year and season of the SSB that results in recruitment in the next timestep
-    // Calculate the SSB that will lead to the recruitment in the NEXT TIME STEP, 
-
-    // Update population section
-    for (int iter_count = min_iter; iter_count <= max_iter; ++iter_count){
-        ssb_temp = ssb_flq(1,ssb_year,1,ssb_season,1,iter_count);
-        // Get the recruitment - year and season passed in for time varying SRR parameters
-        rec_temp = biol.srr.eval_model(ssb_temp, next_year, 1, next_season, 1, iter_count);
-        // Apply the residuals to rec_temp
-        // Use of if statement is OK because for each taping it will only branch the same way (depending on residuals_mult)
-        if (biol.srr.get_residuals_mult()){
-            rec_temp = rec_temp * biol.srr.get_residuals()(1,next_year,1,next_season,1,iter_count);
-        }
-        else{
-            rec_temp = rec_temp + biol.srr.get_residuals()(1,next_year,1,next_season,1,iter_count);
-        }
-        n(1, 1, 1, 1, 1, iter_count) = rec_temp;
-
-        // Get total F - 
-
-        for (int quant_count = 1; quant_count < max_quant; ++quant_count){
-            z =  f(quant_count, year, 1, season, 1, iter_count,1) + biol.m()(quant_count, year, 1, season, 1, iter_count);
-            biol.n()(quant_count+1, next_year, 1, next_season, 1, iter_count) = biol.n()(quant_count, year, 1, season, 1, iter_count) * exp(-z);
-        }
-        // Assume the last age is a plus group
-        z =  f(max_quant, year, 1, season, 1, iter_count, 1) + biol.m()(max_quant, year, 1, season, 1, iter_count);
-        biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) = biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) + (biol.n()(max_quant, year, 1, season, 1, iter_count) * exp(-z));
-    }
-
-
-//end_time = clock();
-//Rprintf("Time in project: %f\n", (float)(end_time - start_time)/CLOCKS_PER_SEC);
-    return;
-}
-*/
-
 
 
 /*
@@ -623,15 +516,86 @@ void operatingModel::run(){
 
     Rprintf("In run\n");
 
+// No of targets
+// Target loop
+// No of simultaneous targets in that target ( = 1)
+// get timestep of target
+// no_fmults = no_sim_targets
+// fmults = 1 (grow or shrink fmult as no sim targets changes)
+// turn on tape
+// f = f * fmult
+// calc error = target_value (from control)  - target_hat_value (in object)
+//     Need calc_error method
+//         target_value method
+//         target_hat_value method
+// solve
+// project again
+
+    const unsigned int ntarget = ctrl.get_ntarget();
+    const unsigned int nsim_targets = 1; // Simultaneous targets - fix at 1 for now - will change with target number
+    const unsigned int niter = ctrl.get_niter(); // number of iters taken from control object - not from Biol or Fisheries
+    int target_year = 0;
+    int target_season = 0;
+    int target_timestep = 0;
+    // The timestep of F that we need to multiply to get the target.
+    // e.g. target is 'catch', target_fmult_timestep is the same as the timestep in the control object
+    // if target is 'biomass' target_fmult_timestep will be the year before the timestep in the control object
+    int target_fmult_timestep = 0;
+    int target_fmult_year = 0;
+    int target_fmult_season = 0;
+
+    // independent variables
+    double fmult_initial = 1; 
+    std::vector<adouble> fmult_ad(niter,fmult_initial); // Length will vary depending on no. simultaneous targets
+    //std::vector<double> fmult(niter,fmult_initial); // For the solver
+    // dependent variables
+    //std::vector<double> error(niter,0.0);
+    //std::vector<adouble> target_value_hat(niter,0.0);
+    //FLQuantAdolc target_value_hat_flq;
+    //std::vector<double> target_value(niter, 0.0); 
+    //int nr_out = 0;
+
+
+    //for (int target_count = 1; target_count <= ntarget; ++target_count){
+    int target_count = 1;
+    // Get number of simultaneous targets in that target
+        Rprintf("\nResolving target: %i\n", target_count);
+
+        // What time step are we hitting this target?
+        target_year = ctrl.get_target_year(target_count);
+        target_season = ctrl.get_target_season(target_count);
+        year_season_to_timestep(target_year, target_season, biol.n(), target_timestep);
+        // Get timestep, year, season of which F to adjust
+//        target_fmult_timestep = get_target_fmult_timestep(target_count);
+//        timestep_to_year_season(target_fmult_timestep, biol.n(), target_fmult_year, target_fmult_season);
+//        Rprintf("target_fmult_year: %i\n", target_fmult_year);
+//        Rprintf("target_fmult_season: %i\n", target_fmult_season);
+//        Rprintf("target_fmult_timestep: %i\n", target_fmult_timestep);
+//
+//        // Get the value that we are trying to hit
+//        // This either comes directly from the control object
+//        // or is calculated if not a min / max or rel value)
+//        target_value = calc_target_value(target_count); 
+
+// }
+
+
+
+    
+
+
+
+
+
     // What timestep do we need to project over
-    int target_timestep = 10;
+    //int target_timestep = 10;
     int year = 0;
     int season = 0;
     timestep_to_year_season(target_timestep, biol.n(), year, season);
     Rprintf("year %i\n", year);
     Rprintf("season %i\n", season);
 
-    int niter = biol.n().get_niter();
+    //int niter = biol.n().get_niter();
 
     int nfmult = 1; // The number of fmults that we solve at a time be careful with this
 
