@@ -35,6 +35,7 @@ template void year_season_to_timestep(const int year, const int season, const FL
 template void timestep_to_year_season(const int timestep, const FLQuant_base<double>& flq, int& year, int& season);
 template void timestep_to_year_season(const int timestep, const FLQuant_base<adouble>& flq, int& year, int& season);
 
+/*
 double euclid_norm(double* x, const int size_x){
     double xsum = 0;
     for (int i=0; i<size_x; ++i){
@@ -43,6 +44,14 @@ double euclid_norm(double* x, const int size_x){
     xsum = sqrt(xsum);
     return xsum;
 }
+*/
+
+double euclid_norm(std::vector<double> x){
+    double xsum = std::inner_product(x.begin(), x.end(), x.begin(), 0.0);
+    xsum = sqrt(xsum);
+    return xsum;
+}
+
 
 /*
 int newton_raphson(std::vector<double>& indep, const int adolc_tape, const int max_iters, const double max_limit, const double tolerance){
@@ -93,6 +102,73 @@ int newton_raphson(std::vector<double>& indep, const int adolc_tape, const int m
 }
 */
 
+// We should offer the option of doing iterations in chunks - i.e. if 5000 iters, do 1000 at a time else Jacobian becomes massive and we hit memory problems
+// And we need to make sure that solving for multiple targets (e.g. if two fleets and we have two fmults) works
+// So we pass in the number of iterations we want to solve, and how many simultaneous targets there in that iteration, i.e. the dimension of the problem
+// As each iteration is indpendent, we solve each iteration of simultaneous targets separately
+int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const int niter, const int nsim_targets, const int max_iters, const double max_limit, const double tolerance){
+    // Check that product of niter and nsim_targets = length of indep (otherwise something has gone wrong)
+    if (indep.size() != (niter * nsim_targets)){
+        Rcpp::stop("In newton_raphson: length of indep does not equal product of niter and nsim_targets\n");
+    }
+
+    double logdet = 0.0;
+    std::vector<double> new_y(niter * nsim_targets, 1000.0);
+    std::vector<double> jac(niter * nsim_targets * niter * nsim_targets);
+    std::vector<double> small_jac(nsim_targets * nsim_targets);
+    std::vector<double> small_new_y(nsim_targets);
+    int jac_element = 0;
+    int nr_count = 0;
+    int reason_for_stopping = 0; // 0 - tolerance met; 1 - iter limit reached; 2 - max limit reached
+
+    // The while and break check should be within each iteration - not here
+    // Want to check each iteration and not fail if just one iteration fails
+
+    // while grad is not 0 (tol)
+    while(euclid_norm(new_y) > tolerance){
+        Rprintf("euclid_norm(new_y): %f\n", euclid_norm(new_y));
+        nr_count++;
+        Rprintf("nr_count: %i\n", nr_count);
+        if (euclid_norm(indep) >= max_limit){
+            reason_for_stopping = 2;
+            Rprintf("Exiting Newton-Raphson early as norm(indep) > max_limit.\n");
+            break;
+        }
+        if (nr_count > max_iters){
+            reason_for_stopping = 1;
+            Rprintf("Exiting Newton-Raphson early as max_iters exceeded.\n");
+            break;
+        }
+        // Update tape with new fmult
+        new_y = fun.Forward(0, indep);
+        // it's very sparse so use SparseJacobian - faster than Jacobian
+        jac = fun.SparseJacobian(indep);
+        Rprintf("Solving Jacobian\n");
+        // Each iteration is a distinct thing
+        // LU solving takes proportional to n^2 operations - so better to solve each iteration indepdently (despite overhead of setting it up)
+        // So here we solve each iteration seperately i.e. down the diagonal of the Jacobian
+        // We take a subsection of the Jacobian (down the diag) and solve that
+        // using LuSolve is excessive if each iteration only has 1 sim_target (which we do) - we can just 1 / x
+        for (int iter_count = 0; iter_count < niter; ++iter_count){
+            // load up small jac - need for loop for multiple targets
+            for(int jac_count_row = 0; jac_count_row < nsim_targets; ++jac_count_row){
+                small_new_y[jac_count_row] = new_y[iter_count * nsim_targets + jac_count_row];
+                for(int jac_count_col = 0; jac_count_col < nsim_targets; ++jac_count_col){
+                    jac_element = (iter_count * niter * nsim_targets * nsim_targets) + (iter_count * nsim_targets) + jac_count_row + (jac_count_col * niter * nsim_targets);
+                    small_jac[jac_count_row + (jac_count_col * nsim_targets)] = jac[jac_element];
+                }
+            }
+            // Add check here - if nsim_targets == 1, just 1 / 
+            CppAD::LuSolve(nsim_targets, nsim_targets, small_jac, small_new_y, small_new_y, logdet); 
+            // put small_new_y back into new_y - needs for loop for 
+            for(int jac_count = 0; jac_count < nsim_targets; ++jac_count){
+                new_y[iter_count * nsim_targets + jac_count] = small_new_y[jac_count];
+            }
+        }
+        std::transform(indep.begin(),indep.end(),new_y.begin(),indep.begin(),std::minus<double>());
+    }
+    return reason_for_stopping;
+}
 
 
 /*------------------------------------------------------------*/
@@ -544,20 +620,20 @@ void operatingModel::run(){
     // independent variables
     double fmult_initial = 1; 
     std::vector<adouble> fmult_ad(niter,fmult_initial); // Length will vary depending on no. simultaneous targets
-    //std::vector<double> fmult(niter,fmult_initial); // For the solver
+    std::vector<double> fmult(niter,fmult_initial); // For the solver
     // dependent variables
     //std::vector<double> error(niter,0.0);
     //std::vector<adouble> target_value_hat(niter,0.0);
-    //FLQuantAdolc target_value_hat_flq;
+    FLQuantAD target_value_hat_flq;
     std::vector<double> target_value(niter, 0.0); //  Length will vary depending on no. simultaneous targets
-    //int nr_out = 0;
+    int nr_out = 0;
     
     // Length of error will vary depending on no. simultaneous targets
     // Initialise with 1 so we pass the first check for NR
     std::vector<CppAD::AD<double> > error(niter, 1.0); 
 
-    //for (int target_count = 1; target_count <= ntarget; ++target_count){
-    int target_count = 1;
+    for (int target_count = 1; target_count <= ntarget; ++target_count){
+    //int target_count = 1;
     // Get number of simultaneous targets in that target
         Rprintf("\nResolving target: %i\n", target_count);
 
@@ -575,135 +651,57 @@ void operatingModel::run(){
         Rprintf("target_fmult_season: %i\n", target_fmult_season);
         Rprintf("target_fmult_timestep: %i\n", target_fmult_timestep);
 
-        // Get the value that we are trying to hit
-        // This either comes directly from the control object
-        // or is calculated if not a min / max or rel value)
-//
-//        f = f * fmult
-//        project
-//        
+        // Turn on tape
+        CppAD::Independent(fmult_ad);
+        Rprintf("Turned on tape\n");
+        // Update F with fmult_ad
+        // Update om.f = om.f * fmult in that year / season
+        for (int iter_count = 0; iter_count < niter; ++ iter_count){
+            for (int quant_count = 1; quant_count <= f(1).get_nquant(); ++quant_count){
+                f(quant_count,target_fmult_year,1,target_fmult_season,1,iter_count+1,1) = f(quant_count,target_fmult_year,1,target_fmult_season,1,iter_count+1,1) * fmult_ad[iter_count];
+            }
+        }
 
-//        target_value = calc_target_value(target_count); 
-        // target_value_hat_flq = eval_target(target_count);
+        // use target_fmult_timestep here
+        project_timestep(target_fmult_timestep); 
+
         // Could put all this in a calc_error() method
-        // error = target_value_hat - target_value
-        // CppAD::ADFun<double> fun(fmult, error);
-// }
-
-
-
-    
-
-
-
-
-
-    // What timestep do we need to project over
-    //int target_timestep = 10;
-    int year = 0;
-    int season = 0;
-    timestep_to_year_season(target_timestep, biol.n(), year, season);
-    Rprintf("year %i\n", year);
-    Rprintf("season %i\n", season);
-
-    //int niter = biol.n().get_niter();
-
-    int nfmult = 1; // The number of fmults that we solve at a time be careful with this
-
-    // Here we go
-    std::vector<CppAD::AD<double> > fmult(niter * nfmult, 1); // Set to 1
-    Rprintf("Turning on tape\n");
-    // Set independent
-    CppAD::Independent(fmult);
-    // Update F
-    for (int iter_count = 1; iter_count <= biol.n().get_niter(); ++iter_count){
-        for (int quant_count = 1; quant_count <= biol.n().get_nquant(); ++quant_count){
-            f(1)(quant_count, year, 1, season, 1, iter_count) = f(1)(quant_count, year, 1, season, 1, iter_count) * fmult[iter_count-1];
+        // Get the value that we are trying to hit (either comes directly from the control object  or is calculated if not a min / max or rel value)
+        target_value = calc_target_value(target_count); 
+        // What is the current value of the predicted target in the operatingModel
+        target_value_hat_flq = eval_target(target_count);
+        // Calculate the error term that we want to be 0
+        for (int iter_count = 0; iter_count < niter; ++ iter_count){
+            error[iter_count] = (target_value_hat_flq(1,target_year, 1, target_season, 1, iter_count+1) - target_value[iter_count]);
         }
-    }
 
-    // load the fad AD member
-    // load_ad_members(target_timestep);
-    // fad = fad * fmult
-    //
-    // Project all iters
-    project_timestep(target_timestep);
+        // Stop recording
+        CppAD::ADFun<double> fun(fmult_ad, error);
+        Rprintf("Turned off tape\n");
 
-    // Calc the output
-    std::vector<CppAD::AD<double> > catch_op(niter);
-    for (int iter_count = 1; iter_count <= biol.n().get_niter(); ++iter_count){
-        catch_op[iter_count-1] = 0.0;
-        for (int quant_count = 1; quant_count <= biol.n().get_nquant(); ++quant_count){
-            catch_op[iter_count-1] = catch_op[iter_count-1] +
-                (fisheries(1)(1).landings_n()(quant_count,year,1,season,1,iter_count) * fisheries(1)(1).landings_wt()(quant_count,year,1,season,1,iter_count)) + (fisheries(1)(1).discards_n()(quant_count,year,1,season,1,iter_count) * fisheries(1)(1).discards_wt()(quant_count,year,1,season,1,iter_count)); 
-        }
-        catch_op[iter_count-1] = catch_op[iter_count-1] - 5000;
-    }
+        // Solve
+        // reset initial solver value 
+        std::fill(fmult.begin(), fmult.end(), 1.0);
 
 
-    CppAD::ADFun<double> fun(fmult, catch_op);
-    Rprintf("Turned off tape\n");
 
+        Rprintf("Calling NR\n");
+        // Just solves 1 simultaneous target so far
+        nr_out = newton_raphson(fmult, fun, niter, 1);
+        Rprintf("NR done\n");
 
-    /*--------- Newton Raphson bit ----------------*/
-
-    // We should offer the option of doing iterations in chunks - i.e. if 5000 iters, do 1000 at a time else Jacobian becomes massive and we hit memory problems
-    // And we need to make sure that solving for multiple targets (e.g. if two fleets and we have two fmults) works
-
-    // Do something to tape
-    double logdet = 0.0;
-    std::vector<double> new_fmult(niter * nfmult, 1.0);
-    std::vector<double> new_y(niter * nfmult);
-    std::vector<double> jac(niter * nfmult * niter * nfmult);
-    std::vector<double> small_jac(nfmult * nfmult);
-    std::vector<double> small_new_y(nfmult);
-    int jac_element = 0;
-
-    for (int nr_count = 0; nr_count <= 10; ++nr_count){
-        Rprintf("nr_count: %i\n", nr_count);
-        // Update tape with new fmult
-        //Rprintf("Making another pass\n");
-        new_y = fun.Forward(0, new_fmult);
-        //Rprintf("Getting Jacobian\n");
-        //jac = fun.Jacobian(new_fmult); // it's very sparse so use SparseJacobian
-        jac = fun.SparseJacobian(new_fmult); // Much faster!
-        Rprintf("Solving Jacobian\n");
-        // Each iteration is a distinct thing
-        // LU solving takes proportional to n^2 operations - so better to solve each iteration indepdently (despite overhead of setting it up)
-        for (int iter_count = 0; iter_count < niter; ++iter_count){
-            // load up small jac - need for loop for multiple targets
-            for(int jac_count_row = 0; jac_count_row < nfmult; ++jac_count_row){
-                small_new_y[jac_count_row] = new_y[iter_count * nfmult + jac_count_row];
-                for(int jac_count_col = 0; jac_count_col < nfmult; ++jac_count_col){
-                    jac_element = (iter_count * niter * nfmult * nfmult) + (iter_count * nfmult) + jac_count_row + (jac_count_col * niter * nfmult);
-                    small_jac[jac_count_row + (jac_count_col * nfmult)] = jac[jac_element];
-                }
-            }
-            CppAD::LuSolve(nfmult, nfmult, small_jac, small_new_y, small_new_y, logdet); 
-            // put small_new_y back into new_y - needs for loop for 
-            for(int jac_count = 0; jac_count < nfmult; ++jac_count){
-                new_y[iter_count * nfmult + jac_count] = small_new_y[jac_count];
+        Rprintf("Updating and projecting\n");
+        // Update f with new fmult
+        // Update F
+        for (int iter_count = 1; iter_count <= biol.n().get_niter(); ++iter_count){
+            for (int quant_count = 1; quant_count <= biol.n().get_nquant(); ++quant_count){
+                f(1)(quant_count, target_fmult_year, 1, target_fmult_season, 1, iter_count) = f(1)(quant_count, target_fmult_year, 1, target_fmult_season, 1, iter_count) * fmult[iter_count-1];
             }
         }
-        
-        
-        //CppAD::LuSolve(niter, niter, jac, new_y, new_y, logdet); // this is slow
-        Rprintf("Updating fmult\n");
-        std::transform(new_fmult.begin(),new_fmult.end(),new_y.begin(),new_fmult.begin(),std::minus<double>());
-        Rprintf("new fmult iter 1: %f\n", new_fmult[0]);
+        project_timestep(target_fmult_timestep);
+
+
     }
-
-    Rprintf("Updating and projecting\n");
-    // Update f with new fmult
-    // Update F
-    for (int iter_count = 1; iter_count <= biol.n().get_niter(); ++iter_count){
-        for (int quant_count = 1; quant_count <= biol.n().get_nquant(); ++quant_count){
-            f(1)(quant_count, year, 1, season, 1, iter_count) = f(1)(quant_count, year, 1, season, 1, iter_count) * new_fmult[iter_count-1];
-        }
-    }
-    project_timestep(target_timestep);
-
-
 
 
 //    // Copy data back

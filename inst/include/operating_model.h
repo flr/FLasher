@@ -38,11 +38,13 @@ void timestep_to_year_season(const int timestep, const FLQuant_base<T>& flq, int
 void year_season_to_timestep(const int year, const int season, const int nseason, int& timestep);
 void timestep_to_year_season(const int timestep, const int nseason, int& year, int& season);
 
-double euclid_norm(double* x, const int size_x);
+//double euclid_norm(double* x, const int size_x);
+double euclid_norm(std::vector<double> x);
 
 // A Newton Raphson solver for a function that has already been taped.
 // Pass in the independent variables, tape no. and control parameters
 // int newton_raphson(std::vector<double>& indep, const int adolc_tape, const int max_iters= 50, const double max_limit = 100, const double tolerance = 1e-12);
+int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const int niter, const int nsim_targets, const int max_iters= 50, const double max_limit = 100, const double tolerance = 1e-12);
 
 /* Everything Louder Than Everything Else 
  * The Operating Model Class

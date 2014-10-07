@@ -1533,6 +1533,18 @@ test_fwdSR_get_timelag <- function(model_name, params, timelag, residuals, resid
     .Call('FLasher_test_fwdSR_get_timelag', PACKAGE = 'FLasher', model_name, params, timelag, residuals, residuals_mult)
 }
 
+test_euclid_norm <- function(xvec) {
+    .Call('FLasher_test_euclid_norm', PACKAGE = 'FLasher', xvec)
+}
+
+test_NR1 <- function(initial_value, max_iters, max_limit, tolerance) {
+    .Call('FLasher_test_NR1', PACKAGE = 'FLasher', initial_value, max_iters, max_limit, tolerance)
+}
+
+test_NR2 <- function(initial_value, max_iters, max_limit, tolerance) {
+    .Call('FLasher_test_NR2', PACKAGE = 'FLasher', initial_value, max_iters, max_limit, tolerance)
+}
+
 test_year_season_to_timestep_FLQuant_double <- function(flq, year, season) {
     .Call('FLasher_test_year_season_to_timestep_FLQuant_double', PACKAGE = 'FLasher', flq, year, season)
 }

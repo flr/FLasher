@@ -6518,6 +6518,57 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// test_euclid_norm
+double test_euclid_norm(std::vector<double> xvec);
+RcppExport SEXP FLasher_test_euclid_norm(SEXP xvecSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< std::vector<double> >::type xvec(xvecSEXP );
+        double __result = test_euclid_norm(xvec);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_NR1
+Rcpp::List test_NR1(const double initial_value, const int max_iters, const double max_limit, const double tolerance);
+RcppExport SEXP FLasher_test_NR1(SEXP initial_valueSEXP, SEXP max_itersSEXP, SEXP max_limitSEXP, SEXP toleranceSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const double >::type initial_value(initial_valueSEXP );
+        Rcpp::traits::input_parameter< const int >::type max_iters(max_itersSEXP );
+        Rcpp::traits::input_parameter< const double >::type max_limit(max_limitSEXP );
+        Rcpp::traits::input_parameter< const double >::type tolerance(toleranceSEXP );
+        Rcpp::List __result = test_NR1(initial_value, max_iters, max_limit, tolerance);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_NR2
+Rcpp::List test_NR2(std::vector<double> initial_value, const int max_iters, const double max_limit, const double tolerance);
+RcppExport SEXP FLasher_test_NR2(SEXP initial_valueSEXP, SEXP max_itersSEXP, SEXP max_limitSEXP, SEXP toleranceSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< std::vector<double> >::type initial_value(initial_valueSEXP );
+        Rcpp::traits::input_parameter< const int >::type max_iters(max_itersSEXP );
+        Rcpp::traits::input_parameter< const double >::type max_limit(max_limitSEXP );
+        Rcpp::traits::input_parameter< const double >::type tolerance(toleranceSEXP );
+        Rcpp::List __result = test_NR2(initial_value, max_iters, max_limit, tolerance);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // test_year_season_to_timestep_FLQuant_double
 int test_year_season_to_timestep_FLQuant_double(FLQuant flq, const int year, const int season);
 RcppExport SEXP FLasher_test_year_season_to_timestep_FLQuant_double(SEXP flqSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
