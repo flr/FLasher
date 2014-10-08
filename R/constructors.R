@@ -9,7 +9,7 @@
 # fwdElement(element='data.frame', iters='array') {{{
 setMethod('fwdElement', signature(element='data.frame', iters='array'),
 	function(element, iters) {
-	
+
 		# COMPLETE df
 		ele <- new('fwdElement')@element[rep(1, nrow(element)),]
 		# HACK: drop rownames
@@ -106,7 +106,7 @@ setMethod('fwdElement', signature(element='data.frame', iters='numeric'),
 # fwdElement(element='data.frame', iters='missing') {{{
 setMethod('fwdElement', signature(element='data.frame', iters='missing'),
 	function(element) {
-	
+		
 		# CREATE iters
 		dti <- dim(element)
 		ite <- array(NA, dim=c(dti[1], 3, 1), dimnames=list(row=1:dti[1], 
@@ -115,7 +115,7 @@ setMethod('fwdElement', signature(element='data.frame', iters='missing'),
 		# FIND val names in element
 		vns <- c('min', 'value', 'max')
 		nms <- vns %in% colnames(element)
-		ite[, vns[nms],] <- element[,vns[nms]]
+		ite[, vns[nms], 1] <- unlist(c(element[,vns[nms]]))
 
 		return(fwdElement(element=element, iters=ite))
 	}
