@@ -38,11 +38,13 @@ void timestep_to_year_season(const int timestep, const FLQuant_base<T>& flq, int
 void year_season_to_timestep(const int year, const int season, const int nseason, int& timestep);
 void timestep_to_year_season(const int timestep, const int nseason, int& year, int& season);
 
-double euclid_norm(double* x, const int size_x);
+//double euclid_norm(double* x, const int size_x);
+double euclid_norm(std::vector<double> x);
 
 // A Newton Raphson solver for a function that has already been taped.
 // Pass in the independent variables, tape no. and control parameters
 // int newton_raphson(std::vector<double>& indep, const int adolc_tape, const int max_iters= 50, const double max_limit = 100, const double tolerance = 1e-12);
+int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const int niter, const int nsim_targets, const int max_iters= 50, const double max_limit = 100, const double tolerance = 1e-12);
 
 /* Everything Louder Than Everything Else 
  * The Operating Model Class
@@ -68,38 +70,34 @@ class operatingModel {
         //void update_from_ad_members(const int timestep);
         
         // Timestep in which to use fmult to affect the target value
-        // int get_target_fmult_timestep(const int target_no);
+        int get_target_fmult_timestep(const int target_no);
         
-        /*
         // age range indices for the f based targets
         Rcpp::IntegerVector get_target_age_range_indices(const int target_no, const int biol_no) const; // Returns the indices of the age range, starts at 0
 
         // Given the target no, evaluate the current value in the operatingModel
-        FLQuantAdolc eval_target(const int target_no) const;
+        FLQuantAD eval_target(const int target_no) const;
 
         // The target value we are trying to hit - either directly from the control object or a min / max / rel value calculation
         std::vector<double> calc_target_value(const int target_no) const; 
-        */
 
-        /*
         // The target value calculations
         // fbar from a catch and fishery on a stock - i.e. partial F - will need to adapt this to include multiple biols in the future
-        FLQuantAdolc fbar(const Rcpp::IntegerVector age_range_indices, const int fishery_no, const int catch_no, const int biol_no = 1) const;
+        FLQuantAD fbar(const Rcpp::IntegerVector age_range_indices, const int fishery_no, const int catch_no, const int biol_no = 1) const;
         // Total fbar on a biol
-        FLQuantAdolc fbar(const Rcpp::IntegerVector age_range_indices, const int biol_no = 1) const;
+        FLQuantAD fbar(const Rcpp::IntegerVector age_range_indices, const int biol_no = 1) const;
         // catches from an FLCatch and fishery on a stock - i.e. partial F - will need to adapt this to include multiple biols in the future
-        FLQuantAdolc catches(const int fishery_no, const int catch_no, const int biol_no = 1) const;
+        FLQuantAD catches(const int fishery_no, const int catch_no, const int biol_no = 1) const;
         // Total catches from a biol
-        FLQuantAdolc catches(const int biol_no = 1) const;
+        FLQuantAD catches(const int biol_no = 1) const;
 
         // Various ways of calculating reproductive potential
-        FLQuantAdolc ssb(const int biol_no) const;
-        FLQuantAdolc ssb(const int timestep, const int unit, const int area, const int biol_no) const; // all iters in a timestep, unit and area
+        FLQuantAD ssb(const int biol_no) const;
+        FLQuantAD ssb(const int timestep, const int unit, const int area, const int biol_no) const; // all iters in a timestep, unit and area
         adouble ssb(const int timestep, const int unit, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
         adouble ssb(const int year, const int unit, const int season, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
         // Other targets
-        FLQuantAdolc biomass(const int biol_no) const;
-        */
+        FLQuantAD biomass(const int biol_no) const;
 
     private:
         /* These are not AD to save memory - we only need AD for solving each timestep */

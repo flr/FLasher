@@ -33,6 +33,7 @@ class fwdSR_base {
 
         // Different ways of evaluating the model
         // Timing is when the recruitment happens - not when SSB happens
+        // So if SRR params are time disagrregated, the timing refers to the recruitment not the SSB
         T eval_model(const T ssb, int year, int unit, int season, int area, int iter);
         //FLQuant_base<T> eval_model(const FLQuant_base<T> ssb);
         //std::vector<T> eval_model(const std::vector<T> ssb);
