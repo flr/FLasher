@@ -14,45 +14,6 @@ test_that("timestep_to_year_season_conversion",{
     expect_that(test_timestep_to_year_season(flq_in, timestep), equals(c(year,season)))
 })
 
-#test_that("euclid_norm",{
-#    size_x <- runif(1, min=5, max = 100) 
-#    x <- rnorm(size_x)
-#    expect_that(test_euclid_norm(x), equals(sqrt(sum(x^2))))
-#})
-#
-#test_that("Newton-Raphson tests",{
-#    # Simplest test - solution is 2 or -2/3
-#    max_iters <- 50
-#    max_limit <- 100
-#    tolerance <- 1e-12
-#    initial <- rnorm(1, sd=1)
-#    fit <- test_NR1(initial, max_iters, max_limit, tolerance)
-#    expect_that(((fit$x - 2) < tolerance) | ((fit$x - (-2/3)) < tolerance), is_true())
-#    expect_that(fit$out, is_identical_to(0L))
-#    # Check max iters
-#    fit <- test_NR1(-10, 2, max_limit, tolerance)
-#    expect_that(fit$out, is_identical_to(1L))
-#    # Check max limit
-#    fit <- test_NR1(200, max_iters, max_limit, tolerance)
-#    expect_that(fit$out, is_identical_to(2L))
-#    tolerance2 <- 1
-#    fit <- test_NR1(50, max_iters, max_limit, tolerance2)
-#    expect_that(((fit$x - 2) < tolerance2) | ((fit$x - (-2/3)) < tolerance2), is_true())
-#    # 2D test 
-#    max_iters <- 50
-#    max_limit <- 1e9 # Crank up the limit - it's OK for this example
-#    tolerance <- 1e-12
-#    initial <- abs(rnorm(2, sd=2))
-#    fit <- test_NR2(initial, max_iters, max_limit, tolerance)
-#    y1 <- fit$x[1]^2 + fit$x[2]^2 - 4
-#    y2 <- fit$x[1]^2 - fit$x[2] + 1
-#    expect_that(sqrt(sum(c(y1,y2)^2)) < tolerance, is_true())
-#    expect_that(fit$out, is_identical_to(0L))
-#})
-#
-
-context("Implementation of operatingModel")
-
 test_that("operatingModel constructors and updaters",{
     # Empty constructor - jusy check they don't fail
     test_operatingModel_empty_constructor()
@@ -234,83 +195,6 @@ test_that("operatingModel SSB methods", {
     expect_that(c(ssb_in[,year,unit,season,area,iter]), equals(c(ssb_out)))
 })
 
-
-#test_that("operatingModel project_timestep", {
-#    # Get the components
-#    data(ple4)
-#    srr_model_name <- "ricker"
-#    ple4_sr <- fmle(as.FLSR(ple4,model=srr_model_name), control  = list(trace=0))
-#    params_sr <- as.FLQuant(params(ple4_sr))
-#    # Have at least 5 years
-#    flq <- random_FLQuant_generator(fixed_dim=c(NA,5,1,NA,1,NA), sd=1)
-#    flb <- random_FLBiol_generator(fixed_dims = dim(flq), sd = 1 )
-#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=1, max_fisheries=1, sd=1)
-#    f <- random_FLQuant_list_generator(max_elements=1, fixed_dims = dim(flq), sd=1)
-#    f <- lapply(f,abs)
-#    f_spwn <- random_FLQuant_list_generator(max_elements=1, fixed_dims = dim(flq), sd=1)
-#    f_spwn <- lapply(f_spwn,abs)
-#    residuals_sr <- abs(FLQuant(rnorm(prod(dim(flq)[-1])), dimnames = list(year = 1:dim(flq)[2], unit = 1:dim(flq)[3], season = 1:dim(flq)[4], area = 1:dim(flq)[5], iter = 1:dim(flq)[6])))
-#    residuals_mult <- TRUE
-#    timelag <- 1
-#    fc <- dummy_fwdControl_generator(years = 1, niters = dim(n(flb))[6])
-#
-#    # Test seasonal projection - ignore SRR
-#    nseason <- dim(flq)[4]
-#    timestep <- round(runif(1, min=1,max=(nseason * dim(flq)[2])-1))
-#    om_out <- test_operating_model_project(flfs, flb, srr_model_name, params_sr, timelag, residuals_sr, residuals_mult, f, f_spwn, timestep, fc)
-#    om_R <- simple_fisheries_project(flfs, flb, ple4_sr, f, f_spwn, residuals_sr, residuals_mult, timestep)
-#    year =  (timestep-1) / nseason + 1; 
-#    season = (timestep-1) %% nseason + 1;
-#    next_year =  (timestep+1-1) / nseason + 1; 
-#    next_season = (timestep+1-1) %% nseason + 1;
-#    # check the catches etc
-#    expect_that(catch.n(om_out[["fisheries"]][[1]][[1]])[,year,1,season,1,]@.Data, is_identical_to(catch.n(om_R[["flfs"]][[1]][[1]])[,year,1,season,1,]@.Data))
-#    expect_that(landings.n(om_out[["fisheries"]][[1]][[1]])[,year,1,season,1,]@.Data, is_identical_to(landings.n(om_R[["flfs"]][[1]][[1]])[,year,1,season,1,]@.Data))
-#    expect_that(discards.n(om_out[["fisheries"]][[1]][[1]])[,year,1,season,1,]@.Data, is_identical_to( discards.n(om_R[["flfs"]][[1]][[1]])[,year,1,season,1,]@.Data))
-#    # Check n (not recs)
-#    expect_that(om_out[["biol"]]@n[-1,next_year,1,next_season,1,]@.Data, is_identical_to( om_R[["flb"]]@n[-1,next_year,1,next_season,1,]@.Data))
-#
-#    # Check with annual SRR
-#    # Test annual model to start with
-#    flq <- random_FLQuant_generator(fixed_dim=c(NA,5,1,1,1,NA),sd=1)
-#    flb <- random_FLBiol_generator(fixed_dims = dim(flq), sd = 1 )
-#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=1, max_fisheries=1, sd=1)
-#    f <- random_FLQuant_list_generator(max_elements=1, fixed_dims = dim(flq), sd=1)
-#    units(f[[1]]) <- "f"
-#    f <- lapply(f,abs)
-#    f_spwn <- random_FLQuant_list_generator(max_elements=1, fixed_dims = dim(flq), sd=1)
-#    units(f_spwn[[1]]) <- "prop"
-#    f_spwn <- lapply(f_spwn,abs)
-#    residuals_sr <- abs(FLQuant(rnorm(prod(dim(flq)[-1])), dimnames = list(year = 1:dim(flq)[2], unit = 1:dim(flq)[3], season = 1:dim(flq)[4], area = 1:dim(flq)[5], iter = 1:dim(flq)[6])))
-#    #residuals_sr <- abs(FLQuant(1, dimnames = list(year = 1:dim(flq)[2], unit = 1:dim(flq)[3], season = 1:dim(flq)[4], area = 1:dim(flq)[5], iter = 1:dim(flq)[6])))
-#    residuals_mult <- TRUE
-#    fc <- dummy_fwdControl_generator(years = 1, niters = dim(n(flb))[6])
-#
-#    timesteps <- 1:(dim(flq)[2]-1)
-#    project_r <- list(flfs = flfs, flb=flb)
-#
-#    for (timestep in timesteps){
-#        project_r <- simple_fisheries_project(project_r[["flfs"]], project_r[["flb"]], ple4_sr, f, f_spwn, residuals_sr, residuals_mult, timestep)
-#    }
-#    # Check recruitment in R method
-#    project_c <- list(fisheries = flfs, biol=flb)
-#    for (timestep in timesteps){
-#        project_c <- test_operating_model_project(project_c[["fisheries"]], project_c[["biol"]], "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, timestep, fc)
-#    }
-#    # Check biol timestep up to max timesteps + 1
-#    expect_that((project_c[["biol"]]), equals((project_r[["flb"]])))
-#
-#
-#    # Check fisheries catch timestep up to max timesteps
-#    flfs_c <- window(project_c[["fisheries"]][[1]][[1]], start=timesteps[1], end=max(timesteps))
-#    flfs_r <- window(project_r[["flfs"]][[1]][[1]], start=timesteps[1], end=max(timesteps))
-#    # expect_that(flfs_c, equals(flfs_r)) # cannot check units as c++ code does not adapt units
-#    expect_that(flfs_c@discards.n@.Data, equals(flfs_r@discards.n@.Data))
-#    expect_that(flfs_c@landings.n@.Data, equals(flfs_r@landings.n@.Data))
-#
-#    # What about SRR on a different timestep
-#})
-#
 
 # Biomass, SSB and other abundance based targets need to change F in the previous timestep
 test_that("operatingModel get_target_fmult_timestep",{
@@ -615,4 +499,221 @@ test_that("operatingModel target values and eval_target method", {
     expect_that(all((cout[max_lim] / current_catches4[max_lim]) <= 1.05), is_true())
 })
 
+
+test_that("Test projection with individual targets",{
+    # Test operating model.
+    # Need FLFisheries, FLBiol, SRR, F and Fspwn
+    data(ple4)
+    # make the biol
+    # srr
+    srr_model_name <- "bevholt"
+    srr <- as.FLSR(ple4, model=srr_model_name)
+    srr <- fmle(srr, control = list(trace=0))
+    srr_params <- as.FLQuant(params(srr))
+    srr_residuals <- exp(residuals(srr))
+    srr_residuals <- window(srr_residuals,end=2009)
+    srr_residuals[,"2009"] <- srr_residuals[,"2008"]
+    srr_residuals[] <- 1 # turn off residuals
+    srr_residuals_mult <- TRUE
+    srr_timelag <- 1
+    niters <- 500
+    data(ple4)
+    ple4 <- propagate(ple4,niters)
+    biol <- as(ple4, 'FLBiol')
+    catch <- as(ple4, 'FLCatch')
+    catch@name <- "ple4 catch"
+    catch@desc <- "ple4 catch"
+    # Hack
+    fishery <- FLFishery(ple4=catch)
+    fishery@name <- "ple4 fishery"
+    fishery@desc <- "ple4 fishery"
+    fisheries <- FLFisheries(ple4=fishery)
+    fisheries@desc <- "ple4 fisheries"
+    # Fs
+    f <- list(ple4 = harvest(ple4))
+    f_spwn_flq <- harvest(ple4)
+    f_spwn_flq[] <- 0
+    f_spwn <- list(ple4 = f_spwn_flq)
+
+    # Add some noise on biol n and harvest
+    n(biol) <- n(biol) * rlnorm(prod(dim(n(biol))), sd = 0.1)
+    f[[1]] <- f[[1]] * rlnorm(prod(dim(f[[1]])), sd = 0.1)
+
+    # A simple target object - 1 year, 1 target
+    minAge <- 2
+    maxAge <- 6
+    # F target
+    target <- data.frame(year=2, quantity = 'f', value = 0.5, minAge=minAge, maxAge=maxAge, season=1L)
+    fwc <- fwdControl(target=target, iter=niters)
+    fwc@target@iters[1,"value",] <- rlnorm(niters, mean = log(0.5), sd = 0.1)
+    out <- test_operatingModel_run(fisheries, biol, srr_model_name, srr_params, srr_residuals, srr_residuals_mult, srr_timelag, f, f_spwn, fwc)
+    # equals?
+    expect_that(c(apply(out[["f"]][[1]][ac(minAge:maxAge),2] ,2:6,mean)), equals(unname(fwc@target@iters[1,"value",])))
+
+    # Catch target
+    target <- data.frame(year=2, quantity = 'catch', value = 100000, minAge=minAge, maxAge=maxAge, season=1L)
+    fwc <- fwdControl(target=target, iter=niters)
+    fwc@target@iters[1,"value",] <- rlnorm(niters, mean = log(100000), sd = 0.1)
+    out <- test_operatingModel_run(fisheries, biol, srr_model_name, srr_params, srr_residuals, srr_residuals_mult, srr_timelag, f, f_spwn, fwc)
+    expect_that(c(catch(out[["fisheries"]][[1]][[1]])[,2]), equals(unname(fwc@target@iters[1,"value",])))
+
+    # Biomass target
+    target <- data.frame(year=2, quantity = 'biomass', value = 300000, minAge=minAge, maxAge=maxAge, season=1L)
+    fwc <- fwdControl(target=target, iter=niters)
+    fwc@target@iters[1,"value",] <- rlnorm(niters, mean = log(300000), sd = 0.1)
+    out <- test_operatingModel_run(fisheries, biol, srr_model_name, srr_params, srr_residuals, srr_residuals_mult, srr_timelag, f, f_spwn, fwc)
+    expect_that(c(quantSums(n(out[["biol"]]) * wt(out[["biol"]]))[,2]), equals(unname(fwc@target@iters[1,"value",])))
+
+    # SSB target
+    target <- data.frame(year=2, quantity = 'ssb', value = 300000, minAge=minAge, maxAge=maxAge, season=1L)
+    fwc <- fwdControl(target=target, iter=niters)
+    fwc@target@iters[1,"value",] <- rlnorm(niters, mean = log(300000), sd = 0.1)
+    out <- test_operatingModel_run(fisheries, biol, srr_model_name, srr_params, srr_residuals, srr_residuals_mult, srr_timelag, f, f_spwn, fwc)
+    ssb_out <- quantSums(n(out[["biol"]]) * wt(out[["biol"]]) * fec(out[["biol"]]) * exp(-out[["f_spwn"]][[1]] * out[["f"]][[1]] - m(out[["biol"]]) * spwn(out[["biol"]])))
+    expect_that(c(ssb_out[,2]), equals(unname(fwc@target@iters[1,"value",])))
+})
+
+test_that("Test projection with really complicated target",{
+    # Test operating model.
+    # Need FLFisheries, FLBiol, SRR, F and Fspwn
+    data(ple4)
+    # make the biol
+    # srr
+    srr_model_name <- "bevholt"
+    srr <- as.FLSR(ple4, model=srr_model_name)
+    srr <- fmle(srr, control = list(trace=0))
+    srr_params <- as.FLQuant(params(srr))
+    srr_residuals <- exp(residuals(srr))
+    srr_residuals <- window(srr_residuals,end=2009)
+    srr_residuals[,"2009"] <- srr_residuals[,"2008"]
+    srr_residuals[] <- 1 # turn off residuals
+    srr_residuals_mult <- TRUE
+    srr_timelag <- 1
+    niters <- 500
+    data(ple4)
+    ple4 <- propagate(ple4,niters)
+    biol <- as(ple4, 'FLBiol')
+    catch <- as(ple4, 'FLCatch')
+    catch@name <- "ple4 catch"
+    catch@desc <- "ple4 catch"
+    # Hack
+    fishery <- FLFishery(ple4=catch)
+    fishery@name <- "ple4 fishery"
+    fishery@desc <- "ple4 fishery"
+    fisheries <- FLFisheries(ple4=fishery)
+    fisheries@desc <- "ple4 fisheries"
+    # Fs
+    f <- list(ple4 = harvest(ple4))
+    f_spwn_flq <- harvest(ple4)
+    f_spwn_flq[] <- 0
+    f_spwn <- list(ple4 = f_spwn_flq)
+
+    # Add some noise on biol n and harvest
+    set.seed(1)
+    n(biol) <- n(biol) * rlnorm(prod(dim(n(biol))), sd = 0.1)
+    f[[1]] <- f[[1]] * rlnorm(prod(dim(f[[1]])), sd = 0.1)
+    minAge <- 2
+    maxAge <- 6
+
+    target <- data.frame(year = 2, quantity = 'f', value = 0.5, minAge = 2, maxAge = 6, season = 1L)
+    target <- rbind(target,
+        # Absolute values
+        data.frame(year = 3, quantity = 'catch', value = 100000, minAge = NA, maxAge = NA, season = 1L),
+        data.frame(year = 5, quantity = 'biomass', value = 300000, minAge = NA, maxAge = NA, season = 1L), # affects F in year 4
+        data.frame(year = 6, quantity = 'ssb', value = 300000, minAge = NA, maxAge = NA, season = 1L), # affects F in year 5
+        # Max targets
+        data.frame(year = 7, quantity = 'catch', value = 100000, minAge = NA, maxAge = NA, season = 1L), # Catch target
+        data.frame(year = 7, quantity = 'f', value = 1, minAge = 2, maxAge = 6, season = 1L), # but maximum F limits it - need to hack this line after constructor
+        # Min target
+        data.frame(year = 8, quantity = 'f', value = 0.2, minAge = 2, maxAge = 6, season = 1L), # F target
+        data.frame(year = 8, quantity = 'catch', value = 100000, minAge = NA, maxAge = NA, season = 1L), # but minimum catch limits it - need to hack this line after constructor
+        # Relative target
+        data.frame(year = 9, quantity = 'catch', value = 0.5, minAge = NA, maxAge = NA, season = 1L), # Need to hack this after constructor
+        # Relative max target
+        data.frame(year = 11, quantity = 'f', value = 0.5, minAge = 2, maxAge = 6, season = 1L), # F target
+        data.frame(year = 11, quantity = 'catch', value = 1.15, minAge = NA, maxAge = NA, season = 1L), # But catch cannot increase more than 15% from previous yearNeed to hack this after constructor
+        # Relative min target
+        data.frame(year = 13, quantity = 'f', value = 0.3, minAge = 2, maxAge = 6, season = 1L), # F target
+        data.frame(year = 13, quantity = 'catch', value = 0.85, minAge = NA, maxAge = NA, season = 1L) # But catch cannot increase more than 15% from previous yearNeed to hack this after constructor
+    )
+
+    fwc <- fwdControl(target=target, iter=niters)
+    # Hack min and max values of f target
+    fwc@target@element
+    fwc@target@element[6,c("value","max")] <- c(NA,0.3)
+    fwc@target@element[8,c("value","min")] <- c(NA,100000)
+    fwc@target@element[9,c("relYear","relSeason")] <- c(8L,1L)
+    fwc@target@element[11,c("value","max","relYear","relSeason")] <- c(NA, 1.15, 10L, 1L)
+    fwc@target@element[13,c("value","min","relYear","relSeason")] <- c(NA, 0.85, 12L, 1L)
+
+    # Fix iter values
+    fwc@target@iters[1,"value",] <- rlnorm(niters, mean = log(0.5), sd = 0.1) # f
+    fwc@target@iters[2,"value",] <- rlnorm(niters, mean = log(100000), sd = 0.1) # sd = 1 results in bad iters - good for testing
+    fwc@target@iters[3,"value",] <- rlnorm(niters, mean = log(300000), sd = 0.1) # biomass
+    fwc@target@iters[4,"value",] <- rlnorm(niters, mean = log(300000), sd = 0.1) # ssb
+    fwc@target@iters[5,"value",] <- rlnorm(niters, mean = log(100000), sd = 0.1) # catch for f max test
+    fwc@target@iters[6,"value",] <- NA # fbar has max only
+    fwc@target@iters[6,"max",] <- rlnorm(niters, mean = log(0.35), sd = 0.01)
+    fwc@target@iters[7,"value",] <- rlnorm(niters, mean = log(0.2), sd = 0.1) 
+    fwc@target@iters[8,"value",] <- NA # fbar has max only
+    fwc@target@iters[8,"min",] <- rlnorm(niters, mean = log(100000), sd = 0.1) 
+    fwc@target@iters[9,"value",] <- rlnorm(niters, mean = log(0.5), sd = 0.1) 
+    fwc@target@iters[10,"value",] <- rlnorm(niters, mean = log(0.5), sd = 0.1) 
+    fwc@target@iters[11,"value",] <- NA
+    fwc@target@iters[11,"max",] <- 1.15
+    fwc@target@iters[12,"value",] <- rlnorm(niters, mean = log(0.3), sd = 0.1) 
+    fwc@target@iters[13,"value",] <- NA
+    fwc@target@iters[13,"min",] <- 0.85 
+
+    # Call test run with (something like this will go in fwd() method)
+    out <- test_operatingModel_run(fisheries, biol, srr_model_name, srr_params, srr_residuals, srr_residuals_mult, srr_timelag, f, f_spwn, fwc)
+    ssb_out <- quantSums(n(out[["biol"]]) * wt(out[["biol"]]) * fec(out[["biol"]]) * exp(-out[["f_spwn"]][[1]] * out[["f"]][[1]] - m(out[["biol"]]) * spwn(out[["biol"]])))
+
+    # Test output
+    # Absolute targets
+    expect_that(c(apply(out[["f"]][[1]][ac(minAge:maxAge),2] ,2:6,mean)), equals(unname(fwc@target@iters[1,"value",]))) # abs ssb
+    expect_that(c(catch(out[["fisheries"]][[1]][[1]])[,3]), equals(unname(fwc@target@iters[2,"value",]))) # abs catch
+    expect_that(c(quantSums(n(out[["biol"]]) * wt(out[["biol"]]))[,5]), equals(unname(fwc@target@iters[3,"value",]))) # abs biomass
+    expect_that(c(ssb_out[,6]), equals(unname(fwc@target@iters[4,"value",])))
+
+    # Max target - bit tricky for comparison - cannot use < > as differences are sometimes +-1e-16 
+    # so need tolerances
+    tol <- .Machine$double.eps ^ 0.5   
+    # Find which Catches have not been hit
+    fmax_iters <- abs((c(catch(out[["fisheries"]][[1]][[1]])[,7]) / unname(fwc@target@iters[5,"value",])) - 1) > tol
+    # Check that fmax has been hit for these iters
+    expect_that(all(abs((c(apply(out[["f"]][[1]][ac(minAge:maxAge),7] ,2:6,mean))[fmax_iters] / unname(fwc@target@iters[6,"max",])[fmax_iters]) -1) < tol), is_true())
+    # And that F is less than Fmax for the iters where catches have been hit
+    expect_that(all(c(apply(out[["f"]][[1]][ac(minAge:maxAge),7] ,2:6,mean))[!fmax_iters] < unname(fwc@target@iters[6,"max",])[!fmax_iters]), is_true())
+
+    # Min test
+    # Iters where F has not been hit
+    cmin_iters <- abs((c(apply(out[["f"]][[1]][ac(minAge:maxAge),8] ,2:6,mean)) / unname(fwc@target@iters[7,"value",]))-1) > tol
+    # cmin has been hit for these iters
+    expect_that(all(abs((c(catch(out[["fisheries"]][[1]][[1]])[,8])[cmin_iters] / unname(fwc@target@iters[8,"min",])[cmin_iters])-1) < tol), is_true())
+    # And that Catch is greater than Cmin for the other iters (where original f target was hit)
+    expect_that(all(c(catch(out[["fisheries"]][[1]][[1]])[,8])[!cmin_iters] > unname(fwc@target@iters[8,"min",])[!cmin_iters]), is_true())
+
+    # Relative test
+    expect_that(c(catch(out[["fisheries"]][[1]][[1]])[,8]) * unname(fwc@target@iters[9,"value",]), equals(c(catch(out[["fisheries"]][[1]][[1]])[,9])))
+
+    # Relative max test
+    # Which iters have been limited by cmax, i.e. f target not hit
+    cmax_iters <- abs((c(apply(out[["f"]][[1]][ac(minAge:maxAge),11] ,2:6,mean)) / unname(fwc@target@iters[10,"value",]))-1) > tol
+    # Check that these iters have hit the limit
+    # Catch should be at limit
+    expect_that(all( abs((c(catch(out[["fisheries"]][[1]][[1]])[,11])[cmax_iters] / (c(catch(out[["fisheries"]][[1]][[1]])[,10])[cmax_iters] * unname(fwc@target@iters[11,"max",])[cmax_iters]))-1) < tol), is_true())
+    # Unlimited iters should have catches less than max
+    expect_that(all(c(catch(out[["fisheries"]][[1]][[1]])[,11])[!cmax_iters] < (c(catch(out[["fisheries"]][[1]][[1]])[,10])[!cmax_iters] * unname(fwc@target@iters[11,"max",])[!cmax_iters])), is_true())
+
+    # Relative min test
+    # Which iters have been limited by cmax, i.e. f target not hit
+    cmax_iters <- abs(( c(apply(out[["f"]][[1]][ac(minAge:maxAge),13] ,2:6,mean)) / unname(fwc@target@iters[12,"value",]))-1) > tol
+    # These iters should be at catch limit
+    expect_that(all( abs((c(catch(out[["fisheries"]][[1]][[1]])[,13])[cmax_iters] / (c(catch(out[["fisheries"]][[1]][[1]])[,12])[cmax_iters] * unname(fwc@target@iters[13,"min",])[cmax_iters]))-1) < tol), is_true())
+    # Other iters should have catches greater than catch limit
+    expect_that(all(c(catch(out[["fisheries"]][[1]][[1]])[,13])[!cmax_iters] > (c(catch(out[["fisheries"]][[1]][[1]])[,12])[!cmax_iters] * unname(fwc@target@iters[13,"min",])[!cmax_iters])), is_true())
+
+
+})
 

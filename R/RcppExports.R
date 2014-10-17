@@ -13,10 +13,6 @@ get_dataframe_quantity <- function(ctrl) {
     .Call('FLasher_get_dataframe_quantity', PACKAGE = 'FLasher', ctrl)
 }
 
-test_run <- function(fisheries, FLBiolSEXP, srr_model_name, srr_params, srr_residuals, srr_residuals_mult, srr_timelag, f, f_spwn, ctrl) {
-    .Call('FLasher_test_run', PACKAGE = 'FLasher', fisheries, FLBiolSEXP, srr_model_name, srr_params, srr_residuals, srr_residuals_mult, srr_timelag, f, f_spwn, ctrl)
-}
-
 cppad_found <- function() {
     invisible(.Call('FLasher_cppad_found', PACKAGE = 'FLasher'))
 }
@@ -1615,5 +1611,9 @@ test_operatingModel_eval_target <- function(flfs, flb_sexp, model_name, params, 
 
 test_operatingModel_calc_target_value <- function(flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, target_no) {
     .Call('FLasher_test_operatingModel_calc_target_value', PACKAGE = 'FLasher', flfs, flb_sexp, model_name, params, timelag, residuals, residuals_mult, f, f_spwn, ctrl, target_no)
+}
+
+test_operatingModel_run <- function(fisheries, FLBiolSEXP, srr_model_name, srr_params, srr_residuals, srr_residuals_mult, srr_timelag, f, f_spwn, ctrl) {
+    .Call('FLasher_test_operatingModel_run', PACKAGE = 'FLasher', fisheries, FLBiolSEXP, srr_model_name, srr_params, srr_residuals, srr_residuals_mult, srr_timelag, f, f_spwn, ctrl)
 }
 

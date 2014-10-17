@@ -69,15 +69,6 @@ void test_operatingModel_empty_constructor(){
     return;
 }
 
-/*
-// [[Rcpp::export]]
-operatingModel test_operatingModel_full_constructor(FLFisheries flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7 f, const FLQuant7 f_spwn, const fwdControl ctrl){
-    fwdBiol biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
-    operatingModel om(flfs, biol, f, f_spwn, ctrl);
-    return om;
-}
-*/
-
 // [[Rcpp::export]]
 operatingModel test_operatingModel_full_constructor(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl){
     fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
@@ -139,16 +130,6 @@ double test_operatingModel_SSB_single_iter_year_season(FLFisheriesAD flfs, SEXP 
     return Value(out);
 }
 
-/*
-// [[Rcpp::export]]
-operatingModel test_operating_model_project(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const int timestep, const fwdControl ctrl){
-    fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
-    operatingModel om(flfs, biol, f, f_spwn, ctrl);
-    om.project_timestep(timestep, 1, ctrl.get_niter());
-    return om;
-}
-*/
-
 
 // [[Rcpp::export]]
 Rcpp::IntegerVector test_operating_model_get_target_age_range_indices(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl, const int target_no){
@@ -190,41 +171,6 @@ int test_operatingModel_get_target_fmult_timestep(FLFisheriesAD flfs, SEXP flb_s
     return om.get_target_fmult_timestep(target_no);
 }
 
-//// Evaluate by target no
-//// [[Rcpp::export]]
-//std::vector<double> test_operatingModel_eval_target(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl, const int target_no, const int min_iter, const int max_iter){
-//    fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
-//    operatingModel om(flfs, biol, f, f_spwn, ctrl);
-//    std::vector<adouble> out_ad = om.eval_target(target_no, min_iter, max_iter);
-//    std::vector<double> out(out_ad.size(), 0.0);
-//    for (int i=0; i<out.size(); ++i){
-//        out[i] = out_ad[i].value();
-//    }
-//    return out;
-//}
-
-
-/*
-//// Evaluate by target type
-//// [[Rcpp::export]]
-//std::vector<double> test_operatingModel_eval_target2(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl, const int target_no){
-//
-//    fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
-//    operatingModel om(flfs, biol, f, f_spwn, ctrl);
-//    const int year = ctrl.get_target_year(target_no); 
-//    const int season = ctrl.get_target_season(target_no);
-//    const int unit = 1;
-//    const int area = 1;
-//    const int biol_no = 1;
-//    std::vector<adouble> out_ad = om.eval_target(target_no, year, unit, season, area);
-//    std::vector<double> out(out_ad.size(), 0.0);
-//    for (int i=0; i<out.size(); ++i){
-//        out[i] = out_ad[i].value();
-//    }
-//    return out;
-//}
-*/
-
 // [[Rcpp::export]]
 FLQuantAD test_operatingModel_eval_target(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl, const int target_no){
     fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
@@ -241,3 +187,21 @@ std::vector<double> test_operatingModel_calc_target_value(FLFisheriesAD flfs, SE
     std::vector<double> out = om.calc_target_value(target_no);
     return out;
 }
+
+
+
+// Assumes the targets are already ordered by time
+// [[Rcpp::export]]
+operatingModel test_operatingModel_run(const FLFisheriesAD fisheries, SEXP FLBiolSEXP, const std::string srr_model_name, const FLQuant srr_params, const FLQuant srr_residuals, const bool srr_residuals_mult, const int srr_timelag, FLQuant7AD f, FLQuant7 f_spwn, fwdControl ctrl){
+
+    // Make the fwdBiol from the FLBiol and SRR bits
+    fwdBiolAD biol(FLBiolSEXP, srr_model_name, srr_params, srr_timelag, srr_residuals, TRUE); 
+    // Make the OM
+    operatingModel om(fisheries, biol, f, f_spwn, ctrl);
+
+    om.run();
+
+    return om;
+
+}
+
