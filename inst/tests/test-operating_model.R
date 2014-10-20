@@ -153,9 +153,18 @@ test_that("operatingModel project timestep",{
         ssb_year <- (timestep - timelag2) / dim(n(flb))[4] + 1
         ssb_season <- (timestep - timelag2) %%  dim(n(flb))[4]+ 1;
         rec2 <- params_ricker2["a",1,,next_season] * ssb2[1,ssb_year,1,ssb_season,1,] * exp(-params_ricker2["b",1,,next_season] * ssb2[1,ssb_year,1,ssb_season,1,]) * residuals_ricker[1,next_year,1,next_season]
-        expect_that(c(rec2), equals(c(n(out2[["biol"]])[1,next_year,1,next_season,1,])))
+        next_n <- n(flb)[,1,,1,,]
+        next_n[] <- 0
+        if (next_season == 1){
+            next_n[2:dim(next_n)[1]] <- (n(out2[["biol"]]) * exp(-z))[1:(dim(next_n)[1]-1),year,,season,,]
+            next_n[dim(next_n)[1]] <- next_n[dim(next_n)[1]] + ((n(out2[["biol"]]) * exp(-z))[dim(next_n)[1],year,,season,,])
+            expect_that(c(rec2), equals(c(n(out2[["biol"]])[1,next_year,1,next_season,1,])))
+        }
+        if (next_season > 1){
+            next_n[1:dim(next_n)[1]] <- (n(out2[["biol"]]) * exp(-z))[1:dim(next_n)[1],year,,season,,]
+            expect_that(c(rec2 + next_n[1,]), equals(c(n(out2[["biol"]])[1,next_year,1,next_season,1,])))
+        }
     }
-
 })
 
 test_that("operatingModel SSB methods", {
