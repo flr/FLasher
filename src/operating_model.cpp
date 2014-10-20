@@ -327,6 +327,11 @@ void operatingModel::project_timestep(const int timestep){
         // Check if timestep is the final timestep - if so, don't update biol
         adouble rec_temp = 0.0;
         adouble ssb_temp = 0.0;
+        // In what age do we put next timestep abundance? If beginning of year, everything is one year older
+        int age_shift = 0;
+        if (next_season == 1){
+            age_shift = 1;
+        }
         for (int iter_count = 1; iter_count <= niter; ++iter_count){
             // Recruitment
             // rec is calculated in a scalar way - i.e. not passing it a vector of SSBs, so have to do one iter at a time
@@ -341,12 +346,21 @@ void operatingModel::project_timestep(const int timestep){
             else{
                 rec_temp = rec_temp + biol.srr.get_residuals()(1,next_year,1,next_season,1,iter_count);
             }
-            biol.n()(1, next_year, 1, next_season, 1, iter_count) = rec_temp;
             for (int quant_count = 1; quant_count < max_quant; ++quant_count){
-                biol.n()(quant_count+1, next_year, 1, next_season, 1, iter_count) = biol.n()(quant_count, year, 1, season, 1, iter_count) * exp(-z(quant_count,1,1,1,1,iter_count));
+                biol.n()(quant_count+age_shift, next_year, 1, next_season, 1, iter_count) = biol.n()(quant_count, year, 1, season, 1, iter_count) * exp(-z(quant_count,1,1,1,1,iter_count));
             }
-            // plus group - assume last age is a plusgroup
-            biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) = biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) + (biol.n()(max_quant, year, 1, season, 1, iter_count) * exp(-z(max_quant, 1, 1, 1, 1, iter_count)));
+            // if next_season is start of the year, it's a plus group - assume last age is a plusgroup
+            // And abundance in first age group is ONLY recruitment
+            if (next_season == 1){
+                biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) = biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) + (biol.n()(max_quant, year, 1, season, 1, iter_count) * exp(-z(max_quant, 1, 1, 1, 1, iter_count)));
+                biol.n()(1, next_year, 1, next_season, 1, iter_count) = rec_temp;
+            }
+            // Else recruitment is added into existing abundance in first age group
+            // And abundance in final age is same as last timesteps - those that died
+            else {
+                biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) = (biol.n()(max_quant, year, 1, season, 1, iter_count) * exp(-z(max_quant, 1, 1, 1, 1, iter_count)));
+                biol.n()(1, next_year, 1, next_season, 1, iter_count) = biol.n()(1, next_year, 1, next_season, 1, iter_count) + rec_temp;
+            }
         }
     }
 

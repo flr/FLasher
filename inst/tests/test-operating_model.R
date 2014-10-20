@@ -57,7 +57,8 @@ test_that("operatingModel constructors and updaters",{
 
 test_that("operatingModel project timestep",{
     # Set up parameters for full test - lots of things needed
-    flq <- random_FLQuant_generator(fixed_dims=c(NA,10,1,NA,1,NA)) # fix unit and area to be 1, need 10 years
+    nseasons <- round(runif(1, min = 2, max = 4))
+    flq <- random_FLQuant_generator(fixed_dims=c(NA,10,1,nseasons,1,NA)) # fix unit and area to be 1, need 10 years, and with seasons > 1 too
     #flq <- random_FLQuant_generator(fixed_dims=c(NA,10,1,1,1,NA)) # fix unit and area to be 1, need 10 years
     flb <- random_FLBiol_generator(fixed_dims = dim(flq))
     m(flb) <- random_FLQuant_generator(fixed_dims = dim(flq), sd = 0.1)
@@ -109,16 +110,31 @@ test_that("operatingModel project timestep",{
             expect_that((cn * dr)[,year,,season,,]@.Data, is_identical_to(discards.n(out[["fisheries"]][[i]][[1]])[,year,,season,,]@.Data))
         }
         # check n is OK - not SRR
+        # Depends if it is start of the year (plus group and recruitment)
         next_n <- n(flb)[,1,,1,,]
         next_n[] <- 0
-        next_n[2:dim(next_n)[1]] <- (n(out[["biol"]]) * exp(-z))[1:(dim(next_n)[1]-1),year,,season,,]
-        next_n[dim(next_n)[1]] <- next_n[dim(next_n)[1]] + ((n(out[["biol"]]) * exp(-z))[dim(next_n)[1],year,,season,,])
+        #next_n[2:dim(next_n)[1]] <- (n(out[["biol"]]) * exp(-z))[1:(dim(next_n)[1]-1),year,,season,,]
+        # if start of year
+        if (next_season == 1){
+            next_n[2:dim(next_n)[1]] <- (n(out[["biol"]]) * exp(-z))[1:(dim(next_n)[1]-1),year,,season,,]
+            next_n[dim(next_n)[1]] <- next_n[dim(next_n)[1]] + ((n(out[["biol"]]) * exp(-z))[dim(next_n)[1],year,,season,,])
+        }
+        if (next_season > 1){
+            next_n[1:dim(next_n)[1]] <- (n(out[["biol"]]) * exp(-z))[1:dim(next_n)[1],year,,season,,]
+        }
+
         # Just checking first area and unit now
         # And ages 2+
         expect_that(c(next_n[2:dim(next_n)[1],,1,,1,]), is_identical_to(c(n(out[["biol"]])[2:dim(next_n)[1],next_year,1,next_season,1,])))
         # With no time structure in SRR params, SRR is calculated every timestep
         rec <- params_ricker["a",] * ssb[1,ssb_year,1,ssb_season,1,] * exp(-params_ricker["b",] * ssb[1,ssb_year,1,ssb_season,1,]) * residuals_ricker[1,next_year,1,next_season]
-        expect_that(c(rec), equals(c(n(out[["biol"]])[1,next_year,1,next_season,1,])))
+        # if start of year only recruitment in age 1
+        if (next_season == 1){
+            expect_that(c(rec), equals(c(n(out[["biol"]])[1,next_year,1,next_season,1,])))
+        }
+        if (next_season > 1){
+            expect_that(c(rec + next_n[1,]), equals(c(n(out[["biol"]])[1,next_year,1,next_season,1,])))
+        }
     }
 
     # Test with time structure in SR params - only recruitment in first season
