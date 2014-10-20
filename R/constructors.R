@@ -122,6 +122,86 @@ setMethod('fwdElement', signature(element='data.frame', iters='missing'),
 )
 # }}}
 
+# fwdElement(element='list', iters='missing') {{{
+setMethod('fwdElement', signature(element='list', iters='missing'),
+	function(element) {
+
+	foo <- function(...) {
+
+		args <- list(...)
+	
+		# SEPARATE df and
+		df <- as.data.frame(args[!names(args) %in% 'value'])
+		
+		# array components
+		val <- args[['value']]
+		
+		# TURN val into matrix
+		if(is(val, 'list')) {
+			mat <- do.call(rbind, val)
+		} else {
+			mat <- t(matrix(val))
+		}
+		# CHECK no. rows in iters
+		if(nrow(df) > nrow(mat)) {
+			mat <- t(matrix(mat, nrow=length(mat), ncol=nrow(df)))
+		}
+
+		ele <- new('fwdElement')@element[rep(1, 1),]
+		ele[names(df)] <- df
+
+		return(list(element=ele, iters=mat))
+	}
+	
+	if(is(element[[1]], 'list')) {
+		
+		inp <- lapply(element, function(x) do.call('foo', x))
+
+		ele <- do.call('rbind', lapply(inp, function(x) x$element))
+		ite <- do.call('rbind', lapply(inp, function(x) x$iters))
+
+		return(fwdElement(element=ele, iters=ite))
+
+	} else {
+		
+		inp <- do.call('foo', element)
+		return(do.call('fwdElement', inp))
+	}
+	
+		
+	}
+)
+
+# }}}
+
+# fwdElement(element='missing', iters='missing') {{{
+setMethod('fwdElement', signature(element='missing', iters='missing'),
+	function(...) {
+
+		args <- list(...)
+		
+		# SEPARATE df and
+		df <- as.data.frame(args[!names(args) %in% 'value'])
+		
+		# array components
+		val <- args[['value']]
+		
+		# TURN val into matrix
+		if(is(val, 'list')) {
+			mat <- do.call(rbind, val)
+		} else {
+			mat <- t(matrix(val))
+		}
+		# CHECK no. rows in iters
+		if(nrow(df) > nrow(mat)) {
+			mat <- t(matrix(mat, nrow=length(mat), ncol=nrow(df)))
+		}
+		return(fwdElement(element=df, iters=mat))
+	}
+)
+
+# }}}
+
 # fwdControl(target=fwdElement, iters='missing') {{{
 setMethod('fwdControl', signature(target='fwdElement', iters='missing'),
 	function(target) {
