@@ -26,6 +26,8 @@
 enum fwdControlTargetType {
     target_f,
     target_catch,
+    target_landings,
+    target_discards,
     target_ssb,
     target_biomass
 };

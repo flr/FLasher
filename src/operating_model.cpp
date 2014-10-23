@@ -94,6 +94,8 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
         //Rprintf("\nnr_count: %i\n", nr_count);
         // Get y = f(x0)
         y = fun.Forward(0, indep); // HERE - why is y changing
+        Rprintf("indep: %f\n", indep[0]);
+        Rprintf("y: %f\n", y[0]);
         // Get f'(x0)
         jac = fun.SparseJacobian(indep);
         // Get w (f(x0) / f'(x0)) for each iteration if necessary
@@ -233,12 +235,7 @@ operatingModel::operator SEXP() const{
                             Rcpp::Named("f", f),
                             Rcpp::Named("f_spwn", f_spwn),
                             Rcpp::Named("ctrl", ctrl));
-                            //Rcpp::Named("landings_n", landings_n),
-                            //Rcpp::Named("discards_n", discards_n),
-                            //Rcpp::Named("fad", fad),
-                            //Rcpp::Named("n", n));
 }
-
 
 // The timestep that fmult affects to calculate the target value
 // e.g. if Biomass is target, then adjust the fmult in the previous timestep
@@ -296,20 +293,23 @@ void operatingModel::project_timestep(const int timestep){
     CppAD::AD<double> landings_n_temp; 
     CppAD::AD<double> discards_n_temp; 
     unsigned int max_quant = biol_dim[0];
+    //Rprintf("landings_n[3] before: %f\n", Value(fisheries(1)(1).landings_n()(3, year, unit, season, area, 1)));
     for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++ fisheries_count){
         for (int iter_count = 1; iter_count <= niter; ++iter_count){
             for (int quant_count = 1; quant_count <= max_quant; ++quant_count){
+
                 // values in current timestep are used to calculate the discards ratio of that timestep, and then overwritten
                 landings_n_temp = fisheries(fisheries_count)(1).landings_n()(quant_count, year, unit, season, area, iter_count);
                 discards_n_temp = fisheries(fisheries_count)(1).discards_n()(quant_count, year, unit, season, area, iter_count);
                 discards_ratio_temp = discards_n_temp / (discards_n_temp + landings_n_temp);
+
                 catch_temp = (f(fisheries_count)(quant_count, year, unit, season, area, iter_count) / z(quant_count, 1, 1, 1, 1, iter_count)) * (1.0 - exp(-1.0 * z(quant_count, 1, 1, 1, 1, iter_count))) * biol.n()(quant_count, year, unit, season, area, iter_count);
                 fisheries(fisheries_count)(1).landings_n()(quant_count, year, unit, season, area, iter_count) = (1.0 - discards_ratio_temp) * catch_temp;
                 fisheries(fisheries_count)(1).discards_n()(quant_count, year, unit, season, area, iter_count) = discards_ratio_temp * catch_temp;
             }
         }
     }
-
+    //Rprintf("landings_n[3] after: %f\n", Value(fisheries(1)(1).landings_n()(3, year, unit, season, area, 1)));
 
     // Update biol in next timestep only if within time range
     if ((next_year <= biol_dim[1]) & (next_season <= biol_dim[3])){
@@ -423,6 +423,16 @@ FLQuantAD operatingModel::eval_target(const int target_no) const {
             //    out_flq = catches(fishery_no, catch_no, biol_no);
             //}
             break;
+        // Need to add multiple FLCatch case
+        case target_landings:
+            Rprintf("target_landings\n");
+            out = landings(biol_no);
+            break;
+        // Need to add multiple FLCatch case
+        case target_discards:
+            Rprintf("target_discards\n");
+            out = discards(biol_no);
+            break;
         case target_ssb:
             out = ssb(biol_no);
             break;
@@ -511,21 +521,6 @@ void operatingModel::run(){
 
     Rprintf("In run\n");
 
-// No of targets
-// Target loop
-// No of simultaneous targets in that target ( = 1)
-// get timestep of target
-// no_fmults = no_sim_targets
-// fmults = 1 (grow or shrink fmult as no sim targets changes)
-// turn on tape
-// f = f * fmult
-// calc error = target_value (from control)  - target_hat_value (in object)
-//     Need calc_error method
-//         target_value method
-//         target_hat_value method
-// solve
-// project again
-
     const unsigned int ntarget = ctrl.get_ntarget();
     const unsigned int nsim_targets = 1; // Simultaneous targets - fix at 1 for now - will change with target number
     const unsigned int niter = ctrl.get_niter(); // number of iters taken from control object - not from Biol or Fisheries
@@ -601,6 +596,8 @@ void operatingModel::run(){
         // Stop recording
         CppAD::ADFun<double> fun(fmult_ad, error);
         Rprintf("Turned off tape\n");
+        Rprintf("target_value: %f\n", target_value[0]);
+        Rprintf("target_value_hat: %f\n", Value(target_value_hat_flq(1,target_year, 1, target_season, 1, 1)));
 
         // Solve
         // reset initial solver value 
@@ -714,4 +711,36 @@ FLQuantAD operatingModel::catches(const int biol_no) const{
     return catches_out;
 }
 
+// Catch of a particular fishery
+FLQuantAD operatingModel::landings(const int fishery_no, const int catch_no, const int biol_no) const{
+    return fisheries(fishery_no, catch_no).landings();
+}
+
+// Total catch from an FLBiol
+// Assumes the catch is the first FLCatch in the FLFishery
+FLQuantAD operatingModel::landings(const int biol_no) const{
+    // Get the catch from the first fishery
+    FLQuantAD landings_out = landings(1,1,biol_no);
+    for (unsigned int fishery_count = 2; fishery_count <= fisheries.get_nfisheries(); ++fishery_count){
+        landings_out = landings_out + landings(fishery_count,1,biol_no);
+    }
+    return landings_out;
+}
+
+
+// Catch of a particular fishery
+FLQuantAD operatingModel::discards(const int fishery_no, const int catch_no, const int biol_no) const{
+    return fisheries(fishery_no, catch_no).discards();
+}
+
+// Total catch from an FLBiol
+// Assumes the catch is the first FLCatch in the FLFishery
+FLQuantAD operatingModel::discards(const int biol_no) const{
+    // Get the catch from the first fishery
+    FLQuantAD discards_out = discards(1,1,biol_no);
+    for (unsigned int fishery_count = 2; fishery_count <= fisheries.get_nfisheries(); ++fishery_count){
+        discards_out = discards_out + discards(fishery_count,1,biol_no);
+    }
+    return discards_out;
+}
 

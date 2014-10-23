@@ -355,6 +355,26 @@ test_that("operatingModel target values and eval_target method", {
     }
     expect_that(targets[["catches"]]@.Data, equals(catches_total@.Data))
 
+    # landings - single
+    expect_that(targets[["landings_catch"]]@.Data , equals(landings(flfs[[fishery_no]][[catch_no]])@.Data))
+    # landings - total
+    landings_total <- landings(flfs[[fishery_no]][[catch_no]])
+    landings_total[] <- 0
+    for (i in 1:length(flfs)){
+        landings_total <- landings_total + landings(flfs[[i]][[catch_no]])
+    }
+    expect_that(targets[["landings"]]@.Data, equals(landings_total@.Data))
+
+    # discards - single
+    expect_that(targets[["discards_catch"]]@.Data , equals(discards(flfs[[fishery_no]][[catch_no]])@.Data))
+    # discards - total
+    discards_total <- discards(flfs[[fishery_no]][[catch_no]])
+    discards_total[] <- 0
+    for (i in 1:length(flfs)){
+        discards_total <- discards_total + discards(flfs[[i]][[catch_no]])
+    }
+    expect_that(targets[["discards"]]@.Data, equals(discards_total@.Data))
+
     # SSB - f portion from all catches
     f_portion <- f_spwn[[1]] * f[[1]]
     for (i in 2:length(f)){

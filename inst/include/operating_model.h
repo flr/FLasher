@@ -86,18 +86,27 @@ class operatingModel {
         FLQuantAD fbar(const Rcpp::IntegerVector age_range_indices, const int fishery_no, const int catch_no, const int biol_no = 1) const;
         // Total fbar on a biol
         FLQuantAD fbar(const Rcpp::IntegerVector age_range_indices, const int biol_no = 1) const;
-        // catches from an FLCatch and fishery on a stock - i.e. partial F - will need to adapt this to include multiple biols in the future
+        // catches from an FLCatch and fishery on a stock 
         FLQuantAD catches(const int fishery_no, const int catch_no, const int biol_no = 1) const;
         // Total catches from a biol
         FLQuantAD catches(const int biol_no = 1) const;
+        // landings from a FLCatch in a fishery on a biol
+        FLQuantAD landings(const int fishery_no, const int catch_no, const int biol_no = 1) const;
+        // Total landings from a biol
+        FLQuantAD landings(const int biol_no = 1) const;
+        // discards from a FLCatch in a fishery on a biol
+        FLQuantAD discards(const int fishery_no, const int catch_no, const int biol_no = 1) const;
+        // Total discards from a biol
+        FLQuantAD discards(const int biol_no = 1) const;
+
+        // Total biomass from a biol
+        FLQuantAD biomass(const int biol_no) const;
 
         // Various ways of calculating reproductive potential
         FLQuantAD ssb(const int biol_no) const;
         FLQuantAD ssb(const int timestep, const int unit, const int area, const int biol_no) const; // all iters in a timestep, unit and area
         adouble ssb(const int timestep, const int unit, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
         adouble ssb(const int year, const int unit, const int season, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
-        // Other targets
-        FLQuantAD biomass(const int biol_no) const;
 
     private:
         /* These are not AD to save memory - we only need AD for solving each timestep */

@@ -153,6 +153,10 @@ Rcpp::List test_operating_model_targets(FLFisheriesAD flfs, SEXP flb_sexp, const
     FLQuantAD fbar = om.fbar(age_range_indices, biol_no);
     FLQuantAD catches_catch_out = om.catches(fishery_no, catch_no, 1);
     FLQuantAD catches_out = om.catches(1);
+    FLQuantAD landings_catch_out = om.landings(fishery_no, catch_no, 1);
+    FLQuantAD landings_out = om.landings(1);
+    FLQuantAD discards_catch_out = om.discards(fishery_no, catch_no, 1);
+    FLQuantAD discards_out = om.discards(1);
     FLQuantAD ssb_out = om.ssb(biol_no);
     FLQuantAD biomass_out = om.biomass(biol_no);
 
@@ -160,6 +164,10 @@ Rcpp::List test_operating_model_targets(FLFisheriesAD flfs, SEXP flb_sexp, const
                             Rcpp::Named("fbar",fbar),
                             Rcpp::Named("catches_catch",catches_catch_out),
                             Rcpp::Named("catches",catches_out),
+                            Rcpp::Named("landings_catch",landings_catch_out),
+                            Rcpp::Named("landings",landings_out),
+                            Rcpp::Named("discards_catch",discards_catch_out),
+                            Rcpp::Named("discards",discards_out),
                             Rcpp::Named("biomass",biomass_out),
                             Rcpp::Named("ssb",ssb_out));
 }
