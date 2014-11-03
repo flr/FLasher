@@ -302,6 +302,7 @@ void operatingModel::project_timestep(const int timestep){
                 landings_n_temp = fisheries(fisheries_count)(1).landings_n()(quant_count, year, unit, season, area, iter_count);
                 discards_n_temp = fisheries(fisheries_count)(1).discards_n()(quant_count, year, unit, season, area, iter_count);
                 discards_ratio_temp = discards_n_temp / (discards_n_temp + landings_n_temp);
+    Rprintf("discards_ratio_temp[%i]: %f\n", quant_count, Value(discards_ratio_temp));
 
                 catch_temp = (f(fisheries_count)(quant_count, year, unit, season, area, iter_count) / z(quant_count, 1, 1, 1, 1, iter_count)) * (1.0 - exp(-1.0 * z(quant_count, 1, 1, 1, 1, iter_count))) * biol.n()(quant_count, year, unit, season, area, iter_count);
                 fisheries(fisheries_count)(1).landings_n()(quant_count, year, unit, season, area, iter_count) = (1.0 - discards_ratio_temp) * catch_temp;
