@@ -69,6 +69,7 @@ class FLCatch_base {
 
         FLQuant_base<T> landings_n_flq;
         FLQuant_base<T> discards_n_flq;
+        FLQuant_base<T> discards_ratio_flq;
         FLQuant landings_wt_flq;
         FLQuant discards_wt_flq;
         FLQuant catch_sel_flq;

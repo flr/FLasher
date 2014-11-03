@@ -558,7 +558,7 @@ test_that("Test projection with individual targets",{
     srr_residuals <- exp(residuals(srr))
     srr_residuals <- window(srr_residuals,end=2009)
     srr_residuals[,"2009"] <- srr_residuals[,"2008"]
-    srr_residuals[] <- 1 # turn off residuals
+    #srr_residuals[] <- 1 # turn off residuals
     srr_residuals_mult <- TRUE
     srr_timelag <- 1
     niters <- 500
@@ -594,6 +594,16 @@ test_that("Test projection with individual targets",{
     out <- test_operatingModel_run(fisheries, biol, srr_model_name, srr_params, srr_residuals, srr_residuals_mult, srr_timelag, f, f_spwn, fwc)
     # equals?
     expect_that(c(apply(out[["f"]][[1]][ac(minAge:maxAge),2] ,2:6,mean)), equals(unname(fwc@target@iters[1,"value",])))
+
+    # Special case - 0 F
+    target <- data.frame(year=2, quantity = 'f', value = 0, minAge=minAge, maxAge=maxAge, season=1L)
+    fwc <- fwdControl(target=target, iter=niters)
+    #fwc@target@iters[1,"value",] <- rlnorm(niters, mean = log(0.5), sd = 0.1)
+    out <- test_operatingModel_run(fisheries, biol, srr_model_name, srr_params, srr_residuals, srr_residuals_mult, srr_timelag, f, f_spwn, fwc)
+    # equals?
+    expect_that(c(apply(out[["f"]][[1]][ac(minAge:maxAge),2] ,2:6,mean)), equals(unname(fwc@target@iters[1,"value",])))
+    #discards.ratio(out[["fisheries"]][[1]][[1]])[,2]
+    #discards.ratio(fisheries[[1]][[1]])[,2]
 
     # Catch target
     target <- data.frame(year=2, quantity = 'catch', value = 100000, minAge=minAge, maxAge=maxAge, season=1L)
@@ -631,7 +641,7 @@ test_that("Test projection with really complicated target",{
     srr_residuals <- exp(residuals(srr))
     srr_residuals <- window(srr_residuals,end=2009)
     srr_residuals[,"2009"] <- srr_residuals[,"2008"]
-    srr_residuals[] <- 1 # turn off residuals
+    #srr_residuals[] <- 1 # turn off residuals
     srr_residuals_mult <- TRUE
     srr_timelag <- 1
     niters <- 500
@@ -714,6 +724,11 @@ test_that("Test projection with really complicated target",{
     out <- test_operatingModel_run(fisheries, biol, srr_model_name, srr_params, srr_residuals, srr_residuals_mult, srr_timelag, f, f_spwn, fwc)
     ssb_out <- quantSums(n(out[["biol"]]) * wt(out[["biol"]]) * fec(out[["biol"]]) * exp(-out[["f_spwn"]][[1]] * out[["f"]][[1]] - m(out[["biol"]]) * spwn(out[["biol"]])))
 
+    # Check that discards_ratio has not been mucked about with
+    dr_orig <- discards.ratio(fisheries[[1]][[1]])
+    dr_out <- discards.ratio(out[["fisheries"]][[1]][[1]])
+    expect_that(dr_orig, equals(dr_out))
+
     # Test output
     # Absolute targets
     expect_that(c(apply(out[["f"]][[1]][ac(minAge:maxAge),2] ,2:6,mean)), equals(unname(fwc@target@iters[1,"value",]))) # abs ssb
@@ -762,3 +777,63 @@ test_that("Test projection with really complicated target",{
 
 })
 
+test_that("Test Jose bug with 0 landings and F bounds",{
+    # This used to stuff up as discards.ratio was recalculated
+    # With 0 landings leading to NA
+    data(ple4)
+    # make the biol
+    # srr
+    srr_model_name <- "bevholt"
+    srr <- as.FLSR(ple4, model=srr_model_name)
+    srr <- fmle(srr, control = list(trace=0))
+    srr_params <- as.FLQuant(params(srr))
+    srr_residuals <- exp(residuals(srr))
+    srr_residuals <- window(srr_residuals,end=2009)
+    srr_residuals[,"2009"] <- srr_residuals[,"2008"]
+    srr_residuals[] <- 1 # turn off residuals
+    srr_residuals_mult <- TRUE
+    srr_timelag <- 1
+    # catch -> fishery -> fisheries
+    #niters <- 500
+    #niters <- 10
+    niters <- 1 
+    #niters <- 1000
+    data(ple4)
+    ple4 <- propagate(ple4,niters)
+    biol <- as(ple4, 'FLBiol')
+    catch <- as(ple4, 'FLCatch')
+    catch@name <- "ple4 catch"
+    catch@desc <- "ple4 catch"
+    # Hack
+    fishery <- FLFishery(ple4=catch)
+    fishery@name <- "ple4 fishery"
+    fishery@desc <- "ple4 fishery"
+    fisheries <- FLFisheries(ple4=fishery)
+    fisheries@desc <- "ple4 fisheries"
+    # Fs
+    f <- list(ple4 = harvest(ple4))
+    f_spwn_flq <- harvest(ple4)
+    f_spwn_flq[] <- 0
+    f_spwn <- list(ple4 = f_spwn_flq)
+
+    minAge <- 2
+    maxAge <- 6
+
+    # 0 landings target, with min and max f
+    target <- data.frame(year=c(2,2,2), quantity = c('landings','f','f'), value = c(0.0,0.0,0.0), minAge=c(NA,minAge,minAge), maxAge=c(NA,maxAge,maxAge), season=1L)
+    fwc <- fwdControl(target=target, iter=niters)
+    # hack target
+    fwc@target@element[2,c("value","min")] <- c(NA, 0)
+    fwc@target@iters[2,c("value","min"),] <- c(NA, 0)
+    fwc@target@element[3,c("value","max")] <- c(NA, 1.5)
+    fwc@target@iters[3,c("value","max"),] <- c(NA, 1.5)
+
+    out <- test_operatingModel_run(fisheries, biol, srr_model_name, srr_params, srr_residuals, srr_residuals_mult, srr_timelag, f, f_spwn, fwc)
+
+    # Catch, landings and discards should be 0
+    expect_that(c(landings(out[["fisheries"]][[1]][[1]])[,2]), equals(fwc@target@iters[1,"value",]))
+    expect_that(c(catch(out[["fisheries"]][[1]][[1]])[,2]), equals(fwc@target@iters[1,"value",]))
+    expect_that(c(discards(out[["fisheries"]][[1]][[1]])[,2]), equals(fwc@target@iters[1,"value",]))
+    # F should be 0
+    expect_that(c(apply(out[["f"]][[1]][ac(minAge:maxAge),2],2:6,mean)), equals(0))
+})

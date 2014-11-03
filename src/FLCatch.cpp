@@ -17,6 +17,7 @@ FLCatch_base<T>::FLCatch_base(){
     range = Rcpp::NumericVector();
     landings_n_flq = FLQuant_base<T>();
     discards_n_flq = FLQuant_base<T>();
+    discards_ratio_flq = FLQuant_base<T>();
     landings_wt_flq = FLQuant();
     discards_wt_flq = FLQuant();
     catch_sel_flq = FLQuant();
@@ -34,6 +35,7 @@ FLCatch_base<T>::FLCatch_base(SEXP flc_sexp){
     range = flc_s4.slot("range");
     landings_n_flq = flc_s4.slot("landings.n");
     discards_n_flq = flc_s4.slot("discards.n");
+    discards_ratio_flq = discards_n_flq / (discards_n_flq + landings_n_flq);
     landings_wt_flq = flc_s4.slot("landings.wt");
     discards_wt_flq = flc_s4.slot("discards.wt");
     catch_sel_flq = flc_s4.slot("catch.sel");
@@ -49,6 +51,7 @@ FLCatch_base<T>::FLCatch_base(const FLCatch_base<T>& FLCatch_source){
     range = Rcpp::clone<Rcpp::NumericVector>(FLCatch_source.range);
     landings_n_flq = FLCatch_source.landings_n_flq;
     discards_n_flq = FLCatch_source.discards_n_flq;
+    discards_ratio_flq = FLCatch_source.discards_ratio_flq;
     landings_wt_flq = FLCatch_source.landings_wt_flq;
     discards_wt_flq = FLCatch_source.discards_wt_flq;
     catch_sel_flq = FLCatch_source.catch_sel_flq;
@@ -65,6 +68,7 @@ FLCatch_base<T>& FLCatch_base<T>::operator = (const FLCatch_base<T>& FLCatch_sou
         range = Rcpp::clone<Rcpp::NumericVector>(FLCatch_source.range);
         landings_n_flq = FLCatch_source.landings_n_flq;
         discards_n_flq = FLCatch_source.discards_n_flq;
+        discards_ratio_flq = FLCatch_source.discards_ratio_flq;
         landings_wt_flq = FLCatch_source.landings_wt_flq;
         discards_wt_flq = FLCatch_source.discards_wt_flq;
         catch_sel_flq = FLCatch_source.catch_sel_flq;
@@ -156,6 +160,12 @@ template <typename T>
 FLQuant& FLCatch_base<T>::price() {
     return price_flq;
 }
+
+template <typename T>
+FLQuant_base<T> FLCatch_base<T>::discards_ratio() const {
+    return discards_ratio_flq;
+}
+
 /*
 template <typename T>
 FLQuant& FLCatch_base<T>::catch_q() {
@@ -194,12 +204,6 @@ FLQuant_base<T> FLCatch_base<T>::catch_wt() const {
     return catch_wt;
 }
 
-template <typename T>
-FLQuant_base<T> FLCatch_base<T>::discards_ratio() const {
-    FLQuant_base<T> discards_ratio = discards_n() / catch_n();
-    return discards_ratio;
-}
-
 
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::landings_sel() const {
@@ -231,6 +235,7 @@ FLCatches_base<T>::FLCatches_base(){
     //catches
 }
 
+// Would like to speed up by not using push_back but cannot define size in advance as we don't what it is!
 // Constructor from a list of SEXP S4 FLCatch objects
 // Used as intrusive 'as'
 template <typename T>
