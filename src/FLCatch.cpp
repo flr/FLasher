@@ -22,7 +22,7 @@ FLCatch_base<T>::FLCatch_base(){
     discards_wt_flq = FLQuant();
     catch_sel_flq = FLQuant();
     price_flq = FLQuant();
-    catch_q_flq = FLQuant();
+    // catch_q_params - what is it?
 }
 
 // Constructor from a SEXP S4 FLCatch
@@ -40,9 +40,7 @@ FLCatch_base<T>::FLCatch_base(SEXP flc_sexp){
     discards_wt_flq = flc_s4.slot("discards.wt");
     catch_sel_flq = flc_s4.slot("catch.sel");
     price_flq = flc_s4.slot("price");
-    // Fix catch_q constructor
-    catch_q_flq = FLQuant();
-    //catch_q_flq = flc_s4.slot("catch.q");
+    // catch_q_params - what is it?
 }
 
 // Copy constructor - else members can be pointed at by multiple instances
@@ -58,7 +56,7 @@ FLCatch_base<T>::FLCatch_base(const FLCatch_base<T>& FLCatch_source){
     discards_wt_flq = FLCatch_source.discards_wt_flq;
     catch_sel_flq = FLCatch_source.catch_sel_flq;
     price_flq = FLCatch_source.price_flq;
-    catch_q_flq = FLCatch_source.catch_q_flq;
+    // catch_q_params - what is it?
 }
 
 // Assignment operator to ensure deep copy - else 'data' can be pointed at by multiple instances
@@ -75,7 +73,7 @@ FLCatch_base<T>& FLCatch_base<T>::operator = (const FLCatch_base<T>& FLCatch_sou
         discards_wt_flq = FLCatch_source.discards_wt_flq;
         catch_sel_flq = FLCatch_source.catch_sel_flq;
         price_flq = FLCatch_source.price_flq;
-        catch_q_flq = FLCatch_source.catch_q_flq;
+        // catch_q_params - what is it?
 	}
 	return *this;
 }
@@ -96,7 +94,7 @@ FLCatch_base<T>::operator SEXP() const{
     flc_s4.slot("discards.wt") = discards_wt_flq;
     flc_s4.slot("catch.sel") = catch_sel_flq;
     flc_s4.slot("price") = price_flq;
-    // Fix catch_q wrap
+    // Fix catch_q params wrap
     //flc_s4.slot("catch.q") = catch_q_flq;
     return Rcpp::wrap(flc_s4);
 }
@@ -169,10 +167,10 @@ FLQuant_base<T> FLCatch_base<T>::discards_ratio() const {
     return discards_ratio_flq;
 }
 
-template <typename T>
-FLQuant& FLCatch_base<T>::catch_q() {
-    return catch_q_flq;
-}
+//template <typename T>
+//FLQuant& FLCatch_base<T>::catch_q() {
+//    return catch_q_flq;
+//}
 
 // methods
 template <typename T>
