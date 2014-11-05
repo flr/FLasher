@@ -46,7 +46,7 @@ class FLCatch_base {
         FLQuant& discards_wt();
         FLQuant& catch_sel();
         FLQuant& price();
-        //FLQuant& catch_q();
+        FLQuant& catch_q();
 
         // Methods
         FLQuant_base<T> landings() const;
@@ -74,7 +74,7 @@ class FLCatch_base {
         FLQuant discards_wt_flq;
         FLQuant catch_sel_flq;
         FLQuant price_flq;
-        //FLQuant catch_q_flq;
+        FLQuant catch_q_flq;
 };
 
 typedef FLCatch_base<double> FLCatch;
