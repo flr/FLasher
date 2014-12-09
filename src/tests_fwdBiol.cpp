@@ -61,13 +61,6 @@ Rcpp::List test_fwdBiolAD_FLSR_bits_constructor(SEXP flb_sexp, const std::string
 				Rcpp::Named("srr",fwb.get_srr()));
 }
 
-
-
-
-
-
-
-
 // [[Rcpp::export]]
 fwdBiol test_fwdBiol_copy_constructor(fwdBiol fwdb1){
 	fwdBiol fwdb2(fwdb1); // uses copy constructor
@@ -192,6 +185,80 @@ fwdBiolAD test_fwdBiolAD_set_accessors(fwdBiolAD fwdb, int quant, int year, int 
     fwdb.spwn()(quant, year, unit, season, area, iter) = values[4];
     return fwdb;
 }
+
+/*-------------------------------------------------------*/
+
+// fwdBiols constructors
+
+// List of biols - used as intrinsic 'as'
+// [[Rcpp::export]]
+fwdBiols test_fwdBiols_list_constructor(SEXP flbs_list_sexp){
+	fwdBiols flbs(flbs_list_sexp);
+	return flbs;
+}
+// [[Rcpp::export]]
+fwdBiolsAD test_fwdBiolsAD_list_constructor(SEXP flbs_list_sexp){
+	fwdBiolsAD flbs(flbs_list_sexp);
+	return flbs;
+}
+
+// fwdBiol constructor
+// [[Rcpp::export]]
+fwdBiols test_fwdBiols_fwdBiol_constructor(SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult){
+    fwdBiol fwb(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
+    fwdBiols fwbs(fwb);
+    return fwbs;
+}
+
+// fwdBiolAD () get operator
+// [[Rcpp::export]]
+fwdBiolAD test_fwdBiolsAD_const_get_single_index_accessor(SEXP fwbs_list_sexp, const int element){
+	const fwdBiolsAD fwbs(fwbs_list_sexp);
+    fwdBiolAD fwb = fwbs(element);
+    return fwb;
+}
+
+// [[Rcpp::export]]
+fwdBiolAD test_fwdBiolsAD_get_single_index_accessor(SEXP fwbs_list_sexp, const int element){
+	fwdBiolsAD fwbs(fwbs_list_sexp);
+    fwdBiolAD fwb = fwbs(element);
+    return fwb;
+}
+
+// [[Rcpp::export]]
+double test_fwdBiolsAD_const_get_value_accessor(SEXP fwbs_list_sexp, const int biol_no, int quant, int year, int unit, int season, int area, int iter){
+	const fwdBiolsAD fwbs(fwbs_list_sexp);
+    adouble ad_value_out = fwbs(biol_no).n()(quant,year,unit,season,area,iter);
+    return Value(ad_value_out);
+}
+
+// [[Rcpp::export]]
+double test_fwdBiolsAD_get_value_accessor(SEXP fwbs_list_sexp, const int biol_no, int quant, int year, int unit, int season, int area, int iter){
+	fwdBiolsAD fwbs(fwbs_list_sexp);
+    adouble ad_value_out = fwbs(biol_no).n()(quant,year,unit,season,area,iter);
+    return Value(ad_value_out);
+}
+
+// [[Rcpp::export]]
+fwdBiolsAD test_fwdBiolsAD_set_single_index_accessor(SEXP fwbs_list_sexp, const int element, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult){
+    fwdBiolAD fwb(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
+	fwdBiolsAD fwbs(fwbs_list_sexp);
+    fwbs(element) = fwb;
+    return fwbs;
+}
+
+// [[Rcpp::export]]
+fwdBiolsAD test_fwdBiolsAD_set_value_accessor(SEXP fwbs_list_sexp, const int biol_no, int quant, int year, int unit, int season, int area, int iter, double value){
+	fwdBiolsAD fwbs(fwbs_list_sexp);
+    adouble ad_value = value;
+    fwbs(biol_no).n()(quant,year,unit,season,area,iter) = ad_value;
+    return fwbs;
+}
+
+// copy constructor
+
+// assignment operator
+
 
 
 

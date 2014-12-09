@@ -1437,6 +1437,42 @@ test_fwdBiolAD_set_accessors <- function(fwdb, quant, year, unit, season, area, 
     .Call('FLasher_test_fwdBiolAD_set_accessors', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter, values)
 }
 
+test_fwdBiols_list_constructor <- function(flbs_list_sexp) {
+    .Call('FLasher_test_fwdBiols_list_constructor', PACKAGE = 'FLasher', flbs_list_sexp)
+}
+
+test_fwdBiolsAD_list_constructor <- function(flbs_list_sexp) {
+    .Call('FLasher_test_fwdBiolsAD_list_constructor', PACKAGE = 'FLasher', flbs_list_sexp)
+}
+
+test_fwdBiols_fwdBiol_constructor <- function(flb_sexp, model_name, params, timelag, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiols_fwdBiol_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, timelag, residuals, residuals_mult)
+}
+
+test_fwdBiolsAD_const_get_single_index_accessor <- function(fwbs_list_sexp, element) {
+    .Call('FLasher_test_fwdBiolsAD_const_get_single_index_accessor', PACKAGE = 'FLasher', fwbs_list_sexp, element)
+}
+
+test_fwdBiolsAD_get_single_index_accessor <- function(fwbs_list_sexp, element) {
+    .Call('FLasher_test_fwdBiolsAD_get_single_index_accessor', PACKAGE = 'FLasher', fwbs_list_sexp, element)
+}
+
+test_fwdBiolsAD_const_get_value_accessor <- function(fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_fwdBiolsAD_const_get_value_accessor', PACKAGE = 'FLasher', fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter)
+}
+
+test_fwdBiolsAD_get_value_accessor <- function(fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_fwdBiolsAD_get_value_accessor', PACKAGE = 'FLasher', fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter)
+}
+
+test_fwdBiolsAD_set_single_index_accessor <- function(fwbs_list_sexp, element, flb_sexp, model_name, params, timelag, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiolsAD_set_single_index_accessor', PACKAGE = 'FLasher', fwbs_list_sexp, element, flb_sexp, model_name, params, timelag, residuals, residuals_mult)
+}
+
+test_fwdBiolsAD_set_value_accessor <- function(fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_fwdBiolsAD_set_value_accessor', PACKAGE = 'FLasher', fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter, value)
+}
+
 test_as_wrap_fwdControl <- function(control) {
     .Call('FLasher_test_as_wrap_fwdControl', PACKAGE = 'FLasher', control)
 }

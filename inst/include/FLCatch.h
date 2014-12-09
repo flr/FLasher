@@ -89,7 +89,7 @@ class FLCatches_base {
         /* Constructors */
 		FLCatches_base();
 		FLCatches_base(SEXP flcs_sexp); // Used as intrusive 'as', takes a list of FLCatch objects
-		FLCatches_base(FLCatch_base<T> flc); // Constructor from an FLCatches object
+		FLCatches_base(FLCatch_base<T> flc); // Constructor from an FLCatch object
         operator SEXP() const; // Used as intrusive 'wrap' - returns an FLCatches objects
 		FLCatches_base(const FLCatches_base& FLCatches_base_source); // copy constructor to ensure that copy is a deep copy - used when passing FLCs into functions
 		FLCatches_base& operator = (const FLCatches_base& FLCatches_base_source); // Assignment operator for a deep copy

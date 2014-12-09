@@ -6101,6 +6101,177 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// test_fwdBiols_list_constructor
+fwdBiols test_fwdBiols_list_constructor(SEXP flbs_list_sexp);
+RcppExport SEXP FLasher_test_fwdBiols_list_constructor(SEXP flbs_list_sexpSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type flbs_list_sexp(flbs_list_sexpSEXP );
+        fwdBiols __result = test_fwdBiols_list_constructor(flbs_list_sexp);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_fwdBiolsAD_list_constructor
+fwdBiolsAD test_fwdBiolsAD_list_constructor(SEXP flbs_list_sexp);
+RcppExport SEXP FLasher_test_fwdBiolsAD_list_constructor(SEXP flbs_list_sexpSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type flbs_list_sexp(flbs_list_sexpSEXP );
+        fwdBiolsAD __result = test_fwdBiolsAD_list_constructor(flbs_list_sexp);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_fwdBiols_fwdBiol_constructor
+fwdBiols test_fwdBiols_fwdBiol_constructor(SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult);
+RcppExport SEXP FLasher_test_fwdBiols_fwdBiol_constructor(SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP timelagSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type flb_sexp(flb_sexpSEXP );
+        Rcpp::traits::input_parameter< const std::string >::type model_name(model_nameSEXP );
+        Rcpp::traits::input_parameter< const FLQuant >::type params(paramsSEXP );
+        Rcpp::traits::input_parameter< const int >::type timelag(timelagSEXP );
+        Rcpp::traits::input_parameter< const FLQuant >::type residuals(residualsSEXP );
+        Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP );
+        fwdBiols __result = test_fwdBiols_fwdBiol_constructor(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_fwdBiolsAD_const_get_single_index_accessor
+fwdBiolAD test_fwdBiolsAD_const_get_single_index_accessor(SEXP fwbs_list_sexp, const int element);
+RcppExport SEXP FLasher_test_fwdBiolsAD_const_get_single_index_accessor(SEXP fwbs_list_sexpSEXP, SEXP elementSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type fwbs_list_sexp(fwbs_list_sexpSEXP );
+        Rcpp::traits::input_parameter< const int >::type element(elementSEXP );
+        fwdBiolAD __result = test_fwdBiolsAD_const_get_single_index_accessor(fwbs_list_sexp, element);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_fwdBiolsAD_get_single_index_accessor
+fwdBiolAD test_fwdBiolsAD_get_single_index_accessor(SEXP fwbs_list_sexp, const int element);
+RcppExport SEXP FLasher_test_fwdBiolsAD_get_single_index_accessor(SEXP fwbs_list_sexpSEXP, SEXP elementSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type fwbs_list_sexp(fwbs_list_sexpSEXP );
+        Rcpp::traits::input_parameter< const int >::type element(elementSEXP );
+        fwdBiolAD __result = test_fwdBiolsAD_get_single_index_accessor(fwbs_list_sexp, element);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_fwdBiolsAD_const_get_value_accessor
+double test_fwdBiolsAD_const_get_value_accessor(SEXP fwbs_list_sexp, const int biol_no, int quant, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_fwdBiolsAD_const_get_value_accessor(SEXP fwbs_list_sexpSEXP, SEXP biol_noSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type fwbs_list_sexp(fwbs_list_sexpSEXP );
+        Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        double __result = test_fwdBiolsAD_const_get_value_accessor(fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_fwdBiolsAD_get_value_accessor
+double test_fwdBiolsAD_get_value_accessor(SEXP fwbs_list_sexp, const int biol_no, int quant, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_fwdBiolsAD_get_value_accessor(SEXP fwbs_list_sexpSEXP, SEXP biol_noSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type fwbs_list_sexp(fwbs_list_sexpSEXP );
+        Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        double __result = test_fwdBiolsAD_get_value_accessor(fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_fwdBiolsAD_set_single_index_accessor
+fwdBiolsAD test_fwdBiolsAD_set_single_index_accessor(SEXP fwbs_list_sexp, const int element, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult);
+RcppExport SEXP FLasher_test_fwdBiolsAD_set_single_index_accessor(SEXP fwbs_list_sexpSEXP, SEXP elementSEXP, SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP timelagSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type fwbs_list_sexp(fwbs_list_sexpSEXP );
+        Rcpp::traits::input_parameter< const int >::type element(elementSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type flb_sexp(flb_sexpSEXP );
+        Rcpp::traits::input_parameter< const std::string >::type model_name(model_nameSEXP );
+        Rcpp::traits::input_parameter< const FLQuant >::type params(paramsSEXP );
+        Rcpp::traits::input_parameter< const int >::type timelag(timelagSEXP );
+        Rcpp::traits::input_parameter< const FLQuant >::type residuals(residualsSEXP );
+        Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP );
+        fwdBiolsAD __result = test_fwdBiolsAD_set_single_index_accessor(fwbs_list_sexp, element, flb_sexp, model_name, params, timelag, residuals, residuals_mult);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_fwdBiolsAD_set_value_accessor
+fwdBiolsAD test_fwdBiolsAD_set_value_accessor(SEXP fwbs_list_sexp, const int biol_no, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_fwdBiolsAD_set_value_accessor(SEXP fwbs_list_sexpSEXP, SEXP biol_noSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type fwbs_list_sexp(fwbs_list_sexpSEXP );
+        Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP );
+        Rcpp::traits::input_parameter< int >::type quant(quantSEXP );
+        Rcpp::traits::input_parameter< int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< int >::type unit(unitSEXP );
+        Rcpp::traits::input_parameter< int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< int >::type area(areaSEXP );
+        Rcpp::traits::input_parameter< int >::type iter(iterSEXP );
+        Rcpp::traits::input_parameter< double >::type value(valueSEXP );
+        fwdBiolsAD __result = test_fwdBiolsAD_set_value_accessor(fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // test_as_wrap_fwdControl
 fwdControl test_as_wrap_fwdControl(fwdControl control);
 RcppExport SEXP FLasher_test_as_wrap_fwdControl(SEXP controlSEXP) {

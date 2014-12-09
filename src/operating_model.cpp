@@ -145,14 +145,11 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
 
 // Empty constructor
 operatingModel::operatingModel(){
-    biol = fwdBiolAD();
+    //biol = fwdBiolAD();
+    biols = std::vector<fwdBiolAD>();
     fisheries = FLFisheriesAD();
     f = FLQuant7AD();
     f_spwn = FLQuant7();
-    //landings_n = FLQuant7AD();
-    //discards_n = FLQuant7AD();
-    //fad = FLQuant7AD();
-    //n = FLQuantAD();
 }
 
 // Main constructor
@@ -746,3 +743,13 @@ FLQuantAD operatingModel::discards(const int biol_no) const{
     return discards_out;
 }
 
+//----------------------------------------------------
+// Catchability methods
+
+// Supposed to get catch_q_params from FLCatch but we don't know what they are yet
+FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no) const{
+    // Default relationship: Q = alpha * B ^ -beta
+    // alpha and beta come from FLCatch.catch_q_params
+    // B is biomass of the biol
+    return FLQuant();
+}

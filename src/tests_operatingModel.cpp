@@ -203,7 +203,7 @@ std::vector<double> test_operatingModel_calc_target_value(FLFisheriesAD flfs, SE
 operatingModel test_operatingModel_run(const FLFisheriesAD fisheries, SEXP FLBiolSEXP, const std::string srr_model_name, const FLQuant srr_params, const FLQuant srr_residuals, const bool srr_residuals_mult, const int srr_timelag, FLQuant7AD f, FLQuant7 f_spwn, fwdControl ctrl){
 
     // Make the fwdBiol from the FLBiol and SRR bits
-    fwdBiolAD biol(FLBiolSEXP, srr_model_name, srr_params, srr_timelag, srr_residuals, TRUE); 
+    fwdBiolAD biol(FLBiolSEXP, srr_model_name, srr_params, srr_timelag, srr_residuals, srr_residuals_mult); 
     // Make the OM
     operatingModel om(fisheries, biol, f, f_spwn, ctrl);
 

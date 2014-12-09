@@ -93,3 +93,34 @@ class fwdBiol_base {
 typedef fwdBiol_base<double> fwdBiol;
 typedef fwdBiol_base<adouble> fwdBiolAD;
 
+/*----------------------------------------------*/
+// FLBiols class - a vector of FLBiols objects
+
+template <typename T>
+class fwdBiols_base {
+    public:
+        /* Constructors */
+		fwdBiols_base();
+		fwdBiols_base(SEXP flbs_list_sexp); // Used as intrusive 'as', takes a list of fwdBiol objects - remove. Better to make each fwdBiol separately and add to list
+        operator SEXP() const; // Used as intrusive 'wrap' - returns an FLBiols
+		fwdBiols_base(fwdBiol_base<T> flb); // Constructor from an fwdBiol object
+		fwdBiols_base(const fwdBiols_base& fwdBiols_base_source); // copy constructor to ensure that copy is a deep copy 
+		fwdBiols_base& operator = (const fwdBiols_base& fwdBiols_base_source); // Assignment operator for a deep copy
+
+        // Accessors
+		fwdBiol_base<T> operator () (const unsigned int element = 1) const; // Only gets an fwdBiol so const reinforced. Default is the first element
+		fwdBiol_base<T>& operator () (const unsigned int element = 1); // Gets and sets an fwdBiol so const not reinforced
+
+        void operator() (const fwdBiol_base<T> flb); // Add another fwdBiol_base<T> to the data
+        unsigned int get_nbiols() const;
+
+    protected:
+        std::vector<fwdBiol_base<T> > biols;
+        Rcpp::CharacterVector names; // of the biols
+        // std::string desc;
+};
+
+typedef fwdBiols_base<double> fwdBiols;
+typedef fwdBiols_base<adouble> fwdBiolsAD;
+
+

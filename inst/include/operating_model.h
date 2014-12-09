@@ -107,6 +107,8 @@ class operatingModel {
         FLQuantAD ssb(const int timestep, const int unit, const int area, const int biol_no) const; // all iters in a timestep, unit and area
         adouble ssb(const int timestep, const int unit, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
         adouble ssb(const int year, const int unit, const int season, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
+        // Catchability methods from an FLCatch and an FLBiol - is AD because biols are AD
+        FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no = 1) const;
 
     private:
         /* These are not AD to save memory - we only need AD for solving each timestep */
@@ -114,15 +116,10 @@ class operatingModel {
         FLQuant7AD f;
         FLQuant7 f_spwn;
         fwdControl ctrl;
-        /* members for temporary storage of a timestep - needed for AD bit */
-        /* Maybe not needed */
-        //FLQuant7AD landings_n; // will increase to 8D if we have multiple biols
-        //FLQuant7AD discards_n;
-        //FLQuant7AD fad;
-        //FLQuantAD n; // will be FLQuant7AD if we have mutiple biols
 
     protected:
         fwdBiolAD biol; // This is protected because operatingModel is a friend of fwdBiol so we can access the SRR
+        std::vector<fwdBiolAD> biols; // This is protected because operatingModel is a friend of fwdBiol so we can access the SRR
 };
 
 

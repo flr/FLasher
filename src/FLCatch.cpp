@@ -80,7 +80,6 @@ FLCatch_base<T>& FLCatch_base<T>::operator = (const FLCatch_base<T>& FLCatch_sou
 
 
 /* Intrusive 'wrap' */
-// Returns an FLBiol and ignores the SRR
 template <typename T>
 FLCatch_base<T>::operator SEXP() const{
     //Rprintf("Wrapping FLCatch_base<T>.\n");
