@@ -58,7 +58,7 @@ class operatingModel {
         /* Not really possible to write an 'as' as there is no corresponding class in FLR - need to write wrapper function - see bottom of cpp script */
 		operatingModel();
         operator SEXP() const; // Used as intrusive 'wrap' - returns a list of stuff
-        operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsAD biols_in, const FLQuant7AD f_in, const FLQuant7 f_spwn_in, const fwdControl ctrl_in);
+        operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsAD biols_in, const fwdControl ctrl_in);
 		operatingModel(const operatingModel& operatingModel_source); // copy constructor to ensure that copy is a deep copy - used when passing FLSs into functions
 		operatingModel& operator = (const operatingModel& operatingModel_source); // Assignment operator for a deep copy
 

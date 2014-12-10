@@ -69,14 +69,13 @@ void test_operatingModel_empty_constructor(){
     return;
 }
 
-/*
 // [[Rcpp::export]]
-operatingModel test_operatingModel_full_constructor(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl){
-    fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
-    operatingModel om(flfs, biol, f, f_spwn, ctrl);
+operatingModel test_operatingModel_full_constructor(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl){
+    // Make the fwdBiols
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
     return om;
 }
-*/
 
 /*----------- F methods --------------*/
 

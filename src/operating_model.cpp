@@ -131,39 +131,28 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
 operatingModel::operatingModel(){
     biols = fwdBiolsAD();
     fisheries = FLFisheriesAD();
-    //f = FLQuant7AD();
-    //f_spwn = FLQuant7();
 }
 
 // Main constructor
-operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsAD biols_in, const FLQuant7AD f_in, const FLQuant7 f_spwn_in, const fwdControl ctrl_in){
-    // Checking dims (1 - 5) of landings slots, F and biols are the same
+operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsAD biols_in, const fwdControl ctrl_in){
+    // Checking dims (1 - 5) of landings slots and biols are the same
     // Each Biol can be fished by multiple Catches - but each Catch must come from a seperate Fishery
-    // Biol dims (1 - 5) must therefore match the Catch dims (Fishery[[1]]) and all FLQuants in f and f_spwn
+    // Biol dims (1 - 5) must therefore match the Catch dims (Fishery[[1]])
     // Dim 6 must be 1 or n
-    const unsigned int nfisheries = fisheries_in.get_nfisheries();
-    // nfisheries must equal length of f and f_spwn
-    //if (nfisheries != f_in.get_ndim7()){
-    //    Rcpp::stop("operatingModel constructor: Number of fisheries must equal number F FLQuants\n");
-    //}
-    //if (nfisheries != f_spwn_in.get_ndim7()){
-    //    Rcpp::stop("operatingModel constructor: Number of fisheries must equal number F_SPWN FLQuants\n");
-    //}
     Rcpp::IntegerVector catch_dim;
-    //Rcpp::IntegerVector f_dim;
-    //Rcpp::IntegerVector f_spwn_dim;
     Rcpp::IntegerVector biol_dim;
     const unsigned int nbiols = biols_in.get_nbiols();
+    const unsigned int nfisheries = fisheries_in.get_nfisheries();
+    const unsigned int ncatches = 0;
     for (int unsigned biol_counter = 1; biol_counter <= nbiols; ++biol_counter){
         biol_dim = biols_in(biol_counter).n().get_dim();
         for (int unsigned fishery_counter = 1; fishery_counter <= nfisheries; ++fishery_counter){
-            catch_dim = fisheries_in(fishery_counter)(1).landings_n().get_dim(); // First catch of the fishery
-            //f_dim = f_in(fishery_counter).get_dim();
-            //f_spwn_dim = f_spwn_in(fishery_counter).get_dim();
-            for (int dim_counter = 0; dim_counter < 5; ++dim_counter){
-                // if((biol_dim[dim_counter] != catch_dim[dim_counter]) || (biol_dim[dim_counter] != f_dim[dim_counter]) || (biol_dim[dim_counter] != f_spwn_dim[dim_counter])){
-                if((biol_dim[dim_counter] != catch_dim[dim_counter])){
-                    Rcpp::stop("In operatingModel constructor: Biol dims must be the same as Catch dims\n");
+            for (int unsigned catch_counter = 1; catch_counter <= ncatches; ++ catch_counter){
+                catch_dim = fisheries_in(fishery_counter)(catch_counter).landings_n().get_dim(); 
+                for (int dim_counter = 0; dim_counter < 5; ++dim_counter){
+                    if((biol_dim[dim_counter] != catch_dim[dim_counter])){
+                        Rcpp::stop("In operatingModel constructor: Biol dims must be the same as Catch dims\n");
+                    }
                 }
             }
         }
@@ -173,8 +162,6 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsA
     // Add ITER check for ctrl
     biols = biols_in;
     fisheries = fisheries_in;
-    // f = f_in;
-    // f_spwn = f_spwn_in;
     ctrl = ctrl_in;
 }
 
@@ -182,8 +169,6 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsA
 operatingModel::operatingModel(const operatingModel& operatingModel_source){
     biols = operatingModel_source.biols;
     fisheries = operatingModel_source.fisheries;
-    // f = operatingModel_source.f;
-    // f_spwn = operatingModel_source.f_spwn;
     ctrl = operatingModel_source.ctrl;
 }
 
@@ -192,8 +177,6 @@ operatingModel& operatingModel::operator = (const operatingModel& operatingModel
 	if (this != &operatingModel_source){
         biols = operatingModel_source.biols;
         fisheries = operatingModel_source.fisheries;
-        // f = operatingModel_source.f;
-        // f_spwn = operatingModel_source.f_spwn;
         ctrl = operatingModel_source.ctrl;
 	}
 	return *this;
@@ -206,8 +189,6 @@ operatingModel::operator SEXP() const{
     return Rcpp::List::create(
                             Rcpp::Named("biols", biols),
                             Rcpp::Named("fisheries", fisheries),
-                            // Rcpp::Named("f", f),
-                            // Rcpp::Named("f_spwn", f_spwn),
                             Rcpp::Named("ctrl", ctrl));
 }
 

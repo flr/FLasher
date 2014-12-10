@@ -17,28 +17,21 @@ test_that("timestep_to_year_season_conversion",{
 test_that("operatingModel constructors and updaters",{
     # Empty constructor - jusy check they don't fail
     test_operatingModel_empty_constructor()
-    # Set up parameters for full test - lots of things needed
-    flq <- random_FLQuant_generator()
-    flb <- random_FLBiol_generator(fixed_dims = dim(flq))
-    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
-    params_ricker <- FLQuant(rnorm(2), dimnames = list(params = c("a","b")))
-    residuals_ricker <- FLQuant(rnorm(100), dimnames = list(year = 1:10, iter = 1:10))
-    residuals_mult <- TRUE
-    timelag <- 0
-    f <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq))
-    f <- lapply(f,abs)
-    f_spwn <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq))
-    f_spwn <- lapply(f_spwn,abs)
-    fc <- dummy_fwdControl_generator(years = 1, niters = dim(n(flb))[6])
 
-    # At last, a test
-    # Full constructor with wrap
-    out <- test_operatingModel_full_constructor(flfs, flb, "ricker", params_ricker, timelag, residuals_ricker, residuals_mult, f, f_spwn, fc)
-    expect_that(out[["biol"]], is_identical_to(flb))
+    # Main constructor test
+    # Set up parameters for full test 
+    flq <- random_FLQuant_generator()
+    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
+    # Pull out just FLBiols for testing
+    flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
+    fc <- dummy_fwdControl_generator(years = 1, niters = dim(flq)[6])
+    # Test as and wrap
+    out <- test_operatingModel_full_constructor(flfs, flbs, fc)
+    expect_that(out[["biols"]], is_identical_to(flbs_in))
     expect_that(out[["fisheries"]], is_identical_to(flfs))
-    expect_that(out[["f"]], is_identical_to(f))
-    expect_that(out[["f_spwn"]], is_identical_to(f_spwn))
     expect_that(out[["ctrl"]], is_identical_to(fc))
+    # Here
 
     # Change dim of f, f_spwn and biol - dimension check
     new_dim <- dim(flq) + round(runif(6,min=1,max=3))

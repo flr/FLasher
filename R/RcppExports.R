@@ -1613,3 +1613,7 @@ test_operatingModel_empty_constructor <- function() {
     invisible(.Call('FLasher_test_operatingModel_empty_constructor', PACKAGE = 'FLasher'))
 }
 
+test_operatingModel_full_constructor <- function(flfs, flbs_list_sexp, ctrl) {
+    .Call('FLasher_test_operatingModel_full_constructor', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl)
+}
+
