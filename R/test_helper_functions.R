@@ -223,6 +223,40 @@ random_FLFisheries_generator <- function(min_fisheries = 2, max_fisheries = 5, .
     return(fisheries)
 }
 
+#' Generates a list that can be passed to the CPP fwdBiols constructor 
+#'
+#' The fwdBiols constructor takes a list (fwdbiols_list). Each element of fwdbiols_list is a list of:
+#' FLBiol, SRR model name, SRR params, SRR timelag, SRR residuals and SRR residuals mult.
+#' This function generates randomly filled FLBiol objects, of the same size.
+#' Used for automatic testing, particularly of the fwdBiols<T> class in CPP.
+#' 
+#' @param min_biols The minimum number of fwdBiols in the list. Default is 1. 
+#' @param max_biols The maximum number of fwdBiols in the list. Default is 5. 
+#' @param fixed_dims A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. Default value is rep(NA,6).
+#' @param max_dims A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,5,5,4,4,10).
+#' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
+#' @export
+#' @return A list object 
+#' @examples
+#' fwdBiols <- random_fwdBiols_list_generator()
+random_fwdBiols_list_generator <- function(min_biols = 1, max_biols = 5, ...){
+    nbiols <- round(runif(1,min=min_biols,max=max_biols))
+    biols <- list()
+    # All biols must have same dims
+    seed_biol <- random_FLBiol_generator(...)
+    for (i in 1:nbiols){
+        biol_bits <- list()
+        biol_bits[["biol"]] <- random_FLBiol_generator(fixed_dims=dim(n(seed_biol)))
+        biol_bits[["srr_model_name"]] <- "bevholt"
+        biol_bits[["srr_params"]] <- FLQuant(abs(rnorm(2)), dimnames=list(params=c("a","b")))
+        biol_bits[["srr_residuals"]] <- n(biol_bits[["biol"]])[1,]
+        biol_bits[["srr_timelag"]] <- dim(n(biol_bits[["biol"]]))[4]
+        biol_bits[["srr_residuals_mult"]] <- TRUE
+        biols[[as.character(signif(abs(runif(1,min=100,max=999)),3))]] <- biol_bits
+    }
+    return(biols)
+}
+
 #' Simple projection with minimal checks
 #'
 #' Given FLFisheries, FLBiol, FLSR, F and f.spwn, project over timesteps

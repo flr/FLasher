@@ -171,21 +171,8 @@ test_that("fwdBiols constructors",{
     # Takes a list - list_fwdBiol
     # Each element of list_fwdBiol is a list containing the fwdBiol components:
     # FLBiol, params, residuals, timelag, residuals_mult 
-    nbiols <- round(runif(1,min=2,max=5))
-    biols <- list()
-    flbs_in <- FLBiols() # Just used for testing output
-    for (i in 1:nbiols){
-        biol_bits <- list()
-        biol_bits[["biol"]] <- random_FLBiol_generator()
-        biol_bits[["srr_model_name"]] <- "bevholt"
-        biol_bits[["srr_params"]] <- FLQuant(abs(rnorm(2)), dimnames=list(params=c("a","b")))
-        biol_bits[["srr_residuals"]] <- n(biol_bits[["biol"]])[1,]
-        biol_bits[["srr_timelag"]] <- dim(n(biol_bits[["biol"]]))[4]
-        biol_bits[["srr_residuals_mult"]] <- TRUE
-        biols[[as.character(signif(abs(runif(1,min=100,max=999)),3))]] <- biol_bits
-        flbs_in[[i]] <- biol_bits[["biol"]]
-    }
-    names(flbs_in) <- names(biols)
+    biols <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5)
+    flbs_in <- FLBiols(lapply(biols, function(x) return(x[["biol"]])))
 
     # Call the list constructors (as)
     flbs_out <- test_fwdBiols_list_constructor(biols)
