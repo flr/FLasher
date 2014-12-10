@@ -6272,6 +6272,42 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// test_fwdBiolsAD_copy_constructor
+Rcpp::List test_fwdBiolsAD_copy_constructor(SEXP fwbs_list_sexp, const int biol_no, const std::vector<int> dims, const double value);
+RcppExport SEXP FLasher_test_fwdBiolsAD_copy_constructor(SEXP fwbs_list_sexpSEXP, SEXP biol_noSEXP, SEXP dimsSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type fwbs_list_sexp(fwbs_list_sexpSEXP );
+        Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP );
+        Rcpp::traits::input_parameter< const std::vector<int> >::type dims(dimsSEXP );
+        Rcpp::traits::input_parameter< const double >::type value(valueSEXP );
+        Rcpp::List __result = test_fwdBiolsAD_copy_constructor(fwbs_list_sexp, biol_no, dims, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_fwdBiolsAD_assignment_operator
+Rcpp::List test_fwdBiolsAD_assignment_operator(SEXP fwbs_list_sexp, const int biol_no, const std::vector<int> dims, const double value);
+RcppExport SEXP FLasher_test_fwdBiolsAD_assignment_operator(SEXP fwbs_list_sexpSEXP, SEXP biol_noSEXP, SEXP dimsSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type fwbs_list_sexp(fwbs_list_sexpSEXP );
+        Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP );
+        Rcpp::traits::input_parameter< const std::vector<int> >::type dims(dimsSEXP );
+        Rcpp::traits::input_parameter< const double >::type value(valueSEXP );
+        Rcpp::List __result = test_fwdBiolsAD_assignment_operator(fwbs_list_sexp, biol_no, dims, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // test_as_wrap_fwdControl
 fwdControl test_as_wrap_fwdControl(fwdControl control);
 RcppExport SEXP FLasher_test_as_wrap_fwdControl(SEXP controlSEXP) {

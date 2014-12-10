@@ -256,8 +256,26 @@ fwdBiolsAD test_fwdBiolsAD_set_value_accessor(SEXP fwbs_list_sexp, const int bio
 }
 
 // copy constructor
+// [[Rcpp::export]]
+Rcpp::List test_fwdBiolsAD_copy_constructor(SEXP fwbs_list_sexp, const int biol_no, const std::vector<int> dims, const double value){
+    fwdBiolsAD fwbs1(fwbs_list_sexp);
+    fwdBiolsAD fwbs2(fwbs1);
+    fwbs1(biol_no).n()(dims[0], dims[1], dims[2], dims[3], dims[4], dims[5]) = value;
+	return Rcpp::List::create(Rcpp::Named("fwbs1", fwbs1),
+				Rcpp::Named("fwbs2", fwbs2));
+}
 
 // assignment operator
+// [[Rcpp::export]]
+Rcpp::List test_fwdBiolsAD_assignment_operator(SEXP fwbs_list_sexp, const int biol_no, const std::vector<int> dims, const double value){
+    fwdBiolsAD fwbs1(fwbs_list_sexp);
+    fwdBiolsAD fwbs2;
+    fwbs2 = fwbs1;
+    fwbs1(biol_no).n()(dims[0], dims[1], dims[2], dims[3], dims[4], dims[5]) = value;
+	return Rcpp::List::create(Rcpp::Named("fwbs1", fwbs1),
+				Rcpp::Named("fwbs2", fwbs2));
+}
+
 
 
 

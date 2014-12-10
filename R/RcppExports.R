@@ -1473,6 +1473,14 @@ test_fwdBiolsAD_set_value_accessor <- function(fwbs_list_sexp, biol_no, quant, y
     .Call('FLasher_test_fwdBiolsAD_set_value_accessor', PACKAGE = 'FLasher', fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter, value)
 }
 
+test_fwdBiolsAD_copy_constructor <- function(fwbs_list_sexp, biol_no, dims, value) {
+    .Call('FLasher_test_fwdBiolsAD_copy_constructor', PACKAGE = 'FLasher', fwbs_list_sexp, biol_no, dims, value)
+}
+
+test_fwdBiolsAD_assignment_operator <- function(fwbs_list_sexp, biol_no, dims, value) {
+    .Call('FLasher_test_fwdBiolsAD_assignment_operator', PACKAGE = 'FLasher', fwbs_list_sexp, biol_no, dims, value)
+}
+
 test_as_wrap_fwdControl <- function(control) {
     .Call('FLasher_test_as_wrap_fwdControl', PACKAGE = 'FLasher', control)
 }
