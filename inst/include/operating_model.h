@@ -58,9 +58,16 @@ class operatingModel {
         /* Not really possible to write an 'as' as there is no corresponding class in FLR - need to write wrapper function - see bottom of cpp script */
 		operatingModel();
         operator SEXP() const; // Used as intrusive 'wrap' - returns a list of stuff
-        operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolAD biol_in, const FLQuant7AD f_in, const FLQuant7 f_spwn_in, const fwdControl ctrl_in);
+        operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsAD biols_in, const FLQuant7AD f_in, const FLQuant7 f_spwn_in, const fwdControl ctrl_in);
 		operatingModel(const operatingModel& operatingModel_source); // copy constructor to ensure that copy is a deep copy - used when passing FLSs into functions
 		operatingModel& operator = (const operatingModel& operatingModel_source); // Assignment operator for a deep copy
+
+        // Catchability methods from an FLCatch and an FLBiol - is AD because biols are AD
+        FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no) const;
+        // Fishing mortality methods
+        FLQuantAD f(const int fishery_no, const int catch_no) const; // partial F
+        FLQuantAD f(const int biol_no) const; // total F on a biol
+        FLQuant f_spwn(const int fishery_no, const int catch_no, const int biol_no); // proportion of F before spawning
 
         void run(); 
         //void run_all_iters(); 
@@ -83,43 +90,39 @@ class operatingModel {
 
         // The target value calculations
         // fbar from a catch and fishery on a stock - i.e. partial F - will need to adapt this to include multiple biols in the future
-        FLQuantAD fbar(const Rcpp::IntegerVector age_range_indices, const int fishery_no, const int catch_no, const int biol_no = 1) const;
+        FLQuantAD fbar(const Rcpp::IntegerVector age_range_indices, const int fishery_no, const int catch_no, const int biol_no) const;
         // Total fbar on a biol
-        FLQuantAD fbar(const Rcpp::IntegerVector age_range_indices, const int biol_no = 1) const;
+        FLQuantAD fbar(const Rcpp::IntegerVector age_range_indices, const int biol_no) const;
         // catches from an FLCatch and fishery on a stock 
-        FLQuantAD catches(const int fishery_no, const int catch_no, const int biol_no = 1) const;
+        //FLQuantAD catches(const int fishery_no, const int catch_no) const;
         // Total catches from a biol
-        FLQuantAD catches(const int biol_no = 1) const;
+        //FLQuantAD catches(const int biol_no) const;
         // landings from a FLCatch in a fishery on a biol
-        FLQuantAD landings(const int fishery_no, const int catch_no, const int biol_no = 1) const;
+        //FLQuantAD landings(const int fishery_no, const int catch_no) const;
         // Total landings from a biol
-        FLQuantAD landings(const int biol_no = 1) const;
+        //FLQuantAD landings(const int biol_no) const;
         // discards from a FLCatch in a fishery on a biol
-        FLQuantAD discards(const int fishery_no, const int catch_no, const int biol_no = 1) const;
+        //FLQuantAD discards(const int fishery_no, const int catch_no) const;
         // Total discards from a biol
-        FLQuantAD discards(const int biol_no = 1) const;
+        //FLQuantAD discards(const int biol_no) const;
 
         // Total biomass from a biol
         FLQuantAD biomass(const int biol_no) const;
 
         // Various ways of calculating reproductive potential
-        FLQuantAD ssb(const int biol_no) const;
-        FLQuantAD ssb(const int timestep, const int unit, const int area, const int biol_no) const; // all iters in a timestep, unit and area
-        adouble ssb(const int timestep, const int unit, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
-        adouble ssb(const int year, const int unit, const int season, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
-        // Catchability methods from an FLCatch and an FLBiol - is AD because biols are AD
-        FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no = 1) const;
+        //FLQuantAD ssb(const int biol_no) const;
+        //FLQuantAD ssb(const int timestep, const int unit, const int area, const int biol_no) const; // all iters in a timestep, unit and area
+        //adouble ssb(const int timestep, const int unit, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
+        //adouble ssb(const int year, const int unit, const int season, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
 
     private:
-        /* These are not AD to save memory - we only need AD for solving each timestep */
         FLFisheriesAD fisheries;
-        FLQuant7AD f;
-        FLQuant7 f_spwn;
+        // FLQuant7AD f;
+        // FLQuant7 f_spwn;
         fwdControl ctrl;
 
     protected:
-        fwdBiolAD biol; // This is protected because operatingModel is a friend of fwdBiol so we can access the SRR
-        std::vector<fwdBiolAD> biols; // This is protected because operatingModel is a friend of fwdBiol so we can access the SRR
+        fwdBiolsAD biols; // This is protected because operatingModel is a friend of fwdBiol so we can access the SRR
 };
 
 

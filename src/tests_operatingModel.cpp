@@ -69,15 +69,26 @@ void test_operatingModel_empty_constructor(){
     return;
 }
 
+/*
 // [[Rcpp::export]]
 operatingModel test_operatingModel_full_constructor(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl){
     fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
     operatingModel om(flfs, biol, f, f_spwn, ctrl);
     return om;
 }
+*/
+
+/*----------- F methods --------------*/
+
+// f()
+
+// f_spwn()
+
+// catch_q()
 
 /*----------- Project timestep --------------*/
 
+/*
 // [[Rcpp::export]]
 operatingModel test_operatingModel_project_timestep(const FLFisheriesAD fisheries, SEXP FLBiolSEXP, const std::string srr_model_name, const FLQuant srr_params, const int srr_timelag, const FLQuant srr_residuals, const bool srr_residuals_mult, FLQuant7AD f, FLQuant7 f_spwn, fwdControl ctrl, const std::vector<int> timesteps){
     // Make the fwdBiol from the FLBiol and SRR bits
@@ -92,9 +103,11 @@ operatingModel test_operatingModel_project_timestep(const FLFisheriesAD fisherie
     return om;
 
 }
+*/
 
 /*----------- SSB calculations--------------*/
 
+/*
 // [[Rcpp::export]]
 FLQuantAD test_operatingModel_SSB_FLQ(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl){
     fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
@@ -212,4 +225,4 @@ operatingModel test_operatingModel_run(const FLFisheriesAD fisheries, SEXP FLBio
     return om;
 
 }
-
+*/
