@@ -348,7 +348,7 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const int quant_min, const int qua
     new_dim[3] = season_max - season_min + 1;
     new_dim[4] = area_max - area_min + 1;
     new_dim[5] = iter_max - iter_min + 1;
-    // Having to to this is unfortunate - with C++11 it could be cleaner
+    // Having to do this is unfortunate - with C++11 it could be cleaner
     std::vector<int> min_dim(6);
     min_dim[0] = quant_min;
     min_dim[1] = year_min;
@@ -1223,6 +1223,53 @@ std::string number_to_string (T number) {
     std::ostringstream ss;
     ss << number;
     return ss.str();
+}
+
+// Not templated - these are parameters so no need to AD them
+// Caution! Assumes that order of present dimnames is the same as an FLQuant
+// Dims can be missing (except the first and the iter) but the order of the
+// present dimnames is: quant, year, unit, season, area, iter
+// Also assumes that ONLY FLQuant dimnames are present - any other dimnames will break the code as data will be the wrong size
+FLQuant FLPar_to_FLQuant(SEXP flp) {
+	Rcpp::S4 flp_s4 = Rcpp::as<Rcpp::S4>(flp);
+    Rcpp::NumericVector data_nv = flp_s4.slot(".Data");
+    Rcpp::IntegerVector flp_dim = data_nv.attr("dim");
+    if (flp_dim.size() > 6){
+        Rcpp::stop("Cannot convert FLPar to FLQuant as FLPar has more than 6 dimensions\n");
+    }
+    Rcpp::List flp_dimnames = data_nv.attr("dimnames");
+    std::vector<unsigned int> flq_dim (6,1);
+    // The number of parameters is always the first dimension in the FLPar
+    flq_dim[0] = flp_dim[0];
+    flq_dim[5] = flp_dim[flp_dim.size()-1];
+    unsigned int element = 0;
+    std::vector<std::string> flp_dimnames_names = flp_dimnames.names();
+
+    // Find the other 4 dimensions: year, unit, season, area
+    // Use find() to match names - precheck in R that they exist - if not find, returns the last
+    std::vector<std::string>::iterator flp_dimnames_iterator;
+    // Use initialiser lists in C++11 rather than this
+    std::vector<std::string> other_flq_dimnames(4);
+    other_flq_dimnames[0] = "year";
+    other_flq_dimnames[1] = "unit";
+    other_flq_dimnames[2] = "season";
+    other_flq_dimnames[3] = "area";
+    for (unsigned int dimname_counter=0; dimname_counter < other_flq_dimnames.size(); ++dimname_counter){
+        flp_dimnames_iterator = find(flp_dimnames_names.begin(), flp_dimnames_names.end(), other_flq_dimnames[dimname_counter]);
+        if(flp_dimnames_iterator != flp_dimnames_names.end()){
+            element = std::distance(flp_dimnames_names.begin(), flp_dimnames_iterator);
+            flq_dim[dimname_counter+1] = flp_dim[element];
+        }
+    }
+    // Rprintf("%i %i %i %i %i %i\n", flq_dim[0], flq_dim[1], flq_dim[2], flq_dim[3], flq_dim[4], flq_dim[5]);
+    // Make the new FLQuant of the required size
+    FLQuant flq_out(flq_dim[0], flq_dim[1], flq_dim[2], flq_dim[3], flq_dim[4], flq_dim[5]);
+    // Set the data - this assumes that the order of the data in the FLPar is correct
+    // i.e. that the dimnames in the FLPar are the same order as an FLQuant
+    flq_out.set_data(flp_s4.slot(".Data"));
+    // Don't set units (doesn't make sense with different parameters having different units)
+    // or dimnames (too complicated)
+    return flq_out;
 }
 
 /*----------------------------------------------------*/

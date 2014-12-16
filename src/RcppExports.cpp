@@ -4135,6 +4135,21 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// FLPar_units
+std::string FLPar_units(SEXP flp);
+RcppExport SEXP FLasher_FLPar_units(SEXP flpSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type flp(flpSEXP );
+        std::string __result = FLPar_units(flp);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // test_FLQuant_as_wrap
 FLQuant test_FLQuant_as_wrap(FLQuant flq);
 RcppExport SEXP FLasher_test_FLQuant_as_wrap(SEXP flqSEXP) {
@@ -4754,6 +4769,21 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP );
         Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP );
         int __result = test_FLQuant_FLQuant_match_dims(flq1, flq2);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLPar_to_FLQuant
+FLQuant test_FLPar_to_FLQuant(SEXP flp);
+RcppExport SEXP FLasher_test_FLPar_to_FLQuant(SEXP flpSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type flp(flpSEXP );
+        FLQuant __result = test_FLPar_to_FLQuant(flp);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

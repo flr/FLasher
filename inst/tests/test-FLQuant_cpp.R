@@ -212,3 +212,50 @@ test_that("Propagating FLQuant iters", {
     expect_that(flq, is_identical_to(flq_out[["flq"]]))
     expect_that(flq_prop, is_identical_to(flq_out[["flq2"]]))
 })
+
+test_that("FLPar_to_FLQuant", {
+    # Need to check dimnames of FLPar before dispatch that dimnames are only FLQuant dimnames
+    # Make some random FLPars
+    flq <- random_FLQuant_generator()
+    flp2D <- FLPar(rnorm(dim(flq)[1] * dim(flq)[6]), dimnames=dimnames(flq)[c(1,6)])
+    flp3D1 <- FLPar(rnorm(dim(flq)[1] * dim(flq)[2] * dim(flq)[6]), dimnames=dimnames(flq)[c(1,2,6)])
+    flp3D2 <- FLPar(rnorm(dim(flq)[1] * dim(flq)[4] * dim(flq)[6]), dimnames=dimnames(flq)[c(1,4,6)])
+    flp4D <- FLPar(rnorm(dim(flq)[1] * dim(flq)[2] * dim(flq)[4] * dim(flq)[6]), dimnames=dimnames(flq)[c(1,2,4,6)])
+    flp5D1 <- FLPar(rnorm(dim(flq)[1] * dim(flq)[2] * dim(flq)[3] * dim(flq)[4] * dim(flq)[6]), dimnames=dimnames(flq)[c(1,2,3,4,6)])
+    flp5D2 <- FLPar(rnorm(dim(flq)[1] * dim(flq)[2] * dim(flq)[4] * dim(flq)[5] * dim(flq)[6]), dimnames=dimnames(flq)[c(1,2,4,5,6)])
+    flp6D <- FLPar(rnorm(prod(dim(flq))), dimnames=dimnames(flq))
+    flp7D <- FLPar(rnorm(dim(flq)[1] * dim(flq)[2] * dim(flq)[4] * dim(flq)[5] * 3 * dim(flq)[6]), dimnames=c(dimnames(flq)[1:5], other=list(c("a","b","c")), dimnames(flq)[6]))
+
+    # Extra dim which will be ignored - no it's not
+    # flp2D2 <- FLPar(rnorm(dim(flq)[1] * dim(flq)[6] * 5), dimnames=list(params = dimnames(flq)[[1]], other_name = c("a","b","c","d","e"), iter = dimnames(flq)[[6]]))
+    # flq_out <- test_FLPar_to_FLQuant(flp2D2)
+
+    # 2D
+    flq_out <- test_FLPar_to_FLQuant(flp2D)
+    expect_that(dim(flq_out), equals(unname(c(dim(flp2D)[1],1,1,1,1,dim(flp2D)[2]))))
+    expect_that(c(flq_out), equals(c(flp2D)))
+    # 3D
+    flq_out <- test_FLPar_to_FLQuant(flp3D1)
+    expect_that(dim(flq_out), equals(unname(c(dim(flp3D1)[1],dim(flp3D1)[2],1,1,1,dim(flp3D1)[3]))))
+    expect_that(c(flq_out), equals(c(flp3D1)))
+    flq_out <- test_FLPar_to_FLQuant(flp3D2)
+    expect_that(dim(flq_out), equals(unname(c(dim(flp3D2)[1],1,1,dim(flp3D2)[2],1,dim(flp3D2)[3]))))
+    expect_that(c(flq_out), equals(c(flp3D2)))
+    # 4D
+    flq_out <- test_FLPar_to_FLQuant(flp4D)
+    expect_that(dim(flq_out), equals(unname(c(dim(flp4D)[1],dim(flp4D)[2],1,dim(flp4D)[3],1,dim(flp4D)[4]))))
+    expect_that(c(flq_out), equals(c(flp4D)))
+    # 5D
+    flq_out <- test_FLPar_to_FLQuant(flp5D1)
+    expect_that(dim(flq_out), equals(unname(c(dim(flp5D1)[1],dim(flp5D1)[2],dim(flp5D1)[3],dim(flp5D1)[4],1,dim(flp5D1)[5]))))
+    expect_that(c(flq_out), equals(c(flp5D1)))
+    flq_out <- test_FLPar_to_FLQuant(flp5D2)
+    expect_that(dim(flq_out), equals(unname(c(dim(flp5D2)[1],dim(flp5D2)[2],1,dim(flp5D2)[3],dim(flp5D2)[4],dim(flp5D2)[5]))))
+    expect_that(c(flq_out), equals(c(flp5D2)))
+    # 6D
+    flq_out <- test_FLPar_to_FLQuant(flp6D)
+    expect_that(dim(flq_out), equals(unname(c(dim(flp6D)))))
+    expect_that(c(flq_out), equals(c(flp6D)))
+    # > 7D (fail)
+    expect_that(test_FLPar_to_FLQuant(flp7D), throws_error())
+})

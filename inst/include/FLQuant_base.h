@@ -161,6 +161,9 @@ int dim5_matcher(const Rcpp::IntegerVector a, const Rcpp::IntegerVector b);
 template <typename T>
 std::string number_to_string (T number);
 
+// Turn an FLPar (straight from R) into FLQuant
+FLQuant FLPar_to_FLQuant(SEXP flp); 
+
 //------------ Non-member arithmetic methods with mixed types --------------
 
 /* Canonical form: Type operator*(const Type &lhs, const Type &rhs); 

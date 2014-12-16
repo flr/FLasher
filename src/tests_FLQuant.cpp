@@ -5,6 +5,12 @@
 
 #include "../../inst/include/FLQuant_base.h"
 
+// [[Rcpp::export]]
+std::string FLPar_units(SEXP flp) {
+	Rcpp::S4 flp_s4 = Rcpp::as<Rcpp::S4>(flp);
+    std::string units = flp_s4.slot("units");
+    return units;
+}
 
 // Constructors and copiers
 
@@ -246,34 +252,12 @@ int test_FLQuant_FLQuant_match_dims(FLQuant flq1, FLQuant flq2){
     return flq1.match_dims(flq2);
 }
 
-// Do not run! - explodes R
-//// [[Rcpp::export]]
-//std::vector<int> test_int_vec(){
-//    std::vector<int> vec(6);
-//    vec[0] = 1;
-//    vec[1] = 1;
-//    vec[2] = 1;
-//    vec[3] = 1;
-//    vec[4] = 1;
-//    vec[5] = 1;
-//    vec[6] = 666; // Do not run!
-//    return vec;
-//
-//}
 
-// Do not run! - explodes R
-//// [[Rcpp::export]]
-//int test_int_vec2(){
-//    std::vector<int> vec(6);
-//    vec[0] = 1;
-//    vec[1] = 1;
-//    vec[2] = 1;
-//    vec[3] = 1;
-//    vec[4] = 1;
-//    vec[5] = 1;
-//     vec[6] = 666; // Do not run!
-//    return vec[6];
-//}
+// [[Rcpp::export]]
+FLQuant test_FLPar_to_FLQuant(SEXP flp){
+    FLQuant flq = FLPar_to_FLQuant(flp);
+    return flq;
+}
 
 //--------- Shortcuts ----------------------
 /*
