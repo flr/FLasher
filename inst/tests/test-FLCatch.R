@@ -166,19 +166,19 @@ test_that("FLCatch catch_q accessor", {
     indices <- round(runif(6, min=1, max=dims))
     # Only params and iter - indices 2:5 should be ignored (==1)
     catch.q(flc_in) <- catch.q1
-    params <- test_FLCatchAD_catch_q(flc_in, indices)
+    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
     expect_that(c(catch.q1[,indices[6]]), is_identical_to(c(params)))
     # params, year and iter
     catch.q(flc_in) <- catch.q2
-    params <- test_FLCatchAD_catch_q(flc_in, indices)
+    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
     expect_that(c(catch.q2[,indices[2],indices[6]]), is_identical_to(c(params)))
     # params, season and iter
     catch.q(flc_in) <- catch.q4
-    params <- test_FLCatchAD_catch_q(flc_in, indices)
+    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
     expect_that(c(catch.q4[,indices[4],indices[6]]), is_identical_to(c(params)))
     # params, year, season and iter
     catch.q(flc_in) <- catch.q24
-    params <- test_FLCatchAD_catch_q(flc_in, indices)
+    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
     expect_that(c(catch.q24[,indices[2],indices[4],indices[6]]), is_identical_to(c(params)))
 })
 

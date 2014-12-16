@@ -134,32 +134,32 @@ FLQuant FLCatch_base<T>::price() const {
 }
 
 template <typename T>
-FLQuant FLCatch_base<T>::catch_q() const {
+FLQuant FLCatch_base<T>::catch_q_params() const {
     return catch_q_flq;
 }
 
 // catch_q_flq is a little different as it checks if unit / season / etc are > 1
 // parameters are stored in the first dimension
 template <typename T>
-std::vector<double> FLCatch_base<T>::catch_q(int year, int unit, int season, int area, int iter) const {
-    std::vector<double> q_out (catch_q().get_nquant(),0.0);
+std::vector<double> FLCatch_base<T>::catch_q_params(int year, int unit, int season, int area, int iter) const {
+    std::vector<double> q_out (catch_q_params().get_nquant(),0.0);
     // Sort out dims - if years > no years in the catch_q_flq object (i.e. catch_q_flq are not disaggregated by time etc.) just pick the first 
     // The real checking should be done in the R side
-    if (year > catch_q().get_nyear()){
+    if (year > catch_q_params().get_nyear()){
         year = 1;
     }
-    if (unit > catch_q().get_nunit()){
+    if (unit > catch_q_params().get_nunit()){
         unit = 1;
     }
-    if (season > catch_q().get_nseason()){
+    if (season > catch_q_params().get_nseason()){
         season = 1;
     }
-    if (area > catch_q().get_narea()){
+    if (area > catch_q_params().get_narea()){
         area = 1;
     }
     // iters already cared for in generic FLQuant_base<> accessor
-    for (int i = 1; i <= catch_q().get_nquant(); ++i){
-        q_out[i-1] = catch_q()(i,year,unit,season,area,iter);
+    for (int i = 1; i <= catch_q_params().get_nquant(); ++i){
+        q_out[i-1] = catch_q_params()(i,year,unit,season,area,iter);
     }
     return q_out;
 }
@@ -197,7 +197,7 @@ FLQuant& FLCatch_base<T>::price() {
 }
 
 template <typename T>
-FLQuant& FLCatch_base<T>::catch_q() {
+FLQuant& FLCatch_base<T>::catch_q_params() {
     return catch_q_flq;
 }
 

@@ -39,10 +39,10 @@ class FLCatch_base {
         FLQuant discards_wt() const;
         FLQuant catch_sel() const;
         FLQuant price() const;
-        FLQuant catch_q() const;
+        FLQuant catch_q_params() const;
         // Extra accessor for catch_q because it's really an FLPar in disguise and does not have
         // the same 'true' dimensions as the other slots
-        std::vector<double> catch_q(int year, int unit, int season, int area, int iter) const;
+        std::vector<double> catch_q_params(int year, int unit, int season, int area, int iter) const;
 
         // Get and Set
         FLQuant_base<T>& landings_n();
@@ -51,7 +51,7 @@ class FLCatch_base {
         FLQuant& discards_wt();
         FLQuant& catch_sel();
         FLQuant& price();
-        FLQuant& catch_q();
+        FLQuant& catch_q_params();
 
         // Methods
         FLQuant_base<T> landings() const;

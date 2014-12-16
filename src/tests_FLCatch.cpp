@@ -102,7 +102,6 @@ Rcpp::NumericVector test_FLCatch_const_get_accessors(const FLCatch flc,int quant
     out[3] = flc.discards_wt()(quant, year, unit, season, area, iter);
     out[4] = flc.catch_sel()(quant, year, unit, season, area, iter);
     out[5] = flc.price()(quant, year, unit, season, area, iter);
-    //out[6] = flc.catch_q()(quant, year, unit, season, area, iter);
     return out;
 }
 
@@ -119,7 +118,6 @@ Rcpp::NumericVector test_FLCatchAD_const_get_accessors(const FLCatchAD flc,int q
     out[3] = flc.discards_wt()(quant, year, unit, season, area, iter);
     out[4] = flc.catch_sel()(quant, year, unit, season, area, iter);
     out[5] = flc.price()(quant, year, unit, season, area, iter);
-    //out[6] = flc.catch_q()(quant, year, unit, season, area, iter);
     return out;
 }
 
@@ -132,7 +130,6 @@ Rcpp::NumericVector test_FLCatch_get_accessors(FLCatch flc,int quant, int year, 
     out[3] = flc.discards_wt()(quant, year, unit, season, area, iter);
     out[4] = flc.catch_sel()(quant, year, unit, season, area, iter);
     out[5] = flc.price()(quant, year, unit, season, area, iter);
-    //out[6] = flc.catch_q()(quant, year, unit, season, area, iter);
     return out;
 }
 
@@ -149,7 +146,6 @@ Rcpp::NumericVector test_FLCatchAD_get_accessors(FLCatchAD flc,int quant, int ye
     out[3] = flc.discards_wt()(quant, year, unit, season, area, iter);
     out[4] = flc.catch_sel()(quant, year, unit, season, area, iter);
     out[5] = flc.price()(quant, year, unit, season, area, iter);
-    //out[6] = flc.catch_q()(quant, year, unit, season, area, iter);
     return out;
 }
 
@@ -161,7 +157,6 @@ FLCatch test_FLCatch_set_accessors(FLCatch flc, int quant, int year, int unit, i
     flc.discards_wt()(quant, year, unit, season, area, iter) = values[3];
     flc.catch_sel()(quant, year, unit, season, area, iter) = values[4];
     flc.price()(quant, year, unit, season, area, iter) = values[5];
-    //out[6] = flc.catch_q()(quant, year, unit, season, area, iter) = values[6];
     return flc;
 }
 
@@ -175,7 +170,6 @@ FLCatchAD test_FLCatchAD_set_accessors(FLCatchAD flc, int quant, int year, int u
     flc.discards_wt()(quant, year, unit, season, area, iter) = values[3];
     flc.catch_sel()(quant, year, unit, season, area, iter) = values[4];
     flc.price()(quant, year, unit, season, area, iter) = values[5];
-    //out[6] = flc.catch_q()(quant, year, unit, season, area, iter) = values[6];
     return flc;
 }
 
@@ -261,10 +255,10 @@ FLQuantAD test_FLCatchAD_discards_sel(const FLCatchAD flc){
 
 
 // [[Rcpp::export]]
-std::vector<double> test_FLCatchAD_catch_q(const FLCatchAD flc, const std::vector<unsigned int> indices)
+std::vector<double> test_FLCatchAD_catch_q_params(const FLCatchAD flc, const std::vector<unsigned int> indices)
 {
     std::vector<double> params;
-    params = flc.catch_q(indices[1], indices[2], indices[3], indices[4], indices[5]);
+    params = flc.catch_q_params(indices[1], indices[2], indices[3], indices[4], indices[5]);
     return params;
 }
 

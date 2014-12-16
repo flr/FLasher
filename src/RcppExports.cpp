@@ -2032,16 +2032,16 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
-// test_FLCatchAD_catch_q
-std::vector<double> test_FLCatchAD_catch_q(const FLCatchAD flc, const std::vector<unsigned int> indices);
-RcppExport SEXP FLasher_test_FLCatchAD_catch_q(SEXP flcSEXP, SEXP indicesSEXP) {
+// test_FLCatchAD_catch_q_params
+std::vector<double> test_FLCatchAD_catch_q_params(const FLCatchAD flc, const std::vector<unsigned int> indices);
+RcppExport SEXP FLasher_test_FLCatchAD_catch_q_params(SEXP flcSEXP, SEXP indicesSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP );
         Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices(indicesSEXP );
-        std::vector<double> __result = test_FLCatchAD_catch_q(flc, indices);
+        std::vector<double> __result = test_FLCatchAD_catch_q_params(flc, indices);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
