@@ -217,6 +217,7 @@ test_that("FLPar_to_FLQuant", {
     # Need to check dimnames of FLPar before dispatch that dimnames are only FLQuant dimnames
     # Make some random FLPars
     flq <- random_FLQuant_generator()
+    names(dimnames(flq))[1] <- "params"
     flp2D <- FLPar(rnorm(dim(flq)[1] * dim(flq)[6]), dimnames=dimnames(flq)[c(1,6)])
     flp3D1 <- FLPar(rnorm(dim(flq)[1] * dim(flq)[2] * dim(flq)[6]), dimnames=dimnames(flq)[c(1,2,6)])
     flp3D2 <- FLPar(rnorm(dim(flq)[1] * dim(flq)[4] * dim(flq)[6]), dimnames=dimnames(flq)[c(1,4,6)])

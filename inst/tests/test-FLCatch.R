@@ -16,7 +16,7 @@ test_that("FLCatch as and wrap",{
 
 test_that("FLCatch constructors",{
     flc_in <- random_FLCatch_generator()
-    # SEXP constructors
+    # SEXP constructors - problem with catch.q
     flc_out <- test_FLCatch_sexp_constructor(flc_in)
     expect_that(flc_in, is_identical_to(flc_out))
     flc_out <- test_FLCatchAD_sexp_constructor(flc_in)
@@ -66,7 +66,6 @@ test_that("FLCatch get and set data accessors", {
                 c(discards.wt(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(catch.sel(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(price(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
-                #c(catch.q(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
     expect_that(values_out, is_identical_to(values_in))
     # Get const AD
     flc_in <- random_FLCatch_generator()
@@ -78,7 +77,6 @@ test_that("FLCatch get and set data accessors", {
                 c(discards.wt(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(catch.sel(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(price(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
-                #c(catch.q(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
     expect_that(values_out, is_identical_to(values_in))
     # Get double
     flc_in <- random_FLCatch_generator()
@@ -90,7 +88,6 @@ test_that("FLCatch get and set data accessors", {
                 c(discards.wt(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(catch.sel(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(price(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
-                #c(catch.q(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
     expect_that(values_out, is_identical_to(values_in))
     # Get AD
     values_out <- test_FLCatchAD_get_accessors(flc_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6])
@@ -100,7 +97,6 @@ test_that("FLCatch get and set data accessors", {
                 c(discards.wt(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(catch.sel(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(price(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
-                #c(catch.q(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
     expect_that(values_out, is_identical_to(values_in))
     # Set double
     flc_in <- random_FLCatch_generator()
@@ -113,7 +109,6 @@ test_that("FLCatch get and set data accessors", {
                 c(discards.wt(flc_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(catch.sel(flc_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(price(flc_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
-                #c(catch.q(flc_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
     # Check inserted values are correct
     expect_that(values_out, is_identical_to(values_in))
     # Check other values have been left alone
@@ -129,7 +124,6 @@ test_that("FLCatch get and set data accessors", {
     expect_that(c(discards.wt(flc_out))[-element], is_identical_to(c(discards.wt(flc_in))[-element]))
     expect_that(c(catch.sel(flc_out))[-element], is_identical_to(c(catch.sel(flc_in))[-element]))
     expect_that(c(price(flc_out))[-element], is_identical_to(c(price(flc_in))[-element]))
-    #expect_that(c(catch.q(flc_out))[-element], is_identical_to(c(catch.q(flc_in))[-element]))
     # Set AD 
     flc_in <- random_FLCatch_generator()
     indices <- round(runif(6,min=1, max = dim(landings.n(flc_in))))
@@ -141,7 +135,6 @@ test_that("FLCatch get and set data accessors", {
                 c(discards.wt(flc_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(catch.sel(flc_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(price(flc_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
-                #c(catch.q(flc_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
     # Check inserted values are correct
     expect_that(values_out, is_identical_to(values_in))
     # Check other values have been left alone
@@ -157,7 +150,36 @@ test_that("FLCatch get and set data accessors", {
     expect_that(c(discards.wt(flc_out))[-element], is_identical_to(c(discards.wt(flc_in))[-element]))
     expect_that(c(catch.sel(flc_out))[-element], is_identical_to(c(catch.sel(flc_in))[-element]))
     expect_that(c(price(flc_out))[-element], is_identical_to(c(price(flc_in))[-element]))
-    #expect_that(c(catch.q(flc_out))[-element], is_identical_to(c(catch.q(flc_in))[-element]))
+})
+
+
+test_that("FLCatch catch_q accessor", {
+    flc_in <- random_FLCatch_generator()
+    dims <- dim(landings.n(flc_in))
+    # Make a random FLPar with max dims of flq
+    # Make random indices of FLPar (-1)
+    # Call it and test
+    catch.q1 <- FLPar(rnorm(2 * dims[6]), dimnames = list(params = c("alpha","beta"), iter = 1:dims[6]))
+    catch.q2 <- FLPar(rnorm(2 * dims[6] * dims[2]), dimnames = list(params = c("alpha","beta"), year = 1:dims[4], iter = 1:dims[6]))
+    catch.q4 <- FLPar(rnorm(2 * dims[6] * dims[4]), dimnames = list(params = c("alpha","beta"), season = 1:dims[4], iter = 1:dims[6]))
+    catch.q24 <- FLPar(rnorm(2 * dims[2] * dims[6] * dims[4]), dimnames = list(params = c("alpha","beta"), year=1:dims[2], season = 1:dims[4], iter = 1:dims[6]))
+    indices <- round(runif(6, min=1, max=dims))
+    # Only params and iter - indices 2:5 should be ignored (==1)
+    catch.q(flc_in) <- catch.q1
+    params <- test_FLCatchAD_catch_q(flc_in, indices)
+    expect_that(c(catch.q1[,indices[6]]), is_identical_to(c(params)))
+    # params, year and iter
+    catch.q(flc_in) <- catch.q2
+    params <- test_FLCatchAD_catch_q(flc_in, indices)
+    expect_that(c(catch.q2[,indices[2],indices[6]]), is_identical_to(c(params)))
+    # params, season and iter
+    catch.q(flc_in) <- catch.q4
+    params <- test_FLCatchAD_catch_q(flc_in, indices)
+    expect_that(c(catch.q4[,indices[4],indices[6]]), is_identical_to(c(params)))
+    # params, year, season and iter
+    catch.q(flc_in) <- catch.q24
+    params <- test_FLCatchAD_catch_q(flc_in, indices)
+    expect_that(c(catch.q24[,indices[2],indices[4],indices[6]]), is_identical_to(c(params)))
 })
 
 test_that("FLCatch methods", {

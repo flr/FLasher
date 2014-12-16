@@ -1255,7 +1255,7 @@ FLQuant FLPar_to_FLQuant(SEXP flp) {
     // Find the other 4 dimensions: year, unit, season, area
     // Use find() to match names - precheck in R that they exist - if not find, returns the last
     std::vector<std::string>::iterator flq_dimnames_iterator;
-    for (unsigned int dimname_counter=0; dimname_counter < flp_dimnames_names.size(); ++dimname_counter){
+    for (unsigned int dimname_counter=1; dimname_counter < (flp_dimnames_names.size() - 1); ++dimname_counter){
         flq_dimnames_iterator = find(other_flq_dimnames.begin(), other_flq_dimnames.end(), flp_dimnames_names[dimname_counter]);
         if(flq_dimnames_iterator != other_flq_dimnames.end()){
             element = std::distance(other_flq_dimnames.begin(), flq_dimnames_iterator);

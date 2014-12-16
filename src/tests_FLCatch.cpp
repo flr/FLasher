@@ -260,6 +260,15 @@ FLQuantAD test_FLCatchAD_discards_sel(const FLCatchAD flc){
 }
 
 
+// [[Rcpp::export]]
+std::vector<double> test_FLCatchAD_catch_q(const FLCatchAD flc, const std::vector<unsigned int> indices)
+{
+    std::vector<double> params;
+    params = flc.catch_q(indices[1], indices[2], indices[3], indices[4], indices[5]);
+    return params;
+}
+
+
 /*------------------------------------------------------------------------*/
 // FLCatches - double
 

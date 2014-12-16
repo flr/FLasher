@@ -22,7 +22,7 @@ FLCatch_base<T>::FLCatch_base(){
     discards_wt_flq = FLQuant();
     catch_sel_flq = FLQuant();
     price_flq = FLQuant();
-    // catch_q_params - what is it?
+    catch_q_flq = FLQuant();
 }
 
 // Constructor from a SEXP S4 FLCatch
@@ -40,7 +40,9 @@ FLCatch_base<T>::FLCatch_base(SEXP flc_sexp){
     discards_wt_flq = flc_s4.slot("discards.wt");
     catch_sel_flq = flc_s4.slot("catch.sel");
     price_flq = flc_s4.slot("price");
-    // catch_q_params - what is it?
+    catch_q_flq = FLPar_to_FLQuant(flc_s4.slot("catch.q"));
+    // Store the original
+    catch_q_orig = flc_s4.slot("catch.q");
 }
 
 // Copy constructor - else members can be pointed at by multiple instances
@@ -56,7 +58,8 @@ FLCatch_base<T>::FLCatch_base(const FLCatch_base<T>& FLCatch_source){
     discards_wt_flq = FLCatch_source.discards_wt_flq;
     catch_sel_flq = FLCatch_source.catch_sel_flq;
     price_flq = FLCatch_source.price_flq;
-    // catch_q_params - what is it?
+    catch_q_flq = FLCatch_source.catch_q_flq;
+    catch_q_orig = FLCatch_source.catch_q_orig;
 }
 
 // Assignment operator to ensure deep copy - else 'data' can be pointed at by multiple instances
@@ -73,7 +76,8 @@ FLCatch_base<T>& FLCatch_base<T>::operator = (const FLCatch_base<T>& FLCatch_sou
         discards_wt_flq = FLCatch_source.discards_wt_flq;
         catch_sel_flq = FLCatch_source.catch_sel_flq;
         price_flq = FLCatch_source.price_flq;
-        // catch_q_params - what is it?
+        catch_q_flq = FLCatch_source.catch_q_flq;
+        catch_q_orig = FLCatch_source.catch_q_orig;
 	}
 	return *this;
 }
@@ -93,8 +97,7 @@ FLCatch_base<T>::operator SEXP() const{
     flc_s4.slot("discards.wt") = discards_wt_flq;
     flc_s4.slot("catch.sel") = catch_sel_flq;
     flc_s4.slot("price") = price_flq;
-    // Fix catch_q params wrap
-    //flc_s4.slot("catch.q") = catch_q_flq;
+    flc_s4.slot("catch.q") = catch_q_orig;
     return Rcpp::wrap(flc_s4);
 }
 
@@ -130,6 +133,38 @@ FLQuant FLCatch_base<T>::price() const {
     return price_flq;
 }
 
+template <typename T>
+FLQuant FLCatch_base<T>::catch_q() const {
+    return catch_q_flq;
+}
+
+// catch_q_flq is a little different as it checks if unit / season / etc are > 1
+// parameters are stored in the first dimension
+template <typename T>
+std::vector<double> FLCatch_base<T>::catch_q(int year, int unit, int season, int area, int iter) const {
+    std::vector<double> q_out (catch_q().get_nquant(),0.0);
+    // Sort out dims - if years > no years in the catch_q_flq object (i.e. catch_q_flq are not disaggregated by time etc.) just pick the first 
+    // The real checking should be done in the R side
+    if (year > catch_q().get_nyear()){
+        year = 1;
+    }
+    if (unit > catch_q().get_nunit()){
+        unit = 1;
+    }
+    if (season > catch_q().get_nseason()){
+        season = 1;
+    }
+    if (area > catch_q().get_narea()){
+        area = 1;
+    }
+    // iters already cared for in generic FLQuant_base<> accessor
+    for (int i = 1; i <= catch_q().get_nquant(); ++i){
+        q_out[i-1] = catch_q()(i,year,unit,season,area,iter);
+    }
+    return q_out;
+}
+
+
 // Get and Set
 template <typename T>
 FLQuant_base<T>& FLCatch_base<T>::landings_n() {
@@ -162,16 +197,19 @@ FLQuant& FLCatch_base<T>::price() {
 }
 
 template <typename T>
+FLQuant& FLCatch_base<T>::catch_q() {
+    return catch_q_flq;
+}
+
+
+
+// methods
+
+template <typename T>
 FLQuant_base<T> FLCatch_base<T>::discards_ratio() const {
     return discards_ratio_flq;
 }
 
-//template <typename T>
-//FLQuant& FLCatch_base<T>::catch_q() {
-//    return catch_q_flq;
-//}
-
-// methods
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::landings() const {
     FLQuant_base<T> landings = quant_sum(landings_n() * landings_wt());
