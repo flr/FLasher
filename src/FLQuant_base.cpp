@@ -1245,22 +1245,28 @@ FLQuant FLPar_to_FLQuant(SEXP flp) {
     unsigned int element = 0;
     std::vector<std::string> flp_dimnames_names = flp_dimnames.names();
 
-    // Find the other 4 dimensions: year, unit, season, area
-    // Use find() to match names - precheck in R that they exist - if not find, returns the last
-    std::vector<std::string>::iterator flp_dimnames_iterator;
     // Use initialiser lists in C++11 rather than this
     std::vector<std::string> other_flq_dimnames(4);
     other_flq_dimnames[0] = "year";
     other_flq_dimnames[1] = "unit";
     other_flq_dimnames[2] = "season";
     other_flq_dimnames[3] = "area";
-    for (unsigned int dimname_counter=0; dimname_counter < other_flq_dimnames.size(); ++dimname_counter){
-        flp_dimnames_iterator = find(flp_dimnames_names.begin(), flp_dimnames_names.end(), other_flq_dimnames[dimname_counter]);
-        if(flp_dimnames_iterator != flp_dimnames_names.end()){
-            element = std::distance(flp_dimnames_names.begin(), flp_dimnames_iterator);
-            flq_dim[dimname_counter+1] = flp_dim[element];
+
+    // Find the other 4 dimensions: year, unit, season, area
+    // Use find() to match names - precheck in R that they exist - if not find, returns the last
+    std::vector<std::string>::iterator flq_dimnames_iterator;
+    for (unsigned int dimname_counter=0; dimname_counter < flp_dimnames_names.size(); ++dimname_counter){
+        flq_dimnames_iterator = find(other_flq_dimnames.begin(), other_flq_dimnames.end(), flp_dimnames_names[dimname_counter]);
+        if(flq_dimnames_iterator != other_flq_dimnames.end()){
+            element = std::distance(other_flq_dimnames.begin(), flq_dimnames_iterator);
+            flq_dim[element+1] = flp_dim[dimname_counter];
+        }
+        else {
+            Rcpp::stop("dimname of FLPar not found in dimnames of FLQuant\n");
         }
     }
+
+
     // Rprintf("%i %i %i %i %i %i\n", flq_dim[0], flq_dim[1], flq_dim[2], flq_dim[3], flq_dim[4], flq_dim[5]);
     // Make the new FLQuant of the required size
     FLQuant flq_out(flq_dim[0], flq_dim[1], flq_dim[2], flq_dim[3], flq_dim[4], flq_dim[5]);

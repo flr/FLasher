@@ -112,7 +112,9 @@ random_FLCatch_generator <- function(sd=100, ...){
     discards.wt(catch)[] <- abs(rnorm(prod(dim(flq)),sd=sd))
     catch.sel(catch)[] <- abs(rnorm(prod(dim(flq)),sd=sd))
     price(catch)[] <- abs(rnorm(prod(dim(flq)),sd=sd))
-    # catch.q(catch) # undefined right now
+    catch.q(catch) <- FLPar(rnorm(2 * dim(flq)[6]), dimnames = list(params = c("alpha","beta"), iter = 1:dim(flq)[6]))
+    # Need to add catch.q.params as attribute
+    #attr(catch, "catch.q.params") <- as(catch.q(catch), "FLQuant")
     name(catch) <- as.character(signif(rnorm(1)*1000,3))
     desc(catch) <- as.character(signif(rnorm(1)*1000,3))
     # set the units to something sensible

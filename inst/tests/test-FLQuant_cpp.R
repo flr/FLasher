@@ -225,11 +225,6 @@ test_that("FLPar_to_FLQuant", {
     flp5D2 <- FLPar(rnorm(dim(flq)[1] * dim(flq)[2] * dim(flq)[4] * dim(flq)[5] * dim(flq)[6]), dimnames=dimnames(flq)[c(1,2,4,5,6)])
     flp6D <- FLPar(rnorm(prod(dim(flq))), dimnames=dimnames(flq))
     flp7D <- FLPar(rnorm(dim(flq)[1] * dim(flq)[2] * dim(flq)[4] * dim(flq)[5] * 3 * dim(flq)[6]), dimnames=c(dimnames(flq)[1:5], other=list(c("a","b","c")), dimnames(flq)[6]))
-
-    # Extra dim which will be ignored - no it's not
-    # flp2D2 <- FLPar(rnorm(dim(flq)[1] * dim(flq)[6] * 5), dimnames=list(params = dimnames(flq)[[1]], other_name = c("a","b","c","d","e"), iter = dimnames(flq)[[6]]))
-    # flq_out <- test_FLPar_to_FLQuant(flp2D2)
-
     # 2D
     flq_out <- test_FLPar_to_FLQuant(flp2D)
     expect_that(dim(flq_out), equals(unname(c(dim(flp2D)[1],1,1,1,1,dim(flp2D)[2]))))
@@ -258,4 +253,8 @@ test_that("FLPar_to_FLQuant", {
     expect_that(c(flq_out), equals(c(flp6D)))
     # > 7D (fail)
     expect_that(test_FLPar_to_FLQuant(flp7D), throws_error())
+    # Wrong dimname - fail
+    # Extra dim which will be ignored - no it's not
+    flp2D2 <- FLPar(rnorm(dim(flq)[1] * dim(flq)[6] * 5), dimnames=list(params = dimnames(flq)[[1]], other_name = c("a","b","c","d","e"), iter = dimnames(flq)[[6]]))
+    expect_that(test_FLPar_to_FLQuant(flp2D2), throws_error())
 })
