@@ -1449,6 +1449,10 @@ test_fwdBiolAD_set_accessors <- function(fwdb, quant, year, unit, season, area, 
     .Call('FLasher_test_fwdBiolAD_set_accessors', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter, values)
 }
 
+fwdBiolAD_biomass <- function(fwdb) {
+    .Call('FLasher_fwdBiolAD_biomass', PACKAGE = 'FLasher', fwdb)
+}
+
 test_fwdBiols_list_constructor <- function(flbs_list_sexp) {
     .Call('FLasher_test_fwdBiols_list_constructor', PACKAGE = 'FLasher', flbs_list_sexp)
 }

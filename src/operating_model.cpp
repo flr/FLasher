@@ -425,7 +425,7 @@ FLQuantAD operatingModel::eval_target(const int target_no) const {
             //out = ssb(biol_no);
             break;
         case target_biomass:
-            out = biomass(biol_no);
+            out = biols(biol_no).biomass();
             break;
         default:
             Rcpp::stop("target_type not found in switch statement - giving up\n");
@@ -659,13 +659,6 @@ adouble operatingModel::ssb(const int year, const int unit, const int season, co
 }
 */
 
-
-// Total biomass at the beginning of the timestep
-// biol_no not currently used
-FLQuantAD operatingModel::biomass(const int biol_no) const {
-    FLQuantAD biomass = quant_sum(biols(biol_no).n() * biols(biol_no).wt());
-    return biomass;
-}
 
 /*
 FLQuantAD operatingModel::fbar(const Rcpp::IntegerVector age_range_indices, const int fishery_no, const int catch_no, const int biol_no) const{

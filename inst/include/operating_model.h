@@ -107,7 +107,7 @@ class operatingModel {
         //FLQuantAD discards(const int biol_no) const;
 
         // Total biomass from a biol
-        FLQuantAD biomass(const int biol_no) const;
+        //FLQuantAD biomass(const int biol_no) const;
 
         // Various ways of calculating reproductive potential
         //FLQuantAD ssb(const int biol_no) const;

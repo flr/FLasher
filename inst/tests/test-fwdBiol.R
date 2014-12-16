@@ -167,6 +167,13 @@ test_that("fwdBiol with fwdSR", {
     expect_that(out[["srr"]][["residuals_mult"]], is_identical_to(residuals_mult))
 })
 
+test_that("fwdBiol methods",{
+    flb_in <- random_FLBiol_generator()
+    biomass <-  fwdBiolAD_biomass(flb_in)
+    expect_that(biomass@.Data, equals(quantSums(n(flb_in) * wt(flb_in))@.Data))
+})
+
+
 test_that("fwdBiols constructors",{
     # Takes a list - list_fwdBiol
     # Each element of list_fwdBiol is a list containing the fwdBiol components:

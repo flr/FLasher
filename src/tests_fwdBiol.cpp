@@ -186,6 +186,12 @@ fwdBiolAD test_fwdBiolAD_set_accessors(fwdBiolAD fwdb, int quant, int year, int 
     return fwdb;
 }
 
+// [[Rcpp::export]]
+FLQuantAD fwdBiolAD_biomass(fwdBiolAD fwdb){
+    return fwdb.biomass();
+}
+
+
 /*-------------------------------------------------------*/
 
 // fwdBiols constructors

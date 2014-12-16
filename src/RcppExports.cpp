@@ -6147,6 +6147,21 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// fwdBiolAD_biomass
+FLQuantAD fwdBiolAD_biomass(fwdBiolAD fwdb);
+RcppExport SEXP FLasher_fwdBiolAD_biomass(SEXP fwdbSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< fwdBiolAD >::type fwdb(fwdbSEXP );
+        FLQuantAD __result = fwdBiolAD_biomass(fwdb);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // test_fwdBiols_list_constructor
 fwdBiols test_fwdBiols_list_constructor(SEXP flbs_list_sexp);
 RcppExport SEXP FLasher_test_fwdBiols_list_constructor(SEXP flbs_list_sexpSEXP) {

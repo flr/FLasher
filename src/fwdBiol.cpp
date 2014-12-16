@@ -167,6 +167,15 @@ fwdSR_base<T> fwdBiol_base<T>::get_srr() const{
     return srr;
 }
 
+// Total biomass at the beginning of the timestep
+template <typename T>
+FLQuant_base<T> fwdBiol_base<T>::biomass() const {
+    FLQuant_base<T> biomass = quant_sum(n() * wt());
+    return biomass;
+}
+
+
+
 
 
 /*------------------------------------------------------------*/

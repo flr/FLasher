@@ -60,12 +60,15 @@ class fwdBiol_base {
         //std::vector<T> ssb(const int timestep) const;
         //T ssb(const int timestep, const int iter) const;
 
-        // Accessor methods for the slots
+        // Accessor methods (get and set) for the slots
         FLQuant_base<T>& n();
         FLQuant& wt();
         FLQuant& m();
         FLQuant& spwn();
         FLQuant& fec();
+
+        // Summary methods
+        FLQuant_base<T> biomass() const;
 
         fwdSR_base<T> get_srr() const;
         std::string get_name() const;
