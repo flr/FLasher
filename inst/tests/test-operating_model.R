@@ -62,6 +62,26 @@ test_that("operatingModel Q methods",{
 })
 
 
+test_that("operatingModel F methods",{
+    flq <- random_FLQuant_generator()
+    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
+    # Pull out just FLBiols for testing
+    flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
+    fc <- dummy_fwdControl_generator(years = 1, niters = dim(flq)[6])
+    fishery_no <- round(runif(1,min=1, max=length(flfs)))
+    catch_no <- round(runif(1,min=1, max=length(flfs[[fishery_no]])))
+    biol_no <- round(runif(1,min=1, max=length(flbs)))
+    cq_flq <- as(catch.q(flfs[[fishery_no]][[catch_no]]), "FLQuant")
+    # Any FLC FLB combination
+    fout <- test_operatingModel_F(flfs, flbs, fc, fishery_no, catch_no, biol_no)
+    biomass <- quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))
+    qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
+    fin <- sweep(catch.sel(flfs[[fishery_no]][[catch_no]]), 2:6, qin * effort(flfs[[fishery_no]]), "*")
+    expect_that(fout@.Data, equals(fin@.Data))
+
+    #indices <- round(runif(5, min = 1, max = dim(flq)[-1]))
+})
 
 
 #test_that("operatingModel project timestep",{

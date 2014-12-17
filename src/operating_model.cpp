@@ -235,13 +235,38 @@ FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, cons
 
 // Fishing mortality methods
 // partial F
+FLQuantAD operatingModel::f(const int fishery_no, const int catch_no, const int biol_no) const {
+    // F = Q * Effort * Sel
+    Rprintf("In f method\n");
+    FLQuantAD q_effort = catch_q(fishery_no, catch_no, biol_no) * fisheries(fishery_no).effort();
+    FLQuantAD sel = fisheries(fishery_no, catch_no).catch_sel();
+    Rcpp::IntegerVector dim = sel.get_dim();
+    for (int quant_count = 1; quant_count <= dim[0]; ++quant_count){
+        for (int year_count = 1; year_count <= dim[1]; ++year_count){
+            for (int unit_count = 1; unit_count <= dim[2]; ++unit_count){
+                for (int season_count = 1; season_count <= dim[3]; ++season_count){
+                    for (int area_count = 1; area_count <= dim[4]; ++area_count){
+                        for (int iter_count = 1; iter_count <= dim[5]; ++iter_count){
+                            sel(quant_count, year_count, unit_count, season_count, area_count, iter_count) = sel(quant_count, year_count, unit_count, season_count, area_count, iter_count) * q_effort(1, year_count, unit_count, season_count, area_count, iter_count);
+                        }}}}}}
+    return sel;
+}
+
+// partial F after working out who fishes on what
 FLQuantAD operatingModel::f(const int fishery_no, const int catch_no) const {
+    unsigned int biol_no;
+    // biol_no = who_is_fished(fishery_no, catch_no, &biol_no);
+    // FLQuantAD f = f(fishery_no, catch_no, biol_no);
 
     return FLQuantAD();
 }
 
 // total F on a biol
 FLQuantAD operatingModel::f(const int biol_no) const {
+    unsigned int fishery_no;
+    unsigned int catch_no;
+    // who_fishes_biol(&fishery_no, &catch_no, biol_no); // More complicated - can be several catches
+    // FLQuantAD f = f(fishery_no, catch_no, biol_no);
 
     return FLQuantAD();
 }

@@ -79,7 +79,6 @@ operatingModel test_operatingModel_full_constructor(FLFisheriesAD flfs, SEXP flb
 
 /*----------- F methods --------------*/
 
-// f()
 
 // f_spwn()
 
@@ -99,6 +98,15 @@ FLQuantAD test_operatingModel_catch_q_FLQuantAD(FLFisheriesAD flfs, SEXP flbs_li
     operatingModel om(flfs, biols, ctrl);
     FLQuantAD qad = om.catch_q(fishery_no, catch_no, biol_no);
     return qad;
+}
+
+// f()
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_F(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD f = om.f(fishery_no, catch_no, biol_no);
+    return f;
 }
 
 /*----------- Project timestep --------------*/
