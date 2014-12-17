@@ -1633,3 +1633,11 @@ test_operatingModel_full_constructor <- function(flfs, flbs_list_sexp, ctrl) {
     .Call('FLasher_test_operatingModel_full_constructor', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl)
 }
 
+test_operatingModel_catch_q_adouble <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices) {
+    .Call('FLasher_test_operatingModel_catch_q_adouble', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices)
+}
+
+test_operatingModel_catch_q_FLQuantAD <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no) {
+    .Call('FLasher_test_operatingModel_catch_q_FLQuantAD', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no)
+}
+

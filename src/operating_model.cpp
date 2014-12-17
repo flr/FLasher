@@ -195,12 +195,42 @@ operatingModel::operator SEXP() const{
 
 
 // Supposed to get catch_q_params from FLCatch but we don't know what they are yet
-FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no) const{
+//FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no) const{
     // Default relationship: Q = alpha * B ^ -beta
     // alpha and beta come from FLCatch.catch_q_params
     // B is biomass of the biol
     // Is this age structured?
-    return FLQuant();
+    // return FLQuant();
+// }
+
+// Default relationship: Q = alpha * B ^ -beta
+// alpha and beta come from FLCatch.catch_q_params
+// B is biomass of the biol
+adouble operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year, const int unit, const int season, const int area, const int iter) const{
+    //FLQuantAD biomass = biols(biol_no).biomass();
+    //std::vector<double> params = fisheries(fishery_no, catch_no).catch_q_params(year, unit, season, area, iter);
+    //adouble q = params[0] * pow(biomass(1,year, unit, season, area, iter),params[1]);
+    FLQuantAD q = catch_q(fishery_no, catch_no, biol_no);
+    return q(1,year, unit, season, area, iter);
+}
+
+
+
+FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no) const{
+    FLQuantAD biomass = biols(biol_no).biomass();
+    // This is pretty grim code but the params are awkwardly stored
+    Rcpp::IntegerVector dim = biomass.get_dim();
+    std::vector<double> q_params;
+    FLQuantAD q = biomass;
+    for (int year_count = 1; year_count <= dim[1]; ++year_count){
+        for (int unit_count = 1; unit_count <= dim[2]; ++unit_count){
+            for (int season_count = 1; season_count <= dim[3]; ++season_count){
+                for (int area_count = 1; area_count <= dim[4]; ++area_count){
+                    for (int iter_count = 1; iter_count <= dim[5]; ++iter_count){
+                        q_params = fisheries(fishery_no, catch_no).catch_q_params(year_count, unit_count, season_count, area_count, iter_count);
+                        q(1,year_count, unit_count, season_count, area_count, iter_count) = q_params[0] * pow(biomass(1,year_count, unit_count, season_count, area_count, iter_count), -q_params[1]);
+    }}}}}
+    return q;
 }
 
 // Fishing mortality methods

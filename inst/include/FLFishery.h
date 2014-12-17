@@ -84,8 +84,8 @@ class FLFisheries_base {
         // Accessors
 		FLFishery_base<T> operator () (const unsigned int  fishery) const; // Only gets an FLFishery so const reinforced. 
 		FLFishery_base<T>& operator () (const unsigned int fishery); // Gets and sets an FLFishery so const not reinforced. Default is the first element
-		FLCatch_base<T> operator () (const unsigned int fishery, const unsigned int catches) const; // Only gets an FLFishery so const reinforced. 
-		FLCatch_base<T>& operator () (const unsigned int fishery, const unsigned int catches); // Gets and sets an FLFishery so const not reinforced. 
+		FLCatch_base<T> operator () (const unsigned int fishery, const unsigned int catches) const; // Only gets an FLCatch so const reinforced. 
+		FLCatch_base<T>& operator () (const unsigned int fishery, const unsigned int catches); // Gets and sets an FLCatch so const not reinforced. 
 
         unsigned int get_nfisheries() const;
 

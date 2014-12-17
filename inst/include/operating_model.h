@@ -63,7 +63,10 @@ class operatingModel {
 		operatingModel& operator = (const operatingModel& operatingModel_source); // Assignment operator for a deep copy
 
         // Catchability methods from an FLCatch and an FLBiol - is AD because biols are AD
+        // FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no) const;
+        adouble catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year, const int unit, const int season, const int area, const int iter) const;
         FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no) const;
+
         // Fishing mortality methods
         FLQuantAD f(const int fishery_no, const int catch_no) const; // partial F
         FLQuantAD f(const int biol_no) const; // total F on a biol

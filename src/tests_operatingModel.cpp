@@ -84,6 +84,22 @@ operatingModel test_operatingModel_full_constructor(FLFisheriesAD flfs, SEXP flb
 // f_spwn()
 
 // catch_q()
+// [[Rcpp::export]]
+double test_operatingModel_catch_q_adouble(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    adouble qad = om.catch_q(fishery_no, catch_no, biol_no, indices[0], indices[1], indices[2], indices[3], indices[4]); 
+    double q = Value(qad);
+    return q;
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_catch_q_FLQuantAD(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD qad = om.catch_q(fishery_no, catch_no, biol_no);
+    return qad;
+}
 
 /*----------- Project timestep --------------*/
 
