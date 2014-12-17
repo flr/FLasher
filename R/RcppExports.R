@@ -1553,6 +1553,14 @@ test_fwdControl_get_age_range <- function(control, target_no) {
     .Call('FLasher_test_fwdControl_get_age_range', PACKAGE = 'FLasher', control, target_no)
 }
 
+test_fwdControl_get_FC <- function(control, biol_no) {
+    .Call('FLasher_test_fwdControl_get_FC', PACKAGE = 'FLasher', control, biol_no)
+}
+
+test_fwdControl_get_B <- function(control, fishery_no, catch_no) {
+    .Call('FLasher_test_fwdControl_get_B', PACKAGE = 'FLasher', control, fishery_no, catch_no)
+}
+
 test_fwdSR_empty_constructor <- function() {
     invisible(.Call('FLasher_test_fwdSR_empty_constructor', PACKAGE = 'FLasher'))
 }

@@ -60,12 +60,16 @@ class fwdControl {
         std::string get_target_quantity(const int target_no) const;
         fwdControlTargetType get_target_type(const int target_no) const;
         void init_target_map();
+        // FCB accessors
+        Rcpp::IntegerMatrix get_FC(const int biol_no) const;
+        std::vector<int> get_B(const int fishery_no, const int catch_no) const;
     private:
         // Not bothering with the R structure of fwdControl@target@iters and @element
         Rcpp::DataFrame target;
         Rcpp::NumericVector target_iters; 
         //std::map<std::string, fwdControlTargetType> target_map;
         target_map_type target_map;
+        Rcpp::IntegerMatrix FCB; // an (n x 3) matrix with columns F, C and B
 };
 
 

@@ -85,3 +85,17 @@ std::string test_fwdControl_get_target_quantity(const fwdControl control, const 
 Rcpp::IntegerVector test_fwdControl_get_age_range(const fwdControl control, const int target_no){
     return control.get_age_range(target_no);
 }
+
+// [[Rcpp::export]]
+Rcpp::IntegerMatrix test_fwdControl_get_FC(const fwdControl control, const int biol_no){
+    return control.get_FC(biol_no);
+}
+
+// [[Rcpp::export]]
+std::vector<int> test_fwdControl_get_B(const fwdControl control, const int fishery_no, const int catch_no){
+    return control.get_B(fishery_no, catch_no);
+}
+
+
+
+

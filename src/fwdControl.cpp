@@ -33,23 +33,28 @@ void fwdControl::init_target_map(){
 fwdControl::fwdControl(){
     target = Rcpp::DataFrame();
     target_iters = Rcpp::NumericVector();
+    FCB = Rcpp::IntegerMatrix();
 }
 
 // Constructor used as intrinsic 'as'
+// Add FCB
 fwdControl::fwdControl(SEXP fwd_control_sexp){
 	Rcpp::S4 fwd_control_s4 = Rcpp::as<Rcpp::S4>(fwd_control_sexp);
 	Rcpp::S4 target_s4 = fwd_control_s4.slot("target");
     target_iters = target_s4.slot("iters");
     target = target_s4.slot("element");
+    FCB = Rcpp::as<Rcpp::IntegerMatrix>(target_s4.slot("FCB")); // Why does need an as?
     init_target_map();
 }
 
 // intrinsic 'wrap' 
+// Add FCB
 fwdControl::operator SEXP() const{
     Rcpp::S4 fwd_control_s4("fwdControl");
     Rcpp::S4 fwd_element_s4("fwdElement");
     fwd_element_s4.slot("element") = target;
     fwd_element_s4.slot("iters") = target_iters;
+    // fwd_element_s4.slot("FCB") = FCB;
     fwd_control_s4.slot("target") = fwd_element_s4;
     return Rcpp::wrap(fwd_control_s4);
 }
@@ -59,6 +64,7 @@ fwdControl::fwdControl(const fwdControl& fwdControl_source){
     target = Rcpp::clone<Rcpp::DataFrame>(fwdControl_source.target); // Need to clone for a deep copy
     target_iters = Rcpp::clone<Rcpp::NumericVector>(fwdControl_source.target_iters); // Need to clone 
     target_map = fwdControl_source.target_map;
+    FCB = fwdControl_source.FCB;
 }
 
 // Assignment operator to ensure deep copy - else 'data' can be pointed at by multiple instances
@@ -67,6 +73,7 @@ fwdControl& fwdControl::operator = (const fwdControl& fwdControl_source){
         target = Rcpp::clone<Rcpp::DataFrame>(fwdControl_source.target); // Need to clone for a deep copy
         target_iters = Rcpp::clone<Rcpp::NumericVector>(fwdControl_source.target_iters); // Need to clone 
         target_map = fwdControl_source.target_map;
+        FCB = fwdControl_source.FCB;
 	}
 	return *this;
 }
@@ -186,6 +193,41 @@ fwdControlTargetType fwdControl::get_target_type(const int target_no) const{
         Rcpp::stop("Unable to find target quantity in fwdControl target_map\n");
     }
     return type_pair_found->second;
+}
+
+/*--------------------- FCB accessors ------------------------------*/
+
+// Given the Biol no, what fishery / catch fish it?
+Rcpp::IntegerMatrix fwdControl::get_FC(const int biol_no) const{
+    std::vector<int> rows;
+    for (unsigned int row_counter=0; row_counter < FCB.nrow(); ++row_counter){
+        if(FCB(row_counter,2) == biol_no){
+            rows.push_back(row_counter);
+        }
+    }
+    Rcpp::IntegerMatrix FC(rows.size(),2);
+    for (unsigned int row_counter=0; row_counter < rows.size(); ++ row_counter){
+        FC(row_counter,0) = FCB(rows[row_counter],0);
+        FC(row_counter,1) = FCB(rows[row_counter],1);
+    }
+    return FC;
+}
+
+// Given the Fishery / catch no, what Biols do they fish?
+std::vector<int> fwdControl::get_B(const int fishery_no, const int catch_no) const{
+    std::vector<int> rows;
+    for (unsigned int row_counter=0; row_counter < FCB.nrow(); ++row_counter){
+        if(FCB(row_counter,0) == fishery_no){
+            if(FCB(row_counter,1) == catch_no){
+                rows.push_back(row_counter);
+            }
+        }
+    }
+    std::vector<int> B(rows.size(),0.0);
+    for (unsigned int row_counter=0; row_counter < rows.size(); ++ row_counter){
+        B[row_counter] = FCB(rows[row_counter],2);
+    }
+    return B;
 }
 
 /*------------------------------------------------------------------*/

@@ -6589,6 +6589,39 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// test_fwdControl_get_FC
+Rcpp::IntegerMatrix test_fwdControl_get_FC(const fwdControl control, const int biol_no);
+RcppExport SEXP FLasher_test_fwdControl_get_FC(SEXP controlSEXP, SEXP biol_noSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP );
+        Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP );
+        Rcpp::IntegerMatrix __result = test_fwdControl_get_FC(control, biol_no);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_fwdControl_get_B
+std::vector<int> test_fwdControl_get_B(const fwdControl control, const int fishery_no, const int catch_no);
+RcppExport SEXP FLasher_test_fwdControl_get_B(SEXP controlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP );
+        Rcpp::traits::input_parameter< const int >::type fishery_no(fishery_noSEXP );
+        Rcpp::traits::input_parameter< const int >::type catch_no(catch_noSEXP );
+        std::vector<int> __result = test_fwdControl_get_B(control, fishery_no, catch_no);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // test_fwdSR_empty_constructor
 void test_fwdSR_empty_constructor();
 RcppExport SEXP FLasher_test_fwdSR_empty_constructor() {

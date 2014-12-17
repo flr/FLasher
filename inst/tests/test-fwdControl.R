@@ -76,3 +76,23 @@ test_that("fwdControl accessors", {
     expect_that(unname(unlist(fc@target@element[target_no,c("minAge", "maxAge")])), is_identical_to(age_range))
 
 })
+
+test_that("fwdControl get_FCB methods", {
+    fwc <- dummy_fwdControl_generator()
+    # Make a temporary FCB attribute - add to class later
+    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+    colnames(FCB) <- c("F","C","B")
+    attr(fwc@target, "FCB") <- FCB
+
+    # Get FC
+    biol_no <- sample(unique(FCB[,"B"]),1)
+    FC_out <- test_fwdControl_get_FC(fwc, biol_no)
+    FC_in <- FCB[FCB[,"B"] == biol_no,c("F","C")]
+    expect_that(unname(FC_in), equals(FC_out))
+    # Get B
+    row_no <- sample(nrow(FCB),1)
+    FC <- FCB[row_no,c("F","C")]
+    B_out <- test_fwdControl_get_B(fwc, FCB[row_no,"F"], FCB[row_no,"C"])
+    B_in <- FCB[(FCB[,"F"] == FC["F"]) & (FCB[,"C"] == FC["C"]),"B"]
+    expect_that(B_in, equals(B_out))
+})
