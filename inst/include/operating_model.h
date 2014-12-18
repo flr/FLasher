@@ -70,7 +70,7 @@ class operatingModel {
         // Fishing mortality methods
         FLQuantAD f(const int fishery_no, const int catch_no, const int biol_no) const; // partial F on a biol assuming that the FLCatch fishes it
         FLQuantAD f(const int fishery_no, const int catch_no) const; // partial F, works out who fishes what first
-        FLQuantAD f(const int biol_no) const; // total F on a biol, works out who fishes what first
+        FLQuantAD f(const int biol_no) const; // total F on a biol
         FLQuant f_spwn(const int fishery_no, const int catch_no, const int biol_no); // proportion of F before spawning
 
         void run(); 

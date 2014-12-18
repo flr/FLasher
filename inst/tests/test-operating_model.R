@@ -80,7 +80,61 @@ test_that("operatingModel F methods",{
     fin <- sweep(catch.sel(flfs[[fishery_no]][[catch_no]]), 2:6, qin * effort(flfs[[fishery_no]]), "*")
     expect_that(fout@.Data, equals(fin@.Data))
 
-    #indices <- round(runif(5, min = 1, max = dim(flq)[-1]))
+    # Total F on a biol
+    om <- make_test_operatingModel1(1)
+    # 1 biol -> 1 catch
+    biol_no <- 1
+    fishery_no <- 1
+    catch_no <- 1
+    f1 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
+    cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
+    qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
+    fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
+    expect_that(f1@.Data, equals(fin@.Data))
+    # 1 biol -> 2 catch
+    biol_no <- 2
+    f2 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
+    fishery_no <- 1
+    catch_no <- 2
+    cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
+    qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
+    fin12 <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
+    fishery_no <- 2
+    catch_no <- 1
+    cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
+    qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
+    fin21 <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
+    fin2 <- fin12 + fin21
+    expect_that(f2@.Data, equals(fin2@.Data))
+    # 2 biol -> 1 catch
+    biol_no <- 3
+    f3 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
+    fishery_no <- 2
+    catch_no <- 2
+    cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
+    qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
+    fin3 <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
+    expect_that(f3@.Data, equals(fin3@.Data))
+    biol_no <- 4
+    f4 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
+    fishery_no <- 2
+    catch_no <- 2
+    cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
+    qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
+    fin4 <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
+    expect_that(f4@.Data, equals(fin4@.Data))
+    # 1 biol -> 0 catch
+    biol_no <- 5
+    f5 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    expect_that(all(f5==0.0), is_true())
+
+
+    
+
 })
 
 

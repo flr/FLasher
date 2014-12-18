@@ -194,15 +194,6 @@ operatingModel::operator SEXP() const{
 
 
 
-// Supposed to get catch_q_params from FLCatch but we don't know what they are yet
-//FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no) const{
-    // Default relationship: Q = alpha * B ^ -beta
-    // alpha and beta come from FLCatch.catch_q_params
-    // B is biomass of the biol
-    // Is this age structured?
-    // return FLQuant();
-// }
-
 // Default relationship: Q = alpha * B ^ -beta
 // alpha and beta come from FLCatch.catch_q_params
 // B is biomass of the biol
@@ -235,6 +226,7 @@ FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, cons
 
 // Fishing mortality methods
 // partial F
+// fishery_no, catch_no and biol_no all start at 1 (not 0), following the FCB table
 FLQuantAD operatingModel::f(const int fishery_no, const int catch_no, const int biol_no) const {
     // F = Q * Effort * Sel
     Rprintf("In f method\n");
@@ -253,6 +245,7 @@ FLQuantAD operatingModel::f(const int fishery_no, const int catch_no, const int 
 }
 
 // partial F after working out who fishes on what
+// fishery_no, catch_no and biol_no all start at 1 (not 0), following the FCB table
 FLQuantAD operatingModel::f(const int fishery_no, const int catch_no) const {
     unsigned int biol_no;
     // biol_no = who_is_fished(fishery_no, catch_no, &biol_no);
@@ -262,13 +255,19 @@ FLQuantAD operatingModel::f(const int fishery_no, const int catch_no) const {
 }
 
 // total F on a biol
+// fishery_no, catch_no and biol_no all start at 1 (not 0), following the FCB table
 FLQuantAD operatingModel::f(const int biol_no) const {
     unsigned int fishery_no;
     unsigned int catch_no;
-    // who_fishes_biol(&fishery_no, &catch_no, biol_no); // More complicated - can be several catches
-    // FLQuantAD f = f(fishery_no, catch_no, biol_no);
-
-    return FLQuantAD();
+    // We need to know the Fishery / Catches that catch the biol
+    const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
+    // What happens if no-one is fishing that biol? FC.nrow() == 0
+    FLQuantAD total_f = biols(biol_no).n(); // Just get FLQuant of the correct dims
+    total_f.fill(0.0);
+    for (unsigned int f_counter=0; f_counter < FC.nrow(); ++f_counter){
+        total_f = total_f + f(FC(f_counter,0), FC(f_counter,1), biol_no);
+    }
+    return total_f;
 }
 // Proportion of F before spawning happens
 FLQuant operatingModel::f_spwn(const int fishery_no, const int catch_no, const int biol_no){
@@ -294,6 +293,9 @@ int operatingModel::get_target_fmult_timestep(const int target_no){
 }
 
 
+// Baranov catch equation: assumes that instantaneous rate of fishing and natural mortalities are constant over time and age
+// natural mortality and fishing mortality occur simultaneously.
+// If a biol is caught my multiple catches, the Fs happen at the same time (and at the same time as M) in the timestep
 // Update to f() and biols
 /*
 void operatingModel::project_timestep(const int timestep){
