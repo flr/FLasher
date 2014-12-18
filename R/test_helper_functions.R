@@ -332,7 +332,6 @@ setClass("fwdControlTest",
 
 
 
-# This should use the fwdControl constructor (when we have one)
 #' Dummy fwdControl object creator
 #'
 #' Creates a dummy fwdControl object for testing purposes
@@ -375,3 +374,82 @@ dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=1,max=10)), 
     fwc <- fwdControl(target=target, iters=target_iters)
     return(fwc)
 }
+
+#' Create a test operating model
+#'
+#' Creates a test operating model for testing FLFishery / FLCatch / FLBiol interactions
+#' Two FLFishery objects with 4 FLCatch objects between them, fishing 4 FLBiol objects
+#' All objects are based on ple4.
+#'
+#' @export
+#' @return A list of objects for sending to C++
+make_test_operatingModel1 <- function(niters = 1000){
+    # Sort out the FLBiols
+    data(ple4)
+    # blow up
+    ple4_iters <- propagate(ple4, niters)
+    seed_biol <- as(ple4_iters,"FLBiol")
+    flbiols <- list()
+    for (i in 1:5){
+        biol <- seed_biol
+        n(biol) <- n(biol) * abs(rnorm(prod(dim(n(biol))), mean = 1, sd = 0.1))
+        m(biol) <- m(biol) * abs(rnorm(prod(dim(m(biol))), mean = 1, sd = 0.1))
+        desc(biol) <- "biol"
+        name(biol) <- "biol"
+        flbiols[[i]] <- biol
+    }
+
+    # Make SRRs
+    srr1 <- fmle(as.FLSR(ple4, model="bevholt"),control = list(trace=0))
+    srr2 <- fmle(as.FLSR(ple4, model="ricker"),control = list(trace=0))
+    res1 <- window(residuals(srr1), start = 1957)
+    res1[,"1957"] <- res1[,"1958"]
+    res1 <- propagate(res1, niters)
+    res1 <- res1 * abs(rnorm(prod(dim(res1)), mean = 1, sd = 0.1))
+    res2 <- window(residuals(srr2), start = 1957)
+    res2[,"1957"] <- res2[,"1958"]
+    res2 <- propagate(res2, niters)
+    res2 <- res2 * abs(rnorm(prod(dim(res2)), mean = 1, sd = 0.1))
+
+    # Make the lists of FLBiol bits
+    biol_bits1 <- list(biol = flbiols[[1]], srr_model_name = "bevholt", srr_params = as(params(srr1), "FLQuant"), srr_residuals = res1, srr_timelag = 1, srr_residuals_mult = TRUE)
+    biol_bits2 <- list(biol = flbiols[[2]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_timelag = 1, srr_residuals_mult = TRUE)
+    biol_bits3 <- list(biol = flbiols[[3]], srr_model_name = "bevholt", srr_params = as(params(srr1), "FLQuant"), srr_residuals = res1, srr_timelag = 1, srr_residuals_mult = TRUE)
+    biol_bits4 <- list(biol = flbiols[[4]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_timelag = 1, srr_residuals_mult = TRUE)
+    biol_bits5 <- list(biol = flbiols[[5]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_timelag = 1, srr_residuals_mult = TRUE)
+    biols <- list(biol1 = biol_bits1, biol2 = biol_bits2, biol3 = biol_bits3, biol4 = biol_bits4, biol5 = biol_bits5)
+
+    # Make the Catches
+    catch_seed <- as(ple4_iters, "FLCatch")
+    catch_list <- list()
+    for (i in 1:4){
+        catch <- catch_seed
+        name(catch) <- paste("catch",i,sep="")
+        desc(catch) <- paste("catch",i,sep="")
+        landings.n(catch) <- landings.n(catch) * abs(rnorm(prod(dim(landings.n(catch))), mean = 1, sd = 0.1))
+        discards.n(catch) <- discards.n(catch) * abs(rnorm(prod(dim(discards.n(catch))), mean = 1, sd = 0.1))
+        catch.sel(catch) <- catch.sel(catch) * abs(rnorm(prod(dim(catch.sel(catch))), mean = 1, sd = 0.1))
+        sweep(catch.sel(catch), 2:6, apply(catch.sel(catch), 2:6, max), "/")
+        catch.q(catch) <- FLPar(c(1,0.5), dimnames=list(params=c("alpha","beta"), iter = 1))
+        catch_list[[i]] <- catch
+    }
+    # Make fishery bits
+    fishery1 <- FLFishery(catch1=catch_list[[1]], catch2 = catch_list[[2]])
+    desc(fishery1) <- "fishery1"
+    effort(fishery1)[] <- 1
+    fishery2 <- FLFishery(catch1=catch_list[[3]], catch2 = catch_list[[4]])
+    desc(fishery2) <- "fishery2"
+    effort(fishery2)[] <- 1
+    fisheries <- FLFisheries(fishery1 = fishery1, fishery2 = fishery2)
+    fisheries@desc <- "fisheries"
+
+    # fwdControl
+    fwc <- dummy_fwdControl_generator()
+    # Make a temporary FCB attribute - add to class later
+    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+    colnames(FCB) <- c("F","C","B")
+    attr(fwc@target, "FCB") <- FCB
+
+    return(list(fisheries = fisheries, biols = biols, fwc = fwc))
+}
+
