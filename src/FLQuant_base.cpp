@@ -455,6 +455,25 @@ FLQuant_base<T> FLQuant_base<T>::propagate_iters(const int iters) const{
     return out;
 }
 
+template <typename T>
+void FLQuant_base<T>::fill(const T value){
+    std::fill(data.begin(), data.end(), value);
+    return;
+}
+
+
+// Specialise the FLQuant_base<T>(FLQuant_base<T2>) constructor 
+// Make an FLQuantAdolc / CppAD from an FLQuant
+template <>
+template <>
+void FLQuant_base<adouble>::fill(const double value){
+    adouble value_ad = value;
+    fill(value_ad);
+}
+
+
+// specialise fill so that it works with FLQuantAD and double
+
 //------------------ Multiplication operators -------------------
 /*  * Need to consider what happens with the combinations FLQuant<T1> * / + - FLQuant<T2>, i.e. what is the output type?
  *  adouble *  double = adouble

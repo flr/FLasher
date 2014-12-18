@@ -89,8 +89,15 @@ test_that("set",{
     new_units <- as.character(rnorm(1))
     flq_out <- test_FLQuant_set_units(flq_in, new_units)
     expect_that(units(flq_out), is_identical_to(new_units))
-
-
+    # fill
+    flq <- random_FLQuant_generator()
+    value <- rnorm(1)
+    flq_out <- test_FLQuant_fill(flq, value)
+    expect_that(all(flq_out == value), is_true())
+    flq_out <- test_FLQuantAD_fill(flq, value)
+    expect_that(all(flq_out == value), is_true())
+    flq_out <- test_FLQuantAD_fill_double(flq, value)
+    expect_that(all(flq_out == value), is_true())
 })
 
 test_that("FLQuant get and set data accessors", {

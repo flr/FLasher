@@ -245,6 +245,25 @@ Rcpp::List test_FLQuant_propagate_iters(FLQuant flq, const int iters){
             Rcpp::Named("flq2", flq2));
 }
 
+// [[Rcpp::export]]
+FLQuant test_FLQuant_fill(FLQuant flq, const double value) {
+    flq.fill(value);
+    return flq;
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_FLQuantAD_fill(FLQuantAD flq, const double value) {
+    adouble value_ad = value;
+    flq.fill(value_ad);
+    return flq;
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_FLQuantAD_fill_double(FLQuantAD flq, const double value) {
+    flq.fill(value);
+    return flq;
+}
+
 
 //------------------ Others --------------------------------------
 // [[Rcpp::export]]

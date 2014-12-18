@@ -4775,6 +4775,54 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// test_FLQuant_fill
+FLQuant test_FLQuant_fill(FLQuant flq, const double value);
+RcppExport SEXP FLasher_test_FLQuant_fill(SEXP flqSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP );
+        Rcpp::traits::input_parameter< const double >::type value(valueSEXP );
+        FLQuant __result = test_FLQuant_fill(flq, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLQuantAD_fill
+FLQuantAD test_FLQuantAD_fill(FLQuantAD flq, const double value);
+RcppExport SEXP FLasher_test_FLQuantAD_fill(SEXP flqSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLQuantAD >::type flq(flqSEXP );
+        Rcpp::traits::input_parameter< const double >::type value(valueSEXP );
+        FLQuantAD __result = test_FLQuantAD_fill(flq, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLQuantAD_fill_double
+FLQuantAD test_FLQuantAD_fill_double(FLQuantAD flq, const double value);
+RcppExport SEXP FLasher_test_FLQuantAD_fill_double(SEXP flqSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLQuantAD >::type flq(flqSEXP );
+        Rcpp::traits::input_parameter< const double >::type value(valueSEXP );
+        FLQuantAD __result = test_FLQuantAD_fill_double(flq, value);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // test_FLQuant_FLQuant_match_dims
 int test_FLQuant_FLQuant_match_dims(FLQuant flq1, FLQuant flq2);
 RcppExport SEXP FLasher_test_FLQuant_FLQuant_match_dims(SEXP flq1SEXP, SEXP flq2SEXP) {

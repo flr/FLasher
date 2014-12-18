@@ -79,6 +79,10 @@ class FLQuant_base {
 		T& operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter); // gets and sets an element so const not reinforced
 		T& operator () (const std::vector<unsigned int> indices); // For all the elements - must be of length 6 
 		//FLQuant_base<T>& operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area); // Access all iters
+        /* Fill methods */
+        void fill(const T value);
+        template <typename T2>
+        void fill(const T2 value); // specialisation to fill FLQuantAD with double
 
         /* Mathematical operators */
 

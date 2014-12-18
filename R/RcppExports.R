@@ -1141,6 +1141,18 @@ test_FLQuant_propagate_iters <- function(flq, iters) {
     .Call('FLasher_test_FLQuant_propagate_iters', PACKAGE = 'FLasher', flq, iters)
 }
 
+test_FLQuant_fill <- function(flq, value) {
+    .Call('FLasher_test_FLQuant_fill', PACKAGE = 'FLasher', flq, value)
+}
+
+test_FLQuantAD_fill <- function(flq, value) {
+    .Call('FLasher_test_FLQuantAD_fill', PACKAGE = 'FLasher', flq, value)
+}
+
+test_FLQuantAD_fill_double <- function(flq, value) {
+    .Call('FLasher_test_FLQuantAD_fill_double', PACKAGE = 'FLasher', flq, value)
+}
+
 test_FLQuant_FLQuant_match_dims <- function(flq1, flq2) {
     .Call('FLasher_test_FLQuant_FLQuant_match_dims', PACKAGE = 'FLasher', flq1, flq2)
 }
