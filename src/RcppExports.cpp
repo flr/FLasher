@@ -7120,3 +7120,21 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// test_operatingModel_project_timestep
+operatingModel test_operatingModel_project_timestep(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int timestep);
+RcppExport SEXP FLasher_test_operatingModel_project_timestep(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP timestepSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type flbs_list_sexp(flbs_list_sexpSEXP );
+        Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP );
+        Rcpp::traits::input_parameter< const int >::type timestep(timestepSEXP );
+        operatingModel __result = test_operatingModel_project_timestep(flfs, flbs_list_sexp, ctrl, timestep);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}

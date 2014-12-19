@@ -66,10 +66,34 @@ class operatingModel {
 		operatingModel(const operatingModel& operatingModel_source); // copy constructor to ensure that copy is a deep copy - used when passing FLSs into functions
 		operatingModel& operator = (const operatingModel& operatingModel_source); // Assignment operator for a deep copy
 
-        // Catchability methods from an FLCatch and an FLBiol - is AD because biols are AD
-        // FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no) const;
-        adouble catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year, const int unit, const int season, const int area, const int iter) const;
+        /**
+          @name Catchability
+          Calculate the catchability of a fishery / catch fishing a biol. 
+          Catchability = alpha * Biomass ^ beta,
+          where alpha and beta are the catchability params.
+          It is assumed that the fishery / catch catches the biol (no check is made).
+         */
+        //@{
+        /**
+         * @brief Catchability over all dimensions
+         * @param fishery_no the position of the fishery within the fisheries (starting at 1).
+         * @param catch_no the position of the catch within the fishery (starting at 1).
+         * @param biol_no the position of the biol within the biols (starting at 1).
+         */
         FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no) const;
+        /**
+          @brief Catchability for a specific dimension
+          @param fishery_no the position of the fishery within the fisheries (starting at 1).
+          @param catch_no the position of the catch within the fishery (starting at 1).
+          @param biol_no the position of the biol within the biols (starting at 1).
+          @param year (starting at 1)
+          @param unit (starting at 1)
+          @param season (starting at 1)
+          @param area (starting at 1)
+          @param iter (starting at 1)
+        */
+        adouble catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year, const int unit, const int season, const int area, const int iter) const;
+        //@}
 
         // Fishing mortality methods
         //! Calculate the fishing mortality
@@ -80,10 +104,11 @@ class operatingModel {
             \param catch_no the position of the catch within the fishery (starting at 1).
             \param biol_no the position of the biol within the biols (starting at 1).
          */
+
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no) const; 
         //! Calculate the partial fishing mortality
         /*!
-            Calculate the partial fishing mortality on a biol from a fishery / catch over all dimensions.
+            Calculate the partial instantaneous fishing mortality on a biol from a fishery / catch over all dimensions.
             If the fishery / catch does not actually fish that biol, then the partial
             fishing mortality will be 0.
             biol_no is included as an argument in case the fishery / catch catches more than one biol.
@@ -91,17 +116,36 @@ class operatingModel {
             \param catch_no the position of the catch within the fishery (starting at 1).
             \param biol_no the position of the biol within the biols (starting at 1).
          */
+
         FLQuantAD partial_f(const int fishery_no, const int catch_no, const int biol_no) const; 
         //! Calculate the total fishing mortality on a biol
         /*!
-            Calculate the total fishing mortality on a biol from all fishery / catches that fish it, over all dimensions.
+            Calculate the total instantaneous fishing mortality on a biol from all fishery / catches that fish it, over all dimensions.
             \param biol_no the position of the biol within the biols (starting at 1).
          */
         FLQuantAD total_f(const int biol_no) const;
+
+        //! Calculate the total mortality on a biol
+        /*!
+            Calculate the total mortality on a biol from all fishery / catches that fish it and natural mortality, over all dimensions.
+            \param biol_no the position of the biol within the biols (starting at 1).
+         */
+        FLQuantAD z(const int biol_no) const;
+
         FLQuant f_spwn(const int fishery_no, const int catch_no, const int biol_no); // proportion of F before spawning
 
         void run(); 
+
         //void run_all_iters(); 
+        
+        //! Project the operating model by a single timestep
+        /*!
+            Project the operating model by a single timestep and update the abundances using the Baranov equation.
+            Fishing and natural mortality are assumed to be constant over age through the timestep.
+            Catches, landings and discards in the fisheries are calculated.
+            Population abundances in the biols in the following time step are calculated including recruitment.
+            @param timestep the timestep to project for
+        */
         void project_timestep(const int timestep);
 
         //void load_ad_members(const int timestep);

@@ -128,6 +128,13 @@ FLQuantAD test_operatingModel_partial_f(FLFisheriesAD flfs, SEXP flbs_list_sexp,
     return pf;
 }
 
+// [[Rcpp::export]]
+operatingModel test_operatingModel_project_timestep(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int timestep){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    om.project_timestep(timestep);
+    return om;
+}
 
 /*----------- Project timestep --------------*/
 
