@@ -1669,3 +1669,7 @@ test_operatingModel_F_B <- function(flfs, flbs_list_sexp, ctrl, biol_no) {
     .Call('FLasher_test_operatingModel_F_B', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no)
 }
 
+test_operatingModel_partial_f <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no) {
+    .Call('FLasher_test_operatingModel_partial_f', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no)
+}
+

@@ -2,7 +2,11 @@
  * Copyright 2014 FLR Team. Distributed under the GPL 2 or later
  * Maintainer: Finlay Scott, JRC
  */
-
+/**
+ * @file   operating_model.h
+ * @Author Finlay Scott (drfinlayscott@gmail.com)
+ * @brief  The operating model class.
+ */
 #ifndef _FLFishery_
 #define _FLFishery_
 #include "FLFishery.h"
@@ -68,9 +72,32 @@ class operatingModel {
         FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no) const;
 
         // Fishing mortality methods
-        FLQuantAD f(const int fishery_no, const int catch_no, const int biol_no) const; // partial F on a biol assuming that the FLCatch fishes it
-        FLQuantAD f(const int fishery_no, const int catch_no) const; // partial F, works out who fishes what first
-        FLQuantAD f(const int biol_no) const; // total F on a biol
+        //! Calculate the fishing mortality
+        /*!
+            Calculate the fishing mortality on a biol from a fishery / catch over all dimensions.
+            It is assumed that the fishery / catch catches the biol (no check is made).
+            \param fishery_no the position of the fishery within the fisheries (starting at 1).
+            \param catch_no the position of the catch within the fishery (starting at 1).
+            \param biol_no the position of the biol within the biols (starting at 1).
+         */
+        FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no) const; 
+        //! Calculate the partial fishing mortality
+        /*!
+            Calculate the partial fishing mortality on a biol from a fishery / catch over all dimensions.
+            If the fishery / catch does not actually fish that biol, then the partial
+            fishing mortality will be 0.
+            biol_no is included as an argument in case the fishery / catch catches more than one biol.
+            \param fishery_no the position of the fishery within the fisheries (starting at 1).
+            \param catch_no the position of the catch within the fishery (starting at 1).
+            \param biol_no the position of the biol within the biols (starting at 1).
+         */
+        FLQuantAD partial_f(const int fishery_no, const int catch_no, const int biol_no) const; 
+        //! Calculate the total fishing mortality on a biol
+        /*!
+            Calculate the total fishing mortality on a biol from all fishery / catches that fish it, over all dimensions.
+            \param biol_no the position of the biol within the biols (starting at 1).
+         */
+        FLQuantAD total_f(const int biol_no) const;
         FLQuant f_spwn(const int fishery_no, const int catch_no, const int biol_no); // proportion of F before spawning
 
         void run(); 

@@ -103,21 +103,31 @@ FLQuantAD test_operatingModel_catch_q_FLQuantAD(FLFisheriesAD flfs, SEXP flbs_li
 // f()
 // [[Rcpp::export]]
 FLQuantAD test_operatingModel_F_FCB(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no){
+    Rprintf("Making biols\n");
     fwdBiolsAD biols(flbs_list_sexp);
+    Rprintf("Making om\n");
     operatingModel om(flfs, biols, ctrl);
-    FLQuantAD total_f = om.f(fishery_no, catch_no, biol_no);
+    FLQuantAD total_f = om.get_f(fishery_no, catch_no, biol_no);
     return total_f;
 }
 
 // [[Rcpp::export]]
 FLQuantAD test_operatingModel_F_B(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no){
-    Rprintf("Making biols\n");
     fwdBiolsAD biols(flbs_list_sexp);
-    Rprintf("Making om\n");
     operatingModel om(flfs, biols, ctrl);
-    FLQuantAD total_f = om.f(biol_no);
+    FLQuantAD total_f = om.total_f(biol_no);
     return total_f;
 }
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_partial_f(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD pf = om.partial_f(fishery_no, catch_no, biol_no);
+    Rprintf("Returning pf\n");
+    return pf;
+}
+
 
 /*----------- Project timestep --------------*/
 

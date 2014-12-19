@@ -227,7 +227,7 @@ FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, cons
 // Fishing mortality methods
 // partial F
 // fishery_no, catch_no and biol_no all start at 1 (not 0), following the FCB table
-FLQuantAD operatingModel::f(const int fishery_no, const int catch_no, const int biol_no) const {
+FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no) const {
     // F = Q * Effort * Sel
     Rprintf("In f method\n");
     FLQuantAD q_effort = catch_q(fishery_no, catch_no, biol_no) * fisheries(fishery_no).effort();
@@ -246,17 +246,29 @@ FLQuantAD operatingModel::f(const int fishery_no, const int catch_no, const int 
 
 // partial F after working out who fishes on what
 // fishery_no, catch_no and biol_no all start at 1 (not 0), following the FCB table
-FLQuantAD operatingModel::f(const int fishery_no, const int catch_no) const {
-    unsigned int biol_no;
-    // biol_no = who_is_fished(fishery_no, catch_no, &biol_no);
-    // FLQuantAD f = f(fishery_no, catch_no, biol_no);
-
-    return FLQuantAD();
+FLQuantAD operatingModel::partial_f(const int fishery_no, const int catch_no, const int biol_no) const {
+    FLQuantAD partial_f;
+    std::vector<int> B = ctrl.get_B(fishery_no, catch_no);
+    // Do F / C catch anything?
+    if (B.size() == 0){
+        partial_f = biols(biol_no).n(); // Just get FLQuant of the correct dims
+        partial_f.fill(0.0);
+    }
+    std::vector<int>::iterator B_iterator = find(B.begin(), B.end(), biol_no);
+    if(B_iterator != B.end()){
+        partial_f = get_f(fishery_no, catch_no, biol_no);
+    }
+    // biol_no is not caught by F/C - return 0
+    else {
+        partial_f = biols(biol_no).n(); // Just get FLQuant of the correct dims
+        partial_f.fill(0.0);
+    }
+    return partial_f;
 }
 
 // total F on a biol
 // fishery_no, catch_no and biol_no all start at 1 (not 0), following the FCB table
-FLQuantAD operatingModel::f(const int biol_no) const {
+FLQuantAD operatingModel::total_f(const int biol_no) const {
     unsigned int fishery_no;
     unsigned int catch_no;
     // We need to know the Fishery / Catches that catch the biol
@@ -265,7 +277,7 @@ FLQuantAD operatingModel::f(const int biol_no) const {
     FLQuantAD total_f = biols(biol_no).n(); // Just get FLQuant of the correct dims
     total_f.fill(0.0);
     for (unsigned int f_counter=0; f_counter < FC.nrow(); ++f_counter){
-        total_f = total_f + f(FC(f_counter,0), FC(f_counter,1), biol_no);
+        total_f = total_f + get_f(FC(f_counter,0), FC(f_counter,1), biol_no);
     }
     return total_f;
 }
@@ -620,9 +632,9 @@ void operatingModel::run(){
         // Update F with fmult_ad
         // Update om.f = om.f * fmult in that year / season
         for (int iter_count = 0; iter_count < niter; ++ iter_count){
-            for (int quant_count = 1; quant_count <= f(1).get_nquant(); ++quant_count){
-                // f(quant_count,target_fmult_year,1,target_fmult_season,1,iter_count+1,1) = f(quant_count,target_fmult_year,1,target_fmult_season,1,iter_count+1,1) * fmult_ad[iter_count];
-            }
+            //for (int quant_count = 1; quant_count <= f(1).get_nquant(); ++quant_count){
+            //    // f(quant_count,target_fmult_year,1,target_fmult_season,1,iter_count+1,1) = f(quant_count,target_fmult_year,1,target_fmult_season,1,iter_count+1,1) * fmult_ad[iter_count];
+            //}
         }
 
         // use target_fmult_timestep here
