@@ -53,6 +53,24 @@ double euclid_norm(std::vector<double> x){
 // f'(x0) w = f(x0)
 // We use LU solve, give it f'(x0) and f(x0) to get w
 // x1 = x0 - w
+// Need to add max_limit
+
+/*! \brief A simple Newton-Raphson optimiser
+ *
+ * The Newton-Raphons optimiser uses the Jacobian matrix calculated by CppAD.
+ * As all iterations of the simulations can be run simultaneously the Jacobian can be treated in discrete chunks along the diagonal.
+ * Also, the Jacobian matrix can be very sparse. 
+ * This implementation therefore solves each 'chunk' independently to save inverting a massive matrix.
+ * The size of each chunk is given by the number of simulation targets (the parameter nsim_targets).
+ * Iterations continue either all the chunks are solved to within the desired tolerance or the maximum number of iterations has been hit.
+ * \param indep The initial values of the independent values.
+ * \param fun The CppAD function object.
+ * \param niter The number of iterations in the simulations.
+ * \param nsim_targets The number of targets to solve for in each iteration (determines of the size of the Jacobian chunks).
+ * \param max_iters The maximum number of solver iterations.
+ * \param max_limit The maximum value of the solution (not yet used).
+ * \param tolerance The tolerance of the solutions.
+ */
 int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const int niter, const int nsim_targets, const int max_iters, const double max_limit, const double tolerance){
     // Check that product of niter and nsim_targets = length of indep (otherwise something has gone wrong)
     if (indep.size() != (niter * nsim_targets)){
@@ -127,17 +145,25 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
 /*------------------------------------------------------------*/
 // operatingModel class
 
-// Empty constructor
+/*! \brief Empty constructor that creates empty members
+ */
 operatingModel::operatingModel(){
     biols = fwdBiolsAD();
     fisheries = FLFisheriesAD();
 }
 
-// Main constructor
+/*! \brief Main constructor for the operatingModel
+ *
+ * Checks dims of the arguments and everything is OK, creates an operatingModel.
+ * The dimensions of the constituent member's FLQuants must all match along dimensions 1 - 5 else it throws and error.
+ *
+ * \param fisheries_in The fisheries.
+ * \param biols_in The biological stocks.
+ * \param ctrl_in The control object that controls the projections.
+ */
 operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsAD biols_in, const fwdControl ctrl_in){
     // Checking dims (1 - 5) of landings slots and biols are the same
-    // Each Biol can be fished by multiple Catches - but each Catch must come from a seperate Fishery
-    // Biol dims (1 - 5) must therefore match the Catch dims (Fishery[[1]])
+    // Each Biol can be fished by multiple Catches - but each Catch must come from a seperate Fishery - relaxed
     // Dim 6 must be 1 or n
     Rcpp::IntegerVector catch_dim;
     Rcpp::IntegerVector biol_dim;
@@ -165,14 +191,22 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsA
     ctrl = ctrl_in;
 }
 
-// Copy constructor - else members can be pointed at by multiple instances
+/*! \brief The copy constructor
+ *
+ * Ensures a deep copy and prevents members being pointed at by multiple instances
+ * \param operatingModel_source The object to be copied.
+ */
 operatingModel::operatingModel(const operatingModel& operatingModel_source){
     biols = operatingModel_source.biols;
     fisheries = operatingModel_source.fisheries;
     ctrl = operatingModel_source.ctrl;
 }
 
-// Assignment operator to ensure deep copy - else 'data' can be pointed at by multiple instances
+/*! \brief The assignment operator 
+ *
+ * Ensures a deep copy and prevents members being pointed at by multiple instances
+ * \param operatingModel_source The object to be copied.
+ */
 operatingModel& operatingModel::operator = (const operatingModel& operatingModel_source){
 	if (this != &operatingModel_source){
         biols = operatingModel_source.biols;
@@ -182,8 +216,11 @@ operatingModel& operatingModel::operator = (const operatingModel& operatingModel
 	return *this;
 }
 
-/* Intrusive 'wrap' */
-// Returns a list of stuff
+/*! \brief Intrusive wrap
+ *
+ * Allows a direct return of an operatingModel to R.
+ * It returns an R list of components.
+ */
 operatingModel::operator SEXP() const{
     Rprintf("Wrapping operatingModel.\n");
     return Rcpp::List::create(
@@ -193,20 +230,35 @@ operatingModel::operator SEXP() const{
 }
 
 
-
-// Default relationship: Q = alpha * B ^ -beta
-// alpha and beta come from FLCatch.catch_q_params
-// B is biomass of the biol
+/*!
+ * \name Catchability
+ * Calculate the catchability of a fishery / catch fishing a biol. 
+ * Catchability = alpha * Biomass ^ beta,
+ * where alpha and beta are the catchability params.
+ * It is assumed that the fishery / catch catches the biol (no check is made).
+ */
+//@{
+/*!
+ * \brief Catchability for a specific quant, year, iter etc.
+ * \param fishery_no the position of the fishery within the fisheries (starting at 1).
+ * \param catch_no the position of the catch within the fishery (starting at 1).
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ * \param year (starting at 1)
+ * \param unit (starting at 1)
+ * \param season (starting at 1)
+ * \param area (starting at 1)
+ * \param iter (starting at 1)
+ */
 adouble operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year, const int unit, const int season, const int area, const int iter) const{
-    //FLQuantAD biomass = biols(biol_no).biomass();
-    //std::vector<double> params = fisheries(fishery_no, catch_no).catch_q_params(year, unit, season, area, iter);
-    //adouble q = params[0] * pow(biomass(1,year, unit, season, area, iter),params[1]);
     FLQuantAD q = catch_q(fishery_no, catch_no, biol_no);
     return q(1,year, unit, season, area, iter);
 }
-
-
-
+/*!
+ * \brief Catchability over all dimensions
+ * \param fishery_no the position of the fishery within the fisheries (starting at 1).
+ * \param catch_no the position of the catch within the fishery (starting at 1).
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ */
 FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no) const{
     FLQuantAD biomass = biols(biol_no).biomass();
     // This is pretty grim code but the params are awkwardly stored
@@ -223,10 +275,19 @@ FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, cons
     }}}}}
     return q;
 }
+//@}
 
-// Fishing mortality methods
-// partial F
-// fishery_no, catch_no and biol_no all start at 1 (not 0), following the FCB table
+
+/*! \brief Calculate the instantaneous fishing mortality on a single biol from a single fishery / catch
+ *
+ * The instantaneous fishing mortality is calculated over all dimensions (quant, year, etc. ).
+ * It is assumed that the fishery / catch actuall fishes the biol (no check is made).
+ * This method is the workhorse fishing mortality method that is called by other fishing mortality methods that do make checks.
+ * F = effort * selectivity * catchability.
+ * \param fishery_no the position of the fishery within the fisheries (starting at 1).
+ * \param catch_no the position of the catch within the fishery (starting at 1).
+ * \param biol_no the position of the biol within the biols (starting at 1).
+*/
 FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no) const {
     // F = Q * Effort * Sel
     Rprintf("In f method\n");
@@ -244,12 +305,20 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
     return sel;
 }
 
-// partial F after working out who fishes on what
-// fishery_no, catch_no and biol_no all start at 1 (not 0), following the FCB table
+/*! \brief Calculate the partial instantaneous fishing mortality on a single biol from a single fishery / catch 
+ *
+ * The instantaneous fishing mortality is calculated over all dimensions (quant, year, etc. ).
+ * Checks are made to see if the fishery / catch actuall catches the biol.
+ * If the fishery / catch does not actually fish that biol, then the partial fishing mortality will be 0.
+ * biol_no is included as an argument in case the fishery / catch catches more than one biol.
+ * \param fishery_no the position of the fishery within the fisheries (starting at 1).
+ * \param catch_no the position of the catch within the fishery (starting at 1).
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ */
 FLQuantAD operatingModel::partial_f(const int fishery_no, const int catch_no, const int biol_no) const {
     FLQuantAD partial_f;
     std::vector<int> B = ctrl.get_B(fishery_no, catch_no);
-    // Do F / C catch anything?
+    // Do F / C catch anything? If not, something has probably gone wrong but we'll leave it at the moment.
     if (B.size() == 0){
         partial_f = biols(biol_no).n(); // Just get FLQuant of the correct dims
         partial_f.fill(0.0);
@@ -266,8 +335,12 @@ FLQuantAD operatingModel::partial_f(const int fishery_no, const int catch_no, co
     return partial_f;
 }
 
-// total F on a biol
-// fishery_no, catch_no and biol_no all start at 1 (not 0), following the FCB table
+/*! \brief Calculate the total instantaneous fishing mortality on a biol
+ *
+ * The total instantaneous fishing mortality is calculated over all dimensions (quant, year, etc. ).
+ * Calculate the total instantaneous fishing mortality on a single biol from all fishery / catches that fish it, over all dimensions.
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ */
 FLQuantAD operatingModel::total_f(const int biol_no) const {
     unsigned int fishery_no;
     unsigned int catch_no;
@@ -282,6 +355,13 @@ FLQuantAD operatingModel::total_f(const int biol_no) const {
     return total_f;
 }
 
+//! Calculate the total mortality on a biol
+/*!
+    Calculate the total instantaneous mortality on a single biol.
+    This is the sum of the fishing mortality from all fishery / catches that fish it and the natural mortality.
+    The total mortality is calculated over all dimensions (quant, year, etc. ).
+    \param biol_no the position of the biol within the biols (starting at 1).
+ */
 FLQuantAD operatingModel::z(const int biol_no) const {
     FLQuantAD z = total_f(biol_no) + biols(biol_no).m();
     return z;

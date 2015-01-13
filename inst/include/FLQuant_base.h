@@ -34,6 +34,14 @@
 // Renaming adouble (ADOL-C type) so can easily use original ADOL-C based code
 typedef CppAD::AD<double> adouble;
 
+
+/*! \brief The FLQuant class
+ *
+ * This class is similar in dimension and behaviour to the R FLQuant class.
+ * The values can either be of type double or adouble, the latter used with the CppAD library.
+ * Basic FLQuant manipulation and mathematical operations are available.
+ *
+ */
 template <typename T>
 class FLQuant_base {
 	public:

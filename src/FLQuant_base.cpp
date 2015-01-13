@@ -6,22 +6,25 @@
 #include <time.h> // included for some basic profiling
 #include "../inst/include/FLQuant_base.h"
 
-// Default constructor
-// No dimnames set as the array is null
+/*! \brief Default constructor 
+ *
+ * Creates an empty FLQuant with no dims, dimnames or units
+ */
 template <typename T>
 FLQuant_base<T>::FLQuant_base(){
-    //Rprintf("In FLQuant_base<T> basic constructor\n");
 	units = std::string(); // Empty string - just ""
     dim = Rcpp::IntegerVector();
     dimnames = Rcpp::List();
 }
 
-// Generic SEXP constructor
-// Used as intrusive 'as'
 // Need to add check that the SEXP is an FLQuant
+/*! \brief Generic SEXP constructor used as intrusive as
+ *
+ * Creates an FLQuant from one passed in directly from R.
+ * \param flq_sexp An SEXP object that is an R based FLQuant
+ */
 template<typename T>
 FLQuant_base<T>::FLQuant_base(SEXP flq_sexp){
-    //Rprintf("In FLQuant_base SEXP constructor\n");
 	Rcpp::S4 flq_s4 = Rcpp::as<Rcpp::S4>(flq_sexp);
     Rcpp::NumericVector data_nv = flq_s4.slot(".Data");
     // Initialise data to the correct size?
@@ -32,11 +35,18 @@ FLQuant_base<T>::FLQuant_base(SEXP flq_sexp){
 	units = Rcpp::as<std::string>(flq_s4.slot("units"));
 	dim = data_nv.attr("dim");
 	dimnames = data_nv.attr("dimnames");
-    //Rprintf("Finishing FLQ_base constructor\n");
 }
 
-// Make an FLQuant of a certain size filled with 0
-// Note that units and dimnames have not been set
+/*! \brief Creates an FLQuant of a certain size filled with 0
+ *
+ * Note that units and dimnames have not been set.
+ * \param nquant The size of the first dimension.
+ * \param nyear The number of years.
+ * \param nunit The number of units.
+ * \param nseason The number of seasons.
+ * \param narea The number of areas.
+ * \param niter The number of iterations.
+ */
 template <typename T>
 FLQuant_base<T>::FLQuant_base(const int nquant, const int nyear, const int nunit, const int nseason, const int narea, const int niter){
     //Rprintf("Making a new FLQuant_base<T> with user defined dims\n");
@@ -55,10 +65,11 @@ FLQuant_base<T>::FLQuant_base(const int nquant, const int nyear, const int nunit
             Rcpp::Named("iter", Rcpp::CharacterVector(niter)));
 }
 
-/* Used as intrusive 'wrap'
- * This needs to be specialised for T
- * i.e. wrapping a double is different to wrapping adouble
- * So this is a generic wrap that just returns a 0
+/*! \brief Used as generic intrusive wrap to return FLQuant to R
+ *
+ * This method is specialised for double and adouble.
+ * This particular implementation should not actually be called.
+ * If it is, it returns an integer and gives a warning
  */
 template<typename T>
 FLQuant_base<T>::operator SEXP() const{
@@ -68,6 +79,10 @@ FLQuant_base<T>::operator SEXP() const{
 }
 
 // Specialise the wrap for an FLQuant_base<double>
+/*! \brief Specialised intrusive wrap for to return a double FLQuant to R
+ *
+ * It is necessary to specialise for the double FLQuant as when we have an adouble FLQuant we have pull out the real value. 
+ */
 template<>
 FLQuant_base<double>::operator SEXP() const{
     //Rprintf("Specialised wrapping FLQuant_base<double>\n");
@@ -88,6 +103,10 @@ FLQuant_base<double>::operator SEXP() const{
 
 // Specialise the wrap for an FLQuant_base<adouble>
 // Necessary because we have to pull .value() out
+/*! \brief Specialised intrusive wrap for to return an adouble FLQuant to R
+ *
+ * It is necessary to specialise as we have to pull out the real value from the adouble value.
+ */
 template<>
 FLQuant_base<adouble>::operator SEXP() const{
     //Rprintf("Specialised wrapping FLQuant_base<adouble>\n");
