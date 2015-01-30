@@ -409,6 +409,23 @@ void operatingModel::project_timestep(const int timestep){
     // N2 = N1 * (exp -Z)
     Rprintf("In project\n");
 
+    // What timesteps / years / seasons are we dealing with?
+    int year = 0;
+    int season = 0;
+    int next_year = 0;
+    int next_season = 0;
+    int ssb_year = 0;
+    int ssb_season = 0;
+    timestep_to_year_season(timestep, biols(1).n(), year, season);
+    timestep_to_year_season(timestep+1, biols(1).n(), next_year, next_season); 
+
+    // CAREFUL WITH NUMBER OF ITERS - do we allow different iterations across objects?
+    // In which case we will need to store niter at an operatingModel level
+    unsigned int niter = biols(1).n().get_niter();
+    // Not yet set up for units and areas
+    unsigned int unit = 1;
+    unsigned int area = 1;
+
     // Get Z for all biols
     // Infefficient as we are getting FLQuant of all dims when we only want a timestep
     FLQuant7AD zs;
@@ -416,22 +433,23 @@ void operatingModel::project_timestep(const int timestep){
         zs(z(biol_counter));  
     }
 
-    
     std::vector<int> biols_fished;
     unsigned int biol_no;
     FLQuantAD catches;
+    FLQuantAD landings;
+    FLQuantAD discards;
     FLQuantAD discards_ratio_store;
     for (int fishery_counter=1; fishery_counter <= fisheries.get_nfisheries(); ++fishery_counter){
         for (int catch_counter=1; catch_counter <= fisheries(fishery_counter).get_ncatches(); ++catch_counter){
             // Temp store for catch abundance
             catches = fisheries(fishery_counter, catch_counter).landings_n();
             catches.fill(0.0);
-            // Get Bs for the F/C
+            // Get B indices for the F/C
             biols_fished = ctrl.get_B(fishery_counter, catch_counter);
             if (biols_fished.size() == 0){
-                Rcpp::stop("In project timestep, fishery / catch does not fish anything. Stopping\n");
+                Rcpp::stop("In project timestep, fishery / catch does not fish anything. Probably a setup error. Stopping\n");
             }
-            // Get catches from each biol that is fished
+            // Get catches from each biol that is fished - in case a Catch fishes more than 1 Biol 
             for (int biol_counter=1; biol_counter <= biols_fished.size(); ++biol_counter){
                 // C = (pF / Z) * (1 - exp(-Z)) * N
                 biol_no = biols_fished[biol_counter-1];
@@ -441,17 +459,20 @@ void operatingModel::project_timestep(const int timestep){
                     (1.0 - exp(-1.0 * zs(biol_no))) *
                     biols(biol_no).n();
             } 
-            // Dish out catches to landings and discards
-// Only into the timestep!
-            // fisheries(fishery_counter, catch_counter).landings_n() = zs(biol_no); // z is OK
-            // fisheries(fishery_counter, catch_counter).landings_n() = catches; // catches are OK
-            // Problem with landings and discards sel
-            
-            //fisheries(fishery_counter, catch_counter).landings_n() = catches * fisheries(fishery_counter, catch_counter).landings_sel();
-            //fisheries(fishery_counter, catch_counter).discards_n() = catches * fisheries(fishery_counter, catch_counter).discards_sel();
+            // Calc landings and discards from catches and discards.ratio
             discards_ratio_store = fisheries(fishery_counter, catch_counter).discards_ratio();
-            fisheries(fishery_counter, catch_counter).landings_n() = catches * (1.0 - discards_ratio_store);
-            fisheries(fishery_counter, catch_counter).discards_n() = catches * discards_ratio_store;
+            landings = catches * (1.0 - discards_ratio_store);
+            discards = catches * discards_ratio_store;
+            // Dish out catches to landings and discards
+            // Only into the timestep - we don't want to overwrite other timesteps
+            // This is inefficent doing all timestep but only needing one
+            for (unsigned int quant_count = 1; quant_count <= fisheries(fishery_counter, catch_counter).landings_n().get_nquant(); ++quant_count){
+                // Again - careful with iters
+                for (unsigned int iter_count = 1; iter_count <= fisheries(fishery_counter, catch_counter).landings_n().get_niter(); ++iter_count){
+                    fisheries(fishery_counter, catch_counter).landings_n()(quant_count,year,unit,season,area,iter_count) = landings(quant_count,year,unit,season,area,iter_count); 
+                    fisheries(fishery_counter, catch_counter).discards_n()(quant_count,year,unit,season,area,iter_count) = discards(quant_count,year,unit,season,area,iter_count); 
+                }
+            }
         }
     }
 
@@ -459,22 +480,6 @@ void operatingModel::project_timestep(const int timestep){
 
 
 
-//    int year = 0;
-//    int season = 0;
-//    int next_year = 0;
-//    int next_season = 0;
-//    int ssb_year = 0;
-//    int ssb_season = 0;
-//    timestep_to_year_season(timestep, biol.n(), year, season);
-//    timestep_to_year_season(timestep+1, biol.n(), next_year, next_season); 
-//
-//    // Dims for getting time slices
-//    Rcpp::IntegerVector biol_dim = biol.m().get_dim();
-//    // CAREFUL WITH NUMBER OF ITERS
-//    unsigned int niter = biol_dim[5];
-//    unsigned int unit = 1;
-//    unsigned int area = 1;
-//    unsigned int biol_no = 1;
 //
 //    // timestep checks
 //    if ((year > biol_dim[1]) | (season > biol_dim[3])){
