@@ -77,8 +77,7 @@ operatingModel test_operatingModel_full_constructor(FLFisheriesAD flfs, SEXP flb
     return om;
 }
 
-/*----------- F methods --------------*/
-
+/*----------- catch.q, F and Z methods --------------*/
 
 // f_spwn()
 
@@ -135,6 +134,15 @@ operatingModel test_operatingModel_project_timestep(FLFisheriesAD flfs, SEXP flb
     om.project_timestep(timestep);
     return om;
 }
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_Z(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD z = om.z(biol_no);
+    return z;
+}
+
 
 /*----------- Project timestep --------------*/
 

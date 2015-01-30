@@ -394,18 +394,27 @@ int operatingModel::get_target_fmult_timestep(const int target_no){
 // Baranov catch equation: assumes that instantaneous rate of fishing and natural mortalities are constant over time and age
 // natural mortality and fishing mortality occur simultaneously.
 // If a biol is caught my multiple catches, the Fs happen at the same time (and at the same time as M) in the timestep
+//! Project the operatingModel by a single timestep
+/*!
+    Projects the operatingModel by a single timestep.
+    All catches, landings and discards in the Fisheries are updated for that timestep.
+    All abundnces in the Biols are updated for the following timestep.
+    The Baranov catch equation is used to calculate catches.
+    This assumes that the instantaneous rate of fishing and natural mortalities are constant over time and age and occur simultaneously.
+    If a Biol is caught by multiple Catches, the fishing mortalities happen at the same time (and at the same time as the natural mortality) in the timestep.
+    \param timestep The time step for the projection.
+ */
 void operatingModel::project_timestep(const int timestep){
     // C = (pF / Z) * (1 - exp(-Z)) * N
     // N2 = N1 * (exp -Z)
     Rprintf("In project\n");
+
     // Get Z for all biols
     // Infefficient as we are getting FLQuant of all dims when we only want a timestep
-    //std::vector<FLQuantAD> z(biols.get_nbiols());
     FLQuant7AD zs;
     for (int biol_counter=1; biol_counter <= biols.get_nbiols(); ++biol_counter){
         zs(z(biol_counter));  
     }
-    Rprintf("length zs: %i\n", zs.get_ndim7());
 
     
     std::vector<int> biols_fished;
