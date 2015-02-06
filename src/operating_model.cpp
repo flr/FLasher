@@ -367,14 +367,6 @@ FLQuantAD operatingModel::z(const int biol_no) const {
     return z;
 }
 
-// Proportion of F before spawning happens
-FLQuant operatingModel::f_spwn(const int fishery_no, const int catch_no, const int biol_no){
-    Rprintf("f_spwn method not written - settting to 0.\n");
-
-
-    return FLQuant();
-}
-
 // The timestep that fmult affects to calculate the target value
 // e.g. if Biomass is target, then adjust the fmult in the previous timestep
 // Add more target types to it

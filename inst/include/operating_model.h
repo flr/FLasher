@@ -85,8 +85,6 @@ class operatingModel {
 
         FLQuantAD z(const int biol_no) const;
 
-        FLQuant f_spwn(const int fishery_no, const int catch_no, const int biol_no); // proportion of F before spawning
-
         void run(); 
 
         //void run_all_iters(); 
