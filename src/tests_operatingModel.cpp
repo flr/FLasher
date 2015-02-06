@@ -102,9 +102,7 @@ FLQuantAD test_operatingModel_catch_q_FLQuantAD(FLFisheriesAD flfs, SEXP flbs_li
 // f()
 // [[Rcpp::export]]
 FLQuantAD test_operatingModel_F_FCB(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no){
-    Rprintf("Making biols\n");
     fwdBiolsAD biols(flbs_list_sexp);
-    Rprintf("Making om\n");
     operatingModel om(flfs, biols, ctrl);
     FLQuantAD total_f = om.get_f(fishery_no, catch_no, biol_no);
     return total_f;
@@ -175,15 +173,14 @@ operatingModel test_operatingModel_project_timestep(const FLFisheriesAD fisherie
 
 /*----------- SSB calculations--------------*/
 
-/*
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_SSB_FLQ(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl){
-    fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
-    operatingModel om(flfs, biol, f, f_spwn, ctrl);
-    const int biol_no = 1;
+FLQuantAD test_operatingModel_SSB_FLQ(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
     return om.ssb(biol_no);
 }
 
+/*
 // [[Rcpp::export]]
 FLQuantAD test_operatingModel_SSB_iters(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const int timestep, const int unit, const int area, const fwdControl ctrl){
     fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);

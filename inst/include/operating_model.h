@@ -138,7 +138,7 @@ class operatingModel {
         //FLQuantAD biomass(const int biol_no) const;
 
         // Various ways of calculating reproductive potential
-        //FLQuantAD ssb(const int biol_no) const;
+        FLQuantAD ssb(const int biol_no) const;
         //FLQuantAD ssb(const int timestep, const int unit, const int area, const int biol_no) const; // all iters in a timestep, unit and area
         //adouble ssb(const int timestep, const int unit, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
         //adouble ssb(const int year, const int unit, const int season, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area

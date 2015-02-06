@@ -1685,3 +1685,7 @@ test_operatingModel_project <- function(flfs, flbs_list_sexp, ctrl, timestep) {
     .Call('FLasher_test_operatingModel_project', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, timestep)
 }
 
+test_operatingModel_SSB_FLQ <- function(flfs, flbs_list_sexp, ctrl, biol_no) {
+    .Call('FLasher_test_operatingModel_SSB_FLQ', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no)
+}
+

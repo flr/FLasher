@@ -219,7 +219,7 @@ test_that("operatingModel F methods",{
     expect_that(fout@.Data, equals(fin@.Data))
 })
 
-test_that("operatingModel Z methods",{
+test_that("operatingModel Z and SSB methods",{
 
     om <- make_test_operatingModel1(10)
 
@@ -233,6 +233,9 @@ test_that("operatingModel Z methods",{
     qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
     fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
     expect_that(z1@.Data, equals(fin@.Data + m(om[["biols"]][[biol_no]][["biol"]])))
+    ssb_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    ssb_in <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]) * fec(om[["biols"]][[biol_no]][["biol"]]) * exp(-((fin+ m(om[["biols"]][[biol_no]][["biol"]]))* spwn(om[["biols"]][[biol_no]][["biol"]]))))
+    expect_that(ssb_out@.Data, equals(ssb_in@.Data))
 
     # 1 biol -> 2 catch
     biol_no <- 2
@@ -250,6 +253,9 @@ test_that("operatingModel Z methods",{
     fin21 <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
     fin2 <- fin12 + fin21
     expect_that(z2@.Data, equals(fin2@.Data + m(om[["biols"]][[biol_no]][["biol"]])))
+    ssb_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    ssb_in <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]) * fec(om[["biols"]][[biol_no]][["biol"]]) * exp(-((fin2+ m(om[["biols"]][[biol_no]][["biol"]]))* spwn(om[["biols"]][[biol_no]][["biol"]]))))
+    expect_that(ssb_out@.Data, equals(ssb_in@.Data))
 
     # 2 biol -> 1 catch
     biol_no <- 3
@@ -261,6 +267,9 @@ test_that("operatingModel Z methods",{
     qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
     fin3 <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
     expect_that(z3@.Data, equals(fin3@.Data + m(om[["biols"]][[biol_no]][["biol"]])))
+    ssb_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    ssb_in <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]) * fec(om[["biols"]][[biol_no]][["biol"]]) * exp(-((fin3+ m(om[["biols"]][[biol_no]][["biol"]]))* spwn(om[["biols"]][[biol_no]][["biol"]]))))
+    expect_that(ssb_out@.Data, equals(ssb_in@.Data))
 
     biol_no <- 4
     z4 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
@@ -271,13 +280,21 @@ test_that("operatingModel Z methods",{
     qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
     fin4 <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
     expect_that(z4@.Data, equals(fin4@.Data + m(om[["biols"]][[biol_no]][["biol"]])))
+    ssb_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    ssb_in <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]) * fec(om[["biols"]][[biol_no]][["biol"]]) * exp(-((fin4+ m(om[["biols"]][[biol_no]][["biol"]]))* spwn(om[["biols"]][[biol_no]][["biol"]]))))
+    expect_that(ssb_out@.Data, equals(ssb_in@.Data))
 
     # 1 biol -> 0 catch
     biol_no <- 5
     z5 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
     expect_that(z5@.Data, equals(m(om[["biols"]][[biol_no]][["biol"]])@.Data))
+    ssb_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    ssb_in <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]) * fec(om[["biols"]][[biol_no]][["biol"]]) * exp(-((m(om[["biols"]][[biol_no]][["biol"]]))* spwn(om[["biols"]][[biol_no]][["biol"]]))))
+    expect_that(ssb_out@.Data, equals(ssb_in@.Data))
 
 })
+
+
 
 test_that("operatingModel project timestep",{
     # Total F on a biol

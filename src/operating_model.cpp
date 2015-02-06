@@ -369,6 +369,8 @@ FLQuantAD operatingModel::z(const int biol_no) const {
 
 // Proportion of F before spawning happens
 FLQuant operatingModel::f_spwn(const int fishery_no, const int catch_no, const int biol_no){
+    Rprintf("f_spwn method not written - settting to 0.\n");
+
 
     return FLQuant();
 }
@@ -820,22 +822,24 @@ void operatingModel::run(){
 
 //---------------Target methods ----------------------------
 
-// Update all to use f() and f.spwn() methods
-
 // SSB calculations - Actual SSB that results in recruitment
-// Return an FLQuant
-// biol_no not currently used
-/*
+
+
+/*! \brief Calculates Spawning Stock Biomass (SSB)
+ *
+ * SSB = Wt * mat * N * (-z * spwn)
+ *
+ * where spwn is the proportion through the timestep where spawning occurs.
+ * As F and natural mortality happen simultaneously, the total mortality before spawning is z * spwn.
+ *
+ * \param biol_no The index position of the biological stocks in the fwdBiols member (starting at 1).
+ */
 FLQuantAD operatingModel::ssb(const int biol_no) const {
-    // Loop over all the Fs that catch the biol
-    FLQuantAD f_portion = f(1) * f_spwn(1);
-    for (unsigned int f_count = 2; f_count <= f.get_ndim7(); ++f_count){
-        f_portion = f_portion + f(f_count) * f_spwn(f_count);
-    }
-    FLQuantAD ssb = quant_sum(biols(biol_no).wt() * biols(biol_no).fec() * exp(-1.0*(biols(biol_no).m() * biols(biol_no).spwn() + f_portion)) * biols(biol_no).n());
+    FLQuantAD ssb = quant_sum(biols(biol_no).wt() * biols(biol_no).fec() * biols(biol_no).n() * exp(-1.0*(z(biol_no) * biols(biol_no).spwn())));
     return ssb;
 }
 
+/*
 // Return all iterations but single timestep as an FLQuant
 FLQuantAD operatingModel::ssb(const int timestep, const int unit, const int area, const int biol_no) const {
     FLQuantAD full_ssb = ssb(biol_no);
