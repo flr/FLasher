@@ -3,7 +3,8 @@ context("Implementation of fwdControl")
 test_that("fwdControl as and wrap",{
     fc_in <- dummy_fwdControl_generator(years = 1:10, niters = 10)
     fc_out <- test_as_wrap_fwdControl(fc_in)
-    expect_that(fc_in, is_identical_to(fc_out))
+    attr(fc_in@target,"FCB") <- NULL
+    expect_that(fc_in@target, is_identical_to(fc_out@target)) # Tests FCB attr too
 })
 
 test_that("fwdControl copy constructor and assignement operator", {
@@ -11,10 +12,11 @@ test_that("fwdControl copy constructor and assignement operator", {
     fc_in <- dummy_fwdControl_generator(years = 1:10, niters = 10)
     # Copy constructor
     fcs <- test_fwdControl_copy_constructor(fc_in)
-    expect_that(fc_in, is_identical_to(fcs[["fc1"]]))
-    expect_that(fc_in, is_identical_to(fcs[["fc2"]]))
     # Assignment
     fc_out <- test_fwdControl_assignment_operator(fc_in)
+    attr(fc_in@target,"FCB") <- NULL
+    expect_that(fc_in, is_identical_to(fcs[["fc1"]]))
+    expect_that(fc_in, is_identical_to(fcs[["fc2"]]))
     expect_that(fc_in, is_identical_to(fc_out))
 })
 
@@ -80,26 +82,26 @@ test_that("fwdControl accessors", {
 test_that("fwdControl get_FCB methods", {
     fwc <- dummy_fwdControl_generator()
     # Make a temporary FCB attribute - add to class later
-    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
-    colnames(FCB) <- c("F","C","B")
-    attr(fwc@target, "FCB") <- FCB
+    #FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+    #colnames(FCB) <- c("F","C","B")
+    #attr(fwc@target, "FCB") <- FCB
 
     # Get FC
-    biol_no <- sample(unique(FCB[,"B"]),1)
+    biol_no <- sample(unique(fwc@target@FCB[,"B"]),1)
     FC_out <- test_fwdControl_get_FC(fwc, biol_no)
-    FC_in <- FCB[FCB[,"B"] == biol_no,c("F","C")]
-    expect_that(unname(FC_in), equals(FC_out))
+    FC_in <- fwc@target@FCB[fwc@target@FCB[,"B"] == biol_no,c("F","C")]
+    expect_that(unname(FC_in), equals(c(FC_out)))
     # What if biol not found in FCB?
-    biol_no <- max(FCB[,"B"])+1
+    biol_no <- max(fwc@target@FCB[,"B"])+1
     FC_out <- test_fwdControl_get_FC(fwc, biol_no)
     # empty
 
-
-
     # Get B
-    row_no <- sample(nrow(FCB),1)
-    FC <- FCB[row_no,c("F","C")]
-    B_out <- test_fwdControl_get_B(fwc, FCB[row_no,"F"], FCB[row_no,"C"])
-    B_in <- FCB[(FCB[,"F"] == FC["F"]) & (FCB[,"C"] == FC["C"]),"B"]
-    expect_that(B_in, equals(B_out))
+    row_no <- sample(nrow(fwc@target@FCB),1)
+    FC <- fwc@target@FCB[row_no,c("F","C")]
+    B_out <- test_fwdControl_get_B(fwc, fwc@target@FCB[row_no,"F"], fwc@target@FCB[row_no,"C"])
+    B_in <- fwc@target@FCB[(fwc@target@FCB[,"F"] == FC["F"]) & (fwc@target@FCB[,"C"] == FC["C"]),"B"]
+    expect_that(unname(B_in), equals(unname(B_out)))
 })
+
+

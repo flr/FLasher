@@ -143,8 +143,6 @@ class operatingModel {
 
     private:
         FLFisheriesAD fisheries;
-        // FLQuant7AD f;
-        // FLQuant7 f_spwn;
         fwdControl ctrl;
 
     protected:

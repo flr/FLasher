@@ -160,7 +160,7 @@ test_that("FLCatch catch_q accessor", {
     # Make random indices of FLPar (-1)
     # Call it and test
     catch.q1 <- FLPar(rnorm(2 * dims[6]), dimnames = list(params = c("alpha","beta"), iter = 1:dims[6]))
-    catch.q2 <- FLPar(rnorm(2 * dims[6] * dims[2]), dimnames = list(params = c("alpha","beta"), year = 1:dims[4], iter = 1:dims[6]))
+    catch.q2 <- FLPar(rnorm(2 * dims[6] * dims[2]), dimnames = list(params = c("alpha","beta"), year = 1:dims[2], iter = 1:dims[6]))
     catch.q4 <- FLPar(rnorm(2 * dims[6] * dims[4]), dimnames = list(params = c("alpha","beta"), season = 1:dims[4], iter = 1:dims[6]))
     catch.q24 <- FLPar(rnorm(2 * dims[2] * dims[6] * dims[4]), dimnames = list(params = c("alpha","beta"), year=1:dims[2], season = 1:dims[4], iter = 1:dims[6]))
     indices <- round(runif(6, min=1, max=dims))

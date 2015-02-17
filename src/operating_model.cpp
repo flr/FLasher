@@ -96,8 +96,8 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
         //Rprintf("\nnr_count: %i\n", nr_count);
         // Get y = f(x0)
         y = fun.Forward(0, indep); // HERE - why is y changing
-        Rprintf("indep: %f\n", indep[0]);
-        Rprintf("y: %f\n", y[0]);
+        //Rprintf("indep: %f\n", indep[0]);
+        //Rprintf("y: %f\n", y[0]);
         // Get f'(x0)
         jac = fun.SparseJacobian(indep);
         // Get w (f(x0) / f'(x0)) for each iteration if necessary
@@ -222,7 +222,7 @@ operatingModel& operatingModel::operator = (const operatingModel& operatingModel
  * It returns an R list of components.
  */
 operatingModel::operator SEXP() const{
-    Rprintf("Wrapping operatingModel.\n");
+    //Rprintf("Wrapping operatingModel.\n");
     return Rcpp::List::create(
                             Rcpp::Named("biols", biols),
                             Rcpp::Named("fisheries", fisheries),
@@ -290,7 +290,7 @@ FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, cons
 */
 FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no) const {
     // F = Q * Effort * Sel
-    Rprintf("In f method\n");
+    //Rprintf("In f method\n");
     FLQuantAD q_effort = catch_q(fishery_no, catch_no, biol_no) * fisheries(fishery_no).effort();
     FLQuantAD sel = fisheries(fishery_no, catch_no).catch_sel();
     Rcpp::IntegerVector dim = sel.get_dim();
@@ -401,7 +401,7 @@ int operatingModel::get_target_fmult_timestep(const int target_no){
 void operatingModel::project_timestep(const int timestep){
     // C = (pF / Z) * (1 - exp(-Z)) * N
     // N2 = N1 * (exp -Z)
-    Rprintf("In project\n");
+    //Rprintf("In project\n");
 
     // What timesteps / years / seasons are we dealing with?
     int year = 0;
@@ -454,7 +454,7 @@ void operatingModel::project_timestep(const int timestep){
             for (int biol_counter=1; biol_counter <= biols_fished.size(); ++biol_counter){
                 // C = (pF / Z) * (1 - exp(-Z)) * N
                 biol_no = biols_fished[biol_counter-1];
-                Rprintf("fishery: %i; catch: %i; biol: %i\n", fishery_counter, catch_counter, biol_no);
+                //Rprintf("fishery: %i; catch: %i; biol: %i\n", fishery_counter, catch_counter, biol_no);
                 catches = catches +
                     (partial_f(fishery_counter, catch_counter, biol_no) / zs(biol_no)) *
                     (1.0 - exp(-1.0 * zs(biol_no))) *
@@ -484,11 +484,11 @@ void operatingModel::project_timestep(const int timestep){
         // In what age do we put next timestep abundance? If beginning of year, everything is one year older
         int age_shift = 0;
         if (next_season == 1){
-            Rprintf("Shifting age\n");
+            //Rprintf("Shifting age\n");
             age_shift = 1;
         }
         for (unsigned int biol_counter=1; biol_counter <= biols.get_nbiols(); ++biol_counter){
-            Rprintf("biol_counter %i\n", biol_counter);
+            //Rprintf("biol_counter %i\n", biol_counter);
             // Get the year and season of the SSB that will result in recruitment in the next timestep
             // Add one to timestep because we are getting the recruitment in timestep+1
             int ssb_timestep = timestep - biols(biol_counter).srr.get_timelag() + 1;
@@ -505,9 +505,7 @@ void operatingModel::project_timestep(const int timestep){
                 ssb_temp = ssb_flq(1,ssb_year,1,ssb_season,1,iter_count);
                 //Rprintf("year: %i, season: %i, ssb_year: %i, ssb_season: %i, ssb_temp: %f\n", year, season, ssb_year, ssb_season, Value(ssb_temp));
                 rec_temp = biols(biol_counter).srr.eval_model(ssb_temp, next_year, 1, next_season, 1, iter_count);
-
-Rprintf("iter_count %i; ssb_temp %f; rec_temp %f\n", iter_count, Value(ssb_temp), Value(rec_temp));
-
+                //Rprintf("iter_count %i; ssb_temp %f; rec_temp %f\n", iter_count, Value(ssb_temp), Value(rec_temp));
                 // Apply the residuals to rec_temp
                 // Use of if statement is OK because for each taping it will only branch the same way (depending on residuals_mult)
                 if (biols(biol_counter).srr.get_residuals_mult()){
@@ -539,7 +537,7 @@ Rprintf("iter_count %i; ssb_temp %f; rec_temp %f\n", iter_count, Value(ssb_temp)
         }
     }
 
-    Rprintf("Leaving project_timestep\n");
+    //Rprintf("Leaving project_timestep\n");
     return; 
 }
 

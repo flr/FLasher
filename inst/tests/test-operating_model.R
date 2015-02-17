@@ -28,6 +28,7 @@ test_that("operatingModel constructors and updaters",{
     fc <- dummy_fwdControl_generator(years = 1, niters = dim(flq)[6])
     # Test as and wrap
     out <- test_operatingModel_full_constructor(flfs, flbs, fc)
+    attr(fc@target, "FCB") <- NULL # To remove FCB attribute for test
     expect_that(out[["biols"]], is_identical_to(flbs_in))
     expect_that(out[["fisheries"]], is_identical_to(flfs))
     expect_that(out[["ctrl"]], is_identical_to(fc))
@@ -359,6 +360,7 @@ test_that("operatingModel annual project",{
     expect_that(n(om[["biols"]][[5]][["biol"]])[,-next_year,,,,]@.Data,equals(n(om_out[["biols"]][[5]])[,-next_year,,,,]@.Data))
 })
 
+# Just checking partial Fs - including when they should be 0
 test_that("operatingModel partial Fs",{
     om <- make_test_operatingModel1(5)
     # Partial F of F/C on a B
@@ -448,61 +450,6 @@ test_that("operatingModel partial Fs",{
 })
 
 
-
-
-#test_that("operatingModel SSB methods", {
-#    #  Lots of things needed for test
-#    data(ple4)
-#    ple4_sr_ricker <- as.FLSR(ple4,model="ricker")
-#    # Force values, don't fit
-#    params(ple4_sr_ricker) <- FLPar(abs(rnorm(2, sd = c(10,1e-6))))#FLPar(c(9.1626, 3.5459e-6))
-#    params_ricker <- as.FLQuant(params(ple4_sr_ricker))
-#    flq <- random_FLQuant_generator(sd=1)
-#    flb <- random_FLBiol_generator(fixed_dims = dim(flq), sd = 1 )
-#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=5, sd=1)
-#    f <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq), sd=1)
-#    f <- lapply(f,abs)
-#    f_spwn <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq), sd=1)
-#    f_spwn <- lapply(f_spwn,abs)
-#    residuals_ricker <- FLQuant(rnorm(dim(flq)[2] * dim(flq)[6]), dimnames = list(year = 1:dim(flq)[2], iter = 1:dim(flq)[6]))
-#    residuals_mult <- TRUE
-#    timelag <- 0
-#    fc <- dummy_fwdControl_generator(years = 1, niters = dim(n(flb))[6])
-#    # SSB - FLQuant - lots of time steps
-#    f_portion <- f[[1]] * f_spwn[[1]]
-#    for (i in 2:length(f)){
-#        f_portion <- f_portion + f[[i]] * f_spwn[[i]]
-#    }
-#    ssb_in <- quantSums(n(flb) * wt(flb) * fec(flb) * exp(-f_portion - m(flb) * spwn(flb)))
-#    ssb_out <- test_operatingModel_SSB_FLQ(flfs, flb, 'ricker', params_ricker, timelag, residuals_ricker, residuals_mult, f, f_spwn, fc)
-#    expect_that(ssb_in@.Data, equals(ssb_out@.Data))
-#    # SSB - FLQuant - single single timestep - all iters
-#    timestep <- floor(runif(1, min=1, max = dim(flq)[2] * dim(flq)[4]))
-#    unit <- floor(runif(1, min=1, max = dim(flq)[3]))
-#    area <- floor(runif(1, min=1, max = dim(flq)[5]))
-#    ssb_out <- test_operatingModel_SSB_iters(flfs, flb, 'ricker', params_ricker, timelag, residuals_ricker, residuals_mult, f, f_spwn, timestep, unit, area, fc)
-#    year <-  floor((timestep-1) / dim(flq)[4] + 1)
-#    season <- (timestep-1) %% dim(flq)[4] + 1;
-#    expect_that((ssb_in[,year,unit,season,area])@.Data, equals(ssb_out@.Data))
-#    # SSB - numeric - single timestep - single iter
-#    iter <- floor(runif(1, min=1, max = dim(flq)[6]))
-#    ssb_out <- test_operatingModel_SSB_single_iter(flfs, flb, 'ricker', params_ricker, timelag, residuals_ricker, residuals_mult, f, f_spwn, timestep, unit, area, iter, fc)
-#    expect_that(c(ssb_in[,year,unit,season,area,iter]), equals(c(ssb_out)))
-#
-#    # SSB non-conformable FLQuant iters, e.g. wt has only 1 iter, but n has many
-#    single_iter <- round(runif(1,min=1,max=dim(flq)[6]))
-#    flb2 <- flb
-#    wt(flb2) <- iter(wt(flb2),single_iter)
-#    fec(flb2) <- iter(fec(flb2),single_iter)
-#    m(flb2) <- iter(m(flb2),single_iter)
-#    ssb_out <- test_operatingModel_SSB_single_iter(flfs, flb2, 'ricker', params_ricker, timelag, residuals_ricker, residuals_mult, f, f_spwn, timestep, unit, area, iter, fc)
-#    ssb_in <- quantSums(n(flb2) * wt(flb2) * fec(flb2) * exp(-f_portion - m(flb2) * spwn(flb2)))
-#    expect_that(c(ssb_in[,year,unit,season,area,iter]), equals(c(ssb_out)))
-#    # SSB with year and season
-#    ssb_out <- test_operatingModel_SSB_single_iter_year_season(flfs, flb2, 'ricker', params_ricker, timelag, residuals_ricker, residuals_mult, f, f_spwn, year, unit, season, area, iter, fc)
-#    expect_that(c(ssb_in[,year,unit,season,area,iter]), equals(c(ssb_out)))
-#})
-#
 #
 ## Biomass, SSB and other abundance based targets need to change F in the previous timestep
 #test_that("operatingModel get_target_fmult_timestep",{

@@ -146,7 +146,7 @@ FLFisheries_base<T>::operator SEXP() const{
     flfs_s4.slot(".Data") = list_out;
     flfs_s4.slot("desc") = desc;
     flfs_s4.slot("names") = names;
-    Rprintf("Finished wrapping FLFisheries\n");
+    //Rprintf("Finished wrapping FLFisheries\n");
     return Rcpp::wrap(flfs_s4);
 }
 

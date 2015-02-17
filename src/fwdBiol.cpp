@@ -194,7 +194,7 @@ fwdBiols_base<T>::fwdBiols_base(){
 // Used as intrusive 'as'
 template <typename T>
 fwdBiols_base<T>::fwdBiols_base(SEXP flbs_list_sexp){
-    Rprintf("In FLBiols SEXP constructor\n");
+    //Rprintf("In FLBiols SEXP constructor\n");
     Rcpp::List flbs_list = Rcpp::as<Rcpp::List>(flbs_list_sexp);
     //fwdBiol_base<T> flb; // empty biol to fill up and put into the list
     for (unsigned int biol_counter=0; biol_counter < flbs_list.size(); ++biol_counter){
@@ -216,7 +216,7 @@ fwdBiols_base<T>::fwdBiols_base(SEXP flbs_list_sexp){
 template<typename T>
 fwdBiols_base<T>::operator SEXP() const{
     Rcpp::S4 flbs_s4("FLBiols");
-    Rprintf("Wrapping FLBiols_base<T>.\n");
+    //Rprintf("Wrapping FLBiols_base<T>.\n");
     Rcpp::List list_out;
     for (unsigned int i = 0; i < get_nbiols(); i++){
         list_out.push_back(biols[i]);
@@ -235,7 +235,7 @@ fwdBiols_base<T>::fwdBiols_base(fwdBiol_base<T> flb){
 // Copy constructor - else 'data' can be pointed at by multiple instances
 template<typename T>
 fwdBiols_base<T>::fwdBiols_base(const fwdBiols_base<T>& fwdBiols_source){
-    Rprintf("In fwdBiols_base<T> copy constructor\n");
+    //Rprintf("In fwdBiols_base<T> copy constructor\n");
 	biols = fwdBiols_source.biols; // std::vector always does deep copy
     names = Rcpp::clone<Rcpp::CharacterVector>(fwdBiols_source.names);
 }
@@ -243,7 +243,7 @@ fwdBiols_base<T>::fwdBiols_base(const fwdBiols_base<T>& fwdBiols_source){
 // Assignment operator to ensure deep copy - else 'data' can be pointed at by multiple instances
 template<typename T>
 fwdBiols_base<T>& fwdBiols_base<T>::operator = (const fwdBiols_base<T>& fwdBiols_source){
-    Rprintf("In fwdBiols_base<T> assignment operator\n");
+    //Rprintf("In fwdBiols_base<T> assignment operator\n");
 	if (this != &fwdBiols_source){
         biols  = fwdBiols_source.biols; // std::vector always does deep copy
         names = Rcpp::clone<Rcpp::CharacterVector>(fwdBiols_source.names);

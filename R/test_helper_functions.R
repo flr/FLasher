@@ -372,6 +372,12 @@ dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=1,max=10)), 
     target_iters[,"max",] <- NA
 
     fwc <- fwdControl(target=target, iters=target_iters)
+
+    # Add fake FCB array - will be constructed on R side before calling fwd()
+    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+    colnames(FCB) <- c("F","C","B")
+    attr(fwc@target, "FCB") <- FCB
+
     return(fwc)
 }
 
