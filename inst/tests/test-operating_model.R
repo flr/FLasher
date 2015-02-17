@@ -219,23 +219,71 @@ test_that("operatingModel F methods",{
     expect_that(fout@.Data, equals(fin@.Data))
 })
 
-test_that("operatingModel Z and SSB methods",{
+test_that("operatingModel Z, SSB and project timestep methods - annual OM",{
 
     om <- make_test_operatingModel1(10)
+    dims <- dim(n(om[["biols"]][[1]][["biol"]]))
+    year <- round(runif(1,min=1,max=dims[2]))
+    season <- round(runif(1,min=1,max=dims[4]))
+    timestep <- (year-1)*dims[4] + season
+    next_year <-  floor((timestep) / dims[4]) + 1; 
+    next_season <- timestep %% dims[4] + 1;
+    om_out <- test_operatingModel_project_timestep(om[["fisheries"]], om[["biols"]], om[["fwc"]], timestep)
 
     # 1 biol -> 1 catch
     biol_no <- 1
     fishery_no <- 1
     catch_no <- 1
-    z1 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
     biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
     cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
     qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
     fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
+    # Z method
+    z1 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
     expect_that(z1@.Data, equals(fin@.Data + m(om[["biols"]][[biol_no]][["biol"]])))
+    zin1 <- fin + m(om[["biols"]][[biol_no]][["biol"]])
+    # SSB method
     ssb_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
     ssb_in <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]) * fec(om[["biols"]][[biol_no]][["biol"]]) * exp(-((fin+ m(om[["biols"]][[biol_no]][["biol"]]))* spwn(om[["biols"]][[biol_no]][["biol"]]))))
     expect_that(ssb_out@.Data, equals(ssb_in@.Data))
+    # Catch, landings, discards in timestep
+    catch.n <- (fin / zin1) * (1 - exp(-zin1)) * n(om[["biols"]][[biol_no]][["biol"]])
+    expect_that(catch.n[,year,1,season,1,]@.Data, equals(catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,1,season,1,]@.Data))
+    expect_that((catch.n[,year,1,season,1,] * (1 - discards.ratio(om[["fisheries"]][[fishery_no]][[catch_no]])[,year,1,season,1,]))@.Data, equals(landings.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,1,season,1,]@.Data))
+    expect_that((catch.n[,year,1,season,1,] * discards.ratio(om[["fisheries"]][[fishery_no]][[catch_no]])[,year,1,season,1,])@.Data,equals(discards.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,1,season,1,]@.Data))
+    # Test all other timesteps are unchanged
+    expect_that(catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,-year,,,,]@.Data, equals(catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,-year,,,,]@.Data))
+    expect_that(catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,,,-season,,]@.Data, equals(catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,,,-season,,]@.Data))
+    expect_that(landings.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,-year,,,,]@.Data, equals(landings.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,-year,,,,]@.Data))
+    expect_that(landings.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,,,-season,,]@.Data, equals(landings.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,,,-season,,]@.Data))
+    expect_that(discards.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,-year,,,,]@.Data, equals(discards.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,-year,,,,]@.Data))
+    expect_that(discards.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,,,-season,,]@.Data, equals(discards.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,,,-season,,]@.Data))
+    # Test Biol 1 abundances
+    next_n <- n(om[["biols"]][[biol_no]][["biol"]])[,next_year,,next_season,,]
+    next_n[] <- 0
+    next_n[2:dims[1],] <- (n(om[["biols"]][[biol_no]][["biol"]])[,year,,season,,] * exp(-zin1[,year,,season,,]))[1:(dims[1]-1),]
+    next_n[dims[1]] <- next_n[dims[1]] + (n(om[["biols"]][[biol_no]][["biol"]])[dims[1],year,,season,,] * exp(-zin1[dims[1],year,,season,,]))
+    # Not recruitment abundances
+    expect_that(c(next_n[2:dims[1],]), equals(c(n(om_out[["biols"]][[biol_no]])[2:dims[1],next_year,,next_season,,])))
+    # Other abundances unaffected
+    expect_that(c(n(om[["biols"]][[biol_no]][["biol"]])[,-next_year,,,,]),equals(c(n(om_out[["biols"]][[biol_no]])[,-next_year,,,,])))
+    expect_that(c(n(om[["biols"]][[biol_no]][["biol"]])[,,,-next_season,,]),equals(c(n(om_out[["biols"]][[biol_no]])[,,,-next_season,,])))
+    # Recruitment
+
+n(om[["biols"]][[biol_no]][["biol"]])[1,next_year,,next_season,,]
+n(om_out[["biols"]][[biol_no]])[1,next_year,,next_season,,]
+
+ssb_timestep <- timestep - om[["biols"]][[biol_no]][["srr_timelag"]] + 1
+ssb_year <-  floor((ssb_timestep-1) / dims[4]) + 1; 
+ssb_season <- (ssb_timestep-1) %% dims[4] + 1;
+ssb_rec <- ssb_in[,ssb_year,,ssb_season,,]
+
+rec_in <- om[["biols"]][[biol_no]][["srr_params"]]['a',] * ssb_rec / (om[["biols"]][[biol_no]][["srr_params"]]['b',] + ssb_rec)
+# Multiplicative residuals
+rec_in <- rec_in * exp(om[["biols"]][[biol_no]][["srr_residuals"]][,next_year,,next_season,,])
+
+
+
 
     # 1 biol -> 2 catch
     biol_no <- 2

@@ -479,43 +479,44 @@ void operatingModel::project_timestep(const int timestep){
 
     // Update biol in next timestep only if within time range
     if ((next_year <= biol_dim[1]) & (next_season <= biol_dim[3])){
-//        // Get the year and season of the SSB that will result in recruitment in the next timestep
-//        // Add one to timestep because we are getting the recruitment in timestep+1
-//        int ssb_timestep = timestep - biol.srr.get_timelag() + 1;
-//        if (ssb_timestep < 1){
-//            Rcpp::stop("project_timestep: ssb timestep outside of range");
-//        }
-//        timestep_to_year_season(ssb_timestep, biol.n(), ssb_year, ssb_season);
-//        // Get SSB - all iters and years etc - could be more efficient
-//        FLQuantAD ssb_flq= ssb(biol_no);
-//        // Then update biol in next timestep
-//        // next n = current n * exp(-z)
-//        // Check if timestep is the final timestep - if so, don't update biol
-//        adouble rec_temp = 0.0;
-//        adouble ssb_temp = 0.0;
+        adouble rec_temp = 0.0;
+        adouble ssb_temp = 0.0;
         // In what age do we put next timestep abundance? If beginning of year, everything is one year older
         int age_shift = 0;
         if (next_season == 1){
             Rprintf("Shifting age\n");
             age_shift = 1;
         }
-        for (int iter_count = 1; iter_count <= niter; ++iter_count){
-//            // Recruitment
-//            // rec is calculated in a scalar way - i.e. not passing it a vector of SSBs, so have to do one iter at a time
-//            ssb_temp = ssb_flq(1,ssb_year,1,ssb_season,1,iter_count);
-//            //Rprintf("year: %i, season: %i, ssb_year: %i, ssb_season: %i, ssb_temp: %f\n", year, season, ssb_year, ssb_season, Value(ssb_temp));
-//            rec_temp = biol.srr.eval_model(ssb_temp, next_year, 1, next_season, 1, iter_count);
-//            // Apply the residuals to rec_temp
-//            // Use of if statement is OK because for each taping it will only branch the same way (depending on residuals_mult)
-//            if (biol.srr.get_residuals_mult()){
-//                rec_temp = rec_temp * biol.srr.get_residuals()(1,next_year,1,next_season,1,iter_count);
-//            }
-//            else{
-//                rec_temp = rec_temp + biol.srr.get_residuals()(1,next_year,1,next_season,1,iter_count);
-//            }
+        for (unsigned int biol_counter=1; biol_counter <= biols.get_nbiols(); ++biol_counter){
+            Rprintf("biol_counter %i\n", biol_counter);
+            // Get the year and season of the SSB that will result in recruitment in the next timestep
+            // Add one to timestep because we are getting the recruitment in timestep+1
+            int ssb_timestep = timestep - biols(biol_counter).srr.get_timelag() + 1;
+                if (ssb_timestep < 1){
+                Rcpp::stop("project_timestep: ssb timestep outside of range");
+            }
+            timestep_to_year_season(ssb_timestep, biol_dim[3], ssb_year, ssb_season);
+            // Get SSB - all iters and years etc - could be more efficient
+            FLQuantAD ssb_flq= ssb(biol_counter);
+            for (int iter_count = 1; iter_count <= niter; ++iter_count){
+                // Update biol in next timestep using next n = current n * exp(-z) taking care of age shifts and plus groups
+                // Recruitment
+                // rec is calculated in a scalar way - i.e. not passing it a vector of SSBs, so have to do one iter at a time
+                ssb_temp = ssb_flq(1,ssb_year,1,ssb_season,1,iter_count);
+                //Rprintf("year: %i, season: %i, ssb_year: %i, ssb_season: %i, ssb_temp: %f\n", year, season, ssb_year, ssb_season, Value(ssb_temp));
+                rec_temp = biols(biol_counter).srr.eval_model(ssb_temp, next_year, 1, next_season, 1, iter_count);
 
-            // Update ages rec+1 to PG
-            for (unsigned int biol_counter=1; biol_counter <= biols.get_nbiols(); ++biol_counter){
+Rprintf("iter_count %i; ssb_temp %f; rec_temp %f\n", iter_count, Value(ssb_temp), Value(rec_temp));
+
+                // Apply the residuals to rec_temp
+                // Use of if statement is OK because for each taping it will only branch the same way (depending on residuals_mult)
+                if (biols(biol_counter).srr.get_residuals_mult()){
+                    rec_temp = rec_temp * exp(biols(biol_counter).srr.get_residuals()(1,next_year,1,next_season,1,iter_count));
+                }
+                else{
+                    rec_temp = rec_temp + biols(biol_counter).srr.get_residuals()(1,next_year,1,next_season,1,iter_count);
+                }
+                // Update ages rec+1 to PG
                 for (int quant_count = 1; quant_count < biol_dim[0]; ++quant_count){
                     biols(biol_counter).n()(quant_count+age_shift, next_year, 1, next_season, 1, iter_count) =
                         biols(biol_counter).n()(quant_count, year, 1, season, 1, iter_count) * exp(-zs(biol_counter)(quant_count,year,1,season,1,iter_count));
@@ -525,31 +526,17 @@ void operatingModel::project_timestep(const int timestep){
                 // And abundance in first age group is ONLY recruitment
                 if (next_season == 1){
                     biols(biol_counter).n()(biol_dim[0], next_year, 1, next_season, 1, iter_count) = biols(biol_counter).n()(biol_dim[0], next_year, 1, next_season, 1, iter_count) + biols(biol_counter).n()(biol_dim[0], year, 1, season, 1, iter_count) * exp(-zs(biol_counter)(biol_dim[0],year,1,season,1,iter_count));
+                    // Rec in first age is only the calculated recruitment
+                    biols(biol_counter).n()(1,next_year,1,next_season,1,iter_count) = rec_temp;
                 }
                 // Otherwise it's mid year and abundance is just from the same age group minus removals
                 else {
                     biols(biol_counter).n()(biol_dim[0], next_year, 1, next_season, 1, iter_count) = biols(biol_counter).n()(biol_dim[0], year, 1, season, 1, iter_count) * exp(-zs(biol_counter)(biol_dim[0],year,1,season,1,iter_count));
+                    // Add rec to the existing age 1
+                    biols(biol_counter).n()(1, next_year, 1, next_season, 1, iter_count) = biols(biol_counter).n()(1, next_year, 1, next_season, 1, iter_count) + rec_temp;
                 }
             }
         }
-
-
-//            for (int quant_count = 1; quant_count < max_quant; ++quant_count){
-//                biol.n()(quant_count+age_shift, next_year, 1, next_season, 1, iter_count) = biol.n()(quant_count, year, 1, season, 1, iter_count) * exp(-z(quant_count,1,1,1,1,iter_count));
-//            }
-//            // if next_season is start of the year, it's a plus group - assume last age is a plusgroup
-//            // And abundance in first age group is ONLY recruitment
-//            if (next_season == 1){
-//                biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) = biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) + (biol.n()(max_quant, year, 1, season, 1, iter_count) * exp(-z(max_quant, 1, 1, 1, 1, iter_count)));
-//                biol.n()(1, next_year, 1, next_season, 1, iter_count) = rec_temp;
-//            }
-//            // Else recruitment is added into existing abundance in first age group
-//            // And abundance in final age is same as last timesteps - those that died
-//            else {
-//                biol.n()(max_quant, next_year, 1, next_season, 1, iter_count) = (biol.n()(max_quant, year, 1, season, 1, iter_count) * exp(-z(max_quant, 1, 1, 1, 1, iter_count)));
-//                biol.n()(1, next_year, 1, next_season, 1, iter_count) = biol.n()(1, next_year, 1, next_season, 1, iter_count) + rec_temp;
-//            }
-//        }
     }
 
     Rprintf("Leaving project_timestep\n");
