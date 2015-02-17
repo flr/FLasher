@@ -1661,8 +1661,8 @@ test_operatingModel_catch_q_FLQuantAD <- function(flfs, flbs_list_sexp, ctrl, fi
     .Call('FLasher_test_operatingModel_catch_q_FLQuantAD', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no)
 }
 
-test_operatingModel_F_FCB <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no) {
-    .Call('FLasher_test_operatingModel_F_FCB', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no)
+test_operatingModel_F <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no) {
+    .Call('FLasher_test_operatingModel_F', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no)
 }
 
 test_operatingModel_F_B <- function(flfs, flbs_list_sexp, ctrl, biol_no) {

@@ -281,7 +281,7 @@ FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, cons
 /*! \brief Calculate the instantaneous fishing mortality on a single biol from a single fishery / catch
  *
  * The instantaneous fishing mortality is calculated over all dimensions (quant, year, etc. ).
- * It is assumed that the fishery / catch actuall fishes the biol (no check is made).
+ * It is assumed that the fishery / catch actually fishes the biol (no check is made).
  * This method is the workhorse fishing mortality method that is called by other fishing mortality methods that do make checks.
  * F = effort * selectivity * catchability.
  * \param fishery_no the position of the fishery within the fisheries (starting at 1).
