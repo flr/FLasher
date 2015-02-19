@@ -39,6 +39,7 @@ test_that("operatingModel constructors and updaters",{
 
 test_that("operatingModel Q methods",{
     flq <- random_FLQuant_generator()
+    flq <- random_FLQuant_generator(fixed_dims = c(10,52,1,1,1,20))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
@@ -57,9 +58,14 @@ test_that("operatingModel Q methods",{
     expect_that(qout, equals(cq[1] * biomass ^ (-cq[2])))
     # FLQuantAD
     qout <- test_operatingModel_catch_q_FLQuantAD(flfs, flbs, fc, fishery_no, catch_no, biol_no)
+    qout_orig <- test_operatingModel_catch_q_orig_FLQuantAD(flfs, flbs, fc, fishery_no, catch_no, biol_no) # Remove method after confirming correctness
     biomass <- quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))
     qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
     expect_that(qout@.Data, equals(qin@.Data))
+    expect_that(qout_orig@.Data, equals(qin@.Data))
+    # FLQuantAD Year Season
+    qout <- test_operatingModel_catch_q_FLQuantAD_YS(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices[2], indices[4])
+    expect_that(c(qout), equals(c(qin[,indices[2],,indices[4],])))
 })
 
 # Test F method with random Biols and Fisheries

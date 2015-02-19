@@ -76,7 +76,9 @@ class operatingModel {
 		operatingModel(const operatingModel& operatingModel_source); // copy constructor to ensure that copy is a deep copy - used when passing FLSs into functions
 		operatingModel& operator = (const operatingModel& operatingModel_source); // Assignment operator for a deep copy
 
+        FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year, const int season) const;
         FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no) const;
+        FLQuantAD catch_q_orig(const int fishery_no, const int catch_no, const int biol_no) const;
         adouble catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year, const int unit, const int season, const int area, const int iter) const;
 
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no) const; 

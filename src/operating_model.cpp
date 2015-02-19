@@ -3,6 +3,7 @@
  * Maintainer: Finlay Scott, JRC
  */
 
+// For timing functions
 #include <time.h>
 
 #include "../inst/include/operating_model.h"
@@ -254,12 +255,61 @@ adouble operatingModel::catch_q(const int fishery_no, const int catch_no, const 
     return q(1,year, unit, season, area, iter);
 }
 /*!
+ * \brief Catchability of a timestep (defined by year and season)
+ * \param fishery_no the position of the fishery within the fisheries (starting at 1).
+ * \param catch_no the position of the catch within the fishery (starting at 1).
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ * \param year year of the timestep
+ * \param year year of the timestep
+ */
+FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year, const int season) const{
+
+    FLQuantAD biomass = biols(biol_no).biomass();
+    Rcpp::IntegerVector dim = biomass.get_dim();
+    // Make the empty FLQuant with one year and season
+    FLQuantAD q(1, 1, dim[2], 1, dim[4], dim[5]);
+    std::vector<double> q_params;
+    for (int unit_count = 1; unit_count <= dim[2]; ++unit_count){
+        for (int area_count = 1; area_count <= dim[4]; ++area_count){
+            for (int iter_count = 1; iter_count <= dim[5]; ++iter_count){
+                q_params = fisheries(fishery_no, catch_no).catch_q_params(year, unit_count, season, area_count, iter_count);
+                q(1,1, unit_count, 1, area_count, iter_count) = q_params[0] * pow(biomass(1,year, unit_count, season, area_count, iter_count), -q_params[1]);
+    }}}
+    return q;
+}
+//@}
+/*!
  * \brief Catchability over all dimensions
  * \param fishery_no the position of the fishery within the fisheries (starting at 1).
  * \param catch_no the position of the catch within the fishery (starting at 1).
  * \param biol_no the position of the biol within the biols (starting at 1).
  */
 FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no) const{
+    FLQuantAD biomass = biols(biol_no).biomass();
+    // This is pretty grim code but the params are awkwardly stored
+    Rcpp::IntegerVector dim = biomass.get_dim();
+    FLQuantAD q = biomass;
+    FLQuantAD q_temp;
+    std::vector<double> q_params;
+    for (int year_count = 1; year_count <= dim[1]; ++year_count){
+        for (int season_count = 1; season_count <= dim[3]; ++season_count){
+            q_temp = catch_q(fishery_no, catch_no, biol_no, year_count, season_count);
+            for (int unit_count = 1; unit_count <= dim[2]; ++unit_count){
+                for (int area_count = 1; area_count <= dim[4]; ++area_count){
+                    for (int iter_count = 1; iter_count <= dim[5]; ++iter_count){
+                        q(1,year_count, unit_count, season_count, area_count, iter_count) = q_temp(1, 1, unit_count, 1, area_count, iter_count);
+    }}}}}
+
+//clock_t start, end;
+//start = clock();
+//end = clock();
+//Rprintf("q params in catch q CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+    return q;
+}
+
+// The original catch_q method - gets the whole FLQuant
+// Faster than the new method but replicates the method in the YS method so undesirable
+FLQuantAD operatingModel::catch_q_orig(const int fishery_no, const int catch_no, const int biol_no) const{
     FLQuantAD biomass = biols(biol_no).biomass();
     // This is pretty grim code but the params are awkwardly stored
     Rcpp::IntegerVector dim = biomass.get_dim();
@@ -273,7 +323,12 @@ FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, cons
                         q_params = fisheries(fishery_no, catch_no).catch_q_params(year_count, unit_count, season_count, area_count, iter_count);
                         q(1,year_count, unit_count, season_count, area_count, iter_count) = q_params[0] * pow(biomass(1,year_count, unit_count, season_count, area_count, iter_count), -q_params[1]);
     }}}}}
+
     return q;
+//clock_t start, end;
+//start = clock();
+//end = clock();
+//Rprintf("q params in catch q CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
 }
 //@}
 
@@ -289,9 +344,11 @@ FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, cons
  * \param biol_no the position of the biol within the biols (starting at 1).
 */
 FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no) const {
+
     // F = Q * Effort * Sel
     //Rprintf("In f method\n");
     FLQuantAD q_effort = catch_q(fishery_no, catch_no, biol_no) * fisheries(fishery_no).effort();
+
     FLQuantAD sel = fisheries(fishery_no, catch_no).catch_sel();
     Rcpp::IntegerVector dim = sel.get_dim();
     for (int quant_count = 1; quant_count <= dim[0]; ++quant_count){
@@ -302,6 +359,7 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
                         for (int iter_count = 1; iter_count <= dim[5]; ++iter_count){
                             sel(quant_count, year_count, unit_count, season_count, area_count, iter_count) = sel(quant_count, year_count, unit_count, season_count, area_count, iter_count) * q_effort(1, year_count, unit_count, season_count, area_count, iter_count);
                         }}}}}}
+
     return sel;
 }
 
@@ -342,6 +400,7 @@ FLQuantAD operatingModel::partial_f(const int fishery_no, const int catch_no, co
  * \param biol_no the position of the biol within the biols (starting at 1).
  */
 FLQuantAD operatingModel::total_f(const int biol_no) const {
+
     unsigned int fishery_no;
     unsigned int catch_no;
     // We need to know the Fishery / Catches that catch the biol
@@ -352,6 +411,8 @@ FLQuantAD operatingModel::total_f(const int biol_no) const {
     for (unsigned int f_counter=0; f_counter < FC.nrow(); ++f_counter){
         total_f = total_f + get_f(FC(f_counter,0), FC(f_counter,1), biol_no);
     }
+
+
     return total_f;
 }
 
@@ -401,7 +462,11 @@ int operatingModel::get_target_fmult_timestep(const int target_no){
 void operatingModel::project_timestep(const int timestep){
     // C = (pF / Z) * (1 - exp(-Z)) * N
     // N2 = N1 * (exp -Z)
-    //Rprintf("In project\n");
+    Rprintf("In project\n");
+
+    // Timing starts - CPU time
+    clock_t start, end;
+    start = clock();
 
     // What timesteps / years / seasons are we dealing with?
     int year = 0;
@@ -413,14 +478,13 @@ void operatingModel::project_timestep(const int timestep){
     timestep_to_year_season(timestep, biols(1).n(), year, season);
     timestep_to_year_season(timestep+1, biols(1).n(), next_year, next_season); 
 
-
     Rcpp::IntegerVector biol_dim = biols(1).n().get_dim();
     // timestep checks
     if ((year > biol_dim[1]) | (season > biol_dim[3])){
         Rcpp::stop("project_timestep: timestep outside of range");
     }
 
-    // CAREFUL WITH NUMBER OF ITERS - do we allow different iterations across objects?
+    // CAREFUL WITH NUMBER OF ITERS - do we allow different iterations across objects? - No
     // In which case we will need to store niter at an operatingModel level
     unsigned int niter = biol_dim[5];
     // Not yet set up for units and areas
@@ -429,10 +493,14 @@ void operatingModel::project_timestep(const int timestep){
 
     // Get Z for all biols
     // Infefficient as we are getting FLQuant of all dims when we only want a timestep
+    clock_t zstart, zend;
+    zstart = clock();
     FLQuant7AD zs;
     for (int biol_counter=1; biol_counter <= biols.get_nbiols(); ++biol_counter){
         zs(z(biol_counter));  
     }
+    zend = clock();
+    Rprintf("project_timestep getting zs CPU time: %f\n", (zend - zstart) / (double)(CLOCKS_PER_SEC));
 
     std::vector<int> biols_fished;
     unsigned int biol_no;
@@ -537,7 +605,12 @@ void operatingModel::project_timestep(const int timestep){
         }
     }
 
-    //Rprintf("Leaving project_timestep\n");
+
+    end = clock();
+    Rprintf("project_timestep CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+     
+    Rprintf("Leaving project_timestep\n");
+    
     return; 
 }
 

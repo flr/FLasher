@@ -392,6 +392,9 @@ dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=1,max=10)), 
 make_test_operatingModel1 <- function(niters = 1000){
     # Sort out the FLBiols
     data(ple4)
+
+    #ple4 <- window(ple4,start=2000, end=2003)
+
     # blow up
     ple4_iters <- propagate(ple4, niters)
     seed_biol <- as(ple4_iters,"FLBiol")

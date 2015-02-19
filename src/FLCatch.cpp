@@ -140,8 +140,16 @@ FLQuant FLCatch_base<T>::catch_q_params() const {
 
 // catch_q_flq is a little different as it checks if unit / season / etc are > 1
 // parameters are stored in the first dimension
+
+int globali = 0;
+
 template <typename T>
 std::vector<double> FLCatch_base<T>::catch_q_params(int year, int unit, int season, int area, int iter) const {
+
+//    globali += 1;
+//clock_t start, end;
+//start = clock();
+
     std::vector<double> q_out (catch_q_params().get_nquant(),0.0);
     // Sort out dims - if years > no years in the catch_q_flq object (i.e. catch_q_flq are not disaggregated by time etc.) just pick the first 
     // The real checking should be done in the R side
@@ -161,6 +169,10 @@ std::vector<double> FLCatch_base<T>::catch_q_params(int year, int unit, int seas
     for (int i = 1; i <= catch_q_params().get_nquant(); ++i){
         q_out[i-1] = catch_q_params()(i,year,unit,season,area,iter);
     }
+
+//end = clock();
+//Rprintf("catch q params CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+//Rprintf("%i q params CPU time: %f\n", globali, (end - start) / (double)(CLOCKS_PER_SEC));
     return q_out;
 }
 
