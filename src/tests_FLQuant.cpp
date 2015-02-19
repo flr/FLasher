@@ -3,6 +3,7 @@
  * Maintainer: Finlay Scott, JRC
  */
 
+#include <time.h>
 #include "../../inst/include/FLQuant_base.h"
 
 // [[Rcpp::export]]
@@ -286,4 +287,32 @@ FLQuant test_FLQuant_year_sum(FLQuant flq){
     return flq_out;
 }
 */
+
+//--------- Time get data elements ------------------
+
+/*
+// [[Rcpp::export]]
+void test_get_data_elememts(FLQuant flq, std::vector<int> indices, const int reps){
+    int out;
+
+    clock_t start, end;
+    start = clock();
+    for (int i = 1; i <= reps; ++i){
+        flq.get_data_element(indices[0], indices[1], indices[2], indices[3], indices[4], indices[5]);
+    }
+    end = clock();
+    Rprintf("data element CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+    start = clock();
+    for (int i = 1; i <= reps; ++i){
+        flq.get_data_element2(indices[0], indices[1], indices[2], indices[3], indices[4], indices[5]);
+    }
+    end = clock();
+    Rprintf("data element 2 CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+
+    return;
+
+}
+*/
+
+
 

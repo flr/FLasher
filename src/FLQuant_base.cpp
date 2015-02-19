@@ -235,6 +235,7 @@ int FLQuant_base<T>::get_niter() const{
 }
 
 // Note that elements start at 1 NOT 0!
+/*
 template <typename T>
 int FLQuant_base<T>::get_data_element(const int quant, const int year, const int unit, const int season, const int area, int iter) const{
     Rcpp::IntegerVector dim = get_dim();
@@ -257,10 +258,11 @@ int FLQuant_base<T>::get_data_element(const int quant, const int year, const int
 			(quant - 1); 
 	return element;
 }
+*/
 
-// Remove all the calls to get_nxxxx() to speed up?
+// Remove all the calls to get_nxxxx() to speed up
 template <typename T>
-int FLQuant_base<T>::get_data_element2(const int quant, const int year, const int unit, const int season, const int area, int iter) const{
+int FLQuant_base<T>::get_data_element(const int quant, const int year, const int unit, const int season, const int area, int iter) const{
     Rcpp::IntegerVector dim = get_dim();
     if ((quant > dim(0)) || (year > dim(1)) || (unit > dim(2)) || (season > dim(3)) || (area > dim(4))){
             Rcpp::stop("Trying to access element outside of quant, year, unit, season or area dim range.");
@@ -283,7 +285,7 @@ int FLQuant_base<T>::get_data_element2(const int quant, const int year, const in
 }
 
 
-// Get only data accessor - single element
+// Get only data accessor - single element - starts at 1
 template <typename T>
 T FLQuant_base<T>::operator () (const unsigned int element) const{
     //Rprintf("In const single element accessor\n");
