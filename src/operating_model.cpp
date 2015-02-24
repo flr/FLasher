@@ -260,14 +260,13 @@ adouble operatingModel::catch_q(const int fishery_no, const int catch_no, const 
  * \param catch_no the position of the catch within the fishery (starting at 1).
  * \param biol_no the position of the biol within the biols (starting at 1).
  * \param year year of the timestep
- * \param year year of the timestep
+ * \param season season of the timestep
  */
 FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year, const int season) const{
-clock_t start, end;
-start = clock();
-
-    FLQuantAD biomass = biols(biol_no).biomass();
-    Rcpp::IntegerVector dim = biomass.get_dim();
+    //FLQuantAD biomass = biols(biol_no).biomass();
+    Rcpp::IntegerVector dim = biols(biol_no).n().get_dim();
+    // Get subset of biomass
+    FLQuantAD biomass = biols(biol_no).biomass(year,year,1,dim[2],season,season,1,dim[4],1,dim[5]);
     // Make the empty FLQuant with one year and season
     FLQuantAD q(1, 1, dim[2], 1, dim[4], dim[5]);
     std::vector<double> q_params;
@@ -275,10 +274,13 @@ start = clock();
         for (int area_count = 1; area_count <= dim[4]; ++area_count){
             for (int iter_count = 1; iter_count <= dim[5]; ++iter_count){
                 q_params = fisheries(fishery_no, catch_no).catch_q_params(year, unit_count, season, area_count, iter_count);
-                q(1,1, unit_count, 1, area_count, iter_count) = q_params[0] * pow(biomass(1,year, unit_count, season, area_count, iter_count), -q_params[1]);
+                //q(1,1, unit_count, 1, area_count, iter_count) = q_params[0] * pow(biomass(1,year, unit_count, season, area_count, iter_count), -q_params[1]);
+                q(1,1, unit_count, 1, area_count, iter_count) = q_params[0] * pow(biomass(1,1, unit_count, 1, area_count, iter_count), -q_params[1]);
     }}}
-end = clock();
-Rprintf("catch q in catch q CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+//clock_t start, end;
+//start = clock();
+//end = clock();
+//Rprintf("catch q in catch q CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
     return q;
 }
 //@}
@@ -290,14 +292,15 @@ Rprintf("catch q in catch q CPU time: %f\n", (end - start) / (double)(CLOCKS_PER
  */
 FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no) const{
     FLQuantAD biomass = biols(biol_no).biomass();
-    // This is pretty grim code but the params are awkwardly stored
     Rcpp::IntegerVector dim = biomass.get_dim();
     FLQuantAD q = biomass;
     FLQuantAD q_temp;
     std::vector<double> q_params;
     for (int year_count = 1; year_count <= dim[1]; ++year_count){
         for (int season_count = 1; season_count <= dim[3]; ++season_count){
+            // Get the q_temp for year and season only
             q_temp = catch_q(fishery_no, catch_no, biol_no, year_count, season_count);
+            // Then sort out unit, area and iter
             for (int unit_count = 1; unit_count <= dim[2]; ++unit_count){
                 for (int area_count = 1; area_count <= dim[4]; ++area_count){
                     for (int iter_count = 1; iter_count <= dim[5]; ++iter_count){

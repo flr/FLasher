@@ -289,7 +289,7 @@ Rcpp::List test_fwdBiolsAD_assignment_operator(SEXP fwbs_list_sexp, const int bi
 }
 
 
-//--------- Speed test --------------
+//--------- Speed tests remove before release --------------
 
 // [[Rcpp::export]]
 void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const int year, const int season, const int rep){

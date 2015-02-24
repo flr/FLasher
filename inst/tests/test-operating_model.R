@@ -64,8 +64,8 @@ test_that("operatingModel Q methods",{
     expect_that(qout@.Data, equals(qin@.Data))
     expect_that(qout_orig@.Data, equals(qin@.Data))
     # FLQuantAD Year Season
-    qout <- test_operatingModel_catch_q_FLQuantAD_YS(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices[2], indices[4])
-    expect_that(c(qout), equals(c(qin[,indices[2],,indices[4],])))
+    qout <- test_operatingModel_catch_q_FLQuantAD_YS(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices[1], indices[3])
+    expect_that(c(qout), equals(c(qin[,indices[1],,indices[3],])))
 })
 
 # Test F method with random Biols and Fisheries
