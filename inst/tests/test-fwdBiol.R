@@ -169,8 +169,14 @@ test_that("fwdBiol with fwdSR", {
 
 test_that("fwdBiol methods",{
     flb_in <- random_FLBiol_generator()
-    biomass <-  fwdBiolAD_biomass(flb_in)
+    biomass <-  fwdBiolAD_biomass_FLQ(flb_in)
     expect_that(biomass@.Data, equals(quantSums(n(flb_in) * wt(flb_in))@.Data))
+    dims1 <- dim(n(flb_in))
+    dims2 <- round(runif(6, min=1,max=dims))
+    dimrange <- c(dims2[2], dims1[2], dims2[3], dims1[3], dims2[4], dims1[4], dims2[5], dims1[5], dims2[6], dims1[6]) 
+    biomass <-  fwdBiolAD_biomass_subset(flb_in, dimrange)
+    expect_that(biomass@.Data, equals(quantSums(n(flb_in) * wt(flb_in))[,dims2[2]:dims1[2], dims2[3]:dims1[3], dims2[4]:dims1[4], dims2[5]:dims1[5], dims2[6]:dims1[6]]@.Data))
+    
 })
 
 

@@ -187,9 +187,15 @@ fwdBiolAD test_fwdBiolAD_set_accessors(fwdBiolAD fwdb, int quant, int year, int 
 }
 
 // [[Rcpp::export]]
-FLQuantAD fwdBiolAD_biomass(fwdBiolAD fwdb){
+FLQuantAD fwdBiolAD_biomass_FLQ(fwdBiolAD fwdb){
     return fwdb.biomass();
 }
+
+// [[Rcpp::export]]
+FLQuantAD fwdBiolAD_biomass_subset(fwdBiolAD fwdb, Rcpp::IntegerVector range){
+    return fwdb.biomass(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8], range[9]);
+}
+
 
 
 /*-------------------------------------------------------*/
@@ -286,7 +292,7 @@ Rcpp::List test_fwdBiolsAD_assignment_operator(SEXP fwbs_list_sexp, const int bi
 //--------- Speed test --------------
 
 // [[Rcpp::export]]
-void fwdBiolAD_biomass_subset(fwdBiolAD fwdb, const int year, const int season, const int rep){
+void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const int year, const int season, const int rep){
     Rcpp::IntegerVector dims = fwdb.biomass().get_dim();
 
     clock_t start, end;
@@ -301,7 +307,7 @@ void fwdBiolAD_biomass_subset(fwdBiolAD fwdb, const int year, const int season, 
 
     start = clock();
     for (int i = 1; i <= rep; ++i){
-        FLQuantAD biol_subset2 = fwdb.biomass(1, dims[0], year, year, 1, dims[2], season, season, 1, dims[4], 1, dims[5]);
+        FLQuantAD biol_subset2 = fwdb.biomass(year, year, 1, dims[2], season, season, 1, dims[4], 1, dims[5]);
     }
     end = clock();
     Rprintf("biomass subset: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));

@@ -1461,8 +1461,12 @@ test_fwdBiolAD_set_accessors <- function(fwdb, quant, year, unit, season, area, 
     .Call('FLasher_test_fwdBiolAD_set_accessors', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter, values)
 }
 
-fwdBiolAD_biomass <- function(fwdb) {
-    .Call('FLasher_fwdBiolAD_biomass', PACKAGE = 'FLasher', fwdb)
+fwdBiolAD_biomass_FLQ <- function(fwdb) {
+    .Call('FLasher_fwdBiolAD_biomass_FLQ', PACKAGE = 'FLasher', fwdb)
+}
+
+fwdBiolAD_biomass_subset <- function(fwdb, range) {
+    .Call('FLasher_fwdBiolAD_biomass_subset', PACKAGE = 'FLasher', fwdb, range)
 }
 
 test_fwdBiols_list_constructor <- function(flbs_list_sexp) {
@@ -1509,8 +1513,8 @@ test_fwdBiolsAD_assignment_operator <- function(fwbs_list_sexp, biol_no, dims, v
     .Call('FLasher_test_fwdBiolsAD_assignment_operator', PACKAGE = 'FLasher', fwbs_list_sexp, biol_no, dims, value)
 }
 
-fwdBiolAD_biomass_subset <- function(fwdb, year, season, rep) {
-    invisible(.Call('FLasher_fwdBiolAD_biomass_subset', PACKAGE = 'FLasher', fwdb, year, season, rep))
+fwdBiolAD_biomass_subset_speed <- function(fwdb, year, season, rep) {
+    invisible(.Call('FLasher_fwdBiolAD_biomass_subset_speed', PACKAGE = 'FLasher', fwdb, year, season, rep))
 }
 
 test_as_wrap_fwdControl <- function(control) {
