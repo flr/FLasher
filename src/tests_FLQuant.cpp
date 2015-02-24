@@ -315,4 +315,20 @@ void test_get_data_elememts(FLQuant flq, std::vector<int> indices, const int rep
 */
 
 
+/*
+// [[Rcpp::export]]
+void test_subset_speed(FLQuant flq, std::vector<int> indices1, std::vector<int> indices2, const int reps){
+    clock_t start, end;
+    start = clock();
+    FLQuant out;
+    for (int i = 1; i <= reps; ++i){
+        out = flq(indices1[0], indices2[0], indices1[1], indices2[1], indices1[2], indices2[2], indices1[3], indices2[3], indices1[4], indices2[4], indices1[5], indices2[5]);
+    }
+    end = clock();
+    Rprintf("new flq CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+    return;
+}
+*/
+
+
 

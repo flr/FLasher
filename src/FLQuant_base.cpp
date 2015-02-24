@@ -235,31 +235,6 @@ int FLQuant_base<T>::get_niter() const{
 }
 
 // Note that elements start at 1 NOT 0!
-/*
-template <typename T>
-int FLQuant_base<T>::get_data_element(const int quant, const int year, const int unit, const int season, const int area, int iter) const{
-    Rcpp::IntegerVector dim = get_dim();
-    if ((quant > dim(0)) || (year > dim(1)) || (unit > dim(2)) || (season > dim(3)) || (area > dim(4))){
-            Rcpp::stop("Trying to access element outside of quant, year, unit, season or area dim range.");
-    }
-    // If only 1 iter and trying to get n iter, set iter to 1
-    if ((iter > 1) && (dim(5) == 1)){
-        //get_data_element(quant, year, unit, season, area, 1);
-        iter = 1;
-    }
-    if ((iter > dim(5)) && (dim(5) > 1)){
-        Rcpp::stop("In get_data_element: trying to access iter > niter\n");
-    } 
-	unsigned int element = (get_narea() * get_nseason() * get_nunit() * get_nyear() * get_nquant() * (iter - 1)) +
-			(get_nseason() * get_nunit() * get_nyear() * get_nquant() * (area - 1)) +
-			(get_nunit() * get_nyear() * get_nquant() * (season - 1)) +
-			(get_nyear() * get_nquant() * (unit - 1)) +
-			(get_nquant() * (year - 1)) +
-			(quant - 1); 
-	return element;
-}
-*/
-
 // Remove all the calls to get_nxxxx() to speed up
 template <typename T>
 int FLQuant_base<T>::get_data_element(const int quant, const int year, const int unit, const int season, const int area, int iter) const{
@@ -369,15 +344,6 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const int quant_min, const int qua
     new_dim[3] = season_max - season_min + 1;
     new_dim[4] = area_max - area_min + 1;
     new_dim[5] = iter_max - iter_min + 1;
-    // Having to do this is unfortunate - with C++11 it could be cleaner
-    std::vector<int> min_dim(6);
-    min_dim[0] = quant_min;
-    min_dim[1] = year_min;
-    min_dim[2] = unit_min;
-    min_dim[3] = season_min;
-    min_dim[4] = area_min;
-    min_dim[5] = iter_min;
-
     FLQuant_base<T> out(new_dim[0], new_dim[1], new_dim[2], new_dim[3], new_dim[4], new_dim[5]);
     out.set_units(get_units());
     for (int quant_count = 1; quant_count <= new_dim[0]; ++quant_count){
@@ -386,9 +352,18 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const int quant_min, const int qua
                 for (int season_count = 1; season_count <= new_dim[3]; ++season_count){
                     for (int area_count = 1; area_count <= new_dim[4]; ++area_count){
                         for (int iter_count = 1; iter_count <= new_dim[5]; ++iter_count){
-                            unsigned int element = get_data_element(quant_count + quant_min - 1, year_count + year_min - 1, unit_count + unit_min - 1, season_count + season_min - 1, area_count + area_min - 1, iter_count + iter_min - 1);
-                            out(quant_count, year_count, unit_count, season_count, area_count, iter_count) = data[element];
+                            unsigned int element_orig = get_data_element(quant_count + quant_min - 1, year_count + year_min - 1, unit_count + unit_min - 1, season_count + season_min - 1, area_count + area_min - 1, iter_count + iter_min - 1);
+                            out(quant_count, year_count, unit_count, season_count, area_count, iter_count) = data[element_orig];
     }}}}}}
+
+    // Sorting out dimnames - not a speed issue
+    std::vector<int> min_dim(6);
+    min_dim[0] = quant_min;
+    min_dim[1] = year_min;
+    min_dim[2] = unit_min;
+    min_dim[3] = season_min;
+    min_dim[4] = area_min;
+    min_dim[5] = iter_min;
 
     Rcpp::List old_dimnames = get_dimnames();
     Rcpp::List new_dimnames = get_dimnames();

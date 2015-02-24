@@ -69,6 +69,7 @@ class fwdBiol_base {
 
         // Summary methods
         FLQuant_base<T> biomass() const;
+        FLQuant_base<T> biomass(const int quant_min, const int quant_max, const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max) const; // subsetting
 
         fwdSR_base<T> get_srr() const;
         std::string get_name() const;

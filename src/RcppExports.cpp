@@ -6417,6 +6417,21 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// fwdBiolAD_biomass_subset
+void fwdBiolAD_biomass_subset(fwdBiolAD fwdb, const int year, const int season, const int rep);
+RcppExport SEXP FLasher_fwdBiolAD_biomass_subset(SEXP fwdbSEXP, SEXP yearSEXP, SEXP seasonSEXP, SEXP repSEXP) {
+BEGIN_RCPP
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< fwdBiolAD >::type fwdb(fwdbSEXP );
+        Rcpp::traits::input_parameter< const int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< const int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< const int >::type rep(repSEXP );
+        fwdBiolAD_biomass_subset(fwdb, year, season, rep);
+    }
+    return R_NilValue;
+END_RCPP
+}
 // test_as_wrap_fwdControl
 fwdControl test_as_wrap_fwdControl(fwdControl control);
 RcppExport SEXP FLasher_test_as_wrap_fwdControl(SEXP controlSEXP) {

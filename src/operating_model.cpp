@@ -263,6 +263,8 @@ adouble operatingModel::catch_q(const int fishery_no, const int catch_no, const 
  * \param year year of the timestep
  */
 FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year, const int season) const{
+clock_t start, end;
+start = clock();
 
     FLQuantAD biomass = biols(biol_no).biomass();
     Rcpp::IntegerVector dim = biomass.get_dim();
@@ -275,6 +277,8 @@ FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, cons
                 q_params = fisheries(fishery_no, catch_no).catch_q_params(year, unit_count, season, area_count, iter_count);
                 q(1,1, unit_count, 1, area_count, iter_count) = q_params[0] * pow(biomass(1,year, unit_count, season, area_count, iter_count), -q_params[1]);
     }}}
+end = clock();
+Rprintf("catch q in catch q CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
     return q;
 }
 //@}
