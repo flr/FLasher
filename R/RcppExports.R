@@ -1513,10 +1513,6 @@ test_fwdBiolsAD_assignment_operator <- function(fwbs_list_sexp, biol_no, dims, v
     .Call('FLasher_test_fwdBiolsAD_assignment_operator', PACKAGE = 'FLasher', fwbs_list_sexp, biol_no, dims, value)
 }
 
-fwdBiolAD_biomass_subset_speed <- function(fwdb, year, season, rep) {
-    invisible(.Call('FLasher_fwdBiolAD_biomass_subset_speed', PACKAGE = 'FLasher', fwdb, year, season, rep))
-}
-
 test_as_wrap_fwdControl <- function(control) {
     .Call('FLasher_test_as_wrap_fwdControl', PACKAGE = 'FLasher', control)
 }
@@ -1665,6 +1661,10 @@ test_operatingModel_catch_q_adouble <- function(flfs, flbs_list_sexp, ctrl, fish
     .Call('FLasher_test_operatingModel_catch_q_adouble', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices)
 }
 
+test_operatingModel_catch_q_subset <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, range) {
+    .Call('FLasher_test_operatingModel_catch_q_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, range)
+}
+
 test_operatingModel_catch_q_FLQuantAD <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no) {
     .Call('FLasher_test_operatingModel_catch_q_FLQuantAD', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no)
 }
@@ -1703,5 +1703,13 @@ test_operatingModel_project <- function(flfs, flbs_list_sexp, ctrl, timestep) {
 
 test_operatingModel_SSB_FLQ <- function(flfs, flbs_list_sexp, ctrl, biol_no) {
     .Call('FLasher_test_operatingModel_SSB_FLQ', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no)
+}
+
+fwdBiolAD_biomass_subset_speed <- function(fwdb, year, season, rep) {
+    invisible(.Call('FLasher_fwdBiolAD_biomass_subset_speed', PACKAGE = 'FLasher', fwdb, year, season, rep))
+}
+
+catch_q_speed <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices, rep) {
+    invisible(.Call('FLasher_catch_q_speed', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices, rep))
 }
 

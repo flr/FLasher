@@ -254,6 +254,53 @@ adouble operatingModel::catch_q(const int fishery_no, const int catch_no, const 
     FLQuantAD q = catch_q(fishery_no, catch_no, biol_no);
     return q(1,year, unit, season, area, iter);
 }
+
+
+/*!
+ * \brief Catchability of a timestep (subset over year, unit, season, area, iter)
+ * \param fishery_no the position of the fishery within the fisheries (starting at 1).
+ * \param catch_no the position of the catch within the fishery (starting at 1).
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ * \param year_min min year 
+ * \param year_max max year 
+ * \param unit_min unit
+ * \param unit_max unit
+ * \param season_min min season 
+ * \param season_max max season 
+ * \param area_min area 
+ * \param area_max area 
+ * \param iter_min iter
+ * \param iter_max iter
+ */
+FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max) const{
+
+    // get dim from min max
+    // change interface to integer vector?
+    // And use C++11 {} to pass in values?
+    
+    std::vector<int> new_dim(5);
+    new_dim[0] = year_max - year_min + 1;
+    new_dim[1] = unit_max - unit_min + 1;
+    new_dim[2] = season_max - season_min + 1;
+    new_dim[3] = area_max - area_min + 1;
+    new_dim[4] = iter_max - iter_min + 1;
+    // Make the empty FLQuant with one year and season
+    FLQuantAD q(1, new_dim[0], new_dim[1], new_dim[2], new_dim[3], new_dim[4]);
+    FLQuantAD biomass = biols(biol_no).biomass(year_min, year_max, unit_min, unit_max, season_min, season_max, area_min, area_max, iter_min, iter_max);
+
+    std::vector<double> q_params;
+
+    for (int year_count = year_min; year_count <= year_max; ++year_count){
+        for (int unit_count = unit_min; unit_count <= unit_max; ++unit_count){
+            for (int season_count = season_min; season_count <= season_max; ++season_count){
+                for (int area_count = area_min; area_count <= area_max; ++area_count){
+                    for (int iter_count = iter_min; iter_count <= iter_max; ++iter_count){
+                        q_params = fisheries(fishery_no, catch_no).catch_q_params(year_count, unit_count, season_count, area_count, iter_count);
+                        q(1, year_count - year_min + 1, unit_count - unit_min + 1, season_count - season_min + 1, area_count - area_min + 1, iter_count - iter_min + 1) = q_params[0] * pow(biomass(1, year_count - year_min + 1, unit_count - unit_min + 1, season_count - season_min + 1, area_count - area_min + 1, iter_count - iter_min + 1), -q_params[1]);
+    }}}}}
+    return q;
+}
+
 /*!
  * \brief Catchability of a timestep (defined by year and season)
  * \param fishery_no the position of the fishery within the fisheries (starting at 1).

@@ -45,27 +45,35 @@ test_that("operatingModel Q methods",{
     flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
     fc <- dummy_fwdControl_generator(years = 1, niters = dim(flq)[6])
-    indices <- round(runif(5, min = 1, max = dim(flq)[-1]))
     fishery_no <- round(runif(1,min=1, max=length(flfs)))
     catch_no <- round(runif(1,min=1, max=length(flfs[[fishery_no]])))
     biol_no <- round(runif(1,min=1, max=length(flbs)))
     cq_flq <- as(catch.q(flfs[[fishery_no]][[catch_no]]), "FLQuant")
-    # single value
-    qout <- test_operatingModel_catch_q_adouble(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices)
-    cq_flq_indices <- pmin(dim(cq_flq)[-1],indices)
-    cq <- c(cq_flq[,cq_flq_indices[1],cq_flq_indices[2],cq_flq_indices[3],cq_flq_indices[4],cq_flq_indices[5]])
-    biomass <- c(quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))[1,indices[1],indices[2],indices[3],indices[4],indices[5]])
-    expect_that(qout, equals(cq[1] * biomass ^ (-cq[2])))
-    # FLQuantAD
-    qout <- test_operatingModel_catch_q_FLQuantAD(flfs, flbs, fc, fishery_no, catch_no, biol_no)
-    qout_orig <- test_operatingModel_catch_q_orig_FLQuantAD(flfs, flbs, fc, fishery_no, catch_no, biol_no) # Remove method after confirming correctness
     biomass <- quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))
     qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
+    # FLQuantAD
+    qout <- test_operatingModel_catch_q_FLQuantAD(flfs, flbs, fc, fishery_no, catch_no, biol_no)
+    #qout_orig <- test_operatingModel_catch_q_orig_FLQuantAD(flfs, flbs, fc, fishery_no, catch_no, biol_no) # Remove method after confirming correctness
     expect_that(qout@.Data, equals(qin@.Data))
-    expect_that(qout_orig@.Data, equals(qin@.Data))
+    #expect_that(qout_orig@.Data, equals(qin@.Data))
+    # Single value
+    indices <- round(runif(5, min = 1, max = dim(flq)[-1]))
+    qout <- test_operatingModel_catch_q_adouble(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices)
+    expect_that(qout, equals(c(qin[1, indices[1],indices[2],indices[3],indices[4],indices[5]])))
+    # FLQuantAD subset
+    dims1 <- dim(n(flbs[[1]][["biol"]]))
+    dims2 <- round(runif(6, min=1,max=dims1))
+    dimrange <- c(dims2[2], dims1[2], dims2[3], dims1[3], dims2[4], dims1[4], dims2[5], dims1[5], dims2[6], dims1[6]) 
+    qout <- test_operatingModel_catch_q_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dimrange)
+    qin_subset <- qin[, dimrange[1]:dimrange[2], dimrange[3]:dimrange[4],dimrange[5]:dimrange[6],dimrange[7]:dimrange[8],dimrange[9]:dimrange[10]]
+    # Dimnames not fixed so check contents and dim
+    expect_that(c(qout), equals(c(qin_subset)))
+    expect_that(dim(qout), equals(dim(qin_subset)))
+
+
     # FLQuantAD Year Season
-    qout <- test_operatingModel_catch_q_FLQuantAD_YS(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices[1], indices[3])
-    expect_that(c(qout), equals(c(qin[,indices[1],,indices[3],])))
+#    qout <- test_operatingModel_catch_q_FLQuantAD_YS(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices[1], indices[3])
+#    expect_that(c(qout), equals(c(qin[,indices[1],,indices[3],])))
 })
 
 # Test F method with random Biols and Fisheries

@@ -80,6 +80,7 @@ class operatingModel {
         FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no) const;
         FLQuantAD catch_q_orig(const int fishery_no, const int catch_no, const int biol_no) const;
         adouble catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year, const int unit, const int season, const int area, const int iter) const;
+        FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max) const;
 
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no) const; 
         FLQuantAD partial_f(const int fishery_no, const int catch_no, const int biol_no) const; 

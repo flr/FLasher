@@ -6433,21 +6433,6 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
-// fwdBiolAD_biomass_subset_speed
-void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const int year, const int season, const int rep);
-RcppExport SEXP FLasher_fwdBiolAD_biomass_subset_speed(SEXP fwdbSEXP, SEXP yearSEXP, SEXP seasonSEXP, SEXP repSEXP) {
-BEGIN_RCPP
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< fwdBiolAD >::type fwdb(fwdbSEXP );
-        Rcpp::traits::input_parameter< const int >::type year(yearSEXP );
-        Rcpp::traits::input_parameter< const int >::type season(seasonSEXP );
-        Rcpp::traits::input_parameter< const int >::type rep(repSEXP );
-        fwdBiolAD_biomass_subset_speed(fwdb, year, season, rep);
-    }
-    return R_NilValue;
-END_RCPP
-}
 // test_as_wrap_fwdControl
 fwdControl test_as_wrap_fwdControl(fwdControl control);
 RcppExport SEXP FLasher_test_as_wrap_fwdControl(SEXP controlSEXP) {
@@ -7073,6 +7058,27 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// test_operatingModel_catch_q_subset
+FLQuantAD test_operatingModel_catch_q_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> range);
+RcppExport SEXP FLasher_test_operatingModel_catch_q_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP, SEXP rangeSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type flbs_list_sexp(flbs_list_sexpSEXP );
+        Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP );
+        Rcpp::traits::input_parameter< const int >::type fishery_no(fishery_noSEXP );
+        Rcpp::traits::input_parameter< const int >::type catch_no(catch_noSEXP );
+        Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP );
+        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type range(rangeSEXP );
+        FLQuantAD __result = test_operatingModel_catch_q_subset(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, range);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // test_operatingModel_catch_q_FLQuantAD
 FLQuantAD test_operatingModel_catch_q_FLQuantAD(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no);
 RcppExport SEXP FLasher_test_operatingModel_catch_q_FLQuantAD(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP) {
@@ -7263,5 +7269,39 @@ BEGIN_RCPP
     }
     UNPROTECT(1);
     return __sexp_result;
+END_RCPP
+}
+// fwdBiolAD_biomass_subset_speed
+void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const int year, const int season, const int rep);
+RcppExport SEXP FLasher_fwdBiolAD_biomass_subset_speed(SEXP fwdbSEXP, SEXP yearSEXP, SEXP seasonSEXP, SEXP repSEXP) {
+BEGIN_RCPP
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< fwdBiolAD >::type fwdb(fwdbSEXP );
+        Rcpp::traits::input_parameter< const int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< const int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< const int >::type rep(repSEXP );
+        fwdBiolAD_biomass_subset_speed(fwdb, year, season, rep);
+    }
+    return R_NilValue;
+END_RCPP
+}
+// catch_q_speed
+void catch_q_speed(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices, const int rep);
+RcppExport SEXP FLasher_catch_q_speed(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP, SEXP indicesSEXP, SEXP repSEXP) {
+BEGIN_RCPP
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type flbs_list_sexp(flbs_list_sexpSEXP );
+        Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP );
+        Rcpp::traits::input_parameter< const int >::type fishery_no(fishery_noSEXP );
+        Rcpp::traits::input_parameter< const int >::type catch_no(catch_noSEXP );
+        Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP );
+        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices(indicesSEXP );
+        Rcpp::traits::input_parameter< const int >::type rep(repSEXP );
+        catch_q_speed(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices, rep);
+    }
+    return R_NilValue;
 END_RCPP
 }

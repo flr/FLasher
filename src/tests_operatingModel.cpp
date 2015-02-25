@@ -93,15 +93,20 @@ double test_operatingModel_catch_q_adouble(FLFisheriesAD flfs, SEXP flbs_list_se
     return q;
 }
 
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_catch_q_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> range){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD qad = om.catch_q(fishery_no, catch_no, biol_no, range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8], range[9]); 
+    return qad;
+}
+
 // [[Rcpp::export]]
 FLQuantAD test_operatingModel_catch_q_FLQuantAD(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no){
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);
-clock_t start, end;
-start = clock();
     FLQuantAD qad = om.catch_q(fishery_no, catch_no, biol_no);
-end = clock();
-Rprintf("q CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
     return qad;
 }
 
@@ -109,11 +114,7 @@ Rprintf("q CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
 FLQuantAD test_operatingModel_catch_q_orig_FLQuantAD(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no){
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);
-clock_t start, end;
-start = clock();
-  FLQuantAD qad = om.catch_q_orig(fishery_no, catch_no, biol_no);
-end = clock();
-Rprintf("q orig CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+    FLQuantAD qad = om.catch_q_orig(fishery_no, catch_no, biol_no);
     return qad;
 }
 
@@ -122,11 +123,7 @@ Rprintf("q orig CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
 FLQuantAD test_operatingModel_catch_q_FLQuantAD_YS(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const int year, const int season){
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);
-clock_t start, end;
-start = clock();
     FLQuantAD qad = om.catch_q(fishery_no, catch_no, biol_no, year, season);
-end = clock();
-Rprintf("q orig CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
     return qad;
 }
 
