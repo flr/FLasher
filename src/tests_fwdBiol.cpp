@@ -289,30 +289,3 @@ Rcpp::List test_fwdBiolsAD_assignment_operator(SEXP fwbs_list_sexp, const int bi
 }
 
 
-//--------- Speed tests remove before release --------------
-
-// [[Rcpp::export]]
-void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const int year, const int season, const int rep){
-    Rcpp::IntegerVector dims = fwdb.biomass().get_dim();
-
-    clock_t start, end;
-    start = clock();
-
-    for (int i = 1; i <= rep; ++i){
-        FLQuantAD biol_full = fwdb.biomass();
-        FLQuantAD biol_subset1 = biol_full(1, dims[0], year, year, 1, dims[2], season, season, 1, dims[4], 1, dims[5]);
-    }
-    end = clock();
-    Rprintf("biomass all CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
-
-    start = clock();
-    for (int i = 1; i <= rep; ++i){
-        FLQuantAD biol_subset2 = fwdb.biomass(year, year, 1, dims[2], season, season, 1, dims[4], 1, dims[5]);
-    }
-    end = clock();
-    Rprintf("biomass subset: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
-
-    return;
-}
-
-
