@@ -1705,3 +1705,15 @@ catch_q_speed <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol
     invisible(.Call('FLasher_catch_q_speed', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices, rep))
 }
 
+useAuto <- function() {
+    .Call('FLasher_useAuto', PACKAGE = 'FLasher')
+}
+
+init_list <- function() {
+    .Call('FLasher_init_list', PACKAGE = 'FLasher')
+}
+
+transformEx2 <- function(x, y) {
+    .Call('FLasher_transformEx2', PACKAGE = 'FLasher', x, y)
+}
+

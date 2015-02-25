@@ -7263,3 +7263,47 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// useAuto
+int useAuto();
+RcppExport SEXP FLasher_useAuto() {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        int __result = useAuto();
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// init_list
+std::vector<int> init_list();
+RcppExport SEXP FLasher_init_list() {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        std::vector<int> __result = init_list();
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// transformEx2
+NumericVector transformEx2(NumericVector x, NumericVector y);
+RcppExport SEXP FLasher_transformEx2(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP );
+        Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP );
+        NumericVector __result = transformEx2(x, y);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}

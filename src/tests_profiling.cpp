@@ -62,3 +62,30 @@ void catch_q_speed(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctr
     end = clock();
     Rprintf("q subset: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
 }
+
+
+//---------------------- Remove all stuff below this line -------
+
+// [[Rcpp::export]]
+int useAuto() {
+    auto val = 42;		// val will be of type int
+    return val;
+}
+
+// [[Rcpp::export]]
+std::vector<int> init_list() {
+    //std::vector<int> out = {1,2,3,4};
+    auto out = {1,2,3,4}; // genius
+    return out;
+}
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+NumericVector transformEx2(NumericVector x, NumericVector y) {
+    NumericVector z(x.size());
+    std::transform(x.begin(), x.end(), y.begin(), z.begin(), 
+                   [](double x, double y) { return sqrt(x*x + y*y); } );
+    return z;
+}
+
+
