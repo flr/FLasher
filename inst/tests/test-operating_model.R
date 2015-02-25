@@ -51,15 +51,6 @@ test_that("operatingModel Q methods",{
     cq_flq <- as(catch.q(flfs[[fishery_no]][[catch_no]]), "FLQuant")
     biomass <- quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))
     qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
-    # FLQuantAD
-    qout <- test_operatingModel_catch_q_FLQuantAD(flfs, flbs, fc, fishery_no, catch_no, biol_no)
-    #qout_orig <- test_operatingModel_catch_q_orig_FLQuantAD(flfs, flbs, fc, fishery_no, catch_no, biol_no) # Remove method after confirming correctness
-    expect_that(qout@.Data, equals(qin@.Data))
-    #expect_that(qout_orig@.Data, equals(qin@.Data))
-    # Single value
-    indices <- round(runif(5, min = 1, max = dim(flq)[-1]))
-    qout <- test_operatingModel_catch_q_adouble(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices)
-    expect_that(qout, equals(c(qin[1, indices[1],indices[2],indices[3],indices[4],indices[5]])))
     # FLQuantAD subset
     dims1 <- dim(n(flbs[[1]][["biol"]]))
     dims2 <- round(runif(6, min=1,max=dims1))
@@ -69,11 +60,14 @@ test_that("operatingModel Q methods",{
     # Dimnames not fixed so check contents and dim
     expect_that(c(qout), equals(c(qin_subset)))
     expect_that(dim(qout), equals(dim(qin_subset)))
-
-
-    # FLQuantAD Year Season
-#    qout <- test_operatingModel_catch_q_FLQuantAD_YS(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices[1], indices[3])
-#    expect_that(c(qout), equals(c(qin[,indices[1],,indices[3],])))
+    # FLQuantAD
+    qout <- test_operatingModel_catch_q_FLQuantAD(flfs, flbs, fc, fishery_no, catch_no, biol_no)
+    expect_that(c(qout), equals(c(qin)))
+    expect_that(dim(qout), equals(dim(qin)))
+    # Single value
+    indices <- round(runif(5, min = 1, max = dim(flq)[-1]))
+    qout <- test_operatingModel_catch_q_adouble(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices)
+    expect_that(qout, equals(c(qin[1, indices[1],indices[2],indices[3],indices[4],indices[5]])))
 })
 
 # Test F method with random Biols and Fisheries

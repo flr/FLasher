@@ -48,7 +48,7 @@ void catch_q_speed(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctr
 
     clock_t start, end;
     start = clock();
-    // Get full catch_q FLQ, then subset YS
+    // Get full catch_q FLQ, then subset
     for (int i = 1; i <= rep; ++i){
         FLQuantAD cq1 = om.catch_q(fishery_no, catch_no, biol_no);
         FLQuantAD cq_subset1 = cq1(1, 1, indices[0], indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], indices[7], indices[8], indices[9]);
