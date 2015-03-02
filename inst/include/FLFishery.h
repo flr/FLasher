@@ -48,6 +48,7 @@ class FLFishery_base : public FLCatches_base<T> {
 
         // Accessor methods for the slots
         // Get only
+        FLQuant effort(const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max) const;
         FLQuant effort() const;
         FLQuant vcost() const;
         FLQuant fcost() const;

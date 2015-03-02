@@ -689,6 +689,14 @@ test_FLFishery_const_economics_get_accessors <- function(flf, quant, year, unit,
     .Call('FLasher_test_FLFishery_const_economics_get_accessors', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
 }
 
+test_FLFishery_get_effort_subset <- function(flf, indices_min, indices_max) {
+    .Call('FLasher_test_FLFishery_get_effort_subset', PACKAGE = 'FLasher', flf, indices_min, indices_max)
+}
+
+test_FLFishery_get_effort <- function(flf) {
+    .Call('FLasher_test_FLFishery_get_effort', PACKAGE = 'FLasher', flf)
+}
+
 test_FLFishery_economics_get_accessors <- function(flf, quant, year, unit, season, area, iter) {
     .Call('FLasher_test_FLFishery_economics_get_accessors', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
 }

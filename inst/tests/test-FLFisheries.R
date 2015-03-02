@@ -103,6 +103,19 @@ test_that("FLFisheriesAD get accessors - double",{
     expect_that(test_FLFisheriesAD_get_nfisheries(flfs_in), is_identical_to(length(flfs_in)))
 })
 
+test_that("FLFisheriesAD effort accessors", {
+    flfs_in <- random_FLFisheries_generator()
+    fishery <- round(runif(1,min=1, max = length(flfs_in)))
+    # Whole FLQ
+    eff_out <- test_FLFishery_get_effort(flfs_in[[fishery]])
+    expect_that(effort(flfs_in[[fishery]]), equals(eff_out))
+    # Subset
+    indices_max <- as.integer(round(runif(6,min=1, max = dim(effort(flfs_in[[fishery]])))))
+    indices_min <- round(runif(6, min=1, max = indices_max))
+    eff_out <- test_FLFishery_get_effort_subset(flfs_in[[fishery]], indices_min[-1], indices_max[-1])
+    expect_that(effort(flfs_in[[fishery]])[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], equals(eff_out))
+})
+
 test_that("FLFisheriesAD get and set data accessors - double", {
     flfs_in <- random_FLFisheries_generator()
     fishery <- round(runif(1,min=1, max = length(flfs_in)))

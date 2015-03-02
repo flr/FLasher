@@ -2827,6 +2827,38 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// test_FLFishery_get_effort_subset
+FLQuant test_FLFishery_get_effort_subset(const FLFishery flf, std::vector<int> indices_min, std::vector<int> indices_max);
+RcppExport SEXP FLasher_test_FLFishery_get_effort_subset(SEXP flfSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLFishery >::type flf(flfSEXP );
+        Rcpp::traits::input_parameter< std::vector<int> >::type indices_min(indices_minSEXP );
+        Rcpp::traits::input_parameter< std::vector<int> >::type indices_max(indices_maxSEXP );
+        FLQuant __result = test_FLFishery_get_effort_subset(flf, indices_min, indices_max);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLFishery_get_effort
+FLQuant test_FLFishery_get_effort(const FLFishery flf);
+RcppExport SEXP FLasher_test_FLFishery_get_effort(SEXP flfSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLFishery >::type flf(flfSEXP );
+        FLQuant __result = test_FLFishery_get_effort(flf);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // test_FLFishery_economics_get_accessors
 Rcpp::NumericVector test_FLFishery_economics_get_accessors(FLFishery flf, int quant, int year, int unit, int season, int area, int iter);
 RcppExport SEXP FLasher_test_FLFishery_economics_get_accessors(SEXP flfSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
