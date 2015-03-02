@@ -170,6 +170,28 @@ FLQuant_base<adouble>::FLQuant_base(const FLQuant_base<double>& FLQuant_source){
     data.insert(data.begin(), source_data.begin(), source_data.end());
 }
 
+//------------------ begin and end ---------------------------------
+// These are used for for_range and iterators
+
+template <typename T>
+typename FLQuant_base<T>::iterator FLQuant_base<T>::begin(){
+    return data.begin();
+}
+
+template <typename T>
+typename FLQuant_base<T>::iterator FLQuant_base<T>::end(){
+    return data.end();
+}
+
+template <typename T>
+typename FLQuant_base<T>::const_iterator FLQuant_base<T>::begin() const {
+    return data.begin();
+}
+
+template <typename T>
+typename FLQuant_base<T>::const_iterator FLQuant_base<T>::end() const {
+    return data.end();
+}
 
 //------------------ Accessors ---------------------------------
 

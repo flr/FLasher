@@ -1161,6 +1161,26 @@ test_FLPar_to_FLQuant <- function(flp) {
     .Call('FLasher_test_FLPar_to_FLQuant', PACKAGE = 'FLasher', flp)
 }
 
+test_for_range <- function(flq, rn) {
+    .Call('FLasher_test_for_range', PACKAGE = 'FLasher', flq, rn)
+}
+
+test_for_range_const <- function(flq, rn) {
+    .Call('FLasher_test_for_range_const', PACKAGE = 'FLasher', flq, rn)
+}
+
+test_FLQuant_for_iterator <- function(flq, rn) {
+    .Call('FLasher_test_FLQuant_for_iterator', PACKAGE = 'FLasher', flq, rn)
+}
+
+test_FLQuant_for_iterator_const <- function(flq, rn) {
+    .Call('FLasher_test_FLQuant_for_iterator_const', PACKAGE = 'FLasher', flq, rn)
+}
+
+test_FLQuant_lambda <- function(flq1, flq2) {
+    .Call('FLasher_test_FLQuant_lambda', PACKAGE = 'FLasher', flq1, flq2)
+}
+
 test_FLQuant7_as_wrap <- function(flq7) {
     .Call('FLasher_test_FLQuant7_as_wrap', PACKAGE = 'FLasher', flq7)
 }
@@ -1715,5 +1735,9 @@ init_list <- function() {
 
 transformEx2 <- function(x, y) {
     .Call('FLasher_transformEx2', PACKAGE = 'FLasher', x, y)
+}
+
+begin_test <- function(init) {
+    invisible(.Call('FLasher_begin_test', PACKAGE = 'FLasher', init))
 }
 

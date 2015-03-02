@@ -266,3 +266,24 @@ test_that("FLPar_to_FLQuant", {
     flp2D2 <- FLPar(rnorm(dim(flq)[1] * dim(flq)[6] * 5), dimnames=list(params = dimnames(flq)[[1]], other_name = c("a","b","c","d","e"), iter = dimnames(flq)[[6]]))
     expect_that(test_FLPar_to_FLQuant(flp2D2), throws_error())
 })
+
+
+test_that("iterators", {
+    flq_in <- random_FLQuant_generator()
+    rn <- rnorm(1)
+    # for_range (uses begin and end, const and non const versions)
+    flq_out <- test_for_range(flq_in, rn)
+    expect_that(flq_in * rn, equals(flq_out))
+    out <- test_for_range_const(flq_in, rn)
+    expect_that(out, equals(sum(flq_in * rn)))
+    # for loop with an iterator, const and otherwise
+    flq_out <- test_FLQuant_for_iterator(flq_in, rn)
+    expect_that(flq_in * rn, equals(flq_out))
+    out <- test_FLQuant_for_iterator_const(flq_in, rn)
+    expect_that(out, equals(sum(flq_in * rn)))
+    # transform lambda function
+    flq1 <- random_FLQuant_generator()
+    flq2 <- random_FLQuant_generator(fixed_dims = dim(flq1))
+    flq_out <- test_FLQuant_lambda(flq1, flq2)
+    expect_that(flq_out@.Data, equals(sqrt(flq1^2 + (flq2^2))@.Data))
+})

@@ -152,6 +152,14 @@ class FLQuant_base {
         int match_dims(const FLQuant_base<T2>& flq) const;
         FLQuant_base<T> propagate_iters(const int iters) const;
 
+        /* begin and end and const versions for iterators */
+        typedef typename std::vector<T>::iterator iterator;
+        iterator begin();
+        iterator end();
+        typedef typename std::vector<T>::const_iterator const_iterator;
+        const_iterator begin() const;
+        const_iterator end() const;
+
     protected:
         std::vector<T> data;
 		std::string units;	

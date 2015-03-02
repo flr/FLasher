@@ -279,6 +279,53 @@ FLQuant test_FLPar_to_FLQuant(SEXP flp){
     return flq;
 }
 
+//--------- begin and end ----------------------
+
+// [[Rcpp::export]]
+FLQuant test_for_range(FLQuant flq, double rn){
+    for (auto& it : flq){
+        it *= rn;
+    }
+    return flq;
+}
+
+// [[Rcpp::export]]
+double test_for_range_const(FLQuant flq, double rn){
+    auto value = 0.0;
+    for (const auto& it : flq){
+        value = value + it * rn;
+    }
+    return value;
+}
+
+
+// [[Rcpp::export]]
+FLQuant test_FLQuant_for_iterator(FLQuant flq, double rn){
+    FLQuant::iterator it;
+    for(it = flq.begin(); it != flq.end(); it++) {
+        *it *= rn;
+    }
+    return flq;
+}
+
+// [[Rcpp::export]]
+double test_FLQuant_for_iterator_const(FLQuant flq, double rn){
+    FLQuant::const_iterator it;
+    auto value = 0.0;
+    for(it = flq.begin(); it != flq.end(); it++) {
+        value = value + *it * rn;
+    }
+    return value;
+}
+
+// [[Rcpp::export]]
+FLQuant test_FLQuant_lambda(FLQuant flq1, FLQuant flq2){
+    FLQuant flq3(flq1);
+    std::transform(flq1.begin(), flq1.end(), flq2.begin(), flq3.begin(),
+        [](double x, double y) { return sqrt(x*x + y*y); } );
+    return flq3;
+}
+
 //--------- Shortcuts ----------------------
 /*
 // [[Rcpp::export]]
@@ -287,48 +334,4 @@ FLQuant test_FLQuant_year_sum(FLQuant flq){
     return flq_out;
 }
 */
-
-//--------- Time get data elements ------------------
-
-/*
-// [[Rcpp::export]]
-void test_get_data_elememts(FLQuant flq, std::vector<int> indices, const int reps){
-    int out;
-
-    clock_t start, end;
-    start = clock();
-    for (int i = 1; i <= reps; ++i){
-        flq.get_data_element(indices[0], indices[1], indices[2], indices[3], indices[4], indices[5]);
-    }
-    end = clock();
-    Rprintf("data element CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
-    start = clock();
-    for (int i = 1; i <= reps; ++i){
-        flq.get_data_element2(indices[0], indices[1], indices[2], indices[3], indices[4], indices[5]);
-    }
-    end = clock();
-    Rprintf("data element 2 CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
-
-    return;
-
-}
-*/
-
-
-/*
-// [[Rcpp::export]]
-void test_subset_speed(FLQuant flq, std::vector<int> indices1, std::vector<int> indices2, const int reps){
-    clock_t start, end;
-    start = clock();
-    FLQuant out;
-    for (int i = 1; i <= reps; ++i){
-        out = flq(indices1[0], indices2[0], indices1[1], indices2[1], indices1[2], indices2[2], indices1[3], indices2[3], indices1[4], indices2[4], indices1[5], indices2[5]);
-    }
-    end = clock();
-    Rprintf("new flq CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
-    return;
-}
-*/
-
-
 

@@ -88,4 +88,44 @@ NumericVector transformEx2(NumericVector x, NumericVector y) {
     return z;
 }
 
+class A {
+    public:
+    A()
+    {
+        v = {1,2,3,4,5};
+        Rprintf("size: %i\n", v.size());
+    }
 
+    A(std::vector<int> init){
+        v = init;
+        Rprintf("size: %i\n", v.size());
+    }
+
+    int* begin() {
+        return &v[0];
+    }
+
+    int* end() {
+        return &v[v.size()];
+    }
+
+    protected:
+        std::vector<int> v;
+};
+
+// [[Rcpp::export]]
+void begin_test(std::vector<int> init){
+    A a(init);
+    for( auto it : a )
+    {
+        Rprintf("%i\n", it);
+    }
+    Rprintf("\n");
+    A b;
+    for( auto it : b )
+    {
+        Rprintf("%i\n", it);
+    }
+}
+
+// begin_test(c(1:10))

@@ -4854,6 +4854,86 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// test_for_range
+FLQuant test_for_range(FLQuant flq, double rn);
+RcppExport SEXP FLasher_test_for_range(SEXP flqSEXP, SEXP rnSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP );
+        Rcpp::traits::input_parameter< double >::type rn(rnSEXP );
+        FLQuant __result = test_for_range(flq, rn);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_for_range_const
+double test_for_range_const(FLQuant flq, double rn);
+RcppExport SEXP FLasher_test_for_range_const(SEXP flqSEXP, SEXP rnSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP );
+        Rcpp::traits::input_parameter< double >::type rn(rnSEXP );
+        double __result = test_for_range_const(flq, rn);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLQuant_for_iterator
+FLQuant test_FLQuant_for_iterator(FLQuant flq, double rn);
+RcppExport SEXP FLasher_test_FLQuant_for_iterator(SEXP flqSEXP, SEXP rnSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP );
+        Rcpp::traits::input_parameter< double >::type rn(rnSEXP );
+        FLQuant __result = test_FLQuant_for_iterator(flq, rn);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLQuant_for_iterator_const
+double test_FLQuant_for_iterator_const(FLQuant flq, double rn);
+RcppExport SEXP FLasher_test_FLQuant_for_iterator_const(SEXP flqSEXP, SEXP rnSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP );
+        Rcpp::traits::input_parameter< double >::type rn(rnSEXP );
+        double __result = test_FLQuant_for_iterator_const(flq, rn);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_FLQuant_lambda
+FLQuant test_FLQuant_lambda(FLQuant flq1, FLQuant flq2);
+RcppExport SEXP FLasher_test_FLQuant_lambda(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP );
+        Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP );
+        FLQuant __result = test_FLQuant_lambda(flq1, flq2);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // test_FLQuant7_as_wrap
 FLQuant7 test_FLQuant7_as_wrap(FLQuant7 flq7);
 RcppExport SEXP FLasher_test_FLQuant7_as_wrap(SEXP flq7SEXP) {
@@ -7305,5 +7385,17 @@ BEGIN_RCPP
     }
     UNPROTECT(1);
     return __sexp_result;
+END_RCPP
+}
+// begin_test
+void begin_test(std::vector<int> init);
+RcppExport SEXP FLasher_begin_test(SEXP initSEXP) {
+BEGIN_RCPP
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< std::vector<int> >::type init(initSEXP );
+        begin_test(init);
+    }
+    return R_NilValue;
 END_RCPP
 }
