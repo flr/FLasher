@@ -404,6 +404,22 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const int quant_min, const int qua
     return out;
 }
 
+/*! \brief Subsets an FLQuant
+ * Just calls the bigger subsetter but has a neater interface
+ *
+ * \param indices_min A vector of length 6 with the minimum indices of the 6 dimensions
+ * \param indices_max A vector of length 6 with the maximum indices of the 6 dimensions
+ */
+template <typename T>
+FLQuant_base<T> FLQuant_base<T>::operator () (const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if (indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In neat FLQuant subsetter. Size of indices_min or max not equal to 6\n");
+    }
+    FLQuant_base<T> out = *this;
+    return out(indices_min[0], indices_max[0], indices_min[1], indices_max[1], indices_min[2], indices_max[2], indices_min[3], indices_max[3], indices_min[4], indices_max[4], indices_min[5], indices_max[5]); 
+}
+
+
 
 template <typename T>
 FLQuant_base<T> FLQuant_base<T>::operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area) const {

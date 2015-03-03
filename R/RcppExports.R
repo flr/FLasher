@@ -1145,6 +1145,10 @@ test_FLQuant_subset <- function(flq, quant_min, quant_max, year_min, year_max, u
     .Call('FLasher_test_FLQuant_subset', PACKAGE = 'FLasher', flq, quant_min, quant_max, year_min, year_max, unit_min, unit_max, season_min, season_max, area_min, area_max, iter_min, iter_max)
 }
 
+test_FLQuant_neat_subset <- function(flq, indices_min, indices_max) {
+    .Call('FLasher_test_FLQuant_neat_subset', PACKAGE = 'FLasher', flq, indices_min, indices_max)
+}
+
 test_FLQuant_propagate_iters <- function(flq, iters) {
     .Call('FLasher_test_FLQuant_propagate_iters', PACKAGE = 'FLasher', flq, iters)
 }
@@ -1731,6 +1735,10 @@ fwdBiolAD_biomass_subset_speed <- function(fwdb, year, season, rep) {
 
 catch_q_speed <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices, rep) {
     invisible(.Call('FLasher_catch_q_speed', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices, rep))
+}
+
+get_f_speed <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max, rep) {
+    invisible(.Call('FLasher_get_f_speed', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max, rep))
 }
 
 useAuto <- function() {

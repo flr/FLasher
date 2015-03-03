@@ -239,6 +239,12 @@ FLQuant test_FLQuant_subset(FLQuant flq, const int quant_min, const int quant_ma
   return flq(quant_min, quant_max, year_min, year_max, unit_min, unit_max, season_min, season_max, area_min, area_max, iter_min, iter_max);
 }
 
+
+// [[Rcpp::export]]
+FLQuant test_FLQuant_neat_subset(FLQuant flq, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    return flq(indices_min, indices_max);
+}
+
 // [[Rcpp::export]]
 Rcpp::List test_FLQuant_propagate_iters(FLQuant flq, const int iters){
     FLQuant flq2 = flq.propagate_iters(iters);

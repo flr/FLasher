@@ -189,7 +189,17 @@ test_that("FLQuant subsetter works",{
     # min < max check
     sub_dims_wrong <- sub_dims_end
     expect_that(test_FLQuant_subset(flq, sub_dims_wrong[1], sub_dims_start[1], sub_dims_wrong[2], sub_dims_start[2], sub_dims_wrong[3], sub_dims_start[3], sub_dims_wrong[4], sub_dims_start[4], sub_dims_wrong[5], sub_dims_start[5], sub_dims_wrong[6], sub_dims_start[6]), throws_error())
-
+    # Test std::vector<unsigned int> subsetter
+    flq <- random_FLQuant_generator()
+    dims_max <- dim(flq)
+    dims_min <- round(runif(6, min=1,max=dims_max))
+    flq_out <- test_FLQuant_neat_subset(flq, dims_min, dims_max)
+    expect_that(flq[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]], equals(flq_out))
+    # indices wrong - should throw error
+    expect_that(test_FLQuant_neat_subset(flq, dims_min[-1], dims_max), throws_error())
+    expect_that(test_FLQuant_neat_subset(flq, dims_min, dims_max[-1]), throws_error())
+    expect_that(test_FLQuant_neat_subset(flq, c(1,dims_min), dims_max), throws_error())
+    expect_that(test_FLQuant_neat_subset(flq, dims_min, c(1,dims_max)), throws_error())
 })
 
 test_that("Accessing FLQuant iter = 1 or n works",{
