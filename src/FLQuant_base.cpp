@@ -359,13 +359,9 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const int quant_min, const int qua
         Rcpp::stop("In FLQuant subsetter: min dim > max\n");
     }
 
-    std::vector<int> new_dim(6);
-    new_dim[0] = quant_max - quant_min + 1;
-    new_dim[1] = year_max - year_min + 1;
-    new_dim[2] = unit_max - unit_min + 1;
-    new_dim[3] = season_max - season_min + 1;
-    new_dim[4] = area_max - area_min + 1;
-    new_dim[5] = iter_max - iter_min + 1;
+    // Using brace initialiser
+    std::vector<int> new_dim{quant_max - quant_min + 1, year_max - year_min + 1, unit_max - unit_min + 1, season_max - season_min + 1, area_max - area_min + 1, iter_max - iter_min + 1};
+
     FLQuant_base<T> out(new_dim[0], new_dim[1], new_dim[2], new_dim[3], new_dim[4], new_dim[5]);
     out.set_units(get_units());
     for (int quant_count = 1; quant_count <= new_dim[0]; ++quant_count){
@@ -379,14 +375,7 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const int quant_min, const int qua
     }}}}}}
 
     // Sorting out dimnames - not a speed issue
-    std::vector<int> min_dim(6);
-    min_dim[0] = quant_min;
-    min_dim[1] = year_min;
-    min_dim[2] = unit_min;
-    min_dim[3] = season_min;
-    min_dim[4] = area_min;
-    min_dim[5] = iter_min;
-
+    std::vector<int> min_dim{quant_min, year_min, unit_min, season_min, area_min, iter_min};
     Rcpp::List old_dimnames = get_dimnames();
     Rcpp::List new_dimnames = get_dimnames();
     std::vector<std::string> temp_old_dimname;
@@ -415,8 +404,7 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const std::vector<unsigned int> in
     if (indices_min.size() != 6 | indices_max.size() != 6){
         Rcpp::stop("In neat FLQuant subsetter. Size of indices_min or max not equal to 6\n");
     }
-    FLQuant_base<T> out = *this;
-    return out(indices_min[0], indices_max[0], indices_min[1], indices_max[1], indices_min[2], indices_max[2], indices_min[3], indices_max[3], indices_min[4], indices_max[4], indices_min[5], indices_max[5]); 
+    return (*this)(indices_min[0], indices_max[0], indices_min[1], indices_max[1], indices_min[2], indices_max[2], indices_min[3], indices_max[3], indices_min[4], indices_max[4], indices_min[5], indices_max[5]);
 }
 
 
