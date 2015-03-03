@@ -176,10 +176,17 @@ FLQuant_base<T> fwdBiol_base<T>::biomass() const {
 
 // Subset biomass
 template <typename T>
-FLQuant_base<T> fwdBiol_base<T>::biomass(const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max) const { 
+FLQuant_base<T> fwdBiol_base<T>::biomass(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const { 
+    if(indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In fwdBiol biomass subset. indices not of length 5\n");
+    }
     Rcpp::IntegerVector dim = n().get_dim();
-    FLQuant_base<T> biomass = quant_sum(n_flq(1, dim[0], year_min, year_max, unit_min, unit_max, season_min, season_max, area_min, area_max, iter_min, iter_max) *
-            wt_flq(1, dim[0], year_min, year_max, unit_min, unit_max, season_min, season_max, area_min, area_max, iter_min, iter_max));
+    // Add age range to indices
+    std::vector<unsigned int> new_indices_min = indices_min;
+    std::vector<unsigned int> new_indices_max = indices_max;
+    new_indices_min.insert(new_indices_min.begin(), 1);
+    new_indices_max.insert(new_indices_max.begin(), dim[0]);
+    FLQuant_base<T> biomass = quant_sum(n_flq(new_indices_min, new_indices_max) * wt_flq(new_indices_min, new_indices_max));
     return biomass;
 }
 

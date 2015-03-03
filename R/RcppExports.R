@@ -1497,8 +1497,8 @@ fwdBiolAD_biomass_FLQ <- function(fwdb) {
     .Call('FLasher_fwdBiolAD_biomass_FLQ', PACKAGE = 'FLasher', fwdb)
 }
 
-fwdBiolAD_biomass_subset <- function(fwdb, range) {
-    .Call('FLasher_fwdBiolAD_biomass_subset', PACKAGE = 'FLasher', fwdb, range)
+fwdBiolAD_biomass_subset <- function(fwdb, indices_min, indices_max) {
+    .Call('FLasher_fwdBiolAD_biomass_subset', PACKAGE = 'FLasher', fwdb, indices_min, indices_max)
 }
 
 test_fwdBiols_list_constructor <- function(flbs_list_sexp) {

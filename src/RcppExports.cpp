@@ -6340,15 +6340,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // fwdBiolAD_biomass_subset
-FLQuantAD fwdBiolAD_biomass_subset(fwdBiolAD fwdb, Rcpp::IntegerVector range);
-RcppExport SEXP FLasher_fwdBiolAD_biomass_subset(SEXP fwdbSEXP, SEXP rangeSEXP) {
+FLQuantAD fwdBiolAD_biomass_subset(fwdBiolAD fwdb, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_fwdBiolAD_biomass_subset(SEXP fwdbSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< fwdBiolAD >::type fwdb(fwdbSEXP );
-        Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type range(rangeSEXP );
-        FLQuantAD __result = fwdBiolAD_biomass_subset(fwdb, range);
+        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP );
+        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP );
+        FLQuantAD __result = fwdBiolAD_biomass_subset(fwdb, indices_min, indices_max);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -7359,14 +7360,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // fwdBiolAD_biomass_subset_speed
-void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const int year, const int season, const int rep);
+void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const unsigned int year, const unsigned int season, const int rep);
 RcppExport SEXP FLasher_fwdBiolAD_biomass_subset_speed(SEXP fwdbSEXP, SEXP yearSEXP, SEXP seasonSEXP, SEXP repSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< fwdBiolAD >::type fwdb(fwdbSEXP );
-        Rcpp::traits::input_parameter< const int >::type year(yearSEXP );
-        Rcpp::traits::input_parameter< const int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< const unsigned int >::type year(yearSEXP );
+        Rcpp::traits::input_parameter< const unsigned int >::type season(seasonSEXP );
         Rcpp::traits::input_parameter< const int >::type rep(repSEXP );
         fwdBiolAD_biomass_subset_speed(fwdb, year, season, rep);
     }

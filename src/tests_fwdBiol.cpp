@@ -192,8 +192,8 @@ FLQuantAD fwdBiolAD_biomass_FLQ(fwdBiolAD fwdb){
 }
 
 // [[Rcpp::export]]
-FLQuantAD fwdBiolAD_biomass_subset(fwdBiolAD fwdb, Rcpp::IntegerVector range){
-    return fwdb.biomass(range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8], range[9]);
+FLQuantAD fwdBiolAD_biomass_subset(fwdBiolAD fwdb, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    return fwdb.biomass(indices_min, indices_max);
 }
 
 
