@@ -80,8 +80,8 @@ FLFishery_base<T>& FLFishery_base<T>::operator = (const FLFishery_base<T>& FLFis
 
 // Accessors of economic slots
 template <typename T>
-FLQuant FLFishery_base<T>::effort(const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max) const {
-    FLQuant effort_out = effort_flq(1, 1, year_min, year_max, unit_min, unit_max, season_min, season_max, area_min, area_max, iter_min, iter_max);
+FLQuant FLFishery_base<T>::effort(std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max) const {
+    FLQuant effort_out = effort_flq(1, 1, indices_min[0], indices_max[0], indices_min[1], indices_max[1], indices_min[2], indices_max[2], indices_min[3], indices_max[3], indices_min[4], indices_max[4]); 
     return effort_out;
 }
 

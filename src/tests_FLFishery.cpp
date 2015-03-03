@@ -98,8 +98,8 @@ Rcpp::NumericVector test_FLFishery_const_economics_get_accessors(const FLFishery
 }
 
 // [[Rcpp::export]]
-FLQuant test_FLFishery_get_effort_subset(const FLFishery flf, std::vector<int> indices_min, std::vector<int> indices_max){
-    return flf.effort(indices_min[0], indices_max[0], indices_min[1], indices_max[1], indices_min[2], indices_max[2], indices_min[3], indices_max[3], indices_min[4], indices_max[4]);
+FLQuant test_FLFishery_get_effort_subset(const FLFishery flf, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    return flf.effort(indices_min, indices_max);
 }
 
 // [[Rcpp::export]]

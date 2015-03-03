@@ -2828,15 +2828,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_FLFishery_get_effort_subset
-FLQuant test_FLFishery_get_effort_subset(const FLFishery flf, std::vector<int> indices_min, std::vector<int> indices_max);
+FLQuant test_FLFishery_get_effort_subset(const FLFishery flf, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
 RcppExport SEXP FLasher_test_FLFishery_get_effort_subset(SEXP flfSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< const FLFishery >::type flf(flfSEXP );
-        Rcpp::traits::input_parameter< std::vector<int> >::type indices_min(indices_minSEXP );
-        Rcpp::traits::input_parameter< std::vector<int> >::type indices_max(indices_maxSEXP );
+        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP );
+        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP );
         FLQuant __result = test_FLFishery_get_effort_subset(flf, indices_min, indices_max);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
