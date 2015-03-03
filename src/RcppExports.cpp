@@ -7189,8 +7189,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_operatingModel_catch_q_subset
-FLQuantAD test_operatingModel_catch_q_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> range);
-RcppExport SEXP FLasher_test_operatingModel_catch_q_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP, SEXP rangeSEXP) {
+FLQuantAD test_operatingModel_catch_q_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_operatingModel_catch_q_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -7201,8 +7201,9 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< const int >::type fishery_no(fishery_noSEXP );
         Rcpp::traits::input_parameter< const int >::type catch_no(catch_noSEXP );
         Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP );
-        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type range(rangeSEXP );
-        FLQuantAD __result = test_operatingModel_catch_q_subset(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, range);
+        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP );
+        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP );
+        FLQuantAD __result = test_operatingModel_catch_q_subset(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -7360,14 +7361,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // fwdBiolAD_biomass_subset_speed
-void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const unsigned int year, const unsigned int season, const int rep);
+void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const unsigned int year, const int unsigned season, const int rep);
 RcppExport SEXP FLasher_fwdBiolAD_biomass_subset_speed(SEXP fwdbSEXP, SEXP yearSEXP, SEXP seasonSEXP, SEXP repSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< fwdBiolAD >::type fwdb(fwdbSEXP );
         Rcpp::traits::input_parameter< const unsigned int >::type year(yearSEXP );
-        Rcpp::traits::input_parameter< const unsigned int >::type season(seasonSEXP );
+        Rcpp::traits::input_parameter< const int unsigned >::type season(seasonSEXP );
         Rcpp::traits::input_parameter< const int >::type rep(repSEXP );
         fwdBiolAD_biomass_subset_speed(fwdb, year, season, rep);
     }

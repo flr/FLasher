@@ -95,10 +95,10 @@ double test_operatingModel_catch_q_adouble(FLFisheriesAD flfs, SEXP flbs_list_se
 
 
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_catch_q_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> range){
+FLQuantAD test_operatingModel_catch_q_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);
-    FLQuantAD qad = om.catch_q(fishery_no, catch_no, biol_no, range[0], range[1], range[2], range[3], range[4], range[5], range[6], range[7], range[8], range[9]); 
+    FLQuantAD qad = om.catch_q(fishery_no, catch_no, biol_no, indices_min, indices_max); 
     return qad;
 }
 

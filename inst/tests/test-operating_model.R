@@ -52,11 +52,11 @@ test_that("operatingModel Q methods",{
     biomass <- quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))
     qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
     # FLQuantAD subset
-    dims1 <- dim(n(flbs[[1]][["biol"]]))
-    dims2 <- round(runif(6, min=1,max=dims1))
-    dimrange <- c(dims2[2], dims1[2], dims2[3], dims1[3], dims2[4], dims1[4], dims2[5], dims1[5], dims2[6], dims1[6]) 
-    qout <- test_operatingModel_catch_q_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dimrange)
-    qin_subset <- qin[, dimrange[1]:dimrange[2], dimrange[3]:dimrange[4],dimrange[5]:dimrange[6],dimrange[7]:dimrange[8],dimrange[9]:dimrange[10]]
+    dims_max <- dim(n(flbs[[1]][["biol"]]))
+    dims_min <- round(runif(6, min=1,max=dims_max))
+    expect_that(test_operatingModel_catch_q_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dims_min, dims_max), throws_error())
+    qout <- test_operatingModel_catch_q_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dims_min[-1], dims_max[-1])
+    qin_subset <- qin[, dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]]
     # Dimnames not fixed so check contents and dim
     expect_that(c(qout), equals(c(qin_subset)))
     expect_that(dim(qout), equals(dim(qin_subset)))
