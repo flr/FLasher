@@ -76,12 +76,10 @@ class operatingModel {
 		operatingModel(const operatingModel& operatingModel_source); // copy constructor to ensure that copy is a deep copy - used when passing FLSs into functions
 		operatingModel& operator = (const operatingModel& operatingModel_source); // Assignment operator for a deep copy
 
-        //FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max) const;
         FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no) const;
         adouble catch_q(const int fishery_no, const int catch_no, const int biol_no, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter) const;
 
-        //FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no, const int quant_min, const int quant_max, const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max) const;
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no) const; 
 

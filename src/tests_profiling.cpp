@@ -17,8 +17,10 @@
 //--------- biomass --------------
 
 // [[Rcpp::export]]
-void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const int year, const int season, const int rep){
-    Rcpp::IntegerVector dims = fwdb.biomass().get_dim();
+void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const unsigned int year, const int unsigned season, const int rep){
+    Rcpp::IntegerVector raw_dims = fwdb.biomass().get_dim();
+
+    std::vector<unsigned int> dims = Rcpp::as<std::vector<unsigned int>>(raw_dims);
 
     clock_t start, end;
     start = clock();
@@ -30,16 +32,21 @@ void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const int year, const int se
     end = clock();
     Rprintf("biomass all CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
 
+
+    std::vector<unsigned int> indices_min {year, 1, season, 1, 1};
+    std::vector<unsigned int> indices_max {year, dims[2], season, dims[4], dims[5]};
     start = clock();
     // Get subset of biomass
     for (int i = 1; i <= rep; ++i){
-        FLQuantAD biol_subset2 = fwdb.biomass(year, year, 1, dims[2], season, season, 1, dims[4], 1, dims[5]);
+        FLQuantAD biol_subset2 = fwdb.biomass(indices_min, indices_max);
     }
     end = clock();
     Rprintf("biomass subset: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
 
     return;
 }
+
+//--------- catch_q --------------
 
 // [[Rcpp::export]]
 void catch_q_speed(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices, const int rep){
@@ -57,10 +64,52 @@ void catch_q_speed(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctr
     Rprintf("q subset full: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
     start = clock();
     for (int i = 1; i <= rep; ++i){
-        FLQuantAD cq2 = om.catch_q(fishery_no, catch_no, biol_no,indices[0], indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], indices[7], indices[8], indices[9]);
+        //FLQuantAD cq2 = om.catch_q(fishery_no, catch_no, biol_no,indices[0], indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], indices[7], indices[8], indices[9]);
     }
     end = clock();
     Rprintf("q subset: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+}
+
+//---------------------- get f speed -------
+// [[Rcpp::export]]
+void get_f_speed(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const int rep){
+    Rprintf("in get f speed\n");
+    clock_t start, end;
+    start = clock();
+        fwdBiolsAD biols(flbs_list_sexp);
+        operatingModel om(flfs, biols, ctrl);
+    end = clock();
+    Rprintf("making om: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+
+    start = clock();
+    // Get full get_f FLQ, then subset
+    for (int i = 1; i <= rep; ++i){
+        FLQuantAD f1 = om.get_f(fishery_no, catch_no, biol_no);
+        FLQuantAD f2 = f1(indices_min[0], indices_max[0], indices_min[1], indices_max[1], indices_min[2], indices_max[2], indices_min[3], indices_max[3], indices_min[4], indices_max[4], indices_min[5], indices_max[5]);
+    }
+    end = clock();
+    Rprintf("f subset full: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+
+    start = clock();
+    // Get subset get_f FLQ, then subset
+    for (int i = 1; i <= rep; ++i){
+        FLQuantAD f3 = om.get_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
+    }
+    end = clock();
+    Rprintf("f subset: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+
+    std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
+    std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
+
+    start = clock();
+    // Get subset catch_q FLQ
+    for (int i = 1; i <= rep; ++i){
+        FLQuantAD q1 = om.catch_q(fishery_no, catch_no, biol_no, indices_min5, indices_max5);
+    }
+    end = clock();
+    Rprintf("q subset: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+    return; 
+
 }
 
 
@@ -128,4 +177,5 @@ void begin_test(std::vector<int> init){
     }
 }
 
-// begin_test(c(1:10))
+
+

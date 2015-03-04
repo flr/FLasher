@@ -244,16 +244,8 @@ operatingModel::operator SEXP() const{
  * \param fishery_no the position of the fishery within the fisheries (starting at 1).
  * \param catch_no the position of the catch within the fishery (starting at 1).
  * \param biol_no the position of the biol within the biols (starting at 1).
- * \param year_min min year 
- * \param year_max max year 
- * \param unit_min unit
- * \param unit_max unit
- * \param season_min min season 
- * \param season_max max season 
- * \param area_min area 
- * \param area_max area 
- * \param iter_min iter
- * \param iter_max iter
+ * \param indices_min The minimum indices year, unit etc (length 5)
+ * \param indices_max The maximum indices year, unit etc (length 5)
  */
 //FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max) const{
 FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
@@ -321,75 +313,50 @@ FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, cons
  * F = effort * selectivity * catchability.
  */
 //@{
+/*! \brief Calculate the instantaneous fishing mortality over a subset of dimensions. 
+ * \param fishery_no the position of the fishery within the fisheries (starting at 1).
+ * \param catch_no the position of the catch within the fishery (starting at 1).
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ * \param indices_min The minimum indices quant, year, unit etc (length 6)
+ * \param indices_max The maximum indices quant, year, unit etc (length 6)
+*/
+FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    // F = Q * Effort * Sel
+    // Lop off the first value from the indices to get indices without quant - needed for effort and catch_q
+    std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
+    std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
+    FLQuantAD q = catch_q(fishery_no, catch_no, biol_no, indices_min5, indices_max5);
+    FLQuant eff = fisheries(fishery_no).effort(indices_min5, indices_max5);
+    FLQuantAD q_effort = q * eff;
+    FLQuantAD sel = fisheries(fishery_no, catch_no).catch_sel()(indices_min, indices_max);
+    // Ugly code but need to implement a sweep - could write a FLQ sweep_dim1 method
+    Rcpp::IntegerVector dim = sel.get_dim();
+    for (int quant_count = 1; quant_count <= dim[0]; ++quant_count){
+        for (int year_count = 1; year_count <= dim[1]; ++year_count){
+            for (int unit_count = 1; unit_count <= dim[2]; ++unit_count){
+                for (int season_count = 1; season_count <= dim[3]; ++season_count){
+                    for (int area_count = 1; area_count <= dim[4]; ++area_count){
+                        for (int iter_count = 1; iter_count <= dim[5]; ++iter_count){
+                            sel(quant_count, year_count, unit_count, season_count, area_count, iter_count) = sel(quant_count, year_count, unit_count, season_count, area_count, iter_count) * q_effort(1, year_count, unit_count, season_count, area_count, iter_count);
+                        }}}}}}
+    return sel;
+}
+
 /*! \brief Calculate the instantaneous fishing mortality over all dimensions (quant, year, etc. ).
  * \param fishery_no the position of the fishery within the fisheries (starting at 1).
  * \param catch_no the position of the catch within the fishery (starting at 1).
  * \param biol_no the position of the biol within the biols (starting at 1).
 */
 FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no) const {
-    // F = Q * Effort * Sel
-    //Rprintf("In f method\n");
-    FLQuantAD q_effort = catch_q(fishery_no, catch_no, biol_no) * fisheries(fishery_no).effort();
-
-    FLQuantAD sel = fisheries(fishery_no, catch_no).catch_sel();
-    Rcpp::IntegerVector dim = sel.get_dim();
-    for (int quant_count = 1; quant_count <= dim[0]; ++quant_count){
-        for (int year_count = 1; year_count <= dim[1]; ++year_count){
-            for (int unit_count = 1; unit_count <= dim[2]; ++unit_count){
-                for (int season_count = 1; season_count <= dim[3]; ++season_count){
-                    for (int area_count = 1; area_count <= dim[4]; ++area_count){
-                        for (int iter_count = 1; iter_count <= dim[5]; ++iter_count){
-                            sel(quant_count, year_count, unit_count, season_count, area_count, iter_count) = sel(quant_count, year_count, unit_count, season_count, area_count, iter_count) * q_effort(1, year_count, unit_count, season_count, area_count, iter_count);
-                        }}}}}}
-    return sel;
+    // Just call the subset method with full indices
+    Rprintf("In get_f FLQ method\n");
+    Rcpp::IntegerVector raw_dims = biols(biol_no).n().get_dim();
+    std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(raw_dims);
+    std::vector<unsigned int> indices_min(6,1);
+    FLQuantAD f = get_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
+    return f;
 }
 
-/*! \brief Calculate the instantaneous fishing mortality over a subset of dimensions. 
- * \param fishery_no the position of the fishery within the fisheries (starting at 1).
- * \param catch_no the position of the catch within the fishery (starting at 1).
- * \param biol_no the position of the biol within the biols (starting at 1).
- * \param year_min min year 
- * \param year_max max year 
- * \param unit_min unit
- * \param unit_max unit
- * \param season_min min season 
- * \param season_max max season 
- * \param area_min area 
- * \param area_max area 
- * \param iter_min iter
- * \param iter_max iter
-*/
-FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    // F = Q * Effort * Sel
-    const int quant_min = indices_min[0];
-    const int quant_max = indices_max[0];
-    const int year_min = indices_min[1];
-    const int year_max = indices_max[1];
-    const int unit_min = indices_min[2];
-    const int unit_max = indices_max[2];
-    const int season_min = indices_min[3];
-    const int season_max = indices_max[3];
-    const int area_min = indices_min[4];
-    const int area_max = indices_max[4];
-    const int iter_min = indices_min[5];
-    const int iter_max = indices_max[5];
-    //FLQuantAD q = catch_q(fishery_no, catch_no, biol_no, year_min, year_max, unit_min, unit_max, season_min, season_max, area_min, area_max, iter_min, iter_max);
-    FLQuantAD q = catch_q(fishery_no, catch_no, biol_no, indices_min, indices_max);
-    FLQuant eff = fisheries(fishery_no).effort()(1, 1, year_min, year_max, unit_min, unit_max, season_min, season_max, area_min, area_max, iter_min, iter_max);
-    FLQuantAD q_effort = q * eff;
-    FLQuantAD sel = fisheries(fishery_no, catch_no).catch_sel()(quant_min, quant_max, year_min, year_max, unit_min, unit_max, season_min, season_max, area_min, area_max, iter_min, iter_max);
-
-    Rcpp::IntegerVector dim = sel.get_dim();
-    for (int quant_count = 1; quant_count <= dim[0]; ++quant_count){
-        for (int year_count = 1; year_count <= dim[1]; ++year_count){
-            for (int unit_count = 1; unit_count <= dim[2]; ++unit_count){
-                for (int season_count = 1; season_count <= dim[3]; ++season_count){
-                    for (int area_count = 1; area_count <= dim[4]; ++area_count){
-                        for (int iter_count = 1; iter_count <= dim[5]; ++iter_count){
-                            sel(quant_count, year_count, unit_count, season_count, area_count, iter_count) = sel(quant_count, year_count, unit_count, season_count, area_count, iter_count) * q_effort(1, year_count, unit_count, season_count, area_count, iter_count);
-                        }}}}}}
-    return sel;
-}
 //@}
 
 /*! \brief Calculate the partial instantaneous fishing mortality on a single biol from a single fishery / catch 

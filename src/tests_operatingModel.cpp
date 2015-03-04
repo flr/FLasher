@@ -110,15 +110,26 @@ FLQuantAD test_operatingModel_catch_q_FLQuantAD(FLFisheriesAD flfs, SEXP flbs_li
     return qad;
 }
 
-// f()
+// get_f()
 // No check is made if FC catches B
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_F(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no){
+FLQuantAD test_operatingModel_get_f(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no){
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);
     FLQuantAD total_f = om.get_f(fishery_no, catch_no, biol_no);
     return total_f;
 }
+
+// get_f() subset
+// No check is made if FC catches B
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_get_f_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD total_f = om.get_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
+    return total_f;
+}
+
 
 // Total F on a biol
 // [[Rcpp::export]]

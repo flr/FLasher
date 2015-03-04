@@ -81,16 +81,22 @@ test_that("operatingModel basic F method",{
     fc <- dummy_fwdControl_generator(years = 1, niters = dim(flq)[6])
     # FCB needed for constructor but not actually used
     attr(fc@target, "FCB") <- array(0, dim = c(10,3))
+    # Any FLC FLB combination
     fishery_no <- round(runif(1,min=1, max=length(flfs)))
     catch_no <- round(runif(1,min=1, max=length(flfs[[fishery_no]])))
     biol_no <- round(runif(1,min=1, max=length(flbs)))
     cq_flq <- as(catch.q(flfs[[fishery_no]][[catch_no]]), "FLQuant")
-    # Any FLC FLB combination
-    fout <- test_operatingModel_F(flfs, flbs, fc, fishery_no, catch_no, biol_no)
     biomass <- quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))
     qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
     fin <- sweep(catch.sel(flfs[[fishery_no]][[catch_no]]), 2:6, qin * effort(flfs[[fishery_no]]), "*")
+    # Full FLQ
+    fout <- test_operatingModel_get_f(flfs, flbs, fc, fishery_no, catch_no, biol_no)
     expect_that(fout@.Data, equals(fin@.Data))
+    # Subset FLQ
+    dim_max <- dim(flq)
+    dim_min <- round(runif(6, min=1, max = dim_max))
+    fout <- test_operatingModel_get_f_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dim_min, dim_max)
+    expect_that(fout@.Data, equals(fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]@.Data))
 })
 
 # F, partial F, Z, SSB, C, L, D
