@@ -113,6 +113,8 @@ test_that("operatingModel annual project",{
     next_year <-  floor((timestep) / dims[4]) + 1; 
     next_season <- timestep %% dims[4] + 1;
     om_out <- test_operatingModel_project_timestep(om[["fisheries"]], om[["biols"]], om[["fwc"]], timestep)
+    dim_max <- dims
+    dim_min <- round(runif(6, min=1, max=dim_max))
 
     #------------------
     # 1 biol -> 1 catch
@@ -124,6 +126,7 @@ test_that("operatingModel annual project",{
     f1 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
     # Partial F from FC
     pf11 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    pf11_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     # Total Z of biol
     z1 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
     # SSB of biol
@@ -156,6 +159,7 @@ test_that("operatingModel annual project",{
     # Test Fs and Zs
     expect_that(f1@.Data, equals(f1in@.Data)) # Total F on Biol
     expect_that(pf11@.Data, equals(f1in@.Data)) # Partial F from FC
+    expect_that(pf11_sub@.Data, equals(f1in[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     expect_that(z1@.Data, equals(z1in@.Data)) # Partial F from FC
     # Test SSB
     expect_that(ssb1_out@.Data, equals(ssb1_in@.Data))
@@ -182,6 +186,8 @@ test_that("operatingModel annual project",{
     # Partial F from FC
     pf12 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, biol_no)
     pf21 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 1, biol_no)
+    pf12_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, biol_no, dim_min, dim_max)
+    pf21_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 1, biol_no, dim_min, dim_max)
     # Total Z of biol
     z2 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
     # SSB of biol
@@ -222,6 +228,8 @@ test_that("operatingModel annual project",{
     expect_that(f2@.Data, equals(f2in@.Data)) # Total F on Biol
     expect_that(pf12@.Data, equals(pfin_12@.Data)) # Partial F from FC
     expect_that(pf21@.Data, equals(pfin_21@.Data)) # Partial F from FC
+    expect_that(pf12_sub@.Data, equals(pfin_12[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
+    expect_that(pf21_sub@.Data, equals(pfin_21[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     expect_that(z2@.Data, equals(z2in@.Data)) # Partial F from FC
     # Test SSB
     expect_that(ssb2_out@.Data, equals(ssb2_in@.Data))
@@ -254,6 +262,8 @@ test_that("operatingModel annual project",{
     # Partial F from FC
     pf223 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 3)
     pf224 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 4)
+    pf223_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 3, dim_min, dim_max)
+    pf224_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 4, dim_min, dim_max)
     # Total Z of biol
     z3 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3)
     z4 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4)
@@ -315,6 +325,8 @@ test_that("operatingModel annual project",{
     expect_that(f4@.Data, equals(fin_224@.Data)) # Total F on Biol
     expect_that(pf223@.Data, equals(fin_223@.Data)) # Total F on Biol
     expect_that(pf224@.Data, equals(fin_224@.Data)) # Total F on Biol
+    expect_that(pf223_sub@.Data, equals(fin_223[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
+    expect_that(pf224_sub@.Data, equals(fin_224[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     expect_that(z3@.Data, equals(z3in@.Data)) # Partial F from FC
     expect_that(z4@.Data, equals(z4in@.Data)) # Partial F from FC
     # Test SSB
@@ -375,6 +387,7 @@ test_that("operatingModel annual project",{
 })
 
 # Just checking partial Fs - including when they should be 0
+# Could remove these as just repeating the tests above
 test_that("operatingModel partial Fs",{
     om <- make_test_operatingModel1(5)
     # Partial F of F/C on a B
@@ -382,84 +395,121 @@ test_that("operatingModel partial Fs",{
     fishery_no <- 1
     catch_no <- 1
     biol_no <- 1
+    dims <- dim(n(om[["biols"]][[1]][["biol"]]))
+    dim_max <- dims
+    dim_min <- round(runif(6, min=1, max=dim_max))
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
     cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
     qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
     fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
     expect_that(fout@.Data, equals(fin@.Data))
+    expect_that(fout_sub@.Data, equals(fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     biol_no <- 2
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 3
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 4
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
     expect_that(all(fout==0.0), is_true())
     biol_no <- 5
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
     expect_that(all(fout==0.0), is_true())
+
     # F/C 12 -> B
     fishery_no <- 1
     catch_no <- 2
     biol_no <- 1
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 2
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
     cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
     qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
     fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
     expect_that(fout@.Data, equals(fin@.Data))
+    expect_that(fout_sub@.Data, equals(fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     biol_no <- 3
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 4
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
+
     # F/C 21 -> B
     fishery_no <- 2
     catch_no <- 1
     biol_no <- 1
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 2
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
     cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
     qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
     fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
     expect_that(fout@.Data, equals(fin@.Data))
+    expect_that(fout_sub@.Data, equals(fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     biol_no <- 3
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 4
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
+
     # F/C 22 -> B
     fishery_no <- 2
     catch_no <- 2
     biol_no <- 1
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 2
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 3
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
     cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
     qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
     fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
     expect_that(fout@.Data, equals(fin@.Data))
+    expect_that(fout_sub@.Data, equals(fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     biol_no <- 4
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
     cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
     qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
     fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
+    expect_that(fout_sub@.Data, equals(fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     expect_that(fout@.Data, equals(fin@.Data))
 })
 

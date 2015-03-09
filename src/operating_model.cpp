@@ -321,6 +321,9 @@ FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, cons
  * \param indices_max The maximum indices quant, year, unit etc (length 6)
 */
 FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if (indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel get_f subsetter. Indices not of length 6\n");
+    }
     // F = Q * Effort * Sel
     // Lop off the first value from the indices to get indices without quant - needed for effort and catch_q
     std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
@@ -359,17 +362,23 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
 
 //@}
 
-/*! \brief Calculate the partial instantaneous fishing mortality on a single biol from a single fishery / catch 
- *
- * The instantaneous fishing mortality is calculated over all dimensions (quant, year, etc. ).
+/*! \name Calculate the partial instantaneous fishing mortality on a single biol from a single fishery / catch
  * Checks are made to see if the fishery / catch actuall catches the biol.
  * If the fishery / catch does not actually fish that biol, then the partial fishing mortality will be 0.
  * biol_no is included as an argument in case the fishery / catch catches more than one biol.
+ */
+//@{
+/*! \brief Instantaneous partial fishing mortality over a subset of dimensions
  * \param fishery_no the position of the fishery within the fisheries (starting at 1).
  * \param catch_no the position of the catch within the fishery (starting at 1).
  * \param biol_no the position of the biol within the biols (starting at 1).
+ * indices_min minimum subset indices (length 6)
+ * indices_max maximum subset indices (length 6)
  */
-FLQuantAD operatingModel::partial_f(const int fishery_no, const int catch_no, const int biol_no) const {
+FLQuantAD operatingModel::partial_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if (indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel partial_f subsetter. Indices not of length 6\n");
+    }
     FLQuantAD partial_f;
     std::vector<int> B = ctrl.get_B(fishery_no, catch_no);
     // Do F / C catch anything? If not, something has probably gone wrong but we'll leave it at the moment.
@@ -379,7 +388,7 @@ FLQuantAD operatingModel::partial_f(const int fishery_no, const int catch_no, co
     }
     std::vector<int>::iterator B_iterator = find(B.begin(), B.end(), biol_no);
     if(B_iterator != B.end()){
-        partial_f = get_f(fishery_no, catch_no, biol_no);
+        partial_f = get_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
     }
     // biol_no is not caught by F/C - return 0
     else {
@@ -387,6 +396,20 @@ FLQuantAD operatingModel::partial_f(const int fishery_no, const int catch_no, co
         partial_f.fill(0.0);
     }
     return partial_f;
+}
+/*! \brief Instantaneous partial fishing mortality over all dimensions
+ * \param fishery_no the position of the fishery within the fisheries (starting at 1).
+ * \param catch_no the position of the catch within the fishery (starting at 1).
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ */
+FLQuantAD operatingModel::partial_f(const int fishery_no, const int catch_no, const int biol_no) const {
+    // Just call the subset method with full indices
+    Rprintf("In partial_f FLQ method\n");
+    Rcpp::IntegerVector raw_dims = biols(biol_no).n().get_dim();
+    std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(raw_dims);
+    std::vector<unsigned int> indices_min(6,1);
+    FLQuantAD f = partial_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
+    return f;
 }
 
 /*! \brief Calculate the total instantaneous fishing mortality on a biol
@@ -516,6 +539,7 @@ void operatingModel::project_timestep(const int timestep){
             }
             // Get catches from each biol that is fished - in case a Catch fishes more than 1 Biol 
             for (int biol_counter=1; biol_counter <= biols_fished.size(); ++biol_counter){
+                Rprintf("biol_counter: %i\n", biol_counter);
                 // C = (pF / Z) * (1 - exp(-Z)) * N
                 biol_no = biols_fished[biol_counter-1];
                 //Rprintf("fishery: %i; catch: %i; biol: %i\n", fishery_counter, catch_counter, biol_no);
@@ -540,6 +564,7 @@ void operatingModel::project_timestep(const int timestep){
             }
         }
     }
+    Rprintf("After updating catches\n");
 
     // Update biol in next timestep only if within time range
     if ((next_year <= biol_dim[1]) & (next_season <= biol_dim[3])){
