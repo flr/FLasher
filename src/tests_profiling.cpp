@@ -49,7 +49,7 @@ void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const unsigned int year, con
 //--------- catch_q --------------
 
 // [[Rcpp::export]]
-void catch_q_speed(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices, const int rep){
+void catch_q_speed(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> dim_min, const std::vector<unsigned int> dim_max , const int rep){
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);
 
@@ -58,13 +58,15 @@ void catch_q_speed(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctr
     // Get full catch_q FLQ, then subset
     for (int i = 1; i <= rep; ++i){
         FLQuantAD cq1 = om.catch_q(fishery_no, catch_no, biol_no);
-        FLQuantAD cq_subset1 = cq1(1, 1, indices[0], indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], indices[7], indices[8], indices[9]);
+        FLQuantAD cq_subset1 = cq1(dim_min, dim_max);
     }
     end = clock();
     Rprintf("q subset full: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+    std::vector<unsigned int> dim_min5(dim_min.begin()+1, dim_min.end());
+    std::vector<unsigned int> dim_max5(dim_max.begin()+1, dim_max.end());
     start = clock();
     for (int i = 1; i <= rep; ++i){
-        //FLQuantAD cq2 = om.catch_q(fishery_no, catch_no, biol_no,indices[0], indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], indices[7], indices[8], indices[9]);
+        FLQuantAD cq2 = om.catch_q(fishery_no, catch_no, biol_no, dim_min5, dim_max5);
     }
     end = clock();
     Rprintf("q subset: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));

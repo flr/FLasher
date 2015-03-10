@@ -54,7 +54,7 @@ test_that("operatingModel Q methods",{
     # FLQuantAD subset
     dims_max <- dim(n(flbs[[1]][["biol"]]))
     dims_min <- round(runif(6, min=1,max=dims_max))
-    expect_that(test_operatingModel_catch_q_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dims_min, dims_max), throws_error())
+    expect_that(test_operatingModel_catch_q_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dims_min, dims_max), throws_error()) # indices too long
     qout <- test_operatingModel_catch_q_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dims_min[-1], dims_max[-1])
     qin_subset <- qin[, dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]]
     # Dimnames not fixed so check contents and dim

@@ -247,26 +247,26 @@ operatingModel::operator SEXP() const{
  * \param indices_min The minimum indices year, unit etc (length 5)
  * \param indices_max The maximum indices year, unit etc (length 5)
  */
-//FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no, const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max) const{
 FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
     if (indices_min.size() != 5 | indices_max.size() != 5){
         Rcpp::stop("In operatingModel catch_q subsetter. Indices not of length 5\n");
     }
-    // This is still messy because of the catch_q_params method
     // Make the empty FLQuant with one year and season
     std::vector<unsigned int> new_dim {indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1};
     FLQuantAD q(1, new_dim[0], new_dim[1], new_dim[2], new_dim[3], new_dim[4]);
     FLQuantAD biomass = biols(biol_no).biomass(indices_min, indices_max);
-    std::vector<double> q_params;
-
-    for (int year_count = 1; year_count <= new_dim[0]; ++year_count){
-        for (int unit_count = 1; unit_count <= new_dim[1]; ++unit_count){
-            for (int season_count = 1; season_count <= new_dim[2]; ++season_count){
-                for (int area_count = 1; area_count <= new_dim[3]; ++area_count){
-                    for (int iter_count = 1; iter_count <= new_dim[4]; ++iter_count){
-                        q_params = fisheries(fishery_no, catch_no).catch_q_params(year_count + indices_min[0] - 1, unit_count + indices_min[1] - 1, season_count + indices_min[2] - 1, area_count + indices_min[3] - 1, iter_count + indices_min[4] - 1);
-                        q(1, year_count, unit_count , season_count, area_count, iter_count) = q_params[0] * pow(biomass(1, year_count, unit_count, season_count, area_count, iter_count), -q_params[1]);
-    }}}}}
+    // Need to add an extra value to the start of the indices when subsetting q_params
+    std::vector<unsigned int> indices_min_q = indices_min;
+    std::vector<unsigned int> indices_max_q = indices_max;
+    indices_min_q.insert(indices_min_q.begin(), 1);
+    indices_max_q.insert(indices_max_q.begin(), 1);
+    FLQuant q_params_a = fisheries(fishery_no, catch_no).catch_q_params(indices_min_q, indices_max_q);
+    indices_min_q[0] = 2;
+    indices_max_q[0] = 2;
+    FLQuant q_params_b = fisheries(fishery_no, catch_no).catch_q_params(indices_min_q, indices_max_q);
+    // The magic of lambda functions
+    std::transform(biomass.begin(), biomass.end(), q_params_b.begin(), biomass.begin(), [](adouble x, double y){return pow(x, -y);});
+    q = q_params_a * biomass;
     return q;
 }
 
