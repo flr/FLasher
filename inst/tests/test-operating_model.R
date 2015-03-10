@@ -123,7 +123,8 @@ test_that("operatingModel annual project",{
     fishery_no <- 1
     catch_no <- 1
     # Total F on the biol
-    f1 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    f1 <- test_operatingModel_total_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    f1_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max)
     # Partial F from FC
     pf11 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
     pf11_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
@@ -157,10 +158,11 @@ test_that("operatingModel annual project",{
     next_n[1,] <- rec_in * exp(om[["biols"]][[biol_no]][["srr_residuals"]][,next_year,,next_season,,])
 
     # Test Fs and Zs
-    expect_that(f1@.Data, equals(f1in@.Data)) # Total F on Biol
+    expect_that(unname(f1@.Data), equals(unname(f1in@.Data))) # Total F on Biol
+    expect_that(unname(f1_sub@.Data), equals(unname(f1in[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))) # Total F on Biol
     expect_that(pf11@.Data, equals(f1in@.Data)) # Partial F from FC
     expect_that(pf11_sub@.Data, equals(f1in[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
-    expect_that(z1@.Data, equals(z1in@.Data)) # Partial F from FC
+    expect_that(unname(z1@.Data), equals(unname(z1in@.Data))) # Partial F from FC
     # Test SSB
     expect_that(ssb1_out@.Data, equals(ssb1_in@.Data))
     # Test Catch, landings and discards in timestep only
@@ -182,7 +184,8 @@ test_that("operatingModel annual project",{
     #------------------
     biol_no <- 2
     # Total F on the biol
-    f2 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    f2 <- test_operatingModel_total_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    f2_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max)
     # Partial F from FC
     pf12 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, biol_no)
     pf21 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 1, biol_no)
@@ -225,12 +228,13 @@ test_that("operatingModel annual project",{
     # Multiplicative residuals
     next_n[1,] <- rec_in * exp(om[["biols"]][[biol_no]][["srr_residuals"]][,next_year,,next_season,,])
     # Test Fs and Zs
-    expect_that(f2@.Data, equals(f2in@.Data)) # Total F on Biol
+    expect_that(unname(f2@.Data), equals(unname(f2in@.Data))) # Total F on Biol
+    expect_that(unname(f2_sub@.Data), equals(unname(f2in[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))) # Total F on Biol
     expect_that(pf12@.Data, equals(pfin_12@.Data)) # Partial F from FC
     expect_that(pf21@.Data, equals(pfin_21@.Data)) # Partial F from FC
     expect_that(pf12_sub@.Data, equals(pfin_12[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     expect_that(pf21_sub@.Data, equals(pfin_21[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
-    expect_that(z2@.Data, equals(z2in@.Data)) # Partial F from FC
+    expect_that(unname(z2@.Data), equals(unname(z2in@.Data))) # Partial F from FC
     # Test SSB
     expect_that(ssb2_out@.Data, equals(ssb2_in@.Data))
     # Test Catch, landings and discards in timestep only
@@ -257,8 +261,10 @@ test_that("operatingModel annual project",{
     # 2 biol -> 1 catch (FC 22 -> B3 + B4)
     #------------------
     # Total F on the biol
-    f3 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3)
-    f4 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4)
+    f3 <- test_operatingModel_total_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3)
+    f3_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, dim_min, dim_max)
+    f4 <- test_operatingModel_total_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4)
+    f4_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, dim_min, dim_max)
     # Partial F from FC
     pf223 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 3)
     pf224 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 4)
@@ -321,14 +327,16 @@ test_that("operatingModel annual project",{
     # Multiplicative residuals
     next_n4[1,] <- rec_in * exp(om[["biols"]][[4]][["srr_residuals"]][,next_year,,next_season,,])
     # Test Fs and Zs
-    expect_that(f3@.Data, equals(fin_223@.Data)) # Total F on Biol
-    expect_that(f4@.Data, equals(fin_224@.Data)) # Total F on Biol
+    expect_that(unname(f3@.Data), equals(unname(fin_223@.Data))) # Total F on Biol
+    expect_that(unname(f4@.Data), equals(unname(fin_224@.Data))) # Total F on Biol
+    expect_that(unname(f3_sub@.Data), equals(unname(fin_223[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))) # Total F on Biol
+    expect_that(unname(f4_sub@.Data), equals(unname(fin_224[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))) # Total F on Biol
     expect_that(pf223@.Data, equals(fin_223@.Data)) # Total F on Biol
     expect_that(pf224@.Data, equals(fin_224@.Data)) # Total F on Biol
     expect_that(pf223_sub@.Data, equals(fin_223[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     expect_that(pf224_sub@.Data, equals(fin_224[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
-    expect_that(z3@.Data, equals(z3in@.Data)) # Partial F from FC
-    expect_that(z4@.Data, equals(z4in@.Data)) # Partial F from FC
+    expect_that(unname(z3@.Data), equals(unname(z3in@.Data))) # Partial F from FC
+    expect_that(unname(z4@.Data), equals(unname(z4in@.Data))) # Partial F from FC
     # Test SSB
     expect_that(ssb3_out@.Data, equals(ssb3_in@.Data))
     expect_that(ssb4_out@.Data, equals(ssb4_in@.Data))
@@ -352,7 +360,8 @@ test_that("operatingModel annual project",{
     # 1 biol -> 0 catch (B5)
     #------------------
     # Total F on the biol
-    f5 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5)
+    f5 <- test_operatingModel_total_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5)
+    f5_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5, dims_min, dims_max)
     # Total Z of biol
     z5 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5)
     # SSB of biol
@@ -376,8 +385,9 @@ test_that("operatingModel annual project",{
     # Multiplicative residuals
     next_n5[1,] <- rec_in * exp(om[["biols"]][[5]][["srr_residuals"]][,next_year,,next_season,,])
     # Test Fs and Zs
-    expect_that(all(f5@.Data==0), equals(TRUE)) # Total F on Biol
-    expect_that(z5@.Data, equals(z5in@.Data)) # Partial F from FC
+    expect_that(all(unname(f5@.Data)==0), equals(TRUE)) # Total F on Biol
+    expect_that(all(unname(f5_sub@.Data)==0), equals(TRUE)) # Total F on Biol
+    expect_that(unname(z5@.Data), equals(unname(z5in@.Data))) # Partial F from FC
     # Test SSB
     expect_that(ssb5_out@.Data, equals(ssb5_in@.Data))
     # Abundances

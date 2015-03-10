@@ -133,7 +133,15 @@ FLQuantAD test_operatingModel_get_f_subset(FLFisheriesAD flfs, SEXP flbs_list_se
 
 // Total F on a biol
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_F_B(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no){
+FLQuantAD test_operatingModel_total_f_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min,  const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD total_f = om.total_f(biol_no, indices_min, indices_max);
+    return total_f;
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_total_f(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no){
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);
     FLQuantAD total_f = om.total_f(biol_no);
