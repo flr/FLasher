@@ -150,7 +150,7 @@ template <typename T>
 FLQuant FLCatch_base<T>::catch_q_params(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
     // Check dims are length 6
     if (indices_min.size() != 6 | indices_max.size() != 6){
-        Rcpp::stop("In FLCatch catch_q_params subsetter. Indices not of length 5\n");
+        Rcpp::stop("In FLCatch catch_q_params subsetter. Indices not of length 6\n");
     }
     // Checking first dimension (parameter) range
     Rcpp::IntegerVector qdims = catch_q_flq.get_dim();

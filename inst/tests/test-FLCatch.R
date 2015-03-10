@@ -222,17 +222,41 @@ test_that("FLCatch catch_q accessor", {
     params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
     expect_that(dim(params), equals(indices_max - indices_min + 1))
     # All units, seasons and areas the same
-    catch.q2[indices_min[1]:indices_max[1], indices_min[2]: indices_max[2], indices_min[6]:indices_max[6]]
+    subq <- catch.q2[indices_min[1]:indices_max[1], indices_min[2]: indices_max[2], indices_min[6]:indices_max[6]]
+    for (qcount in 1:dim(params)[1]){
+        for (ycount in 1:dim(params)[2]){
+            for (icount in 1:dim(params)[6]){
+                expect_that(c(params[qcount, ycount,,,,icount]), equals(rep(c(subq[qcount,ycount,icount]), prod(dim(params)[c(3,4,5)]))))
+    }}}
+
 
 
     # params, season and iter
     catch.q(flc_in) <- catch.q4
     params <- test_FLCatchAD_catch_q_params(flc_in, indices)
     expect_that(c(catch.q4[,indices[4],indices[6]]), is_identical_to(c(params)))
+    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
+    expect_that(dim(params), equals(indices_max - indices_min + 1))
+    subq <- catch.q4[indices_min[1]:indices_max[1], indices_min[4]: indices_max[4], indices_min[6]:indices_max[6]]
+    for (qcount in 1:dim(params)[1]){
+        for (scount in 1:dim(params)[4]){
+            for (icount in 1:dim(params)[6]){
+                expect_that(c(params[qcount,,,scount,,icount]), equals(rep(c(subq[qcount,scount,icount]), prod(dim(params)[c(2,3,5)]))))
+    }}}
+
     # params, year, season and iter
     catch.q(flc_in) <- catch.q24
     params <- test_FLCatchAD_catch_q_params(flc_in, indices)
     expect_that(c(catch.q24[,indices[2],indices[4],indices[6]]), is_identical_to(c(params)))
+    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
+    expect_that(dim(params), equals(indices_max - indices_min + 1))
+    subq <- catch.q24[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[4]: indices_max[4], indices_min[6]:indices_max[6]]
+    for (qcount in 1:dim(params)[1]){
+        for (ycount in 1:dim(params)[2]){
+            for (scount in 1:dim(params)[4]){
+                for (icount in 1:dim(params)[6]){
+                    expect_that(c(params[qcount,ycount,,scount,,icount]), equals(rep(c(subq[qcount,ycount,scount,icount]), prod(dim(params)[c(3,5)]))))
+    }}}}
 })
 
 test_that("FLCatch methods", {
