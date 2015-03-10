@@ -509,6 +509,10 @@ test_FLCatchAD_catch_q_params <- function(flc, indices) {
     .Call('FLasher_test_FLCatchAD_catch_q_params', PACKAGE = 'FLasher', flc, indices)
 }
 
+test_FLCatchAD_catch_q_params_subset <- function(flc, indices_min, indices_max) {
+    .Call('FLasher_test_FLCatchAD_catch_q_params_subset', PACKAGE = 'FLasher', flc, indices_min, indices_max)
+}
+
 test_FLCatches_as_wrap <- function(flcs) {
     .Call('FLasher_test_FLCatches_as_wrap', PACKAGE = 'FLasher', flcs)
 }
@@ -1741,8 +1745,8 @@ fwdBiolAD_biomass_subset_speed <- function(fwdb, year, season, rep) {
     invisible(.Call('FLasher_fwdBiolAD_biomass_subset_speed', PACKAGE = 'FLasher', fwdb, year, season, rep))
 }
 
-catch_q_speed <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices, rep) {
-    invisible(.Call('FLasher_catch_q_speed', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices, rep))
+catch_q_speed <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, dim_min, dim_max, rep) {
+    invisible(.Call('FLasher_catch_q_speed', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, dim_min, dim_max, rep))
 }
 
 get_f_speed <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max, rep) {

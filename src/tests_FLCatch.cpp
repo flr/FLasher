@@ -262,6 +262,14 @@ std::vector<double> test_FLCatchAD_catch_q_params(const FLCatchAD flc, const std
     return params;
 }
 
+// [[Rcpp::export]]
+FLQuant test_FLCatchAD_catch_q_params_subset(const FLCatchAD flc, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max)
+{
+    auto params = flc.catch_q_params(indices_min, indices_max);
+    return params;
+}
+
+
 
 /*------------------------------------------------------------------------*/
 // FLCatches - double

@@ -2048,6 +2048,23 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// test_FLCatchAD_catch_q_params_subset
+FLQuant test_FLCatchAD_catch_q_params_subset(const FLCatchAD flc, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_FLCatchAD_catch_q_params_subset(SEXP flcSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP );
+        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP );
+        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP );
+        FLQuant __result = test_FLCatchAD_catch_q_params_subset(flc, indices_min, indices_max);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // test_FLCatches_as_wrap
 FLCatches test_FLCatches_as_wrap(FLCatches flcs);
 RcppExport SEXP FLasher_test_FLCatches_as_wrap(SEXP flcsSEXP) {
@@ -7420,8 +7437,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // catch_q_speed
-void catch_q_speed(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices, const int rep);
-RcppExport SEXP FLasher_catch_q_speed(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP, SEXP indicesSEXP, SEXP repSEXP) {
+void catch_q_speed(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> dim_min, const std::vector<unsigned int> dim_max, const int rep);
+RcppExport SEXP FLasher_catch_q_speed(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP, SEXP dim_minSEXP, SEXP dim_maxSEXP, SEXP repSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
@@ -7431,9 +7448,10 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< const int >::type fishery_no(fishery_noSEXP );
         Rcpp::traits::input_parameter< const int >::type catch_no(catch_noSEXP );
         Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP );
-        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices(indicesSEXP );
+        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type dim_min(dim_minSEXP );
+        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type dim_max(dim_maxSEXP );
         Rcpp::traits::input_parameter< const int >::type rep(repSEXP );
-        catch_q_speed(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices, rep);
+        catch_q_speed(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, dim_min, dim_max, rep);
     }
     return R_NilValue;
 END_RCPP
