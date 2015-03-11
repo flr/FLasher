@@ -103,7 +103,7 @@ test_that("operatingModel basic F method",{
 # Using the annual test operating model
 # Epic!
 test_that("operatingModel annual project",{
-    om <- make_test_operatingModel1(10)
+    om <- make_test_operatingModel1(20)
 
     # Random timestep
     dims <- dim(n(om[["biols"]][[1]][["biol"]]))

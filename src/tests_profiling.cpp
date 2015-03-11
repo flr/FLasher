@@ -114,6 +114,27 @@ void get_f_speed(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl,
 
 }
 
+//---------------------- quant indices accessor-------
+
+// [[Rcpp::export]]
+void test_quant_indices_speed(fwdBiol fwdb, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const int rep){
+    clock_t start, end;
+    FLQuant test;
+    start = clock();
+    for (int i = 1; i <= rep; ++i){
+        test = fwdb.wt()(indices_min, indices_max);
+    }
+    end = clock();
+    Rprintf("whole then subset: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+    start = clock();
+    for (int i = 1; i <= rep; ++i){
+        test = fwdb.wt(indices_min, indices_max);
+    }
+    end = clock();
+    Rprintf("subset: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
+    return;
+}
+
 
 //---------------------- Remove all stuff below this line -------
 
