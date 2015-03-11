@@ -10,30 +10,30 @@
 /* timestep convertors */
 
 // [[Rcpp::export]]
-int test_year_season_to_timestep_FLQuant_double(FLQuant flq, const int year, const int season){
-    int timestep = 0;
+unsigned int test_year_season_to_timestep_FLQuant_double(FLQuant flq, const unsigned int year, const unsigned int season){
+    unsigned int timestep = 0;
     year_season_to_timestep(year, season, flq, timestep);
     return timestep;
 }
 
 // [[Rcpp::export]]
-int test_year_season_to_timestep_FLQuant_adouble(FLQuantAD flqad, const int year, const int season){
-    int timestep = 0;
+unsigned int test_year_season_to_timestep_FLQuant_adouble(FLQuantAD flqad, const unsigned int year, const unsigned int season){
+    unsigned int timestep = 0;
     year_season_to_timestep(year, season, flqad, timestep);
     return timestep;
 }
 
 // [[Rcpp::export]]
-int test_year_season_to_timestep(FLQuant flq, const int year, const int season){
-    int timestep = 0;
+unsigned int test_year_season_to_timestep(FLQuant flq, const int unsigned year, const int unsigned season){
+    unsigned int timestep = 0;
     year_season_to_timestep(year, season, flq.get_nseason(), timestep);
     return timestep;
 }
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_double(FLQuant flq, const int timestep){
-    int year = 0;
-    int season = 0;
+Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_double(FLQuant flq, const unsigned int timestep){
+    unsigned int year = 0;
+    unsigned int season = 0;
     timestep_to_year_season(timestep, flq, year, season);
     Rcpp::IntegerVector out(2);
     out[0] = year;
@@ -42,9 +42,9 @@ Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_double(FLQuant flq, con
 }
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_adouble(FLQuantAD flqad, const int timestep){
-    int year = 0;
-    int season = 0;
+Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_adouble(FLQuantAD flqad, const unsigned int timestep){
+    unsigned int year = 0;
+    unsigned int season = 0;
     timestep_to_year_season(timestep, flqad, year, season);
     Rcpp::IntegerVector out(2);
     out[0] = year;
@@ -53,9 +53,9 @@ Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_adouble(FLQuantAD flqad
 }
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector test_timestep_to_year_season(FLQuant flq, const int timestep){
-    int year = 0;
-    int season = 0;
+Rcpp::IntegerVector test_timestep_to_year_season(FLQuant flq, const unsigned int timestep){
+    unsigned int year = 0;
+    unsigned int season = 0;
     timestep_to_year_season(timestep, flq.get_nseason(), year, season);
     Rcpp::IntegerVector out(2);
     out[0] = year;
@@ -217,6 +217,13 @@ FLQuantAD test_operatingModel_SSB_FLQ(FLFisheriesAD flfs, SEXP flbs_list_sexp, c
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);
     return om.ssb(biol_no);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_SSB_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    return om.ssb(biol_no, indices_min, indices_max);
 }
 
 /*

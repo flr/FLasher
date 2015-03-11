@@ -34,13 +34,13 @@
 // Converting timestep to year and season and vice versa
 // Several options
 template <typename T>
-void year_season_to_timestep(const int year, const int season, const FLQuant_base<T>& flq, int& timestep);
+void year_season_to_timestep(const unsigned int year, const unsigned int season, const FLQuant_base<T>& flq, unsigned int& timestep);
 
 template <typename T>
-void timestep_to_year_season(const int timestep, const FLQuant_base<T>& flq, int& year, int& season);
+void timestep_to_year_season(const unsigned int timestep, const FLQuant_base<T>& flq, unsigned int& year, unsigned int& season);
 
-void year_season_to_timestep(const int year, const int season, const int nseason, int& timestep);
-void timestep_to_year_season(const int timestep, const int nseason, int& year, int& season);
+void year_season_to_timestep(const unsigned int year, const unsigned int season, const unsigned int nseason, unsigned int& timestep);
+void timestep_to_year_season(const unsigned int timestep, const unsigned int nseason, unsigned int& year, unsigned int& season);
 
 //double euclid_norm(double* x, const int size_x);
 double euclid_norm(std::vector<double> x);
@@ -75,6 +75,8 @@ class operatingModel {
         operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsAD biols_in, const fwdControl ctrl_in);
 		operatingModel(const operatingModel& operatingModel_source); // copy constructor to ensure that copy is a deep copy - used when passing FLSs into functions
 		operatingModel& operator = (const operatingModel& operatingModel_source); // Assignment operator for a deep copy
+
+        /* Accessors */
 
         FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no) const;
@@ -142,6 +144,8 @@ class operatingModel {
 
         // Various ways of calculating reproductive potential
         FLQuantAD ssb(const int biol_no) const;
+        FLQuantAD ssb(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        //FLQuantAD ssb(const int biol_no, &FLQuantAD total_f, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         //FLQuantAD ssb(const int timestep, const int unit, const int area, const int biol_no) const; // all iters in a timestep, unit and area
         //adouble ssb(const int timestep, const int unit, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
         //adouble ssb(const int year, const int unit, const int season, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area

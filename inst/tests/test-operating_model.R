@@ -103,7 +103,7 @@ test_that("operatingModel basic F method",{
 # Using the annual test operating model
 # Epic!
 test_that("operatingModel annual project",{
-    om <- make_test_operatingModel1(5)
+    om <- make_test_operatingModel1(10)
 
     # Random timestep
     dims <- dim(n(om[["biols"]][[1]][["biol"]]))
@@ -132,6 +132,7 @@ test_that("operatingModel annual project",{
     z1 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
     # SSB of biol
     ssb1_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    ssb1_out_subset <- test_operatingModel_SSB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
 
     # Get metrics from IP OM
     biomass_in <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
@@ -164,7 +165,9 @@ test_that("operatingModel annual project",{
     expect_that(pf11_sub@.Data, equals(f1in[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     expect_that(unname(z1@.Data), equals(unname(z1in@.Data))) # Partial F from FC
     # Test SSB
-    expect_that(ssb1_out@.Data, equals(ssb1_in@.Data))
+    expect_that(unname(ssb1_out@.Data), equals(unname(ssb1_in@.Data)))
+    expect_that(unname(ssb1_out_subset@.Data), equals(unname(ssb1_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
+
     # Test Catch, landings and discards in timestep only
     # Catch, landings, discards in timestep
     expect_that(catch.n1[,year,1,season,1,]@.Data, equals(catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,1,season,1,]@.Data))
@@ -195,6 +198,7 @@ test_that("operatingModel annual project",{
     z2 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
     # SSB of biol
     ssb2_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    ssb2_out_subset <- test_operatingModel_SSB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
 
     # Get metrics from IP OM
     biomass_in <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
@@ -236,7 +240,8 @@ test_that("operatingModel annual project",{
     expect_that(pf21_sub@.Data, equals(pfin_21[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     expect_that(unname(z2@.Data), equals(unname(z2in@.Data))) # Partial F from FC
     # Test SSB
-    expect_that(ssb2_out@.Data, equals(ssb2_in@.Data))
+    expect_that(unname(ssb2_out@.Data), equals(unname(ssb2_in@.Data)))
+    expect_that(unname(ssb2_out_subset@.Data), equals(unname(ssb2_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
     # Test Catch, landings and discards in timestep only
     # Catch, landings, discards in timestep
     expect_that(catch.n12[,year,1,season,1,]@.Data, equals(catch.n(om_out[["fisheries"]][[1]][[2]])[,year,1,season,1,]@.Data))
@@ -275,7 +280,9 @@ test_that("operatingModel annual project",{
     z4 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4)
     # SSB of biol
     ssb3_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3)
+    ssb3_out_subset <- test_operatingModel_SSB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, dim_min[-1], dim_max[-1])
     ssb4_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4)
+    ssb4_out_subset <- test_operatingModel_SSB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, dim_min[-1], dim_max[-1])
 
     # Get metrics from IP OM
     biomass_in3 <- quantSums(n(om[["biols"]][[3]][["biol"]]) * wt(om[["biols"]][[3]][["biol"]]))
@@ -338,8 +345,10 @@ test_that("operatingModel annual project",{
     expect_that(unname(z3@.Data), equals(unname(z3in@.Data))) # Partial F from FC
     expect_that(unname(z4@.Data), equals(unname(z4in@.Data))) # Partial F from FC
     # Test SSB
-    expect_that(ssb3_out@.Data, equals(ssb3_in@.Data))
-    expect_that(ssb4_out@.Data, equals(ssb4_in@.Data))
+    expect_that(unname(ssb3_out@.Data), equals(unname(ssb3_in@.Data)))
+    expect_that(unname(ssb3_out_subset@.Data), equals(unname(ssb3_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
+    expect_that(unname(ssb4_out@.Data), equals(unname(ssb4_in@.Data)))
+    expect_that(unname(ssb4_out_subset@.Data), equals(unname(ssb4_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
     # Test Catch, landings and discards in timestep only
     # Catch, landings, discards in timestep
     expect_that(catch.n22[,year,1,season,1,]@.Data, equals(catch.n(om_out[["fisheries"]][[2]][[2]])[,year,1,season,1,]@.Data))
@@ -366,6 +375,7 @@ test_that("operatingModel annual project",{
     z5 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5)
     # SSB of biol
     ssb5_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5)
+    ssb5_out_subset <- test_operatingModel_SSB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5, dim_min[-1], dim_max[-1])
     # Get metrics from IP OM
     biomass_in5 <- quantSums(n(om[["biols"]][[5]][["biol"]]) * wt(om[["biols"]][[5]][["biol"]]))
     z5in <- m(om[["biols"]][[5]][["biol"]])
@@ -389,7 +399,8 @@ test_that("operatingModel annual project",{
     expect_that(all(unname(f5_sub@.Data)==0), equals(TRUE)) # Total F on Biol
     expect_that(unname(z5@.Data), equals(unname(z5in@.Data))) # Partial F from FC
     # Test SSB
-    expect_that(ssb5_out@.Data, equals(ssb5_in@.Data))
+    expect_that(unname(ssb5_out@.Data), equals(unname(ssb5_in@.Data)))
+    expect_that(unname(ssb5_out_subset@.Data), equals(unname(ssb5_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
     # Abundances
     expect_that(next_n5, equals(n(om_out[["biols"]][[5]])[,next_year,,next_season,,]))
     # Other abundances unaffected
