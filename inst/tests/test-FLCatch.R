@@ -67,6 +67,16 @@ test_that("FLCatch get and set data accessors", {
                 c(catch.sel(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(price(flc_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_that(values_out, is_identical_to(values_in))
+    # Subset FLQuant members
+    dims_max <- dim(landings.n(flc_in))
+    dims_min <- round(runif(6, min=1, max=dims_max))
+    out <- test_FLCatch_const_get_accessors_subset(flc_in, dims_min, dims_max)
+    expect_that(out[["landings_n"]], equals(landings.n(flc_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
+    expect_that(out[["discards_n"]], equals(discards.n(flc_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
+    expect_that(out[["landings_wt"]], equals(landings.wt(flc_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
+    expect_that(out[["discards_wt"]], equals(discards.wt(flc_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
+    expect_that(out[["catch_sel"]], equals(catch.sel(flc_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
+    expect_that(out[["discards_ratio"]], equals(discards.ratio(flc_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
     # Get const AD
     flc_in <- random_FLCatch_generator()
     indices <- round(runif(6,min=1, max = dim(landings.n(flc_in))))

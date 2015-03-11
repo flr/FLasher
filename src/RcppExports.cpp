@@ -1685,6 +1685,23 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// test_FLCatch_const_get_accessors_subset
+Rcpp::List test_FLCatch_const_get_accessors_subset(const FLCatch flc, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_FLCatch_const_get_accessors_subset(SEXP flcSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP );
+        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP );
+        Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP );
+        Rcpp::List __result = test_FLCatch_const_get_accessors_subset(flc, indices_min, indices_max);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // test_FLCatchAD_const_get_accessors
 Rcpp::NumericVector test_FLCatchAD_const_get_accessors(const FLCatchAD flc, int quant, int year, int unit, int season, int area, int iter);
 RcppExport SEXP FLasher_test_FLCatchAD_const_get_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {

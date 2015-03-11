@@ -106,6 +106,18 @@ Rcpp::NumericVector test_FLCatch_const_get_accessors(const FLCatch flc,int quant
 }
 
 // [[Rcpp::export]]
+Rcpp::List test_FLCatch_const_get_accessors_subset(const FLCatch flc, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    return Rcpp::List::create(
+        Rcpp::Named("landings_n", flc.landings_n(indices_min, indices_max)),
+        Rcpp::Named("discards_n", flc.discards_n(indices_min, indices_max)),
+        Rcpp::Named("landings_wt", flc.landings_wt(indices_min, indices_max)),
+        Rcpp::Named("discards_wt", flc.discards_wt(indices_min, indices_max)),
+        Rcpp::Named("catch_sel", flc.catch_sel(indices_min, indices_max)),
+        Rcpp::Named("discards_ratio", flc.discards_ratio(indices_min, indices_max)));
+}
+
+
+// [[Rcpp::export]]
 Rcpp::NumericVector test_FLCatchAD_const_get_accessors(const FLCatchAD flc,int quant, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(6);
     adouble ad_value0 = flc.landings_n()(quant, year, unit, season, area, iter);

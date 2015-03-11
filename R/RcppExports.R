@@ -421,6 +421,10 @@ test_FLCatch_const_get_accessors <- function(flc, quant, year, unit, season, are
     .Call('FLasher_test_FLCatch_const_get_accessors', PACKAGE = 'FLasher', flc, quant, year, unit, season, area, iter)
 }
 
+test_FLCatch_const_get_accessors_subset <- function(flc, indices_min, indices_max) {
+    .Call('FLasher_test_FLCatch_const_get_accessors_subset', PACKAGE = 'FLasher', flc, indices_min, indices_max)
+}
+
 test_FLCatchAD_const_get_accessors <- function(flc, quant, year, unit, season, area, iter) {
     .Call('FLasher_test_FLCatchAD_const_get_accessors', PACKAGE = 'FLasher', flc, quant, year, unit, season, area, iter)
 }

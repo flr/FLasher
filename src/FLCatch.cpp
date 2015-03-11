@@ -109,8 +109,18 @@ FLQuant_base<T> FLCatch_base<T>::landings_n() const {
 }
 
 template <typename T>
+FLQuant_base<T> FLCatch_base<T>::landings_n(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return landings_n_flq(indices_min, indices_max);
+}
+
+template <typename T>
 FLQuant_base<T> FLCatch_base<T>::discards_n() const {
     return discards_n_flq;
+}
+
+template <typename T>
+FLQuant_base<T> FLCatch_base<T>::discards_n(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return discards_n_flq(indices_min, indices_max);
 }
 
 template <typename T>
@@ -119,8 +129,18 @@ FLQuant FLCatch_base<T>::landings_wt() const {
 }
 
 template <typename T>
+FLQuant FLCatch_base<T>::landings_wt(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return landings_wt_flq(indices_min, indices_max);
+}
+
+template <typename T>
 FLQuant FLCatch_base<T>::discards_wt() const {
     return discards_wt_flq;
+}
+
+template <typename T>
+FLQuant FLCatch_base<T>::discards_wt(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return discards_wt_flq(indices_min, indices_max);
 }
 
 template <typename T>
@@ -129,8 +149,23 @@ FLQuant FLCatch_base<T>::catch_sel() const {
 }
 
 template <typename T>
+FLQuant FLCatch_base<T>::catch_sel(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return catch_sel_flq(indices_min, indices_max);
+}
+
+template <typename T>
 FLQuant FLCatch_base<T>::price() const {
     return price_flq;
+}
+
+template <typename T>
+FLQuant_base<T> FLCatch_base<T>::discards_ratio() const {
+    return discards_ratio_flq;
+}
+
+template <typename T>
+FLQuant_base<T> FLCatch_base<T>::discards_ratio(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return discards_ratio_flq(indices_min, indices_max);
 }
 
 template <typename T>
@@ -203,13 +238,8 @@ FLQuant FLCatch_base<T>::catch_q_params(const std::vector<unsigned int> indices_
 
 template <typename T>
 std::vector<double> FLCatch_base<T>::catch_q_params(int year, int unit, int season, int area, int iter) const {
-
-//clock_t start, end;
-//start = clock();
     Rcpp::IntegerVector dims = catch_q_flq.get_dim();
-
     std::vector<double> q_out (dims[0],0.0);
-    
     // Sort out dims - if years > no years in the catch_q_flq object (i.e. catch_q_flq are not disaggregated by time etc.) just pick the first 
     // The real checking should be done in the R side
     if (year > dims[1]){
@@ -228,10 +258,6 @@ std::vector<double> FLCatch_base<T>::catch_q_params(int year, int unit, int seas
     for (int i = 1; i <= dims[0]; ++i){
         q_out[i-1] = catch_q_flq(i,year,unit,season,area,iter);
     }
-
-//end = clock();
-//Rprintf("catch q params CPU time: %f\n", (end - start) / (double)(CLOCKS_PER_SEC));
-//Rprintf("%i q params CPU time: %f\n", globali, (end - start) / (double)(CLOCKS_PER_SEC));
     return q_out;
 }
 
@@ -272,14 +298,7 @@ FLQuant& FLCatch_base<T>::catch_q_params() {
     return catch_q_flq;
 }
 
-
-
 // methods
-
-template <typename T>
-FLQuant_base<T> FLCatch_base<T>::discards_ratio() const {
-    return discards_ratio_flq;
-}
 
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::landings() const {
