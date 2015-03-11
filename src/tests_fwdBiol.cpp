@@ -131,6 +131,17 @@ Rcpp::NumericVector test_fwdBiol_const_get_accessors(const fwdBiol fwdb,int quan
 }
 
 // [[Rcpp::export]]
+Rcpp::List test_fwdBiol_const_get_accessors_subset(const fwdBiol fwdb, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    return Rcpp::List::create(
+        Rcpp::Named("n", fwdb.n(indices_min, indices_max)),
+        Rcpp::Named("m", fwdb.m(indices_min, indices_max)),
+        Rcpp::Named("wt", fwdb.wt(indices_min, indices_max)),
+        Rcpp::Named("fec", fwdb.fec(indices_min, indices_max)),
+        Rcpp::Named("spwn", fwdb.spwn(indices_min, indices_max)));
+}
+
+
+// [[Rcpp::export]]
 Rcpp::NumericVector test_fwdBiol_get_accessors(fwdBiol fwdb,int quant, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(5);
     out[0] = fwdb.n()(quant, year, unit, season, area, iter);

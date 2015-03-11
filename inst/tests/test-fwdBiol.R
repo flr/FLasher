@@ -60,6 +60,15 @@ test_that("fwdBiol get and set data accessors", {
                 c(fec(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(spwn(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_that(values_out, is_identical_to(values_in))
+    # Get const subset
+    dims_max <- dim(n(flb_in))
+    dims_min <- round(runif(6, min=1, max=dims_max))
+    out <- test_fwdBiol_const_get_accessors_subset(flb_in, dims_min, dims_max)
+    expect_that(out[["n"]], equals(n(flb_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
+    expect_that(out[["m"]], equals(m(flb_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
+    expect_that(out[["wt"]], equals(wt(flb_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
+    expect_that(out[["fec"]], equals(fec(flb_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
+    expect_that(out[["spwn"]], equals(spwn(flb_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
     # Get const AD
     values_out <- test_fwdBiolAD_const_get_accessors(flb_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6])
     values_in <- c(c(n(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),

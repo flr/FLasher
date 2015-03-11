@@ -1477,6 +1477,10 @@ test_fwdBiol_const_get_accessors <- function(fwdb, quant, year, unit, season, ar
     .Call('FLasher_test_fwdBiol_const_get_accessors', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter)
 }
 
+test_fwdBiol_const_get_accessors_subset <- function(fwdb, indices_min, indices_max) {
+    .Call('FLasher_test_fwdBiol_const_get_accessors_subset', PACKAGE = 'FLasher', fwdb, indices_min, indices_max)
+}
+
 test_fwdBiol_get_accessors <- function(fwdb, quant, year, unit, season, area, iter) {
     .Call('FLasher_test_fwdBiol_get_accessors', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter)
 }
@@ -1755,6 +1759,10 @@ catch_q_speed <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol
 
 get_f_speed <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max, rep) {
     invisible(.Call('FLasher_get_f_speed', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max, rep))
+}
+
+test_quant_indices_speed <- function(fwdb, indices_min, indices_max, rep) {
+    invisible(.Call('FLasher_test_quant_indices_speed', PACKAGE = 'FLasher', fwdb, indices_min, indices_max, rep))
 }
 
 useAuto <- function() {

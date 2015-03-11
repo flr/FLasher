@@ -120,21 +120,48 @@ FLQuant_base<T> fwdBiol_base<T>::n() const {
 }
 
 template <typename T>
+FLQuant_base<T> fwdBiol_base<T>::n(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return n_flq(indices_min, indices_max);
+}
+
+template <typename T>
 FLQuant fwdBiol_base<T>::wt() const {
     return wt_flq;
+}
+
+template <typename T>
+FLQuant fwdBiol_base<T>::wt(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return wt_flq(indices_min, indices_max);
 }
 
 template <typename T>
 FLQuant fwdBiol_base<T>::m() const {
     return m_flq;
 }
+
+template <typename T>
+FLQuant fwdBiol_base<T>::m(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return m_flq(indices_min, indices_max);
+}
+
 template <typename T>
 FLQuant fwdBiol_base<T>::spwn() const {
     return spwn_flq;
 }
+
+template <typename T>
+FLQuant fwdBiol_base<T>::spwn(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return spwn_flq(indices_min, indices_max);
+}
+
 template <typename T>
 FLQuant fwdBiol_base<T>::fec() const {
     return fec_flq;
+}
+
+template <typename T>
+FLQuant fwdBiol_base<T>::fec(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return fec_flq(indices_min, indices_max);
 }
 
 // Get and set accessors
