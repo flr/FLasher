@@ -11,7 +11,7 @@
 template <typename T>
 FLFishery_base<T>::FLFishery_base(){
     name = std::string();
-    effort_flq = FLQuant();
+    effort_flq = FLQuant_base<T>();
     vcost_flq = FLQuant();
     fcost_flq = FLQuant();
 }
@@ -80,16 +80,16 @@ FLFishery_base<T>& FLFishery_base<T>::operator = (const FLFishery_base<T>& FLFis
 
 // Accessors of economic slots
 template <typename T>
-FLQuant FLFishery_base<T>::effort(std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max) const {
+FLQuant_base<T> FLFishery_base<T>::effort(std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max) const {
     if (indices_min.size() != 5 | indices_min.size() != 5){
         Rcpp::stop("In FLFishery effort subsetter. Indices not of length 5\n");
     }
-    FLQuant effort_out = effort_flq(1, 1, indices_min[0], indices_max[0], indices_min[1], indices_max[1], indices_min[2], indices_max[2], indices_min[3], indices_max[3], indices_min[4], indices_max[4]); 
+    FLQuant_base<T> effort_out = effort_flq(1, 1, indices_min[0], indices_max[0], indices_min[1], indices_max[1], indices_min[2], indices_max[2], indices_min[3], indices_max[3], indices_min[4], indices_max[4]); 
     return effort_out;
 }
 
 template <typename T>
-FLQuant FLFishery_base<T>::effort() const {
+FLQuant_base<T> FLFishery_base<T>::effort() const {
     return effort_flq;
 }
 
@@ -104,7 +104,7 @@ FLQuant FLFishery_base<T>::fcost() const {
 }
 
 template <typename T>
-FLQuant& FLFishery_base<T>::effort() {
+FLQuant_base<T>& FLFishery_base<T>::effort() {
     return effort_flq;
 }
 

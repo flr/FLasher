@@ -48,20 +48,19 @@ class FLFishery_base : public FLCatches_base<T> {
 
         // Accessor methods for the slots
         // Get only
-        //FLQuant effort(const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max) const;
-        FLQuant effort(std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max) const;
-        FLQuant effort() const;
+        FLQuant_base<T> effort(std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max) const;
+        FLQuant_base<T> effort() const;
         FLQuant vcost() const;
         FLQuant fcost() const;
         // Get and Set
-        FLQuant& effort();
+        FLQuant_base<T>& effort();
         FLQuant& vcost();
         FLQuant& fcost();
 
     private:
         std::string name;
         Rcpp::NumericVector range;
-        FLQuant effort_flq;
+        FLQuant_base<T> effort_flq;
         FLQuant vcost_flq;
         FLQuant fcost_flq;
 
@@ -91,12 +90,7 @@ class FLFisheries_base {
 
         unsigned int get_nfisheries() const;
 
-        // Catch FLQ accessors
-//        T landings_n(std::vector<int>) const;
-//        T& landings_n(std::vector<int>);
-
     private:
-
         std::vector<FLFishery_base<T> > fisheries;
         Rcpp::CharacterVector names; // of the fisheries
         std::string desc;
