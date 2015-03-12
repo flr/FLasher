@@ -1757,6 +1757,14 @@ test_operatingModel_SSB_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, 
     .Call('FLasher_test_operatingModel_SSB_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
 }
 
+test_operatingModel_run_effort_demo <- function(flfs, flbs_list_sexp, ctrl) {
+    .Call('FLasher_test_operatingModel_run_effort_demo', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl)
+}
+
+test_operatingModel_run_catch_demo <- function(flfs, flbs_list_sexp, ctrl) {
+    .Call('FLasher_test_operatingModel_run_catch_demo', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl)
+}
+
 fwdBiolAD_biomass_subset_speed <- function(fwdb, year, season, rep) {
     invisible(.Call('FLasher_fwdBiolAD_biomass_subset_speed', PACKAGE = 'FLasher', fwdb, year, season, rep))
 }

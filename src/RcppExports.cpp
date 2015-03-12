@@ -7495,6 +7495,40 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// test_operatingModel_run_effort_demo
+operatingModel test_operatingModel_run_effort_demo(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl);
+RcppExport SEXP FLasher_test_operatingModel_run_effort_demo(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type flbs_list_sexp(flbs_list_sexpSEXP );
+        Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP );
+        operatingModel __result = test_operatingModel_run_effort_demo(flfs, flbs_list_sexp, ctrl);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// test_operatingModel_run_catch_demo
+operatingModel test_operatingModel_run_catch_demo(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl);
+RcppExport SEXP FLasher_test_operatingModel_run_catch_demo(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type flbs_list_sexp(flbs_list_sexpSEXP );
+        Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP );
+        operatingModel __result = test_operatingModel_run_catch_demo(flfs, flbs_list_sexp, ctrl);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // fwdBiolAD_biomass_subset_speed
 void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const unsigned int year, const int unsigned season, const int rep);
 RcppExport SEXP FLasher_fwdBiolAD_biomass_subset_speed(SEXP fwdbSEXP, SEXP yearSEXP, SEXP seasonSEXP, SEXP repSEXP) {
