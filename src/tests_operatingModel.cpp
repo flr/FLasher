@@ -210,6 +210,17 @@ operatingModel test_operatingModel_project_timestep(const FLFisheriesAD fisherie
 }
 */
 
+/*----------- target calculations--------------*/
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_catches_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    return om.catches(biol_no, indices_min, indices_max);
+}
+
+
+
 /*----------- SSB calculations--------------*/
 
 // [[Rcpp::export]]
@@ -322,18 +333,21 @@ std::vector<double> test_operatingModel_calc_target_value(FLFisheriesAD flfs, SE
 
 
 
-// Assumes the targets are already ordered by time
-// [[Rcpp::export]]
-operatingModel test_operatingModel_run(const FLFisheriesAD fisheries, SEXP FLBiolSEXP, const std::string srr_model_name, const FLQuant srr_params, const FLQuant srr_residuals, const bool srr_residuals_mult, const int srr_timelag, FLQuant7AD f, FLQuant7 f_spwn, fwdControl ctrl){
-
-    // Make the fwdBiol from the FLBiol and SRR bits
-    fwdBiolAD biol(FLBiolSEXP, srr_model_name, srr_params, srr_timelag, srr_residuals, srr_residuals_mult); 
-    // Make the OM
-    operatingModel om(fisheries, biol, f, f_spwn, ctrl);
-
-    om.run();
-
-    return om;
-
-}
 */
+
+// [[Rcpp::export]]
+operatingModel test_operatingModel_run_effort_demo(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    om.run_effort_demo();
+    return om;
+}
+
+
+// [[Rcpp::export]]
+operatingModel test_operatingModel_run_catch_demo(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    om.run_catch_demo();
+    return om;
+}

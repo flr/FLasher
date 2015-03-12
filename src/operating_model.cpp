@@ -329,7 +329,7 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
     std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
     std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
     FLQuantAD q = catch_q(fishery_no, catch_no, biol_no, indices_min5, indices_max5);
-    FLQuant eff = fisheries(fishery_no).effort(indices_min5, indices_max5);
+    FLQuantAD eff = fisheries(fishery_no).effort(indices_min5, indices_max5);
     FLQuantAD q_effort = q * eff;
     FLQuantAD sel = fisheries(fishery_no, catch_no).catch_sel()(indices_min, indices_max);
     // Ugly code but need to implement a sweep - could write a FLQ sweep_dim1 method
@@ -567,12 +567,13 @@ void operatingModel::project_timestep(const int timestep){
             }
             // Get catches from each biol that is fished - in case a Catch fishes more than 1 Biol 
             for (int biol_counter=1; biol_counter <= biols_fished.size(); ++biol_counter){
-                Rprintf("biol being fished: %i\n", biols_fished[biol_counter-1]);
+                //Rprintf("biol being fished: %i\n", biols_fished[biol_counter-1]);
                 // C = (pF / Z) * (1 - exp(-Z)) * N
                 biol_no = biols_fished[biol_counter-1];
                 //Rprintf("fishery: %i; catch: %i; biol: %i\n", fishery_counter, catch_counter, biol_no);
                 //In efficient! Calculating f again - both partial and total_f use the same method
                 z_temp = total_fs(biol_no) + biols(biol_no).m(indices_min, indices_max);
+                // This line is expensive - extra calculation of partial_f
                 catches = catches +
                     (partial_f(fishery_counter, catch_counter, biol_no, indices_min, indices_max) / z_temp) *
                     (1.0 - exp(-1.0 * z_temp)) *
@@ -614,8 +615,6 @@ void operatingModel::project_timestep(const int timestep){
             age_shift = 1;
         }
         for (unsigned int biol_counter=1; biol_counter <= biols.get_nbiols(); ++biol_counter){
-            //Rprintf("biol_counter %i\n", biol_counter);
-
             // SSB and Recruitment
             // Get the year and season of the SSB that will result in recruitment in the next timestep
             // Add one to timestep because we are getting the recruitment in timestep+1
@@ -624,11 +623,10 @@ void operatingModel::project_timestep(const int timestep){
                 Rcpp::stop("project_timestep: ssb timestep outside of range");
             }
             timestep_to_year_season(ssb_timestep, biol_dim[3], ssb_year, ssb_season);
-            // Update min_indices for ssb
+            // Update min and max_indices for ssb and get it
             ssb_indices_min = {ssb_year, unit, ssb_season, area, 1};
             ssb_indices_max = {ssb_year, unit, ssb_season, area, niter};
             FLQuantAD ssb_flq= ssb(biol_counter, ssb_indices_min, ssb_indices_max);
-
             // Get abundances in next timestep from rec+1 to pg
             z_temp = total_fs(biol_counter) + biols(biol_counter).m(indices_min, indices_max);
             next_n = biols(biol_counter).n(indices_min, indices_max) * exp(-1.0 * z_temp);
@@ -727,7 +725,6 @@ FLQuantAD operatingModel::eval_target(const int target_no) const {
             //}
            break;
         case target_catch:
-            // If no fishery in the control object get total fbar on biol
             //if (Rcpp::IntegerVector::is_na(fishery_no)){
             //out = catches(biol_no);
             //}
@@ -829,111 +826,290 @@ std::vector<double> operatingModel::calc_target_value(const int target_no) const
     return value;
 }
 
-void operatingModel::run(){
+void operatingModel::run_effort_demo(){
+    Rprintf("In run effort()\n");
 
-    Rprintf("In run\n");
+    const unsigned int nsim_targets = 2; // Simultaneous effort targets
+    //const unsigned int niter = ctrl.get_niter(); // number of iters taken from control object - not from Biol or Fisheries
+    const unsigned int niter = biols(1).n().get_niter(); // number of iters taken from control object - not from Biol or Fisheries
+    Rprintf("niter: %i\n", niter);
 
-    const unsigned int ntarget = ctrl.get_ntarget();
-    const unsigned int nsim_targets = 1; // Simultaneous targets - fix at 1 for now - will change with target number
-    const unsigned int niter = ctrl.get_niter(); // number of iters taken from control object - not from Biol or Fisheries
-    unsigned int target_year = 0;
-    unsigned int target_season = 0;
-    unsigned int target_timestep = 0;
-    // The timestep of F that we need to multiply to get the target.
-    // e.g. target is 'catch', target_fmult_timestep is the same as the timestep in the control object
-    // if target is 'biomass' target_fmult_timestep will be the year before the timestep in the control object
-    unsigned int target_fmult_timestep = 0;
-    unsigned int target_fmult_year = 0;
-    unsigned int target_fmult_season = 0;
+    unsigned int target_timestep = 10; // annual timestep 10th year
+    unsigned int target_effortmult_timestep = 10;
+    unsigned int target_effortmult_year;
+    unsigned int target_effortmult_season;
+    timestep_to_year_season(target_effortmult_timestep, biols(1).n(), target_effortmult_year, target_effortmult_season);
 
     // independent variables - fmults
-    double fmult_initial = 1; 
-    std::vector<adouble> fmult_ad(niter,fmult_initial); // Length will vary depending on no. simultaneous targets
-    std::vector<double> fmult(niter,fmult_initial); // For the solver
-    // dependent variables
-    //std::vector<double> error(niter,0.0);
-    //std::vector<adouble> target_value_hat(niter,0.0);
-    FLQuantAD target_value_hat_flq;
-    std::vector<double> target_value(niter, 0.0); //  Length will vary depending on no. simultaneous targets
-    int nr_out = 0;
-    
+    double effortmult_initial = 0.9; 
+    std::vector<adouble> effortmult_ad(niter * nsim_targets, effortmult_initial); // Length will vary depending on no. simultaneous targets
+    std::vector<double> effortmult(niter * nsim_targets); // Length will vary depending on no. simultaneous targets
+
     // Length of error will vary depending on no. simultaneous targets
     // Initialise with 1 so we pass the first check for NR
-    //std::vector<CppAD::AD<double> > error(niter, 1.0); 
-    std::vector<adouble> error(niter, 1.0);
-
-    for (int target_count = 1; target_count <= ntarget; ++target_count){
-    //int target_count = 1;
-    // Get number of simultaneous targets in that target
-        Rprintf("\nResolving target: %i\n", target_count);
-
-        // What time step are we hitting this target?
-        target_year = ctrl.get_target_year(target_count);
-        target_season = ctrl.get_target_season(target_count);
-        year_season_to_timestep(target_year, target_season, biols(1).n(), target_timestep);
-        Rprintf("target_year: %i\n", target_year);
-        Rprintf("target_season: %i\n", target_season);
-        Rprintf("target_timestep: %i\n", target_timestep);
-        // Get timestep, year, season of which F to adjust
-        target_fmult_timestep = get_target_fmult_timestep(target_count);
-        timestep_to_year_season(target_fmult_timestep, biols(1).n(), target_fmult_year, target_fmult_season);
-        Rprintf("target_fmult_year: %i\n", target_fmult_year);
-        Rprintf("target_fmult_season: %i\n", target_fmult_season);
-        Rprintf("target_fmult_timestep: %i\n", target_fmult_timestep);
-
-        // Turn on tape
-        CppAD::Independent(fmult_ad);
-        Rprintf("Turned on tape\n");
-        // Update F with fmult_ad
-        // Update om.f = om.f * fmult in that year / season
-        for (int iter_count = 0; iter_count < niter; ++ iter_count){
-            //for (int quant_count = 1; quant_count <= f(1).get_nquant(); ++quant_count){
-            //    // f(quant_count,target_fmult_year,1,target_fmult_season,1,iter_count+1,1) = f(quant_count,target_fmult_year,1,target_fmult_season,1,iter_count+1,1) * fmult_ad[iter_count];
-            //}
-        }
-
-        // use target_fmult_timestep here
-        //project_timestep(target_fmult_timestep); 
-
-        // Could put all this in a calc_error() method
-        // Get the value that we are trying to hit (either comes directly from the control object  or is calculated if not a min / max or rel value)
-        target_value = calc_target_value(target_count); 
-        // What is the current value of the predicted target in the operatingModel
-        target_value_hat_flq = eval_target(target_count);
-        // Calculate the error term that we want to be 0
-        for (int iter_count = 0; iter_count < niter; ++ iter_count){
-            error[iter_count] = (target_value_hat_flq(1,target_year, 1, target_season, 1, iter_count+1) - target_value[iter_count]);
-        }
-
-        // Stop recording
-        CppAD::ADFun<double> fun(fmult_ad, error);
-        Rprintf("Turned off tape\n");
-        Rprintf("target_value: %f\n", target_value[0]);
-        Rprintf("target_value_hat: %f\n", Value(target_value_hat_flq(1,target_year, 1, target_season, 1, 1)));
-
-        // Solve
-        // reset initial solver value 
-        std::fill(fmult.begin(), fmult.end(), 1.0);
-
-
-
-        Rprintf("Calling NR\n");
-        // Just solves 1 simultaneous target so far
-        nr_out = newton_raphson(fmult, fun, niter, 1);
-        Rprintf("NR done\n");
-
-        Rprintf("Updating and projecting\n");
-        // Update f with new fmult
-        // Update F
-        for (int iter_count = 1; iter_count <= biols(1).n().get_niter(); ++iter_count){
-            for (int quant_count = 1; quant_count <= biols(1).n().get_nquant(); ++quant_count){
-                // f(1)(quant_count, target_fmult_year, 1, target_fmult_season, 1, iter_count) = f(1)(quant_count, target_fmult_year, 1, target_fmult_season, 1, iter_count) * fmult[iter_count-1];
-            }
-        }
-        //project_timestep(target_fmult_timestep);
+    std::vector<adouble> error(niter * nsim_targets, 1.0);
+    // Set some arbitrary effort target values
+    std::vector<double> target_value(niter * nsim_targets, 0.5); //  Length will vary depending on no. simultaneous targets
+    for (auto target_it = target_value.begin(); target_it < target_value.begin() + niter; ++target_it){
+        *target_it = 0.3;
     }
-    Rprintf("Leaving run\n");
+    for (auto target_it = target_value.begin()+niter; target_it < target_value.end(); ++target_it){
+        *target_it = 0.5;
+    }
+    //for (auto target_count = 0; target_count < target_value.size(); ++target_count){
+    //    Rprintf("target_count: %i. target_value: %f\n", target_count, target_value[target_count]);
+    //}
+
+    // Turn on tape
+    CppAD::Independent(effortmult_ad);
+    Rprintf("Turned on tape\n");
+    // Update fisheries.effort() = fisheries.effort() * effortmult in that timestep
+    for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
+        for (int iter_count = 1; iter_count <= niter; ++ iter_count){
+            fisheries(fisheries_count).effort()(1, target_effortmult_year, 1, target_effortmult_season, 1, iter_count) = 
+                fisheries(fisheries_count).effort()(1, target_effortmult_year, 1, target_effortmult_season, 1, iter_count) * 
+                effortmult_ad[(fisheries_count - 1) * niter + iter_count - 1];
+        }
+    }
+    //Rprintf("Initial fisheries effort 1: %f\n", Value(fisheries(1).effort()(1, target_effortmult_year, 1, target_effortmult_season, 1, 1)));
+    //Rprintf("Initial fisheries effort 2: %f\n", Value(fisheries(2).effort()(1, target_effortmult_year, 1, target_effortmult_season, 1, 1)));
+    // Do the projection with the updated efforts
+    project_timestep(target_effortmult_timestep); 
+    // Calc error
+    for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
+        for (int iter_count = 1; iter_count <= niter; ++ iter_count){
+            error[(fisheries_count - 1) * niter + iter_count - 1] = fisheries(fisheries_count).effort()(1, target_effortmult_year, 1, target_effortmult_season, 1, iter_count) - target_value[(fisheries_count - 1) * niter + iter_count - 1];
+            //Rprintf("error: %f\n", Value(error[(fisheries_count - 1) * niter + iter_count - 1]));
+        }
+    }
+
+    // Stop recording
+    CppAD::ADFun<double> fun(effortmult_ad, error);
+    Rprintf("Turned off tape\n");
+
+    // Solve
+    // Reset initial solver value 
+    std::fill(effortmult.begin(), effortmult.end(), 1.0);
+
+    Rprintf("Calling NR\n");
+    // Just solves 1 simultaneous target so far
+    auto nr_out = newton_raphson(effortmult, fun, niter, nsim_targets);
+    Rprintf("NR done\n");
+
+    Rprintf("Updating and projecting\n");
+    // Update effort with new effortmult
+    for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
+        for (int iter_count = 1; iter_count <= niter; ++ iter_count){
+            //Rprintf("effortmult[i]: %f\n", Value(effortmult_ad[(fisheries_count - 1) * niter + iter_count - 1]));
+            fisheries(fisheries_count).effort()(1, target_effortmult_year, 1, target_effortmult_season, 1, iter_count) = 
+                fisheries(fisheries_count).effort()(1, target_effortmult_year, 1, target_effortmult_season, 1, iter_count) * 
+                effortmult[(fisheries_count - 1) * niter + iter_count - 1] / effortmult_initial;
+        }
+    }
+    
+    project_timestep(target_effortmult_timestep);
+    Rprintf("Leaving run effort\n");
 }
+
+
+void operatingModel::run_catch_demo(){
+    Rprintf("In run catch()\n");
+
+    const unsigned int nsim_targets = 2; // Simultaneous effort targets
+    //const unsigned int niter = ctrl.get_niter(); // number of iters taken from control object - not from Biol or Fisheries
+    const unsigned int niter = biols(1).n().get_niter(); // number of iters taken from control object - not from Biol or Fisheries
+    Rprintf("niter: %i\n", niter);
+
+    unsigned int target_timestep = 10; // annual timestep 10th year
+    unsigned int target_effortmult_timestep = 10;
+    unsigned int target_effortmult_year;
+    unsigned int target_effortmult_season;
+    timestep_to_year_season(target_effortmult_timestep, biols(1).n(), target_effortmult_year, target_effortmult_season);
+
+    // independent variables - fmults
+    double effortmult_initial = 1.0; 
+    std::vector<adouble> effortmult_ad(niter * nsim_targets, effortmult_initial); // Length will vary depending on no. simultaneous targets
+    std::vector<double> effortmult(niter * nsim_targets); // Length will vary depending on no. simultaneous targets
+
+    // Length of error will vary depending on no. simultaneous targets
+    // Initialise with 1 so we pass the first check for NR
+    std::vector<adouble> error(niter * nsim_targets, 1.0);
+    // Set some arbitrary catch target values
+    std::vector<double> target_value(niter * nsim_targets, 0.5); //  Length will vary depending on no. simultaneous targets
+    for (auto target_it = target_value.begin(); target_it < target_value.begin() + niter; ++target_it){
+        *target_it = 50000;
+    }
+    for (auto target_it = target_value.begin()+niter; target_it < target_value.end(); ++target_it){
+        *target_it = 60000;
+    }
+    //for (auto target_count = 0; target_count < target_value.size(); ++target_count){
+    //    Rprintf("target_count: %i. target_value: %f\n", target_count, target_value[target_count]);
+    //}
+
+    // Turn on tape
+    CppAD::Independent(effortmult_ad);
+    Rprintf("Turned on tape\n");
+    // Update fisheries.effort() = fisheries.effort() * effortmult in that timestep
+    for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
+        for (int iter_count = 1; iter_count <= niter; ++ iter_count){
+            fisheries(fisheries_count).effort()(1, target_effortmult_year, 1, target_effortmult_season, 1, iter_count) = 
+                fisheries(fisheries_count).effort()(1, target_effortmult_year, 1, target_effortmult_season, 1, iter_count) * 
+                effortmult_ad[(fisheries_count - 1) * niter + iter_count - 1];
+        }
+    }
+    //Rprintf("Initial fisheries effort 1: %f\n", Value(fisheries(1).effort()(1, target_effortmult_year, 1, target_effortmult_season, 1, 1)));
+    //Rprintf("Initial fisheries effort 2: %f\n", Value(fisheries(2).effort()(1, target_effortmult_year, 1, target_effortmult_season, 1, 1)));
+    // Do the projection with the updated efforts
+    project_timestep(target_effortmult_timestep); 
+
+    // Calc error
+    std::vector<unsigned int> indices_min {target_effortmult_year, 1, target_effortmult_season, 1, 1};
+    std::vector<unsigned int> indices_max {target_effortmult_year, 1, target_effortmult_season, 1, niter};
+    FLQuantAD catches_temp; 
+    Rprintf("Calcing error\n");
+    for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
+        catches_temp = fisheries(fisheries_count, 1).catches(indices_min, indices_max);
+        for (int iter_count = 1; iter_count <= niter; ++ iter_count){
+            error[(fisheries_count - 1) * niter + iter_count - 1] =
+                // Catches of first FLCatch in each fishery
+                catches_temp(1, 1, 1, 1, 1, iter_count) - target_value[(fisheries_count - 1) * niter + iter_count - 1];
+        }
+    }
+
+    // Stop recording
+    Rprintf("Turning off tape\n");
+    CppAD::ADFun<double> fun(effortmult_ad, error);
+    Rprintf("Turned off tape\n");
+
+    // Solve
+    // Reset initial solver value 
+    std::fill(effortmult.begin(), effortmult.end(), 1.0);
+    Rprintf("Calling NR\n");
+    // Just solves 1 simultaneous target so far
+    auto nr_out = newton_raphson(effortmult, fun, niter, nsim_targets);
+    Rprintf("NR done\n");
+
+    Rprintf("Updating and projecting\n");
+    // Update effort with new effortmult
+    for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
+        for (int iter_count = 1; iter_count <= niter; ++ iter_count){
+            //Rprintf("effortmult[i]: %f\n", Value(effortmult_ad[(fisheries_count - 1) * niter + iter_count - 1]));
+            fisheries(fisheries_count).effort()(1, target_effortmult_year, 1, target_effortmult_season, 1, iter_count) = 
+                fisheries(fisheries_count).effort()(1, target_effortmult_year, 1, target_effortmult_season, 1, iter_count) * 
+                effortmult[(fisheries_count - 1) * niter + iter_count - 1] / effortmult_initial;
+        }
+    }
+    
+    project_timestep(target_effortmult_timestep);
+    Rprintf("Leaving run catch\n");
+}
+
+
+//void operatingModel::run(){
+//
+//    Rprintf("In run\n");
+//
+//    const unsigned int ntarget = ctrl.get_ntarget();
+//    const unsigned int nsim_targets = 1; // Simultaneous targets - fix at 1 for now - will change with target number
+//    const unsigned int niter = ctrl.get_niter(); // number of iters taken from control object - not from Biol or Fisheries
+//    unsigned int target_year = 0;
+//    unsigned int target_season = 0;
+//    unsigned int target_timestep = 0;
+//    // The timestep of F that we need to multiply to get the target.
+//    // e.g. target is 'catch', target_fmult_timestep is the same as the timestep in the control object
+//    // if target is 'biomass' target_fmult_timestep will be the year before the timestep in the control object
+//    unsigned int target_fmult_timestep = 0;
+//    unsigned int target_fmult_year = 0;
+//    unsigned int target_fmult_season = 0;
+//
+//    // independent variables - fmults
+//    double fmult_initial = 1; 
+//    std::vector<adouble> fmult_ad(niter,fmult_initial); // Length will vary depending on no. simultaneous targets
+//    std::vector<double> fmult(niter,fmult_initial); // For the solver
+//    // dependent variables
+//    //std::vector<double> error(niter,0.0);
+//    //std::vector<adouble> target_value_hat(niter,0.0);
+//    FLQuantAD target_value_hat_flq;
+//    std::vector<double> target_value(niter, 0.0); //  Length will vary depending on no. simultaneous targets
+//    int nr_out = 0;
+//    
+//    // Length of error will vary depending on no. simultaneous targets
+//    // Initialise with 1 so we pass the first check for NR
+//    //std::vector<CppAD::AD<double> > error(niter, 1.0); 
+//    std::vector<adouble> error(niter, 1.0);
+//
+//    for (int target_count = 1; target_count <= ntarget; ++target_count){
+//    //int target_count = 1;
+//    // Get number of simultaneous targets in that target
+//        Rprintf("\nResolving target: %i\n", target_count);
+//
+//        // What time step are we hitting this target?
+//        target_year = ctrl.get_target_year(target_count);
+//        target_season = ctrl.get_target_season(target_count);
+//        year_season_to_timestep(target_year, target_season, biols(1).n(), target_timestep);
+//        Rprintf("target_year: %i\n", target_year);
+//        Rprintf("target_season: %i\n", target_season);
+//        Rprintf("target_timestep: %i\n", target_timestep);
+//        // Get timestep, year, season of which F to adjust
+//        target_fmult_timestep = get_target_fmult_timestep(target_count);
+//        timestep_to_year_season(target_fmult_timestep, biols(1).n(), target_fmult_year, target_fmult_season);
+//        Rprintf("target_fmult_year: %i\n", target_fmult_year);
+//        Rprintf("target_fmult_season: %i\n", target_fmult_season);
+//        Rprintf("target_fmult_timestep: %i\n", target_fmult_timestep);
+//
+//        // Turn on tape
+//        CppAD::Independent(fmult_ad);
+//        Rprintf("Turned on tape\n");
+//        // Update F with fmult_ad
+//        // Update om.f = om.f * fmult in that year / season
+//        for (int iter_count = 0; iter_count < niter; ++ iter_count){
+//            //for (int quant_count = 1; quant_count <= f(1).get_nquant(); ++quant_count){
+//            //    // f(quant_count,target_fmult_year,1,target_fmult_season,1,iter_count+1,1) = f(quant_count,target_fmult_year,1,target_fmult_season,1,iter_count+1,1) * fmult_ad[iter_count];
+//            //}
+//        }
+//
+//        // use target_fmult_timestep here
+//        //project_timestep(target_fmult_timestep); 
+//
+//        // Could put all this in a calc_error() method
+//        // Get the value that we are trying to hit (either comes directly from the control object  or is calculated if not a min / max or rel value)
+//        target_value = calc_target_value(target_count); 
+//        // What is the current value of the predicted target in the operatingModel
+//        target_value_hat_flq = eval_target(target_count);
+//        // Calculate the error term that we want to be 0
+//        for (int iter_count = 0; iter_count < niter; ++ iter_count){
+//            error[iter_count] = (target_value_hat_flq(1,target_year, 1, target_season, 1, iter_count+1) - target_value[iter_count]);
+//        }
+//
+//        // Stop recording
+//        CppAD::ADFun<double> fun(fmult_ad, error);
+//        Rprintf("Turned off tape\n");
+//        Rprintf("target_value: %f\n", target_value[0]);
+//        Rprintf("target_value_hat: %f\n", Value(target_value_hat_flq(1,target_year, 1, target_season, 1, 1)));
+//
+//        // Solve
+//        // reset initial solver value 
+//        std::fill(fmult.begin(), fmult.end(), 1.0);
+//
+//
+//
+//        Rprintf("Calling NR\n");
+//        // Just solves 1 simultaneous target so far
+//        nr_out = newton_raphson(fmult, fun, niter, 1);
+//        Rprintf("NR done\n");
+//
+//        Rprintf("Updating and projecting\n");
+//        // Update f with new fmult
+//        // Update F
+//        for (int iter_count = 1; iter_count <= biols(1).n().get_niter(); ++iter_count){
+//            for (int quant_count = 1; quant_count <= biols(1).n().get_nquant(); ++quant_count){
+//                // f(1)(quant_count, target_fmult_year, 1, target_fmult_season, 1, iter_count) = f(1)(quant_count, target_fmult_year, 1, target_fmult_season, 1, iter_count) * fmult[iter_count-1];
+//            }
+//        }
+//        //project_timestep(target_fmult_timestep);
+//    }
+//    Rprintf("Leaving run\n");
+//}
 
 
 
@@ -1067,6 +1243,34 @@ FLQuantAD operatingModel::catches(const int biol_no) const{
     return catches_out;
 }
 */
+
+
+/*! \brief Subset the total catches from a single biol 
+ * Note: If two biols are caught by the same FLCatch (unlikely) then the returned value is the sum of the catches from both species.
+ * i.e. You cannot separate the catch by species.
+ *
+ * \param biol_no Position of the chosen biol in the biols list
+ * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 5)
+ * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
+ */
+FLQuantAD operatingModel::catches(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if(indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel catches on a biol subset method. indices_min and max must be of length 5\n");
+    }
+    unsigned int fishery_no;
+    unsigned int catch_no;
+    // We need to know the Fishery / Catches that catch the biol
+    const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
+    // What happens if no-one is fishing that biol? FC.nrow() == 0
+    FLQuantAD total_catches(1, indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1); 
+    total_catches.fill(0.0);
+    // If biol is the only one being caught by that FC combination
+    for (unsigned int c_counter=0; c_counter < FC.nrow(); ++c_counter){
+        total_catches = total_catches + fisheries(FC(c_counter,0), FC(c_counter,1)).catches(indices_min, indices_max);
+    }
+    // Else partition catches
+    return total_catches;
+}
 
 // Landings of a particular fishery and catch
 /*

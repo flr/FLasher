@@ -92,7 +92,8 @@ class operatingModel {
 
         FLQuantAD z(const int biol_no) const;
 
-        void run(); 
+        void run_effort_demo(); 
+        void run_catch_demo(); 
 
         //void run_all_iters(); 
         
@@ -129,7 +130,8 @@ class operatingModel {
         // catches from an FLCatch and fishery on a stock 
         //FLQuantAD catches(const int fishery_no, const int catch_no) const;
         // Total catches from a biol
-        //FLQuantAD catches(const int biol_no) const;
+        FLQuantAD catches(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+
         // landings from a FLCatch in a fishery on a biol
         //FLQuantAD landings(const int fishery_no, const int catch_no) const;
         // Total landings from a biol

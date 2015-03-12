@@ -534,6 +534,32 @@ test_that("operatingModel partial Fs",{
     expect_that(fout@.Data, equals(fin@.Data))
 })
 
+test_that("operatingModel catch targets",{
+    om <- make_test_operatingModel1(20)
+    dim_max <- dim(n(om[["biols"]][[1]][["biol"]]))
+    dim_min <- round(runif(6, min=1, max=dim_max))
+
+    # 1 biol -> 1 catch
+    biol_no <- 1
+    catches_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    catches_in <- catch(om[["fisheries"]][[1]][[1]])
+    expect_that(unname(catches_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catches_out@.Data)))
+    # 1 biol -> 2 catch
+    biol_no <- 2
+    catches_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    catches_in <- catch(om[["fisheries"]][[1]][[2]]) + catch(om[["fisheries"]][[2]][[1]])
+    expect_that(unname(catches_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catches_out@.Data)))
+    # 2 biol -> 1 catch
+    biol_no <- 3
+    catches_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    catches_in <- catch(om[["fisheries"]][[2]][[2]])
+    expect_that(unname(catches_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catches_out@.Data)))
+    # Same as catches from 3 as no way of separating them
+    biol_no <- 4 
+    catches_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    expect_that(unname(catches_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catches_out@.Data)))
+}
+
 
 #
 ## Biomass, SSB and other abundance based targets need to change F in the previous timestep
