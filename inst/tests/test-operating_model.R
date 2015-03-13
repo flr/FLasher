@@ -535,28 +535,51 @@ test_that("operatingModel partial Fs",{
 })
 
 test_that("operatingModel catch targets",{
-    om <- make_test_operatingModel1(20)
+    om <- make_test_operatingModel1(10)
     dim_max <- dim(n(om[["biols"]][[1]][["biol"]]))
     dim_min <- round(runif(6, min=1, max=dim_max))
     # 1 biol -> 1 catch
     biol_no <- 1
-    catches_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    catches1_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
     catches_in <- catch(om[["fisheries"]][[1]][[1]])
-    expect_that(unname(catches_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catches_out@.Data)))
+    expect_that(unname(catches_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catches1_out@.Data)))
     # 1 biol -> 2 catch
     biol_no <- 2
-    catches_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    catches2_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
     catches_in <- catch(om[["fisheries"]][[1]][[2]]) + catch(om[["fisheries"]][[2]][[1]])
-    expect_that(unname(catches_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catches_out@.Data)))
+    expect_that(unname(catches_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catches2_out@.Data)))
+
     # 2 biol -> 1 catch
-    biol_no <- 3
-    catches_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
-    catches_in <- catch(om[["fisheries"]][[2]][[2]])
-    expect_that(unname(catches_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catches_out@.Data)))
-    # Same as catches from 3 as no way of separating them
-    biol_no <- 4 
-    catches_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
-    expect_that(unname(catches_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catches_out@.Data)))
+    # Need to calc Baranov
+    cq_flq <- as(catch.q(om[["fisheries"]][[2]][[2]]), "FLQuant")
+    catch3_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, dim_min[-1], dim_max[-1])
+    biomass3 <- quantSums(n(om[["biols"]][[3]][["biol"]]) * wt(om[["biols"]][[3]][["biol"]]))
+    qin3 <- sweep(sweep(biomass3, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
+    fin223 <- sweep(catch.sel(om[["fisheries"]][[2]][[2]]), 2:6, qin3 * effort(om[["fisheries"]][[2]]), "*")
+    z3 <- fin223 + m(om[["biols"]][[3]][["biol"]])
+    cn3 <- (fin223 / z3) * (1 - exp(-z3)) * n(om[["biols"]][[3]][["biol"]])
+    ln3 <- cn3 * (1.0 - discards.ratio(om[["fisheries"]][[2]][[2]]))
+    dn3 <- cn3 * (discards.ratio(om[["fisheries"]][[2]][[2]]))
+    c3 <- quantSums(ln3 * landings.wt(om[["fisheries"]][[2]][[2]]) + dn3 * discards.wt(om[["fisheries"]][[2]][[2]]))
+    expect_that(unname(c3[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catch3_out@.Data)))
+    catch4_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, dim_min[-1], dim_max[-1])
+    biomass4 <- quantSums(n(om[["biols"]][[4]][["biol"]]) * wt(om[["biols"]][[4]][["biol"]]))
+    qin4 <- sweep(sweep(biomass4, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
+    fin224 <- sweep(catch.sel(om[["fisheries"]][[2]][[2]]), 2:6, qin4 * effort(om[["fisheries"]][[2]]), "*")
+    z4 <- fin224 + m(om[["biols"]][[4]][["biol"]])
+    cn4 <- (fin224 / z4) * (1 - exp(-z4)) * n(om[["biols"]][[4]][["biol"]])
+    ln4 <- cn4 * (1.0 - discards.ratio(om[["fisheries"]][[2]][[2]]))
+    dn4 <- cn4 * (discards.ratio(om[["fisheries"]][[2]][[2]]))
+    c4 <- quantSums(ln4 * landings.wt(om[["fisheries"]][[2]][[2]]) + dn4 * discards.wt(om[["fisheries"]][[2]][[2]]))
+    expect_that(unname(c4[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catch4_out@.Data)))
+    # Also check by projecting by a timestep and checking sum of c3 + c4
+    year <- round(runif(1,min=dim_min[2],max=dim_max[2]))
+    season <- round(runif(1,min=dim_min[4],max=dim_max[4]))
+    timestep <- (year-1) * dim(n(om[["biols"]][[1]][["biol"]]))[4] + season
+    om_out <- test_operatingModel_project_timestep(om[["fisheries"]], om[["biols"]], om[["fwc"]], timestep)
+    # c3 + c4 should be catch in FC 22
+    expect_that(unname(catch(om_out[["fisheries"]][[2]][[2]])[,year, dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname((catch3_out + catch4_out)[,year - dim_min[2]+1]@.Data)))
+    # catch 1 and 2 won't be the same as in the projected OM. Their catches are just taken from the OM directly and not calculated directly.
 })
 
 
