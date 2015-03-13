@@ -207,7 +207,7 @@ FLQuant_base<T> fwdBiol_base<T>::biomass(const std::vector<unsigned int> indices
     if(indices_min.size() != 5 | indices_max.size() != 5){
         Rcpp::stop("In fwdBiol biomass subset. indices not of length 5\n");
     }
-    Rcpp::IntegerVector dim = n().get_dim();
+    std::vector<unsigned int> dim = n().get_dim();
     // Add age range to indices
     std::vector<unsigned int> new_indices_min = indices_min;
     std::vector<unsigned int> new_indices_max = indices_max;

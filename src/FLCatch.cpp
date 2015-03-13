@@ -188,12 +188,13 @@ FLQuant FLCatch_base<T>::catch_q_params(const std::vector<unsigned int> indices_
         Rcpp::stop("In FLCatch catch_q_params subsetter. Indices not of length 6\n");
     }
     // Checking first dimension (parameter) range
-    Rcpp::IntegerVector qdims = catch_q_flq.get_dim();
+    std::vector<unsigned int> qdims = catch_q_flq.get_dim();
     if (indices_min[0] < 1 | indices_max[0] > qdims[0]){
         Rcpp::stop("In FLCatch catch_q_params subsetter. Outside first dimension range. Possibly asking for too many parameters.\n");
     }
     // Indices_min must be between 1 and max for dims 2:6
-    Rcpp::IntegerVector ndims = landings_n_flq.get_dim();
+    //Rcpp::IntegerVector ndims = landings_n_flq.get_dim();
+    std::vector<unsigned int> ndims = landings_n_flq.get_dim();
     for (unsigned int i = 1; i < indices_min.size(); ++i){
         if (indices_min[i] < 1 | indices_min[i] > ndims[i] | indices_max[i] > ndims[i]){
             Rcpp::stop("In FLCatch catch_q_params subsetter. indices_min and indices_max dims 2-6 must be within range of FLCatch FLQuant members.\n");
@@ -238,7 +239,7 @@ FLQuant FLCatch_base<T>::catch_q_params(const std::vector<unsigned int> indices_
 
 template <typename T>
 std::vector<double> FLCatch_base<T>::catch_q_params(int year, int unit, int season, int area, int iter) const {
-    Rcpp::IntegerVector dims = catch_q_flq.get_dim();
+    std::vector<unsigned int> dims = catch_q_flq.get_dim();
     std::vector<double> q_out (dims[0],0.0);
     // Sort out dims - if years > no years in the catch_q_flq object (i.e. catch_q_flq are not disaggregated by time etc.) just pick the first 
     // The real checking should be done in the R side
@@ -303,7 +304,8 @@ FLQuant& FLCatch_base<T>::catch_q_params() {
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::landings() const {
     std::vector<unsigned int> indices_min {1,1,1,1,1};
-    std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(landings_wt_flq.get_dim());
+    //std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(landings_wt_flq.get_dim());
+    std::vector<unsigned int> indices_max = landings_wt_flq.get_dim();
     indices_max.erase(indices_max.begin());
     return landings(indices_min, indices_max);
 }
@@ -316,7 +318,7 @@ FLQuant_base<T> FLCatch_base<T>::landings(const std::vector<unsigned int> indice
     std::vector<unsigned int> quant_indices_min = indices_min;
     quant_indices_min.insert(quant_indices_min.begin(), 1);
     std::vector<unsigned int> quant_indices_max = indices_max;
-    Rcpp::IntegerVector dims = landings_wt_flq.get_dim();
+    std::vector<unsigned int> dims = landings_wt_flq.get_dim();
     quant_indices_max.insert(quant_indices_max.begin(), dims[0]);
     FLQuant_base<T> landings = quant_sum(landings_n(quant_indices_min, quant_indices_max) * landings_wt(quant_indices_min, quant_indices_max));
     return landings;
@@ -325,7 +327,7 @@ FLQuant_base<T> FLCatch_base<T>::landings(const std::vector<unsigned int> indice
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::discards() const {
     std::vector<unsigned int> indices_min {1,1,1,1,1};
-    std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(discards_wt_flq.get_dim());
+    std::vector<unsigned int> indices_max = discards_wt_flq.get_dim();
     indices_max.erase(indices_max.begin());
     return discards(indices_min, indices_max);
 }
@@ -338,7 +340,7 @@ FLQuant_base<T> FLCatch_base<T>::discards(const std::vector<unsigned int> indice
     std::vector<unsigned int> quant_indices_min = indices_min;
     quant_indices_min.insert(quant_indices_min.begin(), 1);
     std::vector<unsigned int> quant_indices_max = indices_max;
-    Rcpp::IntegerVector dims = discards_wt_flq.get_dim();
+    std::vector<unsigned int> dims = discards_wt_flq.get_dim();
     quant_indices_max.insert(quant_indices_max.begin(), dims[0]);
     FLQuant_base<T> discards = quant_sum(discards_n(quant_indices_min, quant_indices_max) * discards_wt(quant_indices_min, quant_indices_max));
     return discards;
@@ -353,7 +355,8 @@ FLQuant_base<T> FLCatch_base<T>::catch_n() const {
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::catches() const {
     std::vector<unsigned int> indices_min {1,1,1,1,1};
-    std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(discards_wt_flq.get_dim());
+//    std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(discards_wt_flq.get_dim());
+    std::vector<unsigned int> indices_max = discards_wt_flq.get_dim();
     indices_max.erase(indices_max.begin());
     return catches(indices_min, indices_max);
 }
@@ -366,7 +369,7 @@ FLQuant_base<T> FLCatch_base<T>::catches(const std::vector<unsigned int> indices
     std::vector<unsigned int> quant_indices_min = indices_min;
     quant_indices_min.insert(quant_indices_min.begin(), 1);
     std::vector<unsigned int> quant_indices_max = indices_max;
-    Rcpp::IntegerVector dims = discards_wt_flq.get_dim();
+    std::vector<unsigned int> dims = discards_wt_flq.get_dim();
     quant_indices_max.insert(quant_indices_max.begin(), dims[0]);
     FLQuant_base<T> catches = quant_sum((discards_n(quant_indices_min, quant_indices_max) * discards_wt(quant_indices_min, quant_indices_max))  + (landings_n(quant_indices_min, quant_indices_max) * landings_wt(quant_indices_min, quant_indices_max)));
     return catches;

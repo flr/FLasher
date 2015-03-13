@@ -42,7 +42,7 @@ test_that("get accessors",{
     flq <- random_FLQuant_generator()
     expect_that(test_FLQuant_get_data(flq), is_identical_to(c(flq@.Data)))
     expect_that(test_FLQuant_get_units(flq), is_identical_to(units(flq)))
-    expect_that(test_FLQuant_get_dim(flq), is_identical_to(dim(flq)))
+    expect_that(test_FLQuant_get_dim(flq), equals(dim(flq)))
     expect_that(test_FLQuant_get_dimnames(flq), is_identical_to(dimnames(flq)))
     # Test deep copy is returned with dimnames are got
     dmns_out <- test_FLQuant_get_dimnames2(flq)

@@ -13,7 +13,8 @@
 template <typename T>
 FLQuant_base<T>::FLQuant_base(){
 	units = std::string(); // Empty string - just ""
-    dim = Rcpp::IntegerVector();
+    //dim = Rcpp::IntegerVector();
+    dim = std::vector<unsigned int>();
     dimnames = Rcpp::List();
 }
 
@@ -33,7 +34,9 @@ FLQuant_base<T>::FLQuant_base(SEXP flq_sexp){
     // data(nquant * nyear * nunit * nseason * narea * niter)?
     data.insert(data.begin(), data_nv.begin(), data_nv.end());
 	units = Rcpp::as<std::string>(flq_s4.slot("units"));
-	dim = data_nv.attr("dim");
+	//dim = data_nv.attr("dim");
+    Rcpp::IntegerVector dim_rcpp = data_nv.attr("dim");
+    dim = Rcpp::as<std::vector<unsigned int>>(dim_rcpp);
 	dimnames = data_nv.attr("dimnames");
 }
 
@@ -48,10 +51,11 @@ FLQuant_base<T>::FLQuant_base(SEXP flq_sexp){
  * \param niter The number of iterations.
  */
 template <typename T>
-FLQuant_base<T>::FLQuant_base(const int nquant, const int nyear, const int nunit, const int nseason, const int narea, const int niter){
+FLQuant_base<T>::FLQuant_base(const unsigned int nquant, const unsigned int nyear, const unsigned int nunit, const unsigned int nseason, const unsigned int narea, const unsigned int niter){
     //Rprintf("Making a new FLQuant_base<T> with user defined dims\n");
 	units = std::string(); // Empty string - just ""
-    dim = Rcpp::IntegerVector::create(nquant, nyear, nunit, nseason, narea, niter);
+    //dim = Rcpp::IntegerVector::create(nquant, nyear, nunit, nseason, narea, niter);
+    dim = {nquant, nyear, nunit, nseason, narea, niter};
     data = std::vector<T>(nquant * nyear * nunit * nseason * narea * niter,0.0);
     // How to fill dimnames up appropriately?
     // Just of the right size at the moment.
@@ -131,7 +135,8 @@ FLQuant_base<T>::FLQuant_base(const FLQuant_base<T>& FLQuant_source){
     //Rprintf("In FLQuant_base<T> copy constructor\n");
 	data  = FLQuant_source.data; // std::vector always does deep copy
 	units = FLQuant_source.units; // std::string always does deep copy
-    dim = Rcpp::clone<Rcpp::IntegerVector>(FLQuant_source.dim);
+	dim  = FLQuant_source.dim; // std::vector always does deep copy
+    //dim = Rcpp::clone<Rcpp::IntegerVector>(FLQuant_source.dim);
     dimnames = Rcpp::clone<Rcpp::List>(FLQuant_source.dimnames);
 }
 
@@ -142,7 +147,8 @@ FLQuant_base<T>& FLQuant_base<T>::operator = (const FLQuant_base<T>& FLQuant_sou
 	if (this != &FLQuant_source){
         data  = FLQuant_source.data; // std::vector always does deep copy
         units = FLQuant_source.units; // std::string always does deep copy
-        dim = Rcpp::clone<Rcpp::IntegerVector>(FLQuant_source.dim);
+        dim = FLQuant_source.dim; // std::string always does deep copy
+        //dim = Rcpp::clone<Rcpp::IntegerVector>(FLQuant_source.dim);
         dimnames = Rcpp::clone<Rcpp::List>(FLQuant_source.dimnames);
 	}
 	return *this;
@@ -206,8 +212,10 @@ std::string FLQuant_base<T>::get_units() const{
 }
 
 template <typename T>
-Rcpp::IntegerVector FLQuant_base<T>::get_dim() const{
-	return Rcpp::clone<Rcpp::IntegerVector>(dim);
+//Rcpp::IntegerVector FLQuant_base<T>::get_dim() const{
+std::vector<unsigned int> FLQuant_base<T>::get_dim() const{
+	//return Rcpp::clone<Rcpp::IntegerVector>(dim);
+    return dim;
 }
 
 template <typename T>
@@ -221,62 +229,63 @@ unsigned int FLQuant_base<T>::get_size() const{
 }
 
 template <typename T>
-int FLQuant_base<T>::get_nquant() const{
-	Rcpp::IntegerVector dim = get_dim();
-	return dim(0);
+unsigned int FLQuant_base<T>::get_nquant() const{
+	//Rcpp::IntegerVector dim = get_dim();
+	return dim[0];
 }
 
 template <typename T>
-int FLQuant_base<T>::get_nyear() const{
-	Rcpp::IntegerVector dim = get_dim();
-	return dim(1);
+unsigned int FLQuant_base<T>::get_nyear() const{
+	//Rcpp::IntegerVector dim = get_dim();
+	return dim[1];
 }
 
 template <typename T>
-int FLQuant_base<T>::get_nunit() const{
-	Rcpp::IntegerVector dim = get_dim();
-	return dim(2);
+unsigned int FLQuant_base<T>::get_nunit() const{
+	//Rcpp::IntegerVector dim = get_dim();
+	return dim[2];
 }
 
 template <typename T>
-int FLQuant_base<T>::get_nseason() const{
-	Rcpp::IntegerVector dim = get_dim();
-	return dim(3);
+unsigned int FLQuant_base<T>::get_nseason() const{
+	//Rcpp::IntegerVector dim = get_dim();
+	return dim[3];
 }
 
 template <typename T>
-int FLQuant_base<T>::get_narea() const{
-	Rcpp::IntegerVector dim = get_dim();
-	return dim(4);
+unsigned int FLQuant_base<T>::get_narea() const{
+	//Rcpp::IntegerVector dim = get_dim();
+	return dim[4];
 }
 
 template <typename T>
-int FLQuant_base<T>::get_niter() const{
-	Rcpp::IntegerVector dim = get_dim();
-	return dim(5);
+unsigned int FLQuant_base<T>::get_niter() const{
+	//Rcpp::IntegerVector dim = get_dim();
+	return dim[5];
 }
 
 // Note that elements start at 1 NOT 0!
 // Remove all the calls to get_nxxxx() to speed up
 template <typename T>
 int FLQuant_base<T>::get_data_element(const int quant, const int year, const int unit, const int season, const int area, int iter) const{
-    Rcpp::IntegerVector dim = get_dim();
-    if ((quant > dim(0)) || (year > dim(1)) || (unit > dim(2)) || (season > dim(3)) || (area > dim(4))){
+    //Rcpp::IntegerVector dim = get_dim();
+    std::vector<unsigned int> dim = get_dim();
+    if ((quant > dim[0]) || (year > dim[1]) || (unit > dim[2]) || (season > dim[3]) || (area > dim[4])){
             Rcpp::stop("Trying to access element outside of quant, year, unit, season or area dim range.");
     }
     // If only 1 iter and trying to get n iter, set iter to 1
-    if ((iter > 1) && (dim(5) == 1)){
+    if ((iter > 1) && (dim[5] == 1)){
         //get_data_element(quant, year, unit, season, area, 1);
         iter = 1;
     }
-    if ((iter > dim(5)) && (dim(5) > 1)){
+    if ((iter > dim[5]) && (dim[5] > 1)){
         Rcpp::stop("In get_data_element: trying to access iter > niter\n");
     } 
-	unsigned int element = (dim(4) * dim(3) * dim(2) * dim(1) * dim(0) * (iter - 1)) +
-			(dim(3) * dim(2) * dim(1) * dim(0) * (area - 1)) +
-			(dim(2) * dim(1) * dim(0) * (season - 1)) +
-			(dim(1) * dim(0) * (unit - 1)) +
-			(dim(0) * (year - 1)) +
+	unsigned int element = (dim[4] * dim[3] * dim[2] * dim[1] * dim[0] * (iter - 1)) +
+			(dim[3] * dim[2] * dim[1] * dim[0] * (area - 1)) +
+			(dim[2] * dim[1] * dim[0] * (season - 1)) +
+			(dim[1] * dim[0] * (unit - 1)) +
+			(dim[0] * (year - 1)) +
 			(quant - 1); 
 	return element;
 }
@@ -346,7 +355,7 @@ T& FLQuant_base<T>::operator () (const std::vector<unsigned int> indices) {
 
 // Subset
 template <typename T>
-FLQuant_base<T> FLQuant_base<T>::operator () (const int quant_min, const int quant_max, const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max) const {
+FLQuant_base<T> FLQuant_base<T>::operator () (const unsigned int quant_min, const unsigned int quant_max, const unsigned int year_min, const unsigned int year_max, const unsigned int unit_min, const unsigned int unit_max, const unsigned int season_min, const unsigned int season_max, const unsigned int area_min, const unsigned int area_max, const unsigned int iter_min, const unsigned int iter_max) const {
     // Check ranges
     if ((quant_min < 1) || (year_min < 1)|| (unit_min < 1)|| (season_min < 1)|| (area_min < 1)|| (iter_min < 1)) {
         Rcpp::stop("In FLQuant subsetter: requested min dimensions are less than 1.\n");
@@ -360,7 +369,7 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const int quant_min, const int qua
     }
 
     // Using brace initialiser
-    std::vector<int> new_dim{quant_max - quant_min + 1, year_max - year_min + 1, unit_max - unit_min + 1, season_max - season_min + 1, area_max - area_min + 1, iter_max - iter_min + 1};
+    std::vector<unsigned int> new_dim{quant_max - quant_min + 1, year_max - year_min + 1, unit_max - unit_min + 1, season_max - season_min + 1, area_max - area_min + 1, iter_max - iter_min + 1};
 
     FLQuant_base<T> out(new_dim[0], new_dim[1], new_dim[2], new_dim[3], new_dim[4], new_dim[5]);
     out.set_units(get_units());
@@ -375,7 +384,7 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const int quant_min, const int qua
     }}}}}}
 
     // Sorting out dimnames - not a speed issue
-    std::vector<int> min_dim{quant_min, year_min, unit_min, season_min, area_min, iter_min};
+    std::vector<unsigned int> min_dim{quant_min, year_min, unit_min, season_min, area_min, iter_min};
     Rcpp::List old_dimnames = get_dimnames();
     Rcpp::List new_dimnames = get_dimnames();
     std::vector<std::string> temp_old_dimname;
@@ -426,7 +435,8 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const unsigned int quant, const un
 
 template <typename T>
 void FLQuant_base<T>::set_data(const std::vector<T>& data_in){
-    Rcpp::IntegerVector dim = get_dim();
+    //Rcpp::IntegerVector dim = get_dim();
+    std::vector<unsigned int> dim = get_dim();
     unsigned int dim_prod = (dim[0] * dim[1] * dim[2]* dim[3]* dim[4]* dim[5]);
     if(dim_prod != data_in.size()){
         Rcpp::stop("Cannot set data. Data size does not match dims.\n");
@@ -1080,20 +1090,22 @@ FLQuant_base<T> operator + (const T& lhs, const FLQuant_base<double>& rhs){
 /* Other methods */
 template <typename T>
 int FLQuant_base<T>::match_dims(const FLQuant_base<T>& b) const{
-    Rcpp::IntegerVector dims_a =  get_dim();
-    Rcpp::IntegerVector dims_b =  b.get_dim();
+//    Rcpp::IntegerVector dims_a =  get_dim();
+//    Rcpp::IntegerVector dims_b =  b.get_dim();
+    std::vector<unsigned int> dims_a =  get_dim();
+    std::vector<unsigned int> dims_b =  b.get_dim();
     return dim_matcher(dims_a, dims_b);
 }
 
 template <typename T>
 template <typename T2>
 int FLQuant_base<T>::match_dims(const FLQuant_base<T2>& b) const{
-    Rcpp::IntegerVector dims_a =  get_dim();
-    Rcpp::IntegerVector dims_b =  b.get_dim();
+    //Rcpp::IntegerVector dims_a =  get_dim();
+    //Rcpp::IntegerVector dims_b =  b.get_dim();
+    std::vector<unsigned int> dims_a =  get_dim();
+    std::vector<unsigned int> dims_b =  b.get_dim();
     return dim_matcher(dims_a, dims_b);
 }
-
-
 
 /* Other functions */
 //FLQuant_base<T> log(const FLQuant_base<T>& flq);
@@ -1121,9 +1133,10 @@ FLQuant_base<T> exp(const FLQuant_base<T>& flq){
     return flq_out;
 }
 
-int dim_matcher(const Rcpp::IntegerVector dims_a, const Rcpp::IntegerVector dims_b){
+//int dim_matcher(const Rcpp::IntegerVector dims_a, const Rcpp::IntegerVector dims_b){
+int dim_matcher(const std::vector<unsigned int> dims_a, const std::vector<unsigned int> dims_b){
     for (int i=0; i<6; ++i){
-        if (dims_a(i) != dims_b(i)){
+        if (dims_a[i] != dims_b[i]){
             return -1 * (i+1); // Return negative of what dim does not match
         }
     }
@@ -1131,9 +1144,10 @@ int dim_matcher(const Rcpp::IntegerVector dims_a, const Rcpp::IntegerVector dims
 }
 
 // Only checks dim 1 - 5 - not iter
-int dim5_matcher(const Rcpp::IntegerVector dims_a, const Rcpp::IntegerVector dims_b){
+//int dim5_matcher(const Rcpp::IntegerVector dims_a, const Rcpp::IntegerVector dims_b){
+int dim5_matcher(const std::vector<unsigned int> dims_a, const std::vector<unsigned int> dims_b){
     for (int i=0; i<5; ++i){
-        if (dims_a(i) != dims_b(i)){
+        if (dims_a[i] != dims_b[i]){
             return -1 * (i+1); // Return negative of what dim does not match
         }
     }
@@ -1144,7 +1158,8 @@ int dim5_matcher(const Rcpp::IntegerVector dims_a, const Rcpp::IntegerVector dim
 template <typename T>
 FLQuant_base<T> year_sum(const FLQuant_base<T>& flq){
     Rprintf("In year_sum\n");
-    Rcpp::IntegerVector dim = flq.get_dim();
+    //Rcpp::IntegerVector dim = flq.get_dim();
+    std::vector<unsigned int> dim = flq.get_dim();
     // Need to make an empty FLQ with the right dim
     // New constructor?
     FLQuant_base<T> sum_flq(dim[0], 1, dim[2], dim[3], dim[4], dim[5]);
@@ -1158,7 +1173,8 @@ FLQuant_base<T> year_sum(const FLQuant_base<T>& flq){
 
 template <typename T>
 FLQuant_base<T> quant_sum(const FLQuant_base<T>& flq){
-    Rcpp::IntegerVector dim = flq.get_dim();
+    //Rcpp::IntegerVector dim = flq.get_dim();
+    std::vector<unsigned int> dim = flq.get_dim();
     // Make an empty FLQ with the right dim
     FLQuant_base<T> sum_flq(1, dim[1], dim[2], dim[3], dim[4], dim[5]);
     //// Set dimnames and units
@@ -1214,7 +1230,8 @@ FLQuant_base<T> quant_mean(const FLQuant_base<T>& flq){
 // Might be possible to use template functions if we moved to CppAD
 template <typename T>
 FLQuant_base<T> max_quant(const FLQuant_base<T>& flq){
-    Rcpp::IntegerVector dim = flq.get_dim();
+    //Rcpp::IntegerVector dim = flq.get_dim();
+    std::vector<unsigned int> dim = flq.get_dim();
     // Make an empty FLQ with the right dim
     FLQuant_base<T> max_flq(1, dim[1], dim[2], dim[3], dim[4], dim[5]);
     // Set dimnames and units
@@ -1274,7 +1291,8 @@ std::string number_to_string (T number) {
 FLQuant FLPar_to_FLQuant(SEXP flp) {
 	Rcpp::S4 flp_s4 = Rcpp::as<Rcpp::S4>(flp);
     Rcpp::NumericVector data_nv = flp_s4.slot(".Data");
-    Rcpp::IntegerVector flp_dim = data_nv.attr("dim");
+    //Rcpp::IntegerVector flp_dim = data_nv.attr("dim");
+    std::vector<unsigned int> flp_dim = data_nv.attr("dim");
     if (flp_dim.size() > 6){
         Rcpp::stop("Cannot convert FLPar to FLQuant as FLPar has more than 6 dimensions\n");
     }

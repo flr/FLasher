@@ -370,7 +370,7 @@ test_that("operatingModel annual project",{
     #------------------
     # Total F on the biol
     f5 <- test_operatingModel_total_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5)
-    f5_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5, dims_min, dims_max)
+    f5_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5, dim_min, dim_max)
     # Total Z of biol
     z5 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5)
     # SSB of biol
@@ -420,7 +420,7 @@ test_that("operatingModel partial Fs",{
     dim_max <- dims
     dim_min <- round(runif(6, min=1, max=dim_max))
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
-    fout <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
+    fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
     fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
     cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
@@ -538,7 +538,6 @@ test_that("operatingModel catch targets",{
     om <- make_test_operatingModel1(20)
     dim_max <- dim(n(om[["biols"]][[1]][["biol"]]))
     dim_min <- round(runif(6, min=1, max=dim_max))
-
     # 1 biol -> 1 catch
     biol_no <- 1
     catches_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
@@ -558,7 +557,7 @@ test_that("operatingModel catch targets",{
     biol_no <- 4 
     catches_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
     expect_that(unname(catches_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catches_out@.Data)))
-}
+})
 
 
 #
@@ -1178,3 +1177,4 @@ test_that("operatingModel catch targets",{
 #    # F should be 0
 #    expect_that(c(apply(out[["f"]][[1]][ac(minAge:maxAge),2],2:6,mean)), equals(0))
 #})
+

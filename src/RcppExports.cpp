@@ -3836,14 +3836,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_FLQuantAD_get_dim
-Rcpp::IntegerVector test_FLQuantAD_get_dim(FLQuantAD flq);
+std::vector<unsigned int> test_FLQuantAD_get_dim(FLQuantAD flq);
 RcppExport SEXP FLasher_test_FLQuantAD_get_dim(SEXP flqSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< FLQuantAD >::type flq(flqSEXP );
-        Rcpp::IntegerVector __result = test_FLQuantAD_get_dim(flq);
+        std::vector<unsigned int> __result = test_FLQuantAD_get_dim(flq);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -4398,14 +4398,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_FLQuant_get_dim
-Rcpp::IntegerVector test_FLQuant_get_dim(FLQuant flq);
+std::vector<unsigned int> test_FLQuant_get_dim(FLQuant flq);
 RcppExport SEXP FLasher_test_FLQuant_get_dim(SEXP flqSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP );
-        Rcpp::IntegerVector __result = test_FLQuant_get_dim(flq);
+        std::vector<unsigned int> __result = test_FLQuant_get_dim(flq);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

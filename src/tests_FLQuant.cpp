@@ -82,7 +82,7 @@ std::string test_FLQuant_get_units(FLQuant flq){
 }
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector test_FLQuant_get_dim(FLQuant flq){
+std::vector<unsigned int> test_FLQuant_get_dim(FLQuant flq){
 	return flq.get_dim();
 }
 

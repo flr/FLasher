@@ -18,9 +18,8 @@
 
 // [[Rcpp::export]]
 void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const unsigned int year, const int unsigned season, const int rep){
-    Rcpp::IntegerVector raw_dims = fwdb.biomass().get_dim();
-
-    std::vector<unsigned int> dims = Rcpp::as<std::vector<unsigned int>>(raw_dims);
+    //Rcpp::IntegerVector raw_dims = fwdb.biomass().get_dim();
+    std::vector<unsigned int> dims = fwdb.biomass().get_dim();
 
     clock_t start, end;
     start = clock();

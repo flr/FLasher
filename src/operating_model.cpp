@@ -297,8 +297,7 @@ adouble operatingModel::catch_q(const int fishery_no, const int catch_no, const 
  */
 FLQuantAD operatingModel::catch_q(const int fishery_no, const int catch_no, const int biol_no) const{
     FLQuantAD biomass = biols(biol_no).biomass();
-    Rcpp::IntegerVector raw_dim = biomass.get_dim();
-    std::vector<unsigned int> dim = Rcpp::as<std::vector<unsigned int>>(raw_dim);
+    std::vector<unsigned int> dim = biomass.get_dim();
     std::vector<unsigned int> indices_min {1,1,1,1,1};
     std::vector<unsigned int> indices_max {dim[1], dim[2], dim[3], dim[4], dim[5]};
     FLQuantAD q = catch_q(fishery_no, catch_no, biol_no, indices_min, indices_max);
@@ -333,7 +332,7 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
     FLQuantAD q_effort = q * eff;
     FLQuantAD sel = fisheries(fishery_no, catch_no).catch_sel()(indices_min, indices_max);
     // Ugly code but need to implement a sweep - could write a FLQ sweep_dim1 method
-    Rcpp::IntegerVector dim = sel.get_dim();
+    std::vector<unsigned int> dim = sel.get_dim();
     for (int quant_count = 1; quant_count <= dim[0]; ++quant_count){
         for (int year_count = 1; year_count <= dim[1]; ++year_count){
             for (int unit_count = 1; unit_count <= dim[2]; ++unit_count){
@@ -353,8 +352,9 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
 FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no) const {
     // Just call the subset method with full indices
     Rprintf("In get_f FLQ method\n");
-    Rcpp::IntegerVector raw_dims = biols(biol_no).n().get_dim();
-    std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(raw_dims);
+    std::vector<unsigned int> indices_max = biols(biol_no).n().get_dim();
+    //Rcpp::IntegerVector raw_dims = biols(biol_no).n().get_dim();
+    //std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(raw_dims);
     std::vector<unsigned int> indices_min(6,1);
     FLQuantAD f = get_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
     return f;
@@ -405,8 +405,9 @@ FLQuantAD operatingModel::partial_f(const int fishery_no, const int catch_no, co
 FLQuantAD operatingModel::partial_f(const int fishery_no, const int catch_no, const int biol_no) const {
     // Just call the subset method with full indices
     Rprintf("In partial_f FLQ method\n");
-    Rcpp::IntegerVector raw_dims = biols(biol_no).n().get_dim();
-    std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(raw_dims);
+    //Rcpp::IntegerVector raw_dims = biols(biol_no).n().get_dim();
+    //std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(raw_dims);
+    std::vector<unsigned int> indices_max = biols(biol_no).n().get_dim();
     std::vector<unsigned int> indices_min(6,1);
     FLQuantAD f = partial_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
     return f;
@@ -445,8 +446,9 @@ FLQuantAD operatingModel::total_f(const int biol_no, const std::vector<unsigned 
  * \param biol_no the position of the biol within the biols (starting at 1).
  */
 FLQuantAD operatingModel::total_f(const int biol_no) const {
-    Rcpp::IntegerVector raw_dims = biols(biol_no).n().get_dim();
-    std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(raw_dims);
+    //Rcpp::IntegerVector raw_dims = biols(biol_no).n().get_dim();
+    //std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(raw_dims);
+    std::vector<unsigned int> indices_max = biols(biol_no).n().get_dim();
     std::vector<unsigned int> indices_min(6,1);
     FLQuantAD f = total_f(biol_no, indices_min, indices_max);
 //    unsigned int fishery_no;
@@ -523,8 +525,9 @@ void operatingModel::project_timestep(const int timestep){
     timestep_to_year_season(timestep+1, biols(1).n(), next_year, next_season); 
 
     // Bit of faffing dims are not unsigned in Rcpp::IntegerVector
-    Rcpp::IntegerVector biol_raw_dim = biols(1).n().get_dim();
-    std::vector<unsigned int> biol_dim = Rcpp::as<std::vector<unsigned int>>(biol_raw_dim);
+    //Rcpp::IntegerVector biol_raw_dim = biols(1).n().get_dim();
+    //std::vector<unsigned int> biol_dim = Rcpp::as<std::vector<unsigned int>>(biol_raw_dim);
+    std::vector<unsigned int> biol_dim = biols(1).n().get_dim();
     // timestep checks
     if ((year > biol_dim[1]) | (season > biol_dim[3])){
         Rcpp::stop("project_timestep: timestep outside of range");
@@ -1141,7 +1144,7 @@ FLQuantAD operatingModel::ssb(const int biol_no, const std::vector<unsigned int>
     // Add quant dim to indices
     std::vector<unsigned int> quant_indices_min = indices_min;
     quant_indices_min.insert(quant_indices_min.begin(), 1);
-    Rcpp::IntegerVector dims = biols(biol_no).n().get_dim();
+    std::vector<unsigned int> dims = biols(biol_no).n().get_dim();
     std::vector<unsigned int> quant_indices_max = indices_max;
     quant_indices_max.insert(quant_indices_max.begin(), dims[0]);
     FLQuantAD ssb = quant_sum(biols(biol_no).wt(quant_indices_min, quant_indices_max) * biols(biol_no).fec(quant_indices_min, quant_indices_max) * biols(biol_no).n(quant_indices_min, quant_indices_max) * exp(-1.0*((total_f(biol_no, quant_indices_min, quant_indices_max) + biols(biol_no).m(quant_indices_min, quant_indices_max)) * biols(biol_no).spwn(quant_indices_min, quant_indices_max))));
@@ -1165,7 +1168,8 @@ FLQuantAD operatingModel::ssb(const int biol_no, const std::vector<unsigned int>
  */
 FLQuantAD operatingModel::ssb(const int biol_no) const {
     std::vector<unsigned int> indices_min {1,1,1,1,1};
-    std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(biols(biol_no).n().get_dim());
+    //std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(biols(biol_no).n().get_dim());
+    std::vector<unsigned int> indices_max = biols(biol_no).n().get_dim();
     indices_max.erase(indices_max.begin(), indices_max.begin()+1);
     return ssb(biol_no, indices_min, indices_max);
 }
