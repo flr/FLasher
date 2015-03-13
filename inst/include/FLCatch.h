@@ -68,9 +68,11 @@ class FLCatch_base {
         FLQuant_base<T> discards(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant_base<T> catches() const;
         FLQuant_base<T> catches(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-
         FLQuant_base<T> catch_n() const;
+        FLQuant_base<T> catch_n(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant_base<T> catch_wt() const;
+        FLQuant_base<T> catch_wt(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+
         FLQuant_base<T> landings_sel() const;
         FLQuant_base<T> discards_sel() const;
 

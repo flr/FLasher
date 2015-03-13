@@ -348,7 +348,14 @@ FLQuant_base<T> FLCatch_base<T>::discards(const std::vector<unsigned int> indice
 
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::catch_n() const {
-    FLQuant_base<T> catch_n = discards_n() + landings_n();
+    std::vector<unsigned int> indices_min {1,1,1,1,1,1};
+    std::vector<unsigned int> indices_max = landings_wt_flq.get_dim();
+    return catch_n(indices_min, indices_max);
+}
+
+template <typename T>
+FLQuant_base<T> FLCatch_base<T>::catch_n(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    FLQuant_base<T> catch_n = discards_n(indices_min, indices_max) + landings_n(indices_min, indices_max);
     return catch_n;
 }
 
@@ -377,10 +384,16 @@ FLQuant_base<T> FLCatch_base<T>::catches(const std::vector<unsigned int> indices
 
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::catch_wt() const {
-    FLQuant_base<T> catch_wt = ((landings_wt() * landings_n()) + (discards_wt() * discards_n())) / (landings_n() * discards_n());
-    return catch_wt;
+    std::vector<unsigned int> indices_min {1,1,1,1,1,1};
+    std::vector<unsigned int> indices_max = landings_wt_flq.get_dim();
+    return catch_wt(indices_min, indices_max);
 }
 
+template <typename T>
+FLQuant_base<T> FLCatch_base<T>::catch_wt(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    FLQuant_base<T> catch_wt = ((landings_wt(indices_min, indices_max) * landings_n(indices_min, indices_max)) + (discards_wt(indices_min, indices_max) * discards_n(indices_min, indices_max))) / (landings_n(indices_min, indices_max) * discards_n(indices_min, indices_max));
+    return catch_wt;
+}
 
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::landings_sel() const {

@@ -118,6 +118,8 @@ Rcpp::List test_FLCatch_const_get_accessors_subset(const FLCatch flc, const std:
         Rcpp::Named("discards_wt", flc.discards_wt(indices_min, indices_max)),
         Rcpp::Named("catch_sel", flc.catch_sel(indices_min, indices_max)),
         Rcpp::Named("discards_ratio", flc.discards_ratio(indices_min, indices_max)),
+        Rcpp::Named("catch_wt", flc.catch_wt(indices_min, indices_max)),
+        Rcpp::Named("catch_n", flc.catch_n(indices_min, indices_max)),
         Rcpp::Named("landings", flc.landings(short_indices_min, short_indices_max)),
         Rcpp::Named("discards", flc.discards(short_indices_min, short_indices_max)),
         Rcpp::Named("catches", flc.catches(short_indices_min, short_indices_max)));
