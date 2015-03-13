@@ -391,7 +391,7 @@ FLQuant_base<T> FLCatch_base<T>::catch_wt() const {
 
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::catch_wt(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    FLQuant_base<T> catch_wt = ((landings_wt(indices_min, indices_max) * landings_n(indices_min, indices_max)) + (discards_wt(indices_min, indices_max) * discards_n(indices_min, indices_max))) / (landings_n(indices_min, indices_max) * discards_n(indices_min, indices_max));
+    FLQuant_base<T> catch_wt = ((landings_wt(indices_min, indices_max) * landings_n(indices_min, indices_max)) + (discards_wt(indices_min, indices_max) * discards_n(indices_min, indices_max))) / (landings_n(indices_min, indices_max) + discards_n(indices_min, indices_max));
     return catch_wt;
 }
 
