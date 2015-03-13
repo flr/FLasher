@@ -219,7 +219,19 @@ FLQuantAD test_operatingModel_catches_subset(FLFisheriesAD flfs, SEXP flbs_list_
     return om.catches(biol_no, indices_min, indices_max);
 }
 
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_landings_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    return om.landings(biol_no, indices_min, indices_max);
+}
 
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_discards_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    return om.discards(biol_no, indices_min, indices_max);
+}
 
 /*----------- SSB calculations--------------*/
 

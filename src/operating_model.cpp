@@ -1248,6 +1248,112 @@ FLQuantAD operatingModel::catches(const int biol_no) const{
 }
 */
 
+/*! \brief Subset the total landings from a single biol 
+ * If the catch that catches the biol only catches from that biol, the landings are taken directly from the landings in the FLCatch object, i.e. they are not recalculated. Therefore, if effort or something has changed, this method will not reflect those changes.
+ * If a biol is fished by a catch that also catches from another biol (e.g. a catch fishing on two sub stocks)
+ * the landings from each biol have to be recalculated as there is no way of splitting the total catch
+ * into the catches from each biol.
+ * The sum of the (recalculated) landings may not equal the total landings already stored in the object.
+ *
+ * \param biol_no Position of the chosen biol in the biols list
+ * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 5)
+ * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
+ */
+FLQuantAD operatingModel::landings(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if(indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel landings on a biol subset method. indices_min and max must be of length 5\n");
+    }
+    // Indices for the full FLQ, i.e. including first dimension
+    std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
+    std::vector<unsigned int> quant_indices_min = indices_min;
+    std::vector<unsigned int> quant_indices_max = indices_max;
+    quant_indices_min.insert(quant_indices_min.begin(), 1);
+    quant_indices_max.insert(quant_indices_max.begin(), dim[0]);
+    unsigned int fishery_no;
+    unsigned int catch_no;
+    // Empty quant for storage
+    FLQuantAD total_landings(1, indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1); 
+    total_landings.fill(0.0);
+    // Get the Fishery / Catches that catch the biol
+    const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
+    // Do any of these FCs catch another biol 
+    int nbiols = 0;
+    std::vector<int> biols_fished;
+    // Loop over the FCs that catch from that biol 
+    for (int FC_counter = 0; FC_counter < FC.nrow(); ++FC_counter){
+        // What biols are also fished by that FC
+        biols_fished = ctrl.get_B(FC(FC_counter, 0), FC(FC_counter, 1)); 
+        // If that FC only catches that biol, add catches into total - no need to partition
+        if(biols_fished.size() == 1) { 
+            total_landings = total_landings + fisheries(FC(FC_counter,0), FC(FC_counter,1)).landings(indices_min, indices_max);
+        }
+        // Get partition of the total landings from the FC that comes from the biol
+        // Sadly this involves the baranov equation again
+        else {
+            // Slow as total_f calls partial_f so we end up calling it again
+            FLQuantAD z = total_f(biol_no, quant_indices_min, quant_indices_max) + biols(biol_no).m(quant_indices_min, quant_indices_max);
+            FLQuantAD catch_n =  (partial_f(FC(FC_counter,0), FC(FC_counter,1), biol_no, quant_indices_min, quant_indices_max) / z) * (1.0 - exp(-1.0 * z)) * biols(biol_no).n(quant_indices_min, quant_indices_max);
+            FLQuantAD landings_n = catch_n * (1.0 - fisheries(FC(FC_counter,0), FC(FC_counter,1)).discards_ratio(quant_indices_min, quant_indices_max));
+            FLQuantAD landings = quant_sum(landings_n * fisheries(FC(FC_counter,0), FC(FC_counter,1)).landings_wt(quant_indices_min, quant_indices_max));
+            total_landings = total_landings + landings;
+        }
+    }
+    return total_landings;
+}
+
+/*! \brief Subset the total discards from a single biol 
+ * If the catch that catches the biol only catches from that biol, the discards are taken directly from the discards in the FLCatch object, i.e. they are not recalculated. Therefore, if effort or something has changed, this method will not reflect those changes.
+ * If a biol is fished by a catch that also catches from another biol (e.g. a catch fishing on two sub stocks)
+ * the discards from each biol have to be recalculated as there is no way of splitting the total catch
+ * into the catches from each biol.
+ * The sum of the (recalculated) discards may not equal the total discards already stored in the object.
+ *
+ * \param biol_no Position of the chosen biol in the biols list
+ * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 5)
+ * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
+ */
+FLQuantAD operatingModel::discards(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if(indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel discards on a biol subset method. indices_min and max must be of length 5\n");
+    }
+    // Indices for the full FLQ, i.e. including first dimension
+    std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
+    std::vector<unsigned int> quant_indices_min = indices_min;
+    std::vector<unsigned int> quant_indices_max = indices_max;
+    quant_indices_min.insert(quant_indices_min.begin(), 1);
+    quant_indices_max.insert(quant_indices_max.begin(), dim[0]);
+    unsigned int fishery_no;
+    unsigned int catch_no;
+    // Empty quant for storage
+    FLQuantAD total_discards(1, indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1); 
+    total_discards.fill(0.0);
+    // Get the Fishery / Catches that catch the biol
+    const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
+    // Do any of these FCs catch another biol 
+    int nbiols = 0;
+    std::vector<int> biols_fished;
+    // Loop over the FCs that catch from that biol 
+    for (int FC_counter = 0; FC_counter < FC.nrow(); ++FC_counter){
+        // What biols are also fished by that FC
+        biols_fished = ctrl.get_B(FC(FC_counter, 0), FC(FC_counter, 1)); 
+        // If that FC only catches that biol, add catches into total - no need to partition
+        if(biols_fished.size() == 1) { 
+            total_discards = total_discards + fisheries(FC(FC_counter,0), FC(FC_counter,1)).discards(indices_min, indices_max);
+        }
+        // Get partition of the total discards from the FC that comes from the biol
+        // Sadly this involves the baranov equation again
+        else {
+            // Slow as total_f calls partial_f so we end up calling it again
+            FLQuantAD z = total_f(biol_no, quant_indices_min, quant_indices_max) + biols(biol_no).m(quant_indices_min, quant_indices_max);
+            FLQuantAD catch_n =  (partial_f(FC(FC_counter,0), FC(FC_counter,1), biol_no, quant_indices_min, quant_indices_max) / z) * (1.0 - exp(-1.0 * z)) * biols(biol_no).n(quant_indices_min, quant_indices_max);
+            FLQuantAD discards_n = catch_n * (fisheries(FC(FC_counter,0), FC(FC_counter,1)).discards_ratio(quant_indices_min, quant_indices_max));
+            FLQuantAD discards = quant_sum(discards_n * fisheries(FC(FC_counter,0), FC(FC_counter,1)).discards_wt(quant_indices_min, quant_indices_max));
+            total_discards = total_discards + discards;
+        }
+    }
+    return total_discards;
+}
+
 /*! \brief Subset the total catches from a single biol 
  * If the catch that catches the biol only catches from that biol, the catches are taken directly from the catches in the FLCatch object, i.e. they are not recalculated. Therefore, if effort or something has changed, this method will not reflect those changes.
  * If a biol is fished by a catch that also catches from another biol (i.e. a catch fishing on two sub stocks)
@@ -1263,42 +1369,7 @@ FLQuantAD operatingModel::catches(const int biol_no, const std::vector<unsigned 
     if(indices_min.size() != 5 | indices_max.size() != 5){
         Rcpp::stop("In operatingModel catches on a biol subset method. indices_min and max must be of length 5\n");
     }
-    // Indices for the FLQ, i.e. including first dimension
-    std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
-    std::vector<unsigned int> quant_indices_min = indices_min;
-    std::vector<unsigned int> quant_indices_max = indices_max;
-    quant_indices_min.insert(quant_indices_min.begin(), 1);
-    quant_indices_max.insert(quant_indices_max.begin(), dim[0]);
-    unsigned int fishery_no;
-    unsigned int catch_no;
-    // Empty quant for storage
-    FLQuantAD total_catches(1, indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1); 
-    total_catches.fill(0.0);
-    // Get the Fishery / Catches that catch the biol
-    const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
-    // Do any of these FCs catch another biol 
-    int nbiols = 0;
-    std::vector<int> biols_fished;
-    // Loop over the FCs that catch from that biol, and partition catches if necessary
-    for (int FC_counter = 0; FC_counter < FC.nrow(); ++FC_counter){
-        // What biols are also fished by that FC
-        biols_fished = ctrl.get_B(FC(FC_counter, 0), FC(FC_counter, 1)); 
-        // If that FC only catches that biol, add catches into total - no need to partition
-        if(biols_fished.size() == 1) { 
-            total_catches = total_catches + fisheries(FC(FC_counter,0), FC(FC_counter,1)).catches(indices_min, indices_max);
-        }
-        // Get partition of the total catches from the FC that comes from the biol
-        // Sadly this involves the baranov equation again
-        else {
-            // Slow as total_f calls partial_f so we end up calling it again
-            FLQuantAD z = total_f(biol_no, quant_indices_min, quant_indices_max) + biols(biol_no).m(quant_indices_min, quant_indices_max);
-            FLQuantAD catch_n =  (partial_f(FC(FC_counter,0), FC(FC_counter,1), biol_no, quant_indices_min, quant_indices_max) / z) * (1.0 - exp(-1.0 * z)) * biols(biol_no).n(quant_indices_min, quant_indices_max);
-            FLQuantAD landings_n = catch_n * (1.0 - fisheries(FC(FC_counter,0), FC(FC_counter,1)).discards_ratio(quant_indices_min, quant_indices_max));
-            FLQuantAD discards_n = catch_n * fisheries(FC(FC_counter,0), FC(FC_counter,1)).discards_ratio(quant_indices_min, quant_indices_max);
-            FLQuantAD catches = quant_sum(landings_n * fisheries(FC(FC_counter,0), FC(FC_counter,1)).landings_wt(quant_indices_min, quant_indices_max) + discards_n * fisheries(FC(FC_counter,0), FC(FC_counter,1)).discards_wt(quant_indices_min, quant_indices_max));
-            total_catches = total_catches + catches;
-        }
-    }
+    FLQuantAD total_catches = landings(biol_no, indices_min, indices_max) + discards(biol_no, indices_min, indices_max);
     return total_catches;
 }
 
