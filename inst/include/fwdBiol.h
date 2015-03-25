@@ -50,10 +50,15 @@ class fwdBiol_base {
 
         // Get accessors with const reinforced
         FLQuant_base<T> n() const;
+        FLQuant_base<T> n(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant wt() const;
+        FLQuant wt(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant m() const;
+        FLQuant m(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant spwn() const;
+        FLQuant spwn(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant fec() const;
+        FLQuant fec(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
         // SSB calculations not implemented here - need harvest.spwn information
         //FLQuant_base<T> ssb() const;
@@ -69,6 +74,7 @@ class fwdBiol_base {
 
         // Summary methods
         FLQuant_base<T> biomass() const;
+        FLQuant_base<T> biomass(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; // subsetting
 
         fwdSR_base<T> get_srr() const;
         std::string get_name() const;

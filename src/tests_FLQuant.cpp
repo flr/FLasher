@@ -3,6 +3,7 @@
  * Maintainer: Finlay Scott, JRC
  */
 
+#include <time.h>
 #include "../../inst/include/FLQuant_base.h"
 
 // [[Rcpp::export]]
@@ -81,7 +82,7 @@ std::string test_FLQuant_get_units(FLQuant flq){
 }
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector test_FLQuant_get_dim(FLQuant flq){
+std::vector<unsigned int> test_FLQuant_get_dim(FLQuant flq){
 	return flq.get_dim();
 }
 
@@ -238,6 +239,12 @@ FLQuant test_FLQuant_subset(FLQuant flq, const int quant_min, const int quant_ma
   return flq(quant_min, quant_max, year_min, year_max, unit_min, unit_max, season_min, season_max, area_min, area_max, iter_min, iter_max);
 }
 
+
+// [[Rcpp::export]]
+FLQuant test_FLQuant_neat_subset(FLQuant flq, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    return flq(indices_min, indices_max);
+}
+
 // [[Rcpp::export]]
 Rcpp::List test_FLQuant_propagate_iters(FLQuant flq, const int iters){
     FLQuant flq2 = flq.propagate_iters(iters);
@@ -276,6 +283,53 @@ int test_FLQuant_FLQuant_match_dims(FLQuant flq1, FLQuant flq2){
 FLQuant test_FLPar_to_FLQuant(SEXP flp){
     FLQuant flq = FLPar_to_FLQuant(flp);
     return flq;
+}
+
+//--------- begin and end ----------------------
+
+// [[Rcpp::export]]
+FLQuant test_for_range(FLQuant flq, double rn){
+    for (auto& it : flq){
+        it *= rn;
+    }
+    return flq;
+}
+
+// [[Rcpp::export]]
+double test_for_range_const(FLQuant flq, double rn){
+    auto value = 0.0;
+    for (const auto& it : flq){
+        value = value + it * rn;
+    }
+    return value;
+}
+
+
+// [[Rcpp::export]]
+FLQuant test_FLQuant_for_iterator(FLQuant flq, double rn){
+    FLQuant::iterator it;
+    for(it = flq.begin(); it != flq.end(); it++) {
+        *it *= rn;
+    }
+    return flq;
+}
+
+// [[Rcpp::export]]
+double test_FLQuant_for_iterator_const(FLQuant flq, double rn){
+    FLQuant::const_iterator it;
+    auto value = 0.0;
+    for(it = flq.begin(); it != flq.end(); it++) {
+        value = value + *it * rn;
+    }
+    return value;
+}
+
+// [[Rcpp::export]]
+FLQuant test_FLQuant_lambda(FLQuant flq1, FLQuant flq2){
+    FLQuant flq3(flq1);
+    std::transform(flq1.begin(), flq1.end(), flq2.begin(), flq3.begin(),
+        [](double x, double y) { return sqrt(x*x + y*y); } );
+    return flq3;
 }
 
 //--------- Shortcuts ----------------------

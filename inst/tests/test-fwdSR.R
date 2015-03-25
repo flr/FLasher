@@ -69,7 +69,6 @@ test_that("fwdSR eval_model",{
     rec <- test_fwdSR_eval_full("ricker", params.ricker, timelag, residuals.ricker, residuals_mult, ssb, year, unit, season, area, iter)
     expect_that(rec, is_identical_to(c(predict(ple4.sr.ricker, ssb=FLQuant(ssb)))))
 
-    # Expand params - cannot properly test as FLSR not set up yet
     # random indices for dims
     indices <- round(runif(6,min=2,max=10))
     # Multi years - accessing other dims with dim greater than their lengths

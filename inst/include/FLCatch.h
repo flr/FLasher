@@ -34,15 +34,23 @@ class FLCatch_base {
         // Accessor methods for the slots
         // Get only
         FLQuant_base<T> landings_n() const;
+        FLQuant_base<T> landings_n(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant_base<T> discards_n() const;
+        FLQuant_base<T> discards_n(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant landings_wt() const;
+        FLQuant landings_wt(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant discards_wt() const;
+        FLQuant discards_wt(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant catch_sel() const;
+        FLQuant catch_sel(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant price() const;
+        FLQuant_base<T> discards_ratio() const;
+        FLQuant_base<T> discards_ratio(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant catch_q_params() const;
         // Extra accessor for catch_q because it's really an FLPar in disguise and does not have
         // the same 'true' dimensions as the other slots
         std::vector<double> catch_q_params(int year, int unit, int season, int area, int iter) const;
+        FLQuant catch_q_params(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
         // Get and Set
         FLQuant_base<T>& landings_n();
@@ -55,13 +63,18 @@ class FLCatch_base {
 
         // Methods
         FLQuant_base<T> landings() const;
+        FLQuant_base<T> landings(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant_base<T> discards() const;
+        FLQuant_base<T> discards(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant_base<T> catches() const;
+        FLQuant_base<T> catches(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant_base<T> catch_n() const;
+        FLQuant_base<T> catch_n(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant_base<T> catch_wt() const;
+        FLQuant_base<T> catch_wt(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+
         FLQuant_base<T> landings_sel() const;
         FLQuant_base<T> discards_sel() const;
-        FLQuant_base<T> discards_ratio() const;
 
         std::string get_name() const;
         std::string get_desc() const;

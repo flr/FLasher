@@ -34,6 +34,14 @@
 // Renaming adouble (ADOL-C type) so can easily use original ADOL-C based code
 typedef CppAD::AD<double> adouble;
 
+
+/*! \brief The FLQuant class
+ *
+ * This class is similar in dimension and behaviour to the R FLQuant class.
+ * The values can either be of type double or adouble, the latter used with the CppAD library.
+ * Basic FLQuant manipulation and mathematical operations are available.
+ *
+ */
 template <typename T>
 class FLQuant_base {
 	public:
@@ -43,7 +51,7 @@ class FLQuant_base {
         operator SEXP() const; // Used as intrusive 'wrap'
 		FLQuant_base(const FLQuant_base& FLQuant_base_source); // copy constructor to ensure that copies (i.e. when passing to functions) are deep
 		FLQuant_base& operator = (const FLQuant_base& FLQuant_source); // Assignment operator for a deep copy
-        FLQuant_base(const int nquant, const int nyear, const int nunit, const int nseason, const int narea, const int niter); // Make an empty FLQuant
+        FLQuant_base(const unsigned int nquant, const unsigned int nyear, const unsigned int nunit, const unsigned int nseason, const unsigned int narea, const unsigned int niter); // Make an empty FLQuant
 
         template <typename T2>
 		FLQuant_base(const FLQuant_base<T2>& FLQuant_source); // Specialised to make an FLQuantAdolc / AD from an FLQuant
@@ -51,17 +59,17 @@ class FLQuant_base {
 		/* Get accessors */
         std::vector<T> get_data() const;
 		std::string get_units() const;
-        Rcpp::IntegerVector get_dim() const;
+        //Rcpp::IntegerVector get_dim() const;
+        std::vector<unsigned int> get_dim() const;
         Rcpp::List get_dimnames() const;
 		unsigned int get_size() const;
-		int get_nquant() const;
-		int get_nyear() const;
-		int get_nunit() const;
-		int get_nseason() const;
-		int get_narea() const;
-		int get_niter() const;
+		unsigned int get_nquant() const;
+		unsigned int get_nyear() const;
+		unsigned int get_nunit() const;
+		unsigned int get_nseason() const;
+		unsigned int get_narea() const;
+		unsigned int get_niter() const;
 		int get_data_element(const int quant, const int year, const int unit, const int season, const int area, int iter) const;
-		int get_data_element2(const int quant, const int year, const int unit, const int season, const int area, int iter) const;
 
 		/* Set accessors */
 		void set_data(const std::vector<T>& data_in);
@@ -72,8 +80,10 @@ class FLQuant_base {
 		T operator () (const unsigned int element) const; // only gets an element so const reinforced - 
 		T operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter) const; // only gets an element so const reinforced 
 		T operator () (const std::vector<unsigned int> indices) const; // For all the elements - must be of length 6 
-		FLQuant_base<T> operator () (const int quant_min, const int quant_max, const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max) const; // Subsetting
+		FLQuant_base<T> operator () (const unsigned int quant_min, const unsigned int quant_max, const unsigned int year_min, const unsigned int year_max, const unsigned int unit_min, const unsigned int unit_max, const unsigned int season_min, const unsigned int season_max, const unsigned int area_min, const unsigned int area_max, const unsigned int iter_min, const unsigned int iter_max) const; // Subsetting
+        FLQuant_base<T> operator () (const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; // Neater subsetting
 		FLQuant_base<T> operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area) const; // Access all iters
+
         /* () get and set accessors */
 		T& operator () (const unsigned int element); // gets and sets an element so const not reinforced
 		T& operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter); // gets and sets an element so const not reinforced
@@ -144,10 +154,19 @@ class FLQuant_base {
         int match_dims(const FLQuant_base<T2>& flq) const;
         FLQuant_base<T> propagate_iters(const int iters) const;
 
+        /* begin and end and const versions for iterators */
+        typedef typename std::vector<T>::iterator iterator;
+        iterator begin();
+        iterator end();
+        typedef typename std::vector<T>::const_iterator const_iterator;
+        const_iterator begin() const;
+        const_iterator end() const;
+
     protected:
         std::vector<T> data;
 		std::string units;	
-        Rcpp::IntegerVector dim;
+        //Rcpp::IntegerVector dim;
+        std::vector<unsigned int> dim;
         Rcpp::List dimnames;
 };
 
@@ -158,8 +177,10 @@ typedef FLQuant_base<adouble> FLQuantAD;
 
 //---------- Other useful functions ------------------------
 
-int dim_matcher(const Rcpp::IntegerVector a, const Rcpp::IntegerVector b);
-int dim5_matcher(const Rcpp::IntegerVector a, const Rcpp::IntegerVector b);
+//int dim_matcher(const Rcpp::IntegerVector a, const Rcpp::IntegerVector b);
+//int dim5_matcher(const Rcpp::IntegerVector a, const Rcpp::IntegerVector b);
+int dim_matcher(const std::vector<unsigned int> a, const std::vector<unsigned int> b);
+int dim5_matcher(const std::vector<unsigned int> a, const std::vector<unsigned int> b);
 
 
 template <typename T>

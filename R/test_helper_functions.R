@@ -320,17 +320,6 @@ simple_fisheries_project <- function(flfs, flb, flsr, f, f_spwn, sr_residuals, s
     return(list(flfs = flfs, flb = flb))
 }
 
-setClass("fwdControlTest",
-    representation(
-        target = "data.frame",
-        target_iters = "array"
-    ),
-    prototype = prototype(
-        target_iters= array(NA, dim=c(1,3,1), dimnames=list(target_no=1, c("min","value","max"), iter=1))
-    )
-)
-
-
 
 #' Dummy fwdControl object creator
 #'
@@ -342,10 +331,6 @@ setClass("fwdControlTest",
 #' @export
 #' @return A fwdControl object
 dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=1,max=10)), niters = round(runif(1,min=1,max=10))){
-    # We need to have a proper R version of the class
-    # And an automatic generator
-
-
     target <- data.frame(year=years,
                           value=rlnorm(length(years)),
                           quantity='f',
@@ -354,10 +339,7 @@ dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=1,max=10)), 
                           maxAge = 5,
                           fishery = NA,
                           catch = NA
-
                           )
-
-
     # Force integers - should be done in fwd() dispatch or constructor
     target$fishery <- as.integer(target$fishery)
     target$catch <- as.integer(target$catch)
@@ -372,6 +354,12 @@ dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=1,max=10)), 
     target_iters[,"max",] <- NA
 
     fwc <- fwdControl(target=target, iters=target_iters)
+
+    # Add fake FCB array - will be constructed on R side before calling fwd()
+    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+    colnames(FCB) <- c("F","C","B")
+    attr(fwc@target, "FCB") <- FCB
+
     return(fwc)
 }
 
@@ -386,6 +374,9 @@ dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=1,max=10)), 
 make_test_operatingModel1 <- function(niters = 1000){
     # Sort out the FLBiols
     data(ple4)
+
+    #ple4 <- window(ple4,start=2000, end=2003)
+
     # blow up
     ple4_iters <- propagate(ple4, niters)
     seed_biol <- as(ple4_iters,"FLBiol")

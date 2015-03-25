@@ -3,35 +3,37 @@
  * Maintainer: Finlay Scott, JRC
  */
 
+// For timing functions
+#include <time.h>
 #include "../../inst/include/operating_model.h"
 
 /* timestep convertors */
 
 // [[Rcpp::export]]
-int test_year_season_to_timestep_FLQuant_double(FLQuant flq, const int year, const int season){
-    int timestep = 0;
+unsigned int test_year_season_to_timestep_FLQuant_double(FLQuant flq, const unsigned int year, const unsigned int season){
+    unsigned int timestep = 0;
     year_season_to_timestep(year, season, flq, timestep);
     return timestep;
 }
 
 // [[Rcpp::export]]
-int test_year_season_to_timestep_FLQuant_adouble(FLQuantAD flqad, const int year, const int season){
-    int timestep = 0;
+unsigned int test_year_season_to_timestep_FLQuant_adouble(FLQuantAD flqad, const unsigned int year, const unsigned int season){
+    unsigned int timestep = 0;
     year_season_to_timestep(year, season, flqad, timestep);
     return timestep;
 }
 
 // [[Rcpp::export]]
-int test_year_season_to_timestep(FLQuant flq, const int year, const int season){
-    int timestep = 0;
+unsigned int test_year_season_to_timestep(FLQuant flq, const int unsigned year, const int unsigned season){
+    unsigned int timestep = 0;
     year_season_to_timestep(year, season, flq.get_nseason(), timestep);
     return timestep;
 }
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_double(FLQuant flq, const int timestep){
-    int year = 0;
-    int season = 0;
+Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_double(FLQuant flq, const unsigned int timestep){
+    unsigned int year = 0;
+    unsigned int season = 0;
     timestep_to_year_season(timestep, flq, year, season);
     Rcpp::IntegerVector out(2);
     out[0] = year;
@@ -40,9 +42,9 @@ Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_double(FLQuant flq, con
 }
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_adouble(FLQuantAD flqad, const int timestep){
-    int year = 0;
-    int season = 0;
+Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_adouble(FLQuantAD flqad, const unsigned int timestep){
+    unsigned int year = 0;
+    unsigned int season = 0;
     timestep_to_year_season(timestep, flqad, year, season);
     Rcpp::IntegerVector out(2);
     out[0] = year;
@@ -51,9 +53,9 @@ Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_adouble(FLQuantAD flqad
 }
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector test_timestep_to_year_season(FLQuant flq, const int timestep){
-    int year = 0;
-    int season = 0;
+Rcpp::IntegerVector test_timestep_to_year_season(FLQuant flq, const unsigned int timestep){
+    unsigned int year = 0;
+    unsigned int season = 0;
     timestep_to_year_season(timestep, flq.get_nseason(), year, season);
     Rcpp::IntegerVector out(2);
     out[0] = year;
@@ -77,8 +79,7 @@ operatingModel test_operatingModel_full_constructor(FLFisheriesAD flfs, SEXP flb
     return om;
 }
 
-/*----------- F methods --------------*/
-
+/*----------- catch.q, F and Z methods --------------*/
 
 // f_spwn()
 
@@ -92,6 +93,15 @@ double test_operatingModel_catch_q_adouble(FLFisheriesAD flfs, SEXP flbs_list_se
     return q;
 }
 
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_catch_q_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD qad = om.catch_q(fishery_no, catch_no, biol_no, indices_min, indices_max); 
+    return qad;
+}
+
 // [[Rcpp::export]]
 FLQuantAD test_operatingModel_catch_q_FLQuantAD(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no){
     fwdBiolsAD biols(flbs_list_sexp);
@@ -100,19 +110,38 @@ FLQuantAD test_operatingModel_catch_q_FLQuantAD(FLFisheriesAD flfs, SEXP flbs_li
     return qad;
 }
 
-// f()
+// get_f()
+// No check is made if FC catches B
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_F_FCB(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no){
-    Rprintf("Making biols\n");
+FLQuantAD test_operatingModel_get_f(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no){
     fwdBiolsAD biols(flbs_list_sexp);
-    Rprintf("Making om\n");
     operatingModel om(flfs, biols, ctrl);
     FLQuantAD total_f = om.get_f(fishery_no, catch_no, biol_no);
     return total_f;
 }
 
+// get_f() subset
+// No check is made if FC catches B
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_F_B(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no){
+FLQuantAD test_operatingModel_get_f_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD total_f = om.get_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
+    return total_f;
+}
+
+
+// Total F on a biol
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_total_f_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min,  const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD total_f = om.total_f(biol_no, indices_min, indices_max);
+    return total_f;
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_total_f(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no){
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);
     FLQuantAD total_f = om.total_f(biol_no);
@@ -124,7 +153,14 @@ FLQuantAD test_operatingModel_partial_f(FLFisheriesAD flfs, SEXP flbs_list_sexp,
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);
     FLQuantAD pf = om.partial_f(fishery_no, catch_no, biol_no);
-    Rprintf("Returning pf\n");
+    return pf;
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_partial_f_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD pf = om.partial_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
     return pf;
 }
 
@@ -136,7 +172,26 @@ operatingModel test_operatingModel_project_timestep(FLFisheriesAD flfs, SEXP flb
     return om;
 }
 
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_Z(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD z = om.z(biol_no);
+    return z;
+}
+
+
 /*----------- Project timestep --------------*/
+
+// [[Rcpp::export]]
+operatingModel test_operatingModel_project(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int timestep){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    om.project_timestep(timestep);
+    return om;
+}
+
+
 
 /*
 // [[Rcpp::export]]
@@ -155,17 +210,46 @@ operatingModel test_operatingModel_project_timestep(const FLFisheriesAD fisherie
 }
 */
 
+/*----------- target calculations--------------*/
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_catches_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    return om.catches(biol_no, indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_landings_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    return om.landings(biol_no, indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_discards_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    return om.discards(biol_no, indices_min, indices_max);
+}
+
 /*----------- SSB calculations--------------*/
 
-/*
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_SSB_FLQ(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl){
-    fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
-    operatingModel om(flfs, biol, f, f_spwn, ctrl);
-    const int biol_no = 1;
+FLQuantAD test_operatingModel_SSB_FLQ(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
     return om.ssb(biol_no);
 }
 
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_SSB_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    return om.ssb(biol_no, indices_min, indices_max);
+}
+
+/*
 // [[Rcpp::export]]
 FLQuantAD test_operatingModel_SSB_iters(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const int timestep, const int unit, const int area, const fwdControl ctrl){
     fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
@@ -261,18 +345,21 @@ std::vector<double> test_operatingModel_calc_target_value(FLFisheriesAD flfs, SE
 
 
 
-// Assumes the targets are already ordered by time
-// [[Rcpp::export]]
-operatingModel test_operatingModel_run(const FLFisheriesAD fisheries, SEXP FLBiolSEXP, const std::string srr_model_name, const FLQuant srr_params, const FLQuant srr_residuals, const bool srr_residuals_mult, const int srr_timelag, FLQuant7AD f, FLQuant7 f_spwn, fwdControl ctrl){
-
-    // Make the fwdBiol from the FLBiol and SRR bits
-    fwdBiolAD biol(FLBiolSEXP, srr_model_name, srr_params, srr_timelag, srr_residuals, srr_residuals_mult); 
-    // Make the OM
-    operatingModel om(fisheries, biol, f, f_spwn, ctrl);
-
-    om.run();
-
-    return om;
-
-}
 */
+
+// [[Rcpp::export]]
+operatingModel test_operatingModel_run_effort_demo(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    om.run_effort_demo();
+    return om;
+}
+
+
+// [[Rcpp::export]]
+operatingModel test_operatingModel_run_catch_demo(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    om.run_catch_demo();
+    return om;
+}

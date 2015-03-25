@@ -44,7 +44,7 @@ test_that("FLQuantAD constructors",{
 test_that("FLQuantAD get accessors",{
     flq <- random_FLQuant_generator()
     expect_that(test_FLQuantAD_get_units(flq), is_identical_to(units(flq)))
-    expect_that(test_FLQuantAD_get_dim(flq), is_identical_to(dim(flq)))
+    expect_that(test_FLQuantAD_get_dim(flq), equals(dim(flq)))
     expect_that(test_FLQuantAD_get_dimnames(flq), is_identical_to(dimnames(flq)))
     expect_that(test_FLQuantAD_get_size(flq), is_identical_to(length(c(flq@.Data))))
     expect_that(test_FLQuantAD_get_nquant(flq), is_identical_to(dim(flq)[1]))

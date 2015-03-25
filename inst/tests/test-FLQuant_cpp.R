@@ -42,7 +42,7 @@ test_that("get accessors",{
     flq <- random_FLQuant_generator()
     expect_that(test_FLQuant_get_data(flq), is_identical_to(c(flq@.Data)))
     expect_that(test_FLQuant_get_units(flq), is_identical_to(units(flq)))
-    expect_that(test_FLQuant_get_dim(flq), is_identical_to(dim(flq)))
+    expect_that(test_FLQuant_get_dim(flq), equals(dim(flq)))
     expect_that(test_FLQuant_get_dimnames(flq), is_identical_to(dimnames(flq)))
     # Test deep copy is returned with dimnames are got
     dmns_out <- test_FLQuant_get_dimnames2(flq)
@@ -189,7 +189,17 @@ test_that("FLQuant subsetter works",{
     # min < max check
     sub_dims_wrong <- sub_dims_end
     expect_that(test_FLQuant_subset(flq, sub_dims_wrong[1], sub_dims_start[1], sub_dims_wrong[2], sub_dims_start[2], sub_dims_wrong[3], sub_dims_start[3], sub_dims_wrong[4], sub_dims_start[4], sub_dims_wrong[5], sub_dims_start[5], sub_dims_wrong[6], sub_dims_start[6]), throws_error())
-
+    # Test std::vector<unsigned int> subsetter
+    flq <- random_FLQuant_generator()
+    dims_max <- dim(flq)
+    dims_min <- round(runif(6, min=1,max=dims_max))
+    flq_out <- test_FLQuant_neat_subset(flq, dims_min, dims_max)
+    expect_that(flq[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]], equals(flq_out))
+    # indices wrong - should throw error
+    expect_that(test_FLQuant_neat_subset(flq, dims_min[-1], dims_max), throws_error())
+    expect_that(test_FLQuant_neat_subset(flq, dims_min, dims_max[-1]), throws_error())
+    expect_that(test_FLQuant_neat_subset(flq, c(1,dims_min), dims_max), throws_error())
+    expect_that(test_FLQuant_neat_subset(flq, dims_min, c(1,dims_max)), throws_error())
 })
 
 test_that("Accessing FLQuant iter = 1 or n works",{
@@ -265,4 +275,25 @@ test_that("FLPar_to_FLQuant", {
     # Extra dim which will be ignored - no it's not
     flp2D2 <- FLPar(rnorm(dim(flq)[1] * dim(flq)[6] * 5), dimnames=list(params = dimnames(flq)[[1]], other_name = c("a","b","c","d","e"), iter = dimnames(flq)[[6]]))
     expect_that(test_FLPar_to_FLQuant(flp2D2), throws_error())
+})
+
+
+test_that("iterators", {
+    flq_in <- random_FLQuant_generator()
+    rn <- rnorm(1)
+    # for_range (uses begin and end, const and non const versions)
+    flq_out <- test_for_range(flq_in, rn)
+    expect_that(flq_in * rn, equals(flq_out))
+    out <- test_for_range_const(flq_in, rn)
+    expect_that(out, equals(sum(flq_in * rn)))
+    # for loop with an iterator, const and otherwise
+    flq_out <- test_FLQuant_for_iterator(flq_in, rn)
+    expect_that(flq_in * rn, equals(flq_out))
+    out <- test_FLQuant_for_iterator_const(flq_in, rn)
+    expect_that(out, equals(sum(flq_in * rn)))
+    # transform lambda function
+    flq1 <- random_FLQuant_generator()
+    flq2 <- random_FLQuant_generator(fixed_dims = dim(flq1))
+    flq_out <- test_FLQuant_lambda(flq1, flq2)
+    expect_that(flq_out@.Data, equals(sqrt(flq1^2 + (flq2^2))@.Data))
 })

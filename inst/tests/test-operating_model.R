@@ -28,6 +28,7 @@ test_that("operatingModel constructors and updaters",{
     fc <- dummy_fwdControl_generator(years = 1, niters = dim(flq)[6])
     # Test as and wrap
     out <- test_operatingModel_full_constructor(flfs, flbs, fc)
+    attr(fc@target, "FCB") <- NULL # To remove FCB attribute for test
     expect_that(out[["biols"]], is_identical_to(flbs_in))
     expect_that(out[["fisheries"]], is_identical_to(flfs))
     expect_that(out[["ctrl"]], is_identical_to(fc))
@@ -38,412 +39,588 @@ test_that("operatingModel constructors and updaters",{
 
 test_that("operatingModel Q methods",{
     flq <- random_FLQuant_generator()
+    flq <- random_FLQuant_generator(fixed_dims = c(10,52,1,1,1,20))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
     fc <- dummy_fwdControl_generator(years = 1, niters = dim(flq)[6])
-    indices <- round(runif(5, min = 1, max = dim(flq)[-1]))
     fishery_no <- round(runif(1,min=1, max=length(flfs)))
     catch_no <- round(runif(1,min=1, max=length(flfs[[fishery_no]])))
     biol_no <- round(runif(1,min=1, max=length(flbs)))
     cq_flq <- as(catch.q(flfs[[fishery_no]][[catch_no]]), "FLQuant")
-    # single value
-    qout <- test_operatingModel_catch_q_adouble(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices)
-    cq_flq_indices <- pmin(dim(cq_flq)[-1],indices)
-    cq <- c(cq_flq[,cq_flq_indices[1],cq_flq_indices[2],cq_flq_indices[3],cq_flq_indices[4],cq_flq_indices[5]])
-    biomass <- c(quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))[1,indices[1],indices[2],indices[3],indices[4],indices[5]])
-    expect_that(qout, equals(cq[1] * biomass ^ (-cq[2])))
-    # FLQuantAD
-    qout <- test_operatingModel_catch_q_FLQuantAD(flfs, flbs, fc, fishery_no, catch_no, biol_no)
     biomass <- quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))
     qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
-    expect_that(qout@.Data, equals(qin@.Data))
+    # FLQuantAD subset
+    dims_max <- dim(n(flbs[[1]][["biol"]]))
+    dims_min <- round(runif(6, min=1,max=dims_max))
+    expect_that(test_operatingModel_catch_q_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dims_min, dims_max), throws_error()) # indices too long
+    qout <- test_operatingModel_catch_q_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dims_min[-1], dims_max[-1])
+    qin_subset <- qin[, dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]]
+    # Dimnames not fixed so check contents and dim
+    expect_that(c(qout), equals(c(qin_subset)))
+    expect_that(dim(qout), equals(dim(qin_subset)))
+    # FLQuantAD
+    qout <- test_operatingModel_catch_q_FLQuantAD(flfs, flbs, fc, fishery_no, catch_no, biol_no)
+    expect_that(c(qout), equals(c(qin)))
+    expect_that(dim(qout), equals(dim(qin)))
+    # Single value
+    indices <- round(runif(5, min = 1, max = dim(flq)[-1]))
+    qout <- test_operatingModel_catch_q_adouble(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices)
+    expect_that(qout, equals(c(qin[1, indices[1],indices[2],indices[3],indices[4],indices[5]])))
 })
 
-
-test_that("operatingModel F methods",{
+# Test F method with random Biols and Fisheries
+# No check if FC catches B
+test_that("operatingModel basic F method",{
     flq <- random_FLQuant_generator()
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
     fc <- dummy_fwdControl_generator(years = 1, niters = dim(flq)[6])
+    # FCB needed for constructor but not actually used
     attr(fc@target, "FCB") <- array(0, dim = c(10,3))
+    # Any FLC FLB combination
     fishery_no <- round(runif(1,min=1, max=length(flfs)))
     catch_no <- round(runif(1,min=1, max=length(flfs[[fishery_no]])))
     biol_no <- round(runif(1,min=1, max=length(flbs)))
     cq_flq <- as(catch.q(flfs[[fishery_no]][[catch_no]]), "FLQuant")
-    # Any FLC FLB combination
-    fout <- test_operatingModel_F_FCB(flfs, flbs, fc, fishery_no, catch_no, biol_no)
     biomass <- quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))
     qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
     fin <- sweep(catch.sel(flfs[[fishery_no]][[catch_no]]), 2:6, qin * effort(flfs[[fishery_no]]), "*")
+    # Full FLQ
+    fout <- test_operatingModel_get_f(flfs, flbs, fc, fishery_no, catch_no, biol_no)
     expect_that(fout@.Data, equals(fin@.Data))
+    # Subset FLQ
+    dim_max <- dim(flq)
+    dim_min <- round(runif(6, min=1, max = dim_max))
+    fout <- test_operatingModel_get_f_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dim_min, dim_max)
+    expect_that(fout@.Data, equals(fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]@.Data))
+})
 
-    # Total F on a biol
-    om <- make_test_operatingModel1(10)
+# F, partial F, Z, SSB, C, L, D
+# Using the annual test operating model
+# Epic!
+test_that("operatingModel annual project",{
+    om <- make_test_operatingModel1(20)
+
+    # Random timestep
+    dims <- dim(n(om[["biols"]][[1]][["biol"]]))
+    year <- round(runif(1,min=1,max=dims[2]))
+    season <- round(runif(1,min=1,max=dims[4]))
+    timestep <- (year-1)*dims[4] + season
+    next_year <-  floor((timestep) / dims[4]) + 1; 
+    next_season <- timestep %% dims[4] + 1;
+    om_out <- test_operatingModel_project_timestep(om[["fisheries"]], om[["biols"]], om[["fwc"]], timestep)
+    dim_max <- dims
+    dim_min <- round(runif(6, min=1, max=dim_max))
+
+    #------------------
     # 1 biol -> 1 catch
+    #------------------
     biol_no <- 1
     fishery_no <- 1
     catch_no <- 1
-    f1 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
-    biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
-    cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
-    qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
-    fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
-    expect_that(f1@.Data, equals(fin@.Data))
-    # 1 biol -> 2 catch
-    biol_no <- 2
-    f2 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
-    biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
-    fishery_no <- 1
-    catch_no <- 2
-    cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
-    qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
-    fin12 <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
-    fishery_no <- 2
-    catch_no <- 1
-    cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
-    qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
-    fin21 <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
-    fin2 <- fin12 + fin21
-    expect_that(f2@.Data, equals(fin2@.Data))
-    # 2 biol -> 1 catch
-    biol_no <- 3
-    f3 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
-    biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
-    fishery_no <- 2
-    catch_no <- 2
-    cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
-    qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
-    fin3 <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
-    expect_that(f3@.Data, equals(fin3@.Data))
-    biol_no <- 4
-    f4 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
-    biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
-    fishery_no <- 2
-    catch_no <- 2
-    cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
-    qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
-    fin4 <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
-    expect_that(f4@.Data, equals(fin4@.Data))
-    # 1 biol -> 0 catch
-    biol_no <- 5
-    f5 <- test_operatingModel_F_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
-    expect_that(all(f5==0.0), is_true())
+    # Total F on the biol
+    f1 <- test_operatingModel_total_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    f1_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max)
+    # Partial F from FC
+    pf11 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    pf11_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
+    # Total Z of biol
+    z1 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    # SSB of biol
+    ssb1_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    ssb1_out_subset <- test_operatingModel_SSB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
 
+    # Get metrics from IP OM
+    biomass_in <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
+    cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
+    qin <- sweep(sweep(biomass_in, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
+    f1in <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
+    z1in <- f1in + m(om[["biols"]][[biol_no]][["biol"]])
+    ssb1_in <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]) * fec(om[["biols"]][[biol_no]][["biol"]]) * exp(-((f1in+ m(om[["biols"]][[biol_no]][["biol"]]))* spwn(om[["biols"]][[biol_no]][["biol"]]))))
+    catch.n1 <- (f1in / z1in) * (1 - exp(-z1in)) * n(om[["biols"]][[biol_no]][["biol"]])
+    landings.n1 <- (catch.n1[,year,1,season,1,] * (1 - discards.ratio(om[["fisheries"]][[fishery_no]][[catch_no]])[,year,1,season,1,]))
+    discards.n1 <- (catch.n1[,year,1,season,1,] * (discards.ratio(om[["fisheries"]][[fishery_no]][[catch_no]])[,year,1,season,1,]))
+    # Biol abundances
+    next_n <- n(om[["biols"]][[biol_no]][["biol"]])[,next_year,,next_season,,]
+    next_n[] <- 0
+    next_n[2:dims[1],] <- (n(om[["biols"]][[biol_no]][["biol"]])[,year,,season,,] * exp(-z1in[,year,,season,,]))[1:(dims[1]-1),]
+    next_n[dims[1]] <- next_n[dims[1]] + (n(om[["biols"]][[biol_no]][["biol"]])[dims[1],year,,season,,] * exp(-z1in[dims[1],year,,season,,]))
+    # Rec - it's BH for Biol 1
+    ssb_timestep <- timestep - om[["biols"]][[biol_no]][["srr_timelag"]] + 1
+    ssb_year <-  floor((ssb_timestep-1) / dims[4]) + 1; 
+    ssb_season <- (ssb_timestep-1) %% dims[4] + 1;
+    ssb_rec <- ssb1_in[,ssb_year,,ssb_season,,]
+    rec_in <- om[["biols"]][[biol_no]][["srr_params"]]['a',] * ssb_rec / (om[["biols"]][[biol_no]][["srr_params"]]['b',] + ssb_rec)
+    # Multiplicative residuals
+    next_n[1,] <- rec_in * exp(om[["biols"]][[biol_no]][["srr_residuals"]][,next_year,,next_season,,])
+
+    # Test Fs and Zs
+    expect_that(unname(f1@.Data), equals(unname(f1in@.Data))) # Total F on Biol
+    expect_that(unname(f1_sub@.Data), equals(unname(f1in[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))) # Total F on Biol
+    expect_that(pf11@.Data, equals(f1in@.Data)) # Partial F from FC
+    expect_that(pf11_sub@.Data, equals(f1in[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
+    expect_that(unname(z1@.Data), equals(unname(z1in@.Data))) # Partial F from FC
+    # Test SSB
+    expect_that(unname(ssb1_out@.Data), equals(unname(ssb1_in@.Data)))
+    expect_that(unname(ssb1_out_subset@.Data), equals(unname(ssb1_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
+
+    # Test Catch, landings and discards in timestep only
+    # Catch, landings, discards in timestep
+    expect_that(catch.n1[,year,1,season,1,]@.Data, equals(catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,1,season,1,]@.Data))
+    expect_that(landings.n1@.Data, equals(landings.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,1,season,1,]@.Data))
+    expect_that(discards.n1@.Data,equals(discards.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,1,season,1,]@.Data))
+    # Only CLD in that timestep should have changed
+    expect_that(catch.n(om[["fisheries"]][[fishery_no]][[catch_no]])[,-year]@.Data, equals(catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,-year]@.Data))
+    expect_that(landings.n(om[["fisheries"]][[fishery_no]][[catch_no]])[,-year,,,,]@.Data, equals(landings.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,-year,,,,]@.Data))
+    expect_that(discards.n(om[["fisheries"]][[fishery_no]][[catch_no]])[,-year,,,,]@.Data, equals(discards.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,-year,,,,]@.Data))
+    # Abundances
+    expect_that(next_n, equals(n(om_out[["biols"]][[biol_no]])[,next_year,,next_season,,]))
+    # Other abundances unaffected
+    expect_that(n(om[["biols"]][[biol_no]][["biol"]])[,-next_year,,,,]@.Data,equals(n(om_out[["biols"]][[biol_no]])[,-next_year,,,,]@.Data))
+
+    #------------------
+    # 1 biol -> 2 catch (FC 12 & 21 -> B2)
+    #------------------
+    biol_no <- 2
+    # Total F on the biol
+    f2 <- test_operatingModel_total_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    f2_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max)
+    # Partial F from FC
+    pf12 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, biol_no)
+    pf21 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 1, biol_no)
+    pf12_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, biol_no, dim_min, dim_max)
+    pf21_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 1, biol_no, dim_min, dim_max)
+    # Total Z of biol
+    z2 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    # SSB of biol
+    ssb2_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
+    ssb2_out_subset <- test_operatingModel_SSB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+
+    # Get metrics from IP OM
+    biomass_in <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
+    cq_flq_12 <- as(catch.q(om[["fisheries"]][[1]][[2]]), "FLQuant")
+    cq_flq_21 <- as(catch.q(om[["fisheries"]][[2]][[1]]), "FLQuant")
+    qin_12 <- sweep(sweep(biomass_in, c(1,3,4,5), -cq_flq_12[2,], "^"), c(1,3,4,5), cq_flq_12[1], "*")
+    qin_21 <- sweep(sweep(biomass_in, c(1,3,4,5), -cq_flq_21[2,], "^"), c(1,3,4,5), cq_flq_21[1], "*")
+    pfin_12 <- sweep(catch.sel(om[["fisheries"]][[1]][[2]]), 2:6, qin_12 * effort(om[["fisheries"]][[1]]), "*")
+    pfin_21 <- sweep(catch.sel(om[["fisheries"]][[2]][[1]]), 2:6, qin_21 * effort(om[["fisheries"]][[2]]), "*")
+    f2in <- pfin_12 + pfin_21
+    z2in <- f2in + m(om[["biols"]][[biol_no]][["biol"]])
+    ssb2_in <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]) * fec(om[["biols"]][[biol_no]][["biol"]]) * exp(-((f2in+ m(om[["biols"]][[biol_no]][["biol"]]))* spwn(om[["biols"]][[biol_no]][["biol"]]))))
+    # CLD
+    catch.n12 <- (pfin_12 / z2in) * (1 - exp(-z2in)) * n(om[["biols"]][[biol_no]][["biol"]])
+    landings.n12 <- (catch.n12[,year,1,season,1,] * (1 - discards.ratio(om[["fisheries"]][[1]][[2]])[,year,1,season,1,]))
+    discards.n12 <- (catch.n12[,year,1,season,1,] * (discards.ratio(om[["fisheries"]][[1]][[2]])[,year,1,season,1,]))
+    catch.n21 <- (pfin_21 / z2in) * (1 - exp(-z2in)) * n(om[["biols"]][[biol_no]][["biol"]])
+    landings.n21 <- (catch.n21[,year,1,season,1,] * (1 - discards.ratio(om[["fisheries"]][[2]][[1]])[,year,1,season,1,]))
+    discards.n21 <- (catch.n21[,year,1,season,1,] * (discards.ratio(om[["fisheries"]][[2]][[1]])[,year,1,season,1,]))
+    # Biol abundances
+    next_n <- n(om[["biols"]][[biol_no]][["biol"]])[,next_year,,next_season,,]
+    next_n[] <- 0
+    next_n[2:dims[1],] <- (n(om[["biols"]][[biol_no]][["biol"]])[,year,,season,,] * exp(-z2in[,year,,season,,]))[1:(dims[1]-1),]
+    next_n[dims[1]] <- next_n[dims[1]] + (n(om[["biols"]][[biol_no]][["biol"]])[dims[1],year,,season,,] * exp(-z2in[dims[1],year,,season,,]))
+    # Rec - it's Ricker for Biol 2
+    ssb_timestep <- timestep - om[["biols"]][[biol_no]][["srr_timelag"]] + 1
+    ssb_year <-  floor((ssb_timestep-1) / dims[4]) + 1; 
+    ssb_season <- (ssb_timestep-1) %% dims[4] + 1;
+    ssb_rec <- ssb2_in[,ssb_year,,ssb_season,,]
+    rec_in <- om[["biols"]][[biol_no]][["srr_params"]]['a',] * ssb_rec * exp(-om[["biols"]][[biol_no]][["srr_params"]]['b',] * ssb_rec)
+    # Multiplicative residuals
+    next_n[1,] <- rec_in * exp(om[["biols"]][[biol_no]][["srr_residuals"]][,next_year,,next_season,,])
+    # Test Fs and Zs
+    expect_that(unname(f2@.Data), equals(unname(f2in@.Data))) # Total F on Biol
+    expect_that(unname(f2_sub@.Data), equals(unname(f2in[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))) # Total F on Biol
+    expect_that(pf12@.Data, equals(pfin_12@.Data)) # Partial F from FC
+    expect_that(pf21@.Data, equals(pfin_21@.Data)) # Partial F from FC
+    expect_that(pf12_sub@.Data, equals(pfin_12[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
+    expect_that(pf21_sub@.Data, equals(pfin_21[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
+    expect_that(unname(z2@.Data), equals(unname(z2in@.Data))) # Partial F from FC
+    # Test SSB
+    expect_that(unname(ssb2_out@.Data), equals(unname(ssb2_in@.Data)))
+    expect_that(unname(ssb2_out_subset@.Data), equals(unname(ssb2_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
+    # Test Catch, landings and discards in timestep only
+    # Catch, landings, discards in timestep
+    expect_that(catch.n12[,year,1,season,1,]@.Data, equals(catch.n(om_out[["fisheries"]][[1]][[2]])[,year,1,season,1,]@.Data))
+    expect_that(landings.n12@.Data, equals(landings.n(om_out[["fisheries"]][[1]][[2]])[,year,1,season,1,]@.Data))
+    expect_that(discards.n12@.Data,equals(discards.n(om_out[["fisheries"]][[1]][[2]])[,year,1,season,1,]@.Data))
+    expect_that(catch.n21[,year,1,season,1,]@.Data, equals(catch.n(om_out[["fisheries"]][[2]][[1]])[,year,1,season,1,]@.Data))
+    expect_that(landings.n21@.Data, equals(landings.n(om_out[["fisheries"]][[2]][[1]])[,year,1,season,1,]@.Data))
+    expect_that(discards.n21@.Data,equals(discards.n(om_out[["fisheries"]][[2]][[1]])[,year,1,season,1,]@.Data))
+    # Only CLD in that timestep should have changed
+    expect_that(catch.n(om[["fisheries"]][[1]][[2]])[,-year]@.Data, equals(catch.n(om_out[["fisheries"]][[1]][[2]])[,-year]@.Data))
+    expect_that(landings.n(om[["fisheries"]][[1]][[2]])[,-year,,,,]@.Data, equals(landings.n(om_out[["fisheries"]][[1]][[2]])[,-year,,,,]@.Data))
+    expect_that(discards.n(om[["fisheries"]][[1]][[2]])[,-year,,,,]@.Data, equals(discards.n(om_out[["fisheries"]][[1]][[2]])[,-year,,,,]@.Data))
+    expect_that(catch.n(om[["fisheries"]][[2]][[1]])[,-year]@.Data, equals(catch.n(om_out[["fisheries"]][[2]][[1]])[,-year]@.Data))
+    expect_that(landings.n(om[["fisheries"]][[2]][[1]])[,-year,,,,]@.Data, equals(landings.n(om_out[["fisheries"]][[2]][[1]])[,-year,,,,]@.Data))
+    expect_that(discards.n(om[["fisheries"]][[2]][[1]])[,-year,,,,]@.Data, equals(discards.n(om_out[["fisheries"]][[2]][[1]])[,-year,,,,]@.Data))
+    # Abundances
+    expect_that(next_n, equals(n(om_out[["biols"]][[biol_no]])[,next_year,,next_season,,]))
+    # Other abundances unaffected
+    expect_that(n(om[["biols"]][[biol_no]][["biol"]])[,-next_year,,,,]@.Data,equals(n(om_out[["biols"]][[biol_no]])[,-next_year,,,,]@.Data))
+
+    #------------------
+    # 2 biol -> 1 catch (FC 22 -> B3 + B4)
+    #------------------
+    # Total F on the biol
+    f3 <- test_operatingModel_total_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3)
+    f3_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, dim_min, dim_max)
+    f4 <- test_operatingModel_total_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4)
+    f4_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, dim_min, dim_max)
+    # Partial F from FC
+    pf223 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 3)
+    pf224 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 4)
+    pf223_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 3, dim_min, dim_max)
+    pf224_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 4, dim_min, dim_max)
+    # Total Z of biol
+    z3 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3)
+    z4 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4)
+    # SSB of biol
+    ssb3_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3)
+    ssb3_out_subset <- test_operatingModel_SSB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, dim_min[-1], dim_max[-1])
+    ssb4_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4)
+    ssb4_out_subset <- test_operatingModel_SSB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, dim_min[-1], dim_max[-1])
+
+    # Get metrics from IP OM
+    biomass_in3 <- quantSums(n(om[["biols"]][[3]][["biol"]]) * wt(om[["biols"]][[3]][["biol"]]))
+    biomass_in4 <- quantSums(n(om[["biols"]][[4]][["biol"]]) * wt(om[["biols"]][[4]][["biol"]]))
+    cq_flq_22 <- as(catch.q(om[["fisheries"]][[2]][[2]]), "FLQuant")
+    qin_223 <- sweep(sweep(biomass_in3, c(1,3,4,5), -cq_flq_22[2,], "^"), c(1,3,4,5), cq_flq_22[1], "*")
+    qin_224 <- sweep(sweep(biomass_in4, c(1,3,4,5), -cq_flq_22[2,], "^"), c(1,3,4,5), cq_flq_22[1], "*")
+    fin_223 <- sweep(catch.sel(om[["fisheries"]][[2]][[2]]), 2:6, qin_223 * effort(om[["fisheries"]][[2]]), "*")
+    fin_224 <- sweep(catch.sel(om[["fisheries"]][[2]][[2]]), 2:6, qin_224 * effort(om[["fisheries"]][[2]]), "*")
+    z3in <- fin_223 + m(om[["biols"]][[3]][["biol"]])
+    z4in <- fin_224 + m(om[["biols"]][[4]][["biol"]])
+    ssb3_in <- quantSums(n(om[["biols"]][[3]][["biol"]]) * wt(om[["biols"]][[3]][["biol"]]) * fec(om[["biols"]][[3]][["biol"]]) * exp(-((fin_223 + m(om[["biols"]][[3]][["biol"]]))* spwn(om[["biols"]][[3]][["biol"]]))))
+    ssb4_in <- quantSums(n(om[["biols"]][[4]][["biol"]]) * wt(om[["biols"]][[4]][["biol"]]) * fec(om[["biols"]][[4]][["biol"]]) * exp(-((fin_224 + m(om[["biols"]][[4]][["biol"]]))* spwn(om[["biols"]][[4]][["biol"]]))))
+    # CLD
+    catch.n223 <- (fin_223 / z3in) * (1 - exp(-z3in)) * n(om[["biols"]][[3]][["biol"]])
+    catch.n224 <- (fin_224 / z4in) * (1 - exp(-z4in)) * n(om[["biols"]][[4]][["biol"]])
+    landings.n223 <- (catch.n223[,year,1,season,1,] * (1 - discards.ratio(om[["fisheries"]][[2]][[2]])[,year,1,season,1,]))
+    landings.n224 <- (catch.n224[,year,1,season,1,] * (1 - discards.ratio(om[["fisheries"]][[2]][[2]])[,year,1,season,1,]))
+    discards.n223 <- (catch.n223[,year,1,season,1,] * (discards.ratio(om[["fisheries"]][[2]][[2]])[,year,1,season,1,]))
+    discards.n224 <- (catch.n224[,year,1,season,1,] * (discards.ratio(om[["fisheries"]][[2]][[2]])[,year,1,season,1,]))
+    catch.n22 <- catch.n223 + catch.n224
+    landings.n22 <- landings.n223 + landings.n224
+    discards.n22 <- discards.n223 + discards.n224
+
+    # Biol abundances
+    next_n3 <- n(om[["biols"]][[3]][["biol"]])[,next_year,,next_season,,]
+    next_n3[] <- 0
+    next_n3[2:dims[1],] <- (n(om[["biols"]][[3]][["biol"]])[,year,,season,,] * exp(-z3in[,year,,season,,]))[1:(dims[1]-1),]
+    next_n3[dims[1]] <- next_n3[dims[1]] + (n(om[["biols"]][[3]][["biol"]])[dims[1],year,,season,,] * exp(-z3in[dims[1],year,,season,,]))
+    # Rec - it's Bevholt for Biol 3
+    ssb_timestep <- timestep - om[["biols"]][[3]][["srr_timelag"]] + 1
+    ssb_year <-  floor((ssb_timestep-1) / dims[4]) + 1; 
+    ssb_season <- (ssb_timestep-1) %% dims[4] + 1;
+    ssb_rec <- ssb3_in[,ssb_year,,ssb_season,,]
+    rec_in <- om[["biols"]][[3]][["srr_params"]]['a',] * ssb_rec / (om[["biols"]][[3]][["srr_params"]]['b',] + ssb_rec)
+    # Multiplicative residuals
+    next_n3[1,] <- rec_in * exp(om[["biols"]][[3]][["srr_residuals"]][,next_year,,next_season,,])
+
+    next_n4 <- n(om[["biols"]][[4]][["biol"]])[,next_year,,next_season,,]
+    next_n4[] <- 0
+    next_n4[2:dims[1],] <- (n(om[["biols"]][[4]][["biol"]])[,year,,season,,] * exp(-z4in[,year,,season,,]))[1:(dims[1]-1),]
+    next_n4[dims[1]] <- next_n4[dims[1]] + (n(om[["biols"]][[4]][["biol"]])[dims[1],year,,season,,] * exp(-z4in[dims[1],year,,season,,]))
+    # Rec - it's Ricker for Biol 4
+    ssb_timestep <- timestep - om[["biols"]][[4]][["srr_timelag"]] + 1
+    ssb_year <-  floor((ssb_timestep-1) / dims[4]) + 1; 
+    ssb_season <- (ssb_timestep-1) %% dims[4] + 1;
+    ssb_rec <- ssb4_in[,ssb_year,,ssb_season,,]
+    rec_in <- om[["biols"]][[4]][["srr_params"]]['a',] * ssb_rec * exp(-om[["biols"]][[4]][["srr_params"]]['b',] * ssb_rec)
+    # Multiplicative residuals
+    next_n4[1,] <- rec_in * exp(om[["biols"]][[4]][["srr_residuals"]][,next_year,,next_season,,])
+    # Test Fs and Zs
+    expect_that(unname(f3@.Data), equals(unname(fin_223@.Data))) # Total F on Biol
+    expect_that(unname(f4@.Data), equals(unname(fin_224@.Data))) # Total F on Biol
+    expect_that(unname(f3_sub@.Data), equals(unname(fin_223[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))) # Total F on Biol
+    expect_that(unname(f4_sub@.Data), equals(unname(fin_224[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))) # Total F on Biol
+    expect_that(pf223@.Data, equals(fin_223@.Data)) # Total F on Biol
+    expect_that(pf224@.Data, equals(fin_224@.Data)) # Total F on Biol
+    expect_that(pf223_sub@.Data, equals(fin_223[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
+    expect_that(pf224_sub@.Data, equals(fin_224[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
+    expect_that(unname(z3@.Data), equals(unname(z3in@.Data))) # Partial F from FC
+    expect_that(unname(z4@.Data), equals(unname(z4in@.Data))) # Partial F from FC
+    # Test SSB
+    expect_that(unname(ssb3_out@.Data), equals(unname(ssb3_in@.Data)))
+    expect_that(unname(ssb3_out_subset@.Data), equals(unname(ssb3_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
+    expect_that(unname(ssb4_out@.Data), equals(unname(ssb4_in@.Data)))
+    expect_that(unname(ssb4_out_subset@.Data), equals(unname(ssb4_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
+    # Test Catch, landings and discards in timestep only
+    # Catch, landings, discards in timestep
+    expect_that(catch.n22[,year,1,season,1,]@.Data, equals(catch.n(om_out[["fisheries"]][[2]][[2]])[,year,1,season,1,]@.Data))
+    expect_that(landings.n22@.Data, equals(landings.n(om_out[["fisheries"]][[2]][[2]])[,year,1,season,1,]@.Data))
+    expect_that(discards.n22@.Data,equals(discards.n(om_out[["fisheries"]][[2]][[2]])[,year,1,season,1,]@.Data))
+    # Only CLD in that timestep should have changed
+    expect_that(catch.n(om[["fisheries"]][[2]][[2]])[,-year]@.Data, equals(catch.n(om_out[["fisheries"]][[2]][[2]])[,-year]@.Data))
+    expect_that(landings.n(om[["fisheries"]][[2]][[2]])[,-year,,,,]@.Data, equals(landings.n(om_out[["fisheries"]][[2]][[2]])[,-year,,,,]@.Data))
+    expect_that(discards.n(om[["fisheries"]][[2]][[2]])[,-year,,,,]@.Data, equals(discards.n(om_out[["fisheries"]][[2]][[2]])[,-year,,,,]@.Data))
+    # Abundances
+    expect_that(next_n3, equals(n(om_out[["biols"]][[3]])[,next_year,,next_season,,]))
+    expect_that(next_n4, equals(n(om_out[["biols"]][[4]])[,next_year,,next_season,,]))
+    # Other abundances unaffected
+    expect_that(n(om[["biols"]][[3]][["biol"]])[,-next_year,,,,]@.Data,equals(n(om_out[["biols"]][[3]])[,-next_year,,,,]@.Data))
+    expect_that(n(om[["biols"]][[4]][["biol"]])[,-next_year,,,,]@.Data,equals(n(om_out[["biols"]][[4]])[,-next_year,,,,]@.Data))
+
+    #------------------
+    # 1 biol -> 0 catch (B5)
+    #------------------
+    # Total F on the biol
+    f5 <- test_operatingModel_total_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5)
+    f5_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5, dim_min, dim_max)
+    # Total Z of biol
+    z5 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5)
+    # SSB of biol
+    ssb5_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5)
+    ssb5_out_subset <- test_operatingModel_SSB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5, dim_min[-1], dim_max[-1])
+    # Get metrics from IP OM
+    biomass_in5 <- quantSums(n(om[["biols"]][[5]][["biol"]]) * wt(om[["biols"]][[5]][["biol"]]))
+    z5in <- m(om[["biols"]][[5]][["biol"]])
+    ssb5_in <- quantSums(n(om[["biols"]][[5]][["biol"]]) * wt(om[["biols"]][[5]][["biol"]]) * fec(om[["biols"]][[5]][["biol"]]) * exp(-((m(om[["biols"]][[5]][["biol"]]))* spwn(om[["biols"]][[5]][["biol"]]))))
+
+    # Biol abundances
+    next_n5 <- n(om[["biols"]][[5]][["biol"]])[,next_year,,next_season,,]
+    next_n5[] <- 0
+    next_n5[2:dims[1],] <- (n(om[["biols"]][[5]][["biol"]])[,year,,season,,] * exp(-z5in[,year,,season,,]))[1:(dims[1]-1),]
+    next_n5[dims[1]] <- next_n5[dims[1]] + (n(om[["biols"]][[5]][["biol"]])[dims[1],year,,season,,] * exp(-z5in[dims[1],year,,season,,]))
+    # Rec - it's Ricker for Biol 5
+    ssb_timestep <- timestep - om[["biols"]][[5]][["srr_timelag"]] + 1
+    ssb_year <-  floor((ssb_timestep-1) / dims[4]) + 1; 
+    ssb_season <- (ssb_timestep-1) %% dims[4] + 1;
+    ssb_rec <- ssb5_in[,ssb_year,,ssb_season,,]
+    rec_in <- om[["biols"]][[5]][["srr_params"]]['a',] * ssb_rec * exp(-om[["biols"]][[5]][["srr_params"]]['b',] * ssb_rec)
+    # Multiplicative residuals
+    next_n5[1,] <- rec_in * exp(om[["biols"]][[5]][["srr_residuals"]][,next_year,,next_season,,])
+    # Test Fs and Zs
+    expect_that(all(unname(f5@.Data)==0), equals(TRUE)) # Total F on Biol
+    expect_that(all(unname(f5_sub@.Data)==0), equals(TRUE)) # Total F on Biol
+    expect_that(unname(z5@.Data), equals(unname(z5in@.Data))) # Partial F from FC
+    # Test SSB
+    expect_that(unname(ssb5_out@.Data), equals(unname(ssb5_in@.Data)))
+    expect_that(unname(ssb5_out_subset@.Data), equals(unname(ssb5_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
+    # Abundances
+    expect_that(next_n5, equals(n(om_out[["biols"]][[5]])[,next_year,,next_season,,]))
+    # Other abundances unaffected
+    expect_that(n(om[["biols"]][[5]][["biol"]])[,-next_year,,,,]@.Data,equals(n(om_out[["biols"]][[5]])[,-next_year,,,,]@.Data))
+})
+
+# Just checking partial Fs - including when they should be 0
+# Could remove these as just repeating the tests above
+test_that("operatingModel partial Fs",{
+    om <- make_test_operatingModel1(5)
     # Partial F of F/C on a B
     # F/C 11 -> B
     fishery_no <- 1
     catch_no <- 1
     biol_no <- 1
+    dims <- dim(n(om[["biols"]][[1]][["biol"]]))
+    dim_max <- dims
+    dim_min <- round(runif(6, min=1, max=dim_max))
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
     cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
     qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
     fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
     expect_that(fout@.Data, equals(fin@.Data))
+    expect_that(fout_sub@.Data, equals(fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     biol_no <- 2
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 3
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 4
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
     expect_that(all(fout==0.0), is_true())
     biol_no <- 5
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
     expect_that(all(fout==0.0), is_true())
+
     # F/C 12 -> B
     fishery_no <- 1
     catch_no <- 2
     biol_no <- 1
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 2
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
     cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
     qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
     fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
     expect_that(fout@.Data, equals(fin@.Data))
+    expect_that(fout_sub@.Data, equals(fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     biol_no <- 3
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 4
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
+
     # F/C 21 -> B
     fishery_no <- 2
     catch_no <- 1
     biol_no <- 1
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 2
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
     cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
     qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
     fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
     expect_that(fout@.Data, equals(fin@.Data))
+    expect_that(fout_sub@.Data, equals(fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     biol_no <- 3
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 4
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
+
     # F/C 22 -> B
     fishery_no <- 2
     catch_no <- 2
     biol_no <- 1
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 2
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     expect_that(all(fout==0.0), is_true())
+    expect_that(all(fout_sub==0.0), is_true())
     biol_no <- 3
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
     cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
     qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
     fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
     expect_that(fout@.Data, equals(fin@.Data))
+    expect_that(fout_sub@.Data, equals(fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     biol_no <- 4
     fout <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
+    fout_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
     biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
     cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
     qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
     fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
+    expect_that(fout_sub@.Data, equals(fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
     expect_that(fout@.Data, equals(fin@.Data))
 })
 
-test_that("operatingModel project timestep",{
-    # Total F on a biol
-    # Test annual
+test_that("operatingModel landings, catch and discards targets",{
     om <- make_test_operatingModel1(10)
-
-
-    dims <- dim(n(om[["biols"]][[1]][["biol"]]))
-    timestep <- round(runif(1,min=1, max=dims[2]-1))
-    # It's very slow
+    dim_max <- dim(n(om[["biols"]][[1]][["biol"]]))
+    dim_min <- round(runif(6, min=1, max=dim_max))
+    # Project a timestep and check landings / catches and discards against it 
+    # Ensures catches / landings and discards are consistent with the effort etc in the object at that timestep
+    year <- round(runif(1,min=dim_min[2],max=dim_max[2]))
+    season <- round(runif(1,min=dim_min[4],max=dim_max[4]))
+    timestep <- (year-1) * dim(n(om[["biols"]][[1]][["biol"]]))[4] + season
     om_out <- test_operatingModel_project_timestep(om[["fisheries"]], om[["biols"]], om[["fwc"]], timestep)
-    # Just catches
-    fishery_no <- 1
-    catch_no <- 1
+    # Copy fisheries and biols back into the original om
+    om[["fisheries"]] <- om_out[["fisheries"]]
+    for (i in 1:length(om[["biols"]])){
+        om[["biols"]][[i]][["biol"]] <- om_out[["biols"]][[i]]
+    }
+
+    # 1 biol -> 1 catch
     biol_no <- 1
-    biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
-    cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
-    qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
-    f1 <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
-    z1 <- f1 + m(om[["biols"]][[biol_no]][["biol"]])
-    c1 <- (f1 / z1) * (1 - exp(-z1)) * n(om[["biols"]][[biol_no]][["biol"]])
-    c1[,timestep]
-    catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,timestep]
-    landings.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,timestep]
-    discards.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,timestep]
+    landings1_out <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    landings1_in <- landings(om[["fisheries"]][[1]][[1]])
+    expect_that(unname(landings1_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(landings1_out@.Data)))
+    discards1_out <- test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    discards1_in <- discards(om[["fisheries"]][[1]][[1]])
+    expect_that(unname(discards1_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(discards1_out@.Data)))
+    catch1_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    catch1_in <- catch(om[["fisheries"]][[1]][[1]])
+    expect_that(unname(catch1_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catch1_out@.Data)))
 
-    fishery_no <- 1
-    catch_no <- 2
+    # 1 biol -> 2 catch
     biol_no <- 2
-    biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
-    cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
-    qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
-    f12 <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
-    fishery_no <- 2
-    catch_no <- 1
-    biol_no <- 2
-    biomass <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
-    cq_flq <- as(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]]), "FLQuant")
-    qin <- sweep(sweep(biomass, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
-    f21 <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, qin * effort(om[["fisheries"]][[fishery_no]]), "*")
+    landings2_out <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    landings2_in <- landings(om[["fisheries"]][[1]][[2]]) + landings(om[["fisheries"]][[2]][[1]])
+    expect_that(unname(landings2_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(landings2_out@.Data)))
+    discards2_out <- test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    discards2_in <- discards(om[["fisheries"]][[1]][[2]]) + discards(om[["fisheries"]][[2]][[1]])
+    expect_that(unname(discards2_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(discards2_out@.Data)))
+    catch2_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    catch2_in <- catch(om[["fisheries"]][[1]][[2]]) + catch(om[["fisheries"]][[2]][[1]])
+    expect_that(unname(catch2_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catch2_out@.Data)))
 
-    z2 <- f12 + f21 + m(om[["biols"]][[biol_no]][["biol"]])
-
-    fishery_no <- 1
-    catch_no <- 2
-    c12 <- (f12 / z2) * (1 - exp(-z2)) * n(om[["biols"]][[biol_no]][["biol"]])
-    c12[,timestep] 
-    catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,timestep]
-
-    fishery_no <- 2
-    catch_no <- 1
-    c21 <- (f21 / z2) * (1 - exp(-z2)) * n(om[["biols"]][[biol_no]][["biol"]])
-    c21[,timestep] 
-    catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,timestep]
-
-
-
+    # 2 biol -> 1 catch
+    # Need to calc Baranov
+    cq_flq <- as(catch.q(om[["fisheries"]][[2]][[2]]), "FLQuant")
+    # Biol 3 (fished by FC22 which also fishes biol 4)
+    catch3_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, dim_min[-1], dim_max[-1])
+    landings3_out <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, dim_min[-1], dim_max[-1])
+    discards3_out <- test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, dim_min[-1], dim_max[-1])
+    biomass3 <- quantSums(n(om[["biols"]][[3]][["biol"]]) * wt(om[["biols"]][[3]][["biol"]]))
+    qin3 <- sweep(sweep(biomass3, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
+    fin223 <- sweep(catch.sel(om[["fisheries"]][[2]][[2]]), 2:6, qin3 * effort(om[["fisheries"]][[2]]), "*")
+    z3 <- fin223 + m(om[["biols"]][[3]][["biol"]])
+    cn3 <- (fin223 / z3) * (1 - exp(-z3)) * n(om[["biols"]][[3]][["biol"]])
+    ln3 <- cn3 * (1.0 - discards.ratio(om[["fisheries"]][[2]][[2]]))
+    dn3 <- cn3 * (discards.ratio(om[["fisheries"]][[2]][[2]]))
+    landings3_in <- quantSums(ln3 * landings.wt(om[["fisheries"]][[2]][[2]]))
+    discards3_in <- quantSums(dn3 * discards.wt(om[["fisheries"]][[2]][[2]]))
+    catch3_in <- landings3_in + discards3_in
+    # Just check the time step we projected over 
+    expect_that(unname(discards3_in[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(discards3_out[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data)))
+    expect_that(unname(landings3_in[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(landings3_out[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data)))
+    expect_that(unname(catch3_in[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catch3_out[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data)))
+    # Biol 4 (fished by FC22 which also fishes biol 3)
+    catch4_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, dim_min[-1], dim_max[-1])
+    landings4_out <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, dim_min[-1], dim_max[-1])
+    discards4_out <- test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, dim_min[-1], dim_max[-1])
+    biomass4 <- quantSums(n(om[["biols"]][[4]][["biol"]]) * wt(om[["biols"]][[4]][["biol"]]))
+    qin4 <- sweep(sweep(biomass4, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
+    fin224 <- sweep(catch.sel(om[["fisheries"]][[2]][[2]]), 2:6, qin4 * effort(om[["fisheries"]][[2]]), "*")
+    z4 <- fin224 + m(om[["biols"]][[4]][["biol"]])
+    cn4 <- (fin224 / z4) * (1 - exp(-z4)) * n(om[["biols"]][[4]][["biol"]])
+    ln4 <- cn4 * (1.0 - discards.ratio(om[["fisheries"]][[2]][[2]]))
+    dn4 <- cn4 * (discards.ratio(om[["fisheries"]][[2]][[2]]))
+    landings4_in <- quantSums(ln4 * landings.wt(om[["fisheries"]][[2]][[2]]))
+    discards4_in <- quantSums(dn4 * discards.wt(om[["fisheries"]][[2]][[2]]))
+    catch4_in <- landings4_in + discards4_in
+    # Just check the time step we projected over 
+    expect_that(unname(discards4_in[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(discards4_out[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data)))
+    expect_that(unname(landings4_in[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(landings4_out[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data)))
+    expect_that(unname(catch4_in[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catch4_out[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data)))
+    # Check sums (landings from biols 3 and 4 should equal landings in FC 22)
+    expect_that(unname((landings3_out + landings4_out)[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data), equals(unname(landings(om[["fisheries"]][[2]][[2]])[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
+    expect_that(unname((discards3_out + discards4_out)[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data), equals(unname(discards(om[["fisheries"]][[2]][[2]])[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
+    expect_that(unname((catch3_out + catch4_out)[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data), equals(unname(catch(om[["fisheries"]][[2]][[2]])[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
 
 })
 
 
-#test_that("operatingModel project timestep",{
-#    # Set up parameters for full test - lots of things needed
-#    nseasons <- round(runif(1, min = 2, max = 4))
-#    flq <- random_FLQuant_generator(fixed_dims=c(NA,10,1,nseasons,1,NA)) # fix unit and area to be 1, need 10 years, and with seasons > 1 too
-#    #flq <- random_FLQuant_generator(fixed_dims=c(NA,10,1,1,1,NA)) # fix unit and area to be 1, need 10 years
-#    flb <- random_FLBiol_generator(fixed_dims = dim(flq))
-#    m(flb) <- random_FLQuant_generator(fixed_dims = dim(flq), sd = 0.1)
-#    # 2 fisheries
-#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
-#    #ple4_sr_ricker <- as.FLSR(ple4,model="ricker")
-#    #params(ple4_sr_ricker) <- FLPar(abs(rnorm(2, sd = c(10,1e-6))))#FLPar(c(9.1626, 3.5459e-6))
-#    params_ricker <- FLQuant(abs(rnorm(2, sd = c(10,1e-6))),dimnames=list(params=c("a","b")))
-#    
-#    residuals_ricker <- FLQuant(NA, dimnames = dimnames(flq[1,]))
-#    residuals_ricker[] <- abs(rnorm(prod(dim(residuals_ricker))))
-#    residuals_mult <- TRUE
-#    f <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq), sd = 0.1)
-#    f <- lapply(f,abs)
-#    f_spwn <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq))
-#    f_spwn <- lapply(f_spwn,abs)
-#    fc <- dummy_fwdControl_generator(years = 1, niters = dim(n(flb))[6]) # doesn't do anything - just needed to make OM object in C
-#    # Project over random timesteps
-#    min_timestep <- round(runif(1,min=2,max=dim(n(flb))[2]/2 * dim(n(flb))[4])) 
-#    max_timestep <- round(runif(1,min=min_timestep+1,max=dim(n(flb))[2] * dim(n(flb))[4])) - 1
-#    timesteps <- min_timestep:max_timestep
-#    timelag <- round(runif(1,min=1,max=min_timestep)) # random timelag for recruitment
-#
-#    # Run!
-#    out <- test_operatingModel_project_timestep(flfs, flb, "ricker", params_ricker, timelag, residuals_ricker, residuals_mult, f, f_spwn, fc, timesteps)
-#    # Check landings_n and discards_n are correct
-#    total_f <- f[[1]]
-#    for (i in 2:length(flfs)){
-#        total_f <- total_f + f[[i]]
-#    }
-#    z <- total_f + m(flb)
-#    # SSB calc
-#    f_portion <- f[[1]] * f_spwn[[1]] 
-#    for (i in 2:length(f)){
-#        f_portion <- f_portion + f[[i]] * f_spwn[[i]]
-#    }
-#    ssb <- quantSums(n(out[["biol"]]) * wt(out[["biol"]]) * fec(out[["biol"]]) * exp(-f_portion - m(out[["biol"]]) * spwn(out[["biol"]])))
-#    for (timestep in timesteps){
-#        year <-  floor((timestep-1) / dim(flq)[4] + 1)
-#        season <- (timestep-1) %%  dim(n(flb))[4]+ 1;
-#        next_year <- (timestep) / dim(n(flb))[4] + 1
-#        next_season <- (timestep) %%  dim(n(flb))[4]+ 1;
-#        ssb_year <- (timestep - timelag) / dim(n(flb))[4] + 1
-#        ssb_season <- (timestep - timelag) %%  dim(n(flb))[4]+ 1;
-#        for (i in 1:length(flfs)){
-#            cn <- (f[[i]] / z) * (1 - exp(-z)) * n(out[["biol"]])
-#            dr <- discards.n(flfs[[i]][[1]]) / (landings.n(flfs[[i]][[1]]) + discards.n(flfs[[i]][[1]]))
-#            expect_that((cn * (1 - dr))[,year,,season,,]@.Data, is_identical_to(landings.n(out[["fisheries"]][[i]][[1]])[,year,,season,,]@.Data))
-#            expect_that((cn * dr)[,year,,season,,]@.Data, is_identical_to(discards.n(out[["fisheries"]][[i]][[1]])[,year,,season,,]@.Data))
-#        }
-#        # check n is OK - not SRR
-#        # Depends if it is start of the year (plus group and recruitment)
-#        next_n <- n(flb)[,1,,1,,]
-#        next_n[] <- 0
-#        #next_n[2:dim(next_n)[1]] <- (n(out[["biol"]]) * exp(-z))[1:(dim(next_n)[1]-1),year,,season,,]
-#        # if start of year
-#        if (next_season == 1){
-#            next_n[2:dim(next_n)[1]] <- (n(out[["biol"]]) * exp(-z))[1:(dim(next_n)[1]-1),year,,season,,]
-#            next_n[dim(next_n)[1]] <- next_n[dim(next_n)[1]] + ((n(out[["biol"]]) * exp(-z))[dim(next_n)[1],year,,season,,])
-#        }
-#        if (next_season > 1){
-#            next_n[1:dim(next_n)[1]] <- (n(out[["biol"]]) * exp(-z))[1:dim(next_n)[1],year,,season,,]
-#        }
-#
-#        # Just checking first area and unit now
-#        # And ages 2+
-#        expect_that(c(next_n[2:dim(next_n)[1],,1,,1,]), is_identical_to(c(n(out[["biol"]])[2:dim(next_n)[1],next_year,1,next_season,1,])))
-#        # With no time structure in SRR params, SRR is calculated every timestep
-#        rec <- params_ricker["a",] * ssb[1,ssb_year,1,ssb_season,1,] * exp(-params_ricker["b",] * ssb[1,ssb_year,1,ssb_season,1,]) * residuals_ricker[1,next_year,1,next_season]
-#        # if start of year only recruitment in age 1
-#        if (next_season == 1){
-#            expect_that(c(rec), equals(c(n(out[["biol"]])[1,next_year,1,next_season,1,])))
-#        }
-#        if (next_season > 1){
-#            expect_that(c(rec + next_n[1,]), equals(c(n(out[["biol"]])[1,next_year,1,next_season,1,])))
-#        }
-#    }
-#
-#    # Test with time structure in SR params - only recruitment in first season
-#    params_ricker2 <- FLQuant(0,dimnames=list(params=c("a","b"), season = dimnames(flq)$season))
-#    params_ricker2[,,,1] <- abs(rnorm(2, sd = c(10,1e-6)))
-#    # check over timesteps with and without recruitment
-#    timesteps2 <- (dim(flq)[4]):(dim(flq)[4] * 2 + 1)
-#    timelag2 <- round(runif(1,min=1,max=min(timesteps2))) # random timelag for recruitment
-#    out2 <- test_operatingModel_project_timestep(flfs, flb, "ricker", params_ricker2, timelag2, residuals_ricker, residuals_mult, f, f_spwn, fc, timesteps2)
-#    ssb2 <- quantSums(n(out2[["biol"]]) * wt(out2[["biol"]]) * fec(out2[["biol"]]) * exp(-f_portion - m(out2[["biol"]]) * spwn(out2[["biol"]])))
-#    for (timestep in timesteps2){
-#        year <-  floor((timestep-1) / dim(flq)[4] + 1)
-#        season <- (timestep-1) %%  dim(n(flb))[4]+ 1;
-#        next_year <- (timestep) / dim(n(flb))[4] + 1
-#        next_season <- (timestep) %%  dim(n(flb))[4]+ 1;
-#        ssb_year <- (timestep - timelag2) / dim(n(flb))[4] + 1
-#        ssb_season <- (timestep - timelag2) %%  dim(n(flb))[4]+ 1;
-#        rec2 <- params_ricker2["a",1,,next_season] * ssb2[1,ssb_year,1,ssb_season,1,] * exp(-params_ricker2["b",1,,next_season] * ssb2[1,ssb_year,1,ssb_season,1,]) * residuals_ricker[1,next_year,1,next_season]
-#        next_n <- n(flb)[,1,,1,,]
-#        next_n[] <- 0
-#        if (next_season == 1){
-#            next_n[2:dim(next_n)[1]] <- (n(out2[["biol"]]) * exp(-z))[1:(dim(next_n)[1]-1),year,,season,,]
-#            next_n[dim(next_n)[1]] <- next_n[dim(next_n)[1]] + ((n(out2[["biol"]]) * exp(-z))[dim(next_n)[1],year,,season,,])
-#            expect_that(c(rec2), equals(c(n(out2[["biol"]])[1,next_year,1,next_season,1,])))
-#        }
-#        if (next_season > 1){
-#            next_n[1:dim(next_n)[1]] <- (n(out2[["biol"]]) * exp(-z))[1:dim(next_n)[1],year,,season,,]
-#            expect_that(c(rec2 + next_n[1,]), equals(c(n(out2[["biol"]])[1,next_year,1,next_season,1,])))
-#        }
-#    }
-#})
-#
-#test_that("operatingModel SSB methods", {
-#    #  Lots of things needed for test
-#    data(ple4)
-#    ple4_sr_ricker <- as.FLSR(ple4,model="ricker")
-#    # Force values, don't fit
-#    params(ple4_sr_ricker) <- FLPar(abs(rnorm(2, sd = c(10,1e-6))))#FLPar(c(9.1626, 3.5459e-6))
-#    params_ricker <- as.FLQuant(params(ple4_sr_ricker))
-#    flq <- random_FLQuant_generator(sd=1)
-#    flb <- random_FLBiol_generator(fixed_dims = dim(flq), sd = 1 )
-#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=5, sd=1)
-#    f <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq), sd=1)
-#    f <- lapply(f,abs)
-#    f_spwn <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq), sd=1)
-#    f_spwn <- lapply(f_spwn,abs)
-#    residuals_ricker <- FLQuant(rnorm(dim(flq)[2] * dim(flq)[6]), dimnames = list(year = 1:dim(flq)[2], iter = 1:dim(flq)[6]))
-#    residuals_mult <- TRUE
-#    timelag <- 0
-#    fc <- dummy_fwdControl_generator(years = 1, niters = dim(n(flb))[6])
-#    # SSB - FLQuant - lots of time steps
-#    f_portion <- f[[1]] * f_spwn[[1]]
-#    for (i in 2:length(f)){
-#        f_portion <- f_portion + f[[i]] * f_spwn[[i]]
-#    }
-#    ssb_in <- quantSums(n(flb) * wt(flb) * fec(flb) * exp(-f_portion - m(flb) * spwn(flb)))
-#    ssb_out <- test_operatingModel_SSB_FLQ(flfs, flb, 'ricker', params_ricker, timelag, residuals_ricker, residuals_mult, f, f_spwn, fc)
-#    expect_that(ssb_in@.Data, equals(ssb_out@.Data))
-#    # SSB - FLQuant - single single timestep - all iters
-#    timestep <- floor(runif(1, min=1, max = dim(flq)[2] * dim(flq)[4]))
-#    unit <- floor(runif(1, min=1, max = dim(flq)[3]))
-#    area <- floor(runif(1, min=1, max = dim(flq)[5]))
-#    ssb_out <- test_operatingModel_SSB_iters(flfs, flb, 'ricker', params_ricker, timelag, residuals_ricker, residuals_mult, f, f_spwn, timestep, unit, area, fc)
-#    year <-  floor((timestep-1) / dim(flq)[4] + 1)
-#    season <- (timestep-1) %% dim(flq)[4] + 1;
-#    expect_that((ssb_in[,year,unit,season,area])@.Data, equals(ssb_out@.Data))
-#    # SSB - numeric - single timestep - single iter
-#    iter <- floor(runif(1, min=1, max = dim(flq)[6]))
-#    ssb_out <- test_operatingModel_SSB_single_iter(flfs, flb, 'ricker', params_ricker, timelag, residuals_ricker, residuals_mult, f, f_spwn, timestep, unit, area, iter, fc)
-#    expect_that(c(ssb_in[,year,unit,season,area,iter]), equals(c(ssb_out)))
-#
-#    # SSB non-conformable FLQuant iters, e.g. wt has only 1 iter, but n has many
-#    single_iter <- round(runif(1,min=1,max=dim(flq)[6]))
-#    flb2 <- flb
-#    wt(flb2) <- iter(wt(flb2),single_iter)
-#    fec(flb2) <- iter(fec(flb2),single_iter)
-#    m(flb2) <- iter(m(flb2),single_iter)
-#    ssb_out <- test_operatingModel_SSB_single_iter(flfs, flb2, 'ricker', params_ricker, timelag, residuals_ricker, residuals_mult, f, f_spwn, timestep, unit, area, iter, fc)
-#    ssb_in <- quantSums(n(flb2) * wt(flb2) * fec(flb2) * exp(-f_portion - m(flb2) * spwn(flb2)))
-#    expect_that(c(ssb_in[,year,unit,season,area,iter]), equals(c(ssb_out)))
-#    # SSB with year and season
-#    ssb_out <- test_operatingModel_SSB_single_iter_year_season(flfs, flb2, 'ricker', params_ricker, timelag, residuals_ricker, residuals_mult, f, f_spwn, year, unit, season, area, iter, fc)
-#    expect_that(c(ssb_in[,year,unit,season,area,iter]), equals(c(ssb_out)))
-#})
-#
 #
 ## Biomass, SSB and other abundance based targets need to change F in the previous timestep
 #test_that("operatingModel get_target_fmult_timestep",{
@@ -1061,3 +1238,4 @@ test_that("operatingModel project timestep",{
 #    # F should be 0
 #    expect_that(c(apply(out[["f"]][[1]][ac(minAge:maxAge),2],2:6,mean)), equals(0))
 #})
+

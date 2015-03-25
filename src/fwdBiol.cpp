@@ -120,21 +120,48 @@ FLQuant_base<T> fwdBiol_base<T>::n() const {
 }
 
 template <typename T>
+FLQuant_base<T> fwdBiol_base<T>::n(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return n_flq(indices_min, indices_max);
+}
+
+template <typename T>
 FLQuant fwdBiol_base<T>::wt() const {
     return wt_flq;
+}
+
+template <typename T>
+FLQuant fwdBiol_base<T>::wt(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return wt_flq(indices_min, indices_max);
 }
 
 template <typename T>
 FLQuant fwdBiol_base<T>::m() const {
     return m_flq;
 }
+
+template <typename T>
+FLQuant fwdBiol_base<T>::m(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return m_flq(indices_min, indices_max);
+}
+
 template <typename T>
 FLQuant fwdBiol_base<T>::spwn() const {
     return spwn_flq;
 }
+
+template <typename T>
+FLQuant fwdBiol_base<T>::spwn(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return spwn_flq(indices_min, indices_max);
+}
+
 template <typename T>
 FLQuant fwdBiol_base<T>::fec() const {
     return fec_flq;
+}
+
+template <typename T>
+FLQuant fwdBiol_base<T>::fec(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return fec_flq(indices_min, indices_max);
 }
 
 // Get and set accessors
@@ -174,6 +201,21 @@ FLQuant_base<T> fwdBiol_base<T>::biomass() const {
     return biomass;
 }
 
+// Subset biomass
+template <typename T>
+FLQuant_base<T> fwdBiol_base<T>::biomass(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const { 
+    if(indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In fwdBiol biomass subset. indices not of length 5\n");
+    }
+    std::vector<unsigned int> dim = n().get_dim();
+    // Add age range to indices
+    std::vector<unsigned int> new_indices_min = indices_min;
+    std::vector<unsigned int> new_indices_max = indices_max;
+    new_indices_min.insert(new_indices_min.begin(), 1);
+    new_indices_max.insert(new_indices_max.begin(), dim[0]);
+    FLQuant_base<T> biomass = quant_sum(n_flq(new_indices_min, new_indices_max) * wt_flq(new_indices_min, new_indices_max));
+    return biomass;
+}
 
 
 
@@ -194,7 +236,7 @@ fwdBiols_base<T>::fwdBiols_base(){
 // Used as intrusive 'as'
 template <typename T>
 fwdBiols_base<T>::fwdBiols_base(SEXP flbs_list_sexp){
-    Rprintf("In FLBiols SEXP constructor\n");
+    //Rprintf("In FLBiols SEXP constructor\n");
     Rcpp::List flbs_list = Rcpp::as<Rcpp::List>(flbs_list_sexp);
     //fwdBiol_base<T> flb; // empty biol to fill up and put into the list
     for (unsigned int biol_counter=0; biol_counter < flbs_list.size(); ++biol_counter){
@@ -216,7 +258,7 @@ fwdBiols_base<T>::fwdBiols_base(SEXP flbs_list_sexp){
 template<typename T>
 fwdBiols_base<T>::operator SEXP() const{
     Rcpp::S4 flbs_s4("FLBiols");
-    Rprintf("Wrapping FLBiols_base<T>.\n");
+    //Rprintf("Wrapping FLBiols_base<T>.\n");
     Rcpp::List list_out;
     for (unsigned int i = 0; i < get_nbiols(); i++){
         list_out.push_back(biols[i]);
@@ -235,7 +277,7 @@ fwdBiols_base<T>::fwdBiols_base(fwdBiol_base<T> flb){
 // Copy constructor - else 'data' can be pointed at by multiple instances
 template<typename T>
 fwdBiols_base<T>::fwdBiols_base(const fwdBiols_base<T>& fwdBiols_source){
-    Rprintf("In fwdBiols_base<T> copy constructor\n");
+    //Rprintf("In fwdBiols_base<T> copy constructor\n");
 	biols = fwdBiols_source.biols; // std::vector always does deep copy
     names = Rcpp::clone<Rcpp::CharacterVector>(fwdBiols_source.names);
 }
@@ -243,7 +285,7 @@ fwdBiols_base<T>::fwdBiols_base(const fwdBiols_base<T>& fwdBiols_source){
 // Assignment operator to ensure deep copy - else 'data' can be pointed at by multiple instances
 template<typename T>
 fwdBiols_base<T>& fwdBiols_base<T>::operator = (const fwdBiols_base<T>& fwdBiols_source){
-    Rprintf("In fwdBiols_base<T> assignment operator\n");
+    //Rprintf("In fwdBiols_base<T> assignment operator\n");
 	if (this != &fwdBiols_source){
         biols  = fwdBiols_source.biols; // std::vector always does deep copy
         names = Rcpp::clone<Rcpp::CharacterVector>(fwdBiols_source.names);
