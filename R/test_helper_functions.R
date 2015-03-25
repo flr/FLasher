@@ -320,17 +320,6 @@ simple_fisheries_project <- function(flfs, flb, flsr, f, f_spwn, sr_residuals, s
     return(list(flfs = flfs, flb = flb))
 }
 
-setClass("fwdControlTest",
-    representation(
-        target = "data.frame",
-        target_iters = "array"
-    ),
-    prototype = prototype(
-        target_iters= array(NA, dim=c(1,3,1), dimnames=list(target_no=1, c("min","value","max"), iter=1))
-    )
-)
-
-
 
 #' Dummy fwdControl object creator
 #'
@@ -342,10 +331,6 @@ setClass("fwdControlTest",
 #' @export
 #' @return A fwdControl object
 dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=1,max=10)), niters = round(runif(1,min=1,max=10))){
-    # We need to have a proper R version of the class
-    # And an automatic generator
-
-
     target <- data.frame(year=years,
                           value=rlnorm(length(years)),
                           quantity='f',
@@ -354,10 +339,7 @@ dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=1,max=10)), 
                           maxAge = 5,
                           fishery = NA,
                           catch = NA
-
                           )
-
-
     # Force integers - should be done in fwd() dispatch or constructor
     target$fishery <- as.integer(target$fishery)
     target$catch <- as.integer(target$catch)

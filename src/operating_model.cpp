@@ -94,7 +94,7 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
     while((std::accumulate(iter_solved.begin(), iter_solved.end(), 0) < niter) & (nr_count < max_iters)){ 
     //for (nr_count = 0; nr_count < 10; ++nr_count){
         ++nr_count;
-        //Rprintf("\nnr_count: %i\n", nr_count);
+        Rprintf("nr_count: %i\n", nr_count);
         // Get y = f(x0)
         y = fun.Forward(0, indep); // HERE - why is y changing
         //Rprintf("indep: %f\n", indep[0]);
@@ -123,7 +123,7 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
                 //Rprintf("iter_y[0] %f\n", iter_y[0]*1e12);
                 // Has iter now been solved? If so, set the flag to 1
                 if (euclid_norm(iter_y) < tolerance){
-                    //Rprintf("iter %i now solved\n", iter_count);
+                    Rprintf("iter %i now solved\n", iter_count);
                     //Rprintf("euclid_norm * 1e12: %f\n", euclid_norm(iter_y)*1e12);
                     iter_solved[iter_count] = 1;
                 }
@@ -951,7 +951,7 @@ void operatingModel::run_catch_demo(){
 
     // Turn on tape
     CppAD::Independent(effortmult_ad);
-    Rprintf("Turned on tape\n");
+   Rprintf("Turned on tape\n");
     // Update fisheries.effort() = fisheries.effort() * effortmult in that timestep
     for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
         for (int iter_count = 1; iter_count <= niter; ++ iter_count){
@@ -965,19 +965,37 @@ void operatingModel::run_catch_demo(){
     // Do the projection with the updated efforts
     project_timestep(target_effortmult_timestep); 
 
-    // Calc error
+ //   // Calc error
     std::vector<unsigned int> indices_min {target_effortmult_year, 1, target_effortmult_season, 1, 1};
     std::vector<unsigned int> indices_max {target_effortmult_year, 1, target_effortmult_season, 1, niter};
     FLQuantAD catches_temp; 
-    Rprintf("Calcing error\n");
-    for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
-        catches_temp = fisheries(fisheries_count, 1).catches(indices_min, indices_max);
+    //catches_temp = catches(3, indices_min, indices_max);
+ //   Rprintf("Calcing error\n");
+    // Catch targets are FC11 and FC21 - works
+    //for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
+    //    catches_temp = fisheries(fisheries_count, 1).catches(indices_min, indices_max);
+    //    for (int iter_count = 1; iter_count <= niter; ++ iter_count){
+    //        error[(fisheries_count - 1) * niter + iter_count - 1] =
+    //            // Catches of first FLCatch in each fishery
+    //            catches_temp(1, 1, 1, 1, 1, iter_count) - target_value[(fisheries_count - 1) * niter + iter_count - 1];
+    //    }
+    //}
+    // Catch targets are total C on Biol1 and total C on Biol 2 (fished by FC12 & FC21)
+    int target_count = 0;
+    //for (int biol_count : {1,2}){ // Looks OK
+    for (int biol_count : {2,3}){ // Looks OK
+    //for (int biol_count : {3,3}){ // Not possible - solver goes forever
+        ++target_count;
+        catches_temp = catches(biol_count, indices_min, indices_max);
         for (int iter_count = 1; iter_count <= niter; ++ iter_count){
-            error[(fisheries_count - 1) * niter + iter_count - 1] =
-                // Catches of first FLCatch in each fishery
-                catches_temp(1, 1, 1, 1, 1, iter_count) - target_value[(fisheries_count - 1) * niter + iter_count - 1];
+            //Rprintf("ct: %f\n", Value(catches_temp(1, 1, 1, 1, 1, iter_count)));
+            //Rprintf("error_count: %f\n", Value(error[(target_count - 1) * niter + iter_count - 1]));
+            error[(target_count - 1) * niter + iter_count - 1] =
+                catches_temp(1, 1, 1, 1, 1, iter_count) - target_value[(target_count - 1) * niter + iter_count - 1];
         }
     }
+    
+
 
     // Stop recording
     Rprintf("Turning off tape\n");
