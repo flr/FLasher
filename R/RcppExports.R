@@ -1569,12 +1569,16 @@ test_fwdControl_assignment_operator <- function(fc) {
     .Call('FLasher_test_fwdControl_assignment_operator', PACKAGE = 'FLasher', fc)
 }
 
+test_fwdControl_get_ntimestep <- function(control) {
+    .Call('FLasher_test_fwdControl_get_ntimestep', PACKAGE = 'FLasher', control)
+}
+
 test_fwdControl_get_target <- function(control) {
     .Call('FLasher_test_fwdControl_get_target', PACKAGE = 'FLasher', control)
 }
 
-test_fwdControl_get_ntarget <- function(control) {
-    .Call('FLasher_test_fwdControl_get_ntarget', PACKAGE = 'FLasher', control)
+test_fwdControl_get_ntarget <- function(control, timestep) {
+    .Call('FLasher_test_fwdControl_get_ntarget', PACKAGE = 'FLasher', control, timestep)
 }
 
 test_fwdControl_get_niter <- function(control) {
@@ -1767,6 +1771,10 @@ test_operatingModel_SSB_FLQ <- function(flfs, flbs_list_sexp, ctrl, biol_no) {
 
 test_operatingModel_SSB_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
     .Call('FLasher_test_operatingModel_SSB_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_run <- function(flfs, flbs_list_sexp, ctrl) {
+    .Call('FLasher_test_operatingModel_run', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl)
 }
 
 test_operatingModel_run_effort_demo <- function(flfs, flbs_list_sexp, ctrl) {

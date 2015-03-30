@@ -82,14 +82,32 @@ Rcpp::DataFrame fwdControl::get_target() const{
     return target;
 }
 
-// Returns the number of targets in the control object
-// This will need to be more sophisticated when we start dealing with simultaneous targets in a year
-int fwdControl::get_ntarget() const{
+// How many timesteps are we dealing with here
+// Just interrogates the timestep column in the dataframe
+unsigned int fwdControl::get_ntimestep() const{
+    // Check that the timestep exists 
+    std::vector<std::string> col_names = target.attr("names");
+    if (std::find(col_names.begin(), col_names.end(), "timestep") == col_names.end()){
+        Rcpp::stop("In fwdControl::get_ntimestep - no timestep column in control dataframe\n");
+    }
+    //Rcpp::IntegerVector timestep = target["timestep"];
+    std::vector<unsigned int> timestep = target["timestep"];
+    // Assume that they are contiguous
+    // get max, get min
+    auto max = std::max_element(timestep.begin(), timestep.end());
+    auto min = std::min_element(timestep.begin(), timestep.end());
+    auto ntimestep = (max - min + 1);
+    return ntimestep;
+
+}
+
+// Returns the number of targets in the control object for that timestep
+unsigned int fwdControl::get_ntarget(const unsigned timestep) const{
      return target.nrows();
 }
 
 // Returns the number of iterations in the target_iters member object
-int fwdControl::get_niter() const{
+unsigned int fwdControl::get_niter() const{
     Rcpp::IntegerVector dim = target_iters.attr("dim");
      return dim[2];
 }

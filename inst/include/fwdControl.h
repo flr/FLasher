@@ -46,8 +46,10 @@ class fwdControl {
 		fwdControl& operator = (const fwdControl& fwdControl_source); // Assignment operator for a deep copy
         // Accessors
         Rcpp::DataFrame get_target() const;
-        int get_ntarget() const;
-        int get_niter() const;
+        unsigned int get_ntimestep() const;
+        unsigned int get_ntarget(const unsigned int) const;
+        unsigned int get_niter() const;
+
         // Return index values, starting at 1 (i.e. not the character string of year and season)
         int get_target_year(const int target_no) const;
         int get_target_season(const int target_no) const;

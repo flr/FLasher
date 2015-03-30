@@ -28,9 +28,19 @@ test_that("fwdControl accessors", {
     # fill up min and max too - just for the accessor checks
     fc@target@iters[,"min",] <- rnorm(prod(dim(fc@target@iters)[c(1,3)]))
     fc@target@iters[,"max",] <- rnorm(prod(dim(fc@target@iters)[c(1,3)]))
+
+    # No timestep column
+    expect_that(test_fwdControl_get_ntimestep(fc), throws_error())
+
+    # Add the timestep column 
+    fc@target@element$timestep <- fc@target@element$year + 2
+    expect_that(length(unique(fc@target@element$timestep)), equals(test_fwdControl_get_ntimestep(fc)))
+
     # get target
     target <- test_fwdControl_get_target(fc)
     expect_that(target, is_identical_to(fc@target@element))
+
+
     # get ntarget
     ntarget <- test_fwdControl_get_ntarget(fc)
     expect_that(ntarget, is_identical_to(nrow(fc@target@element)))
