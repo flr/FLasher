@@ -1577,8 +1577,8 @@ test_fwdControl_get_target <- function(control) {
     .Call('FLasher_test_fwdControl_get_target', PACKAGE = 'FLasher', control)
 }
 
-test_fwdControl_get_ntarget <- function(control, timestep) {
-    .Call('FLasher_test_fwdControl_get_ntarget', PACKAGE = 'FLasher', control, timestep)
+test_fwdControl_get_ntarget <- function(control) {
+    .Call('FLasher_test_fwdControl_get_ntarget', PACKAGE = 'FLasher', control)
 }
 
 test_fwdControl_get_niter <- function(control) {

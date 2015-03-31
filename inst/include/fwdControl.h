@@ -47,7 +47,7 @@ class fwdControl {
         // Accessors
         Rcpp::DataFrame get_target() const;
         unsigned int get_ntimestep() const;
-        unsigned int get_ntarget(const unsigned int) const;
+        unsigned int get_ntarget() const;
         unsigned int get_niter() const;
 
         // Return index values, starting at 1 (i.e. not the character string of year and season)

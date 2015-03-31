@@ -5128,14 +5128,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_fwdControl_get_ntarget
-int test_fwdControl_get_ntarget(const fwdControl control, unsigned int timestep);
-RcppExport SEXP FLasher_test_fwdControl_get_ntarget(SEXP controlSEXP, SEXP timestepSEXP) {
+int test_fwdControl_get_ntarget(const fwdControl control);
+RcppExport SEXP FLasher_test_fwdControl_get_ntarget(SEXP controlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type timestep(timestepSEXP);
-    __result = Rcpp::wrap(test_fwdControl_get_ntarget(control, timestep));
+    __result = Rcpp::wrap(test_fwdControl_get_ntarget(control));
     return __result;
 END_RCPP
 }

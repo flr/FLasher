@@ -39,8 +39,8 @@ Rcpp::DataFrame test_fwdControl_get_target(const fwdControl control){
 }
 
 // [[Rcpp::export]]
-int test_fwdControl_get_ntarget(const fwdControl control, unsigned int timestep){
-    return control.get_ntarget(timestep);
+int test_fwdControl_get_ntarget(const fwdControl control){
+    return control.get_ntarget();
 }
 
 // [[Rcpp::export]]

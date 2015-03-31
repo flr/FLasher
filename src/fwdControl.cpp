@@ -90,20 +90,28 @@ unsigned int fwdControl::get_ntimestep() const{
     if (std::find(col_names.begin(), col_names.end(), "timestep") == col_names.end()){
         Rcpp::stop("In fwdControl::get_ntimestep - no timestep column in control dataframe\n");
     }
-    //Rcpp::IntegerVector timestep = target["timestep"];
     std::vector<unsigned int> timestep = target["timestep"];
     // Assume that they are contiguous
     // get max, get min
-    auto max = std::max_element(timestep.begin(), timestep.end());
-    auto min = std::min_element(timestep.begin(), timestep.end());
+    auto max = *std::max_element(timestep.begin(), timestep.end());
+    auto min = *std::min_element(timestep.begin(), timestep.end());
     auto ntimestep = (max - min + 1);
     return ntimestep;
 
 }
 
-// Returns the number of targets in the control object for that timestep
-unsigned int fwdControl::get_ntarget(const unsigned timestep) const{
-     return target.nrows();
+// Returns the number of targets in the control object
+// Target numbers should be contiguous starting from 1
+unsigned int fwdControl::get_ntarget() const{
+    // Check that the target column exists 
+    std::vector<std::string> col_names = target.attr("names");
+    if (std::find(col_names.begin(), col_names.end(), "target") == col_names.end()){
+        Rcpp::stop("In fwdControl::get_ntarget - no target column in control dataframe\n");
+    }
+    std::vector<unsigned int> target_no = target["target"];
+    auto minmax = std::minmax_element(target_no.begin(), target_no.end());
+    auto ntarget = (*minmax.second - *minmax.first + 1);
+    return ntarget;
 }
 
 // Returns the number of iterations in the target_iters member object

@@ -29,21 +29,24 @@ test_that("fwdControl accessors", {
     fc@target@iters[,"min",] <- rnorm(prod(dim(fc@target@iters)[c(1,3)]))
     fc@target@iters[,"max",] <- rnorm(prod(dim(fc@target@iters)[c(1,3)]))
 
-    # No timestep column
-    expect_that(test_fwdControl_get_ntimestep(fc), throws_error())
-
-    # Add the timestep column 
-    fc@target@element$timestep <- fc@target@element$year + 2
-    expect_that(length(unique(fc@target@element$timestep)), equals(test_fwdControl_get_ntimestep(fc)))
-
     # get target
     target <- test_fwdControl_get_target(fc)
     expect_that(target, is_identical_to(fc@target@element))
 
+    # Tests for the timestep column
+    # No timestep column
+    expect_that(test_fwdControl_get_ntimestep(fc), throws_error())
+    # Add the timestep column 
+    fc@target@element$timestep <- fc@target@element$year + 2
+    expect_that(max(fc@target@element$timestep) - min(fc@target@element$timestep) + 1, equals(test_fwdControl_get_ntimestep(fc)))
 
     # get ntarget
-    ntarget <- test_fwdControl_get_ntarget(fc)
-    expect_that(ntarget, is_identical_to(nrow(fc@target@element)))
+    # No target column
+    expect_that(test_fwdControl_get_ntarget(fc), throws_error())
+    # Add the target column 
+    fc@target@element$target <- rep(1:ceiling(nrow(fc@target@element)/2), each = 2)[1:nrow(fc@target@element)]
+    expect_that(test_fwdControl_get_ntarget(fc), equals(max(fc@target@element$target) - min(fc@target@element$target) + 1))
+
     # get niter
     niter <- test_fwdControl_get_niter(fc)
     expect_that(niter, is_identical_to(dim(fc@target@iters)[3]))
