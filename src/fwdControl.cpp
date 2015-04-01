@@ -208,7 +208,7 @@ unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
 
 /*! \brief Given the target_no and the sim_target_no, return the corresponding row number in the control object
  *
- * Row number starts at 1
+ * Row number starts at 0
  * \param target_no References the target column in the control dataframe.
  * \param sim_target_no Number of the simultaneous target within the target set (default = 1).
  */
@@ -222,7 +222,7 @@ unsigned int fwdControl::get_target_row(unsigned int target_no, unsigned int sim
         }
         current_target++;
     }
-    return current_target - targets.begin();
+    return current_target - targets.begin() - 1;
 }
 
 // It's a 3D array and we want the 2nd column of the 2nd dimension
@@ -242,13 +242,14 @@ std::vector<double> fwdControl::get_target_value(const int target_no, const int 
     auto nsim_target = get_nsim_target(target_no);
     Rcpp::IntegerVector dim = target_iters.attr("dim");
     std::vector<double> out(dim[2] * nsim_target, 0.0);
-    unsigned int element;
-
-
-
-    for (int iter_count = 0; iter_count < dim[2]; ++iter_count){
-        element = (dim[1] * dim[0] * (iter_count)) + (dim[0] * (col - 1)) + (target_no - 1); 
-        out[iter_count] = target_iters(element);
+    unsigned int target_element = 0;
+    unsigned int target_row = 0;
+    for (unsigned int sim_target_count = 1; sim_target_count <= nsim_target; ++sim_target_count){
+        target_row = get_target_row(target_no, sim_target_count);
+        for (unsigned int iter_count = 0; iter_count < dim[2]; ++iter_count){
+            target_element = (dim[1] * dim[0] * (iter_count)) + (dim[0] * (col - 1)) + target_row; 
+            out[iter_count + (dim[2] * (sim_target_count-1))] = target_iters(target_element);
+        }
     }
     return out;
 }

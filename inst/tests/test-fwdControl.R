@@ -51,23 +51,21 @@ test_that("fwdControl accessors", {
     niter <- test_fwdControl_get_niter(fc)
     expect_that(niter, is_identical_to(dim(fc@target@iters)[3]))
 
-    # nsim_target
     target_no <- fc@target@element$target[round(runif(1, min=1, max=length(fc@target@element$target)))]
+    # nsim_target
     expect_that(sum(fc@target@element$target == target_no), equals(test_fwdControl_get_nsim_target(fc, target_no)))
 
     nsim_target <- sum(fc@target@element$target == target_no)
     sim_target_no <- round(runif(1, min=1, max=nsim_target))
     row_no <- which(fc@target@element$target==target_no)[sim_target_no]
-    expect_that(row_no, equals(test_fwdControl_get_target_row(fc, target_no, sim_target_no)))
+    expect_that(row_no-1, equals(test_fwdControl_get_target_row(fc, target_no, sim_target_no)))
+    #test_fwdControl_get_target_row(fc, target_no, sim_target_no)
 
-
-    ## get target value
-    #target_no <- round(runif(1,min=1,max=dim(fc@target@element)[1]))
-    #col_no <- round(runif(1,min=1,max=3))
-    #iter <- round(runif(1,min=1, max=dim(fc@target@iters)[3]))
-    #value_list <- test_fwdControl_get_target_value(fc, target_no, col_no, iter)
-    #expect_that(fc@target@iters[target_no, col_no, iter], is_identical_to(value_list[["value"]]))
-    #expect_that(unname(fc@target@iters[target_no, col_no,]), is_identical_to(value_list[["values"]]))
+    # get target value
+    col_no <- round(runif(1,min=1,max=3))
+    values <- test_fwdControl_get_target_value(fc, target_no, col_no)
+    target_rows <- which(fc@target@element$target==target_no)
+    expect_that(c(t(fc@target@iters[target_rows,col_no,])), equals(values))
 
     ## get year, season, fishery of target
     #target_no <- round(runif(1, min=1, max=nrow(fc@target@element)))

@@ -5174,6 +5174,19 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_fwdControl_get_target_value
+std::vector<double> test_fwdControl_get_target_value(const fwdControl control, const int target_no, const int col);
+RcppExport SEXP FLasher_test_fwdControl_get_target_value(SEXP controlSEXP, SEXP target_noSEXP, SEXP colSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
+    Rcpp::traits::input_parameter< const int >::type target_no(target_noSEXP);
+    Rcpp::traits::input_parameter< const int >::type col(colSEXP);
+    __result = Rcpp::wrap(test_fwdControl_get_target_value(control, target_no, col));
+    return __result;
+END_RCPP
+}
 // test_fwdControl_get_target_quantity
 std::string test_fwdControl_get_target_quantity(const fwdControl control, const int target_no);
 RcppExport SEXP FLasher_test_fwdControl_get_target_quantity(SEXP controlSEXP, SEXP target_noSEXP) {
