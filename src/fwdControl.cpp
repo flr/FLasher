@@ -196,15 +196,7 @@ Rcpp::IntegerVector fwdControl::get_age_range(const int target_no) const{
  */
 unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
     Rcpp::IntegerVector targets = target["target"];
-    //unsigned int count = 0;
-    //for (unsigned int target_count = 0; target_count < targets.size(); ++target_count){
-    //    if (targets[target_count] == target_no){
-    //        count++;
-    //    }
-    //}
-    // return count;
-
-    // Or do it all with STL - probably slower but looks fancy
+    // Do it all with STL - probably slower but looks fancy
     // Sort them
     std::sort(targets.begin(), targets.end());
     // [&] means capture variable, means we can get target_no
@@ -213,11 +205,31 @@ unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
     return it_greater - it_value;
 }
 
+
+/*! \brief Given the target_no and the sim_target_no, return the corresponding row number in the control object
+ *
+ * Row number starts at 1
+ * \param target_no References the target column in the control dataframe.
+ * \param sim_target_no Number of the simultaneous target within the target set (default = 1).
+ */
+unsigned int fwdControl::get_target_row(unsigned int target_no, unsigned int sim_target_no) const{
+    Rcpp::IntegerVector targets = target["target"];
+    auto current_target = targets.begin();
+    for (unsigned int target_count = 0; target_count < sim_target_no; ++target_count){
+        current_target = std::find(current_target, targets.end(), target_no);
+        if (current_target == targets.end()){
+            Rcpp::stop("In fwdControl::get_target_row. target row not found\n");
+        }
+        current_target++;
+    }
+    return current_target - targets.begin();
+}
+
 // It's a 3D array and we want the 2nd column of the 2nd dimension
 // Indexing starts at 1
 // Get all iters
 // Could write this with some container magic
-/*! \brief get the target value from the control object
+/*! \brief Get the target value from the control object
  *
  * Get all iterations, from all simultaneous targets, in the control frame.
  * Returns a single vector of length niter * nsimtarget
@@ -227,9 +239,13 @@ unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
  * \param col 1 for min, 2 for value, 3 for max column
  */
 std::vector<double> fwdControl::get_target_value(const int target_no, const int col) const{
+    auto nsim_target = get_nsim_target(target_no);
     Rcpp::IntegerVector dim = target_iters.attr("dim");
-    std::vector<double> out(dim[2], 0.0);
+    std::vector<double> out(dim[2] * nsim_target, 0.0);
     unsigned int element;
+
+
+
     for (int iter_count = 0; iter_count < dim[2]; ++iter_count){
         element = (dim[1] * dim[0] * (iter_count)) + (dim[0] * (col - 1)) + (target_no - 1); 
         out[iter_count] = target_iters(element);

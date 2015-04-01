@@ -1589,6 +1589,10 @@ test_fwdControl_get_nsim_target <- function(control, target_no) {
     .Call('FLasher_test_fwdControl_get_nsim_target', PACKAGE = 'FLasher', control, target_no)
 }
 
+test_fwdControl_get_target_row <- function(control, target_no, sim_target_no) {
+    .Call('FLasher_test_fwdControl_get_target_row', PACKAGE = 'FLasher', control, target_no, sim_target_no)
+}
+
 test_fwdControl_get_target_quantity <- function(control, target_no) {
     .Call('FLasher_test_fwdControl_get_target_quantity', PACKAGE = 'FLasher', control, target_no)
 }

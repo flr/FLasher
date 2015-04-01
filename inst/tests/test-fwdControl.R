@@ -52,8 +52,14 @@ test_that("fwdControl accessors", {
     expect_that(niter, is_identical_to(dim(fc@target@iters)[3]))
 
     # nsim_target
-    target_no <- round(runif(1, min=min(fc@target@element$target), max=max(fc@target@element$target)))
+    target_no <- fc@target@element$target[round(runif(1, min=1, max=length(fc@target@element$target)))]
     expect_that(sum(fc@target@element$target == target_no), equals(test_fwdControl_get_nsim_target(fc, target_no)))
+
+    nsim_target <- sum(fc@target@element$target == target_no)
+    sim_target_no <- round(runif(1, min=1, max=nsim_target))
+    row_no <- which(fc@target@element$target==target_no)[sim_target_no]
+    expect_that(row_no, equals(test_fwdControl_get_target_row(fc, target_no, sim_target_no)))
+
 
     ## get target value
     #target_no <- round(runif(1,min=1,max=dim(fc@target@element)[1]))

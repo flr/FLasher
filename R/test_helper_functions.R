@@ -330,7 +330,7 @@ simple_fisheries_project <- function(flfs, flb, flsr, f, f_spwn, sr_residuals, s
 #' 
 #' @export
 #' @return A fwdControl object
-dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=1,max=10)), niters = round(runif(1,min=1,max=10))){
+dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=5,max=10)), niters = round(runif(1,min=1,max=10))){
     target <- data.frame(year=years,
                           value=rlnorm(length(years)),
                           quantity='f',

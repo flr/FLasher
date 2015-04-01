@@ -53,6 +53,11 @@ unsigned int test_fwdControl_get_nsim_target(const fwdControl control, unsigned 
     return control.get_nsim_target(target_no);
 }
 
+// [[Rcpp::export]]
+unsigned int test_fwdControl_get_target_row(const fwdControl control, unsigned int target_no, unsigned int sim_target_no){
+    return control.get_target_row(target_no, sim_target_no);
+}
+
 
 //// [[Rcpp::export]]
 //int test_fwdControl_get_target_fishery(const fwdControl control, const int target_no){

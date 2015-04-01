@@ -50,6 +50,7 @@ class fwdControl {
         unsigned int get_ntarget() const;
         unsigned int get_niter() const;
         unsigned int get_nsim_target(unsigned int target_no) const;
+        unsigned int get_target_row(unsigned int target_no, unsigned int sim_target_no = 1) const;
 
         // Return index values, starting at 1 (i.e. not the character string of year and season)
         //int get_target_year(const int target_no) const;
@@ -58,8 +59,10 @@ class fwdControl {
         //int get_target_rel_season(const int target_no) const;
         //int get_target_fishery(const int target_no) const;
         Rcpp::IntegerVector get_age_range(const int target_no) const; // Returns the age range - literally just the values in target
+
         //double get_target_value(const int target_no, const int col, const int iter) const; // col: 1 = min, 2 = value, 3 = max
         std::vector<double> get_target_value(const int target_no, const int col) const; // gets all iters. col: 1 = min, 2 = value, 3 = max
+
         std::string get_target_quantity(const int target_no) const;
         fwdControlTargetType get_target_type(const int target_no) const;
         void init_target_map();
