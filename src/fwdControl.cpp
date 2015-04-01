@@ -122,45 +122,45 @@ unsigned int fwdControl::get_niter() const{
 
 // Returns the year and season of the target - used to calculate the timestep in the projection loop
 // These are integer indices - not characters
-int fwdControl::get_target_year(const int target_no) const {
-    Rcpp::IntegerVector year = target["year"];
-    if (target_no > year.size()){
-        Rcpp::stop("In fwdControl::get_target_year. target_no > number of targets\n");
-    }
-    return year[target_no-1];
-}
-
-int fwdControl::get_target_rel_year(const int target_no) const {
-    Rcpp::IntegerVector rel_year = target["relYear"];
-    if (target_no > rel_year.size()){
-        Rcpp::stop("In fwdControl::get_target_rel_year. target_no > number of targets\n");
-    }
-    return rel_year[target_no-1];
-}
-
-int fwdControl::get_target_season(const int target_no) const {
-    Rcpp::IntegerVector season = target["season"];
-    if (target_no > season.size()){
-        Rcpp::stop("In fwdControl::get_target_season. target_no > number of targets\n");
-    }
-    return season[target_no-1];
-}
-
-int fwdControl::get_target_rel_season(const int target_no) const {
-    Rcpp::IntegerVector rel_season = target["relSeason"];
-    if (target_no > rel_season.size()){
-        Rcpp::stop("In fwdControl::get_target_rel_season. target_no > number of targets\n");
-    }
-    return rel_season[target_no-1];
-}
-
-int fwdControl::get_target_fishery(const int target_no) const {
-    Rcpp::IntegerVector fishery = target["fishery"];
-    if (target_no > fishery.size()){
-        Rcpp::stop("In fwdControl::get_target_fishery. target_no > number of targets\n");
-    }
-    return fishery[target_no-1];
-}
+//int fwdControl::get_target_year(const int target_no) const {
+//    Rcpp::IntegerVector year = target["year"];
+//    if (target_no > year.size()){
+//        Rcpp::stop("In fwdControl::get_target_year. target_no > number of targets\n");
+//    }
+//    return year[target_no-1];
+//}
+//
+//int fwdControl::get_target_rel_year(const int target_no) const {
+//    Rcpp::IntegerVector rel_year = target["relYear"];
+//    if (target_no > rel_year.size()){
+//        Rcpp::stop("In fwdControl::get_target_rel_year. target_no > number of targets\n");
+//    }
+//    return rel_year[target_no-1];
+//}
+//
+//int fwdControl::get_target_season(const int target_no) const {
+//    Rcpp::IntegerVector season = target["season"];
+//    if (target_no > season.size()){
+//        Rcpp::stop("In fwdControl::get_target_season. target_no > number of targets\n");
+//    }
+//    return season[target_no-1];
+//}
+//
+//int fwdControl::get_target_rel_season(const int target_no) const {
+//    Rcpp::IntegerVector rel_season = target["relSeason"];
+//    if (target_no > rel_season.size()){
+//        Rcpp::stop("In fwdControl::get_target_rel_season. target_no > number of targets\n");
+//    }
+//    return rel_season[target_no-1];
+//}
+//
+//int fwdControl::get_target_fishery(const int target_no) const {
+//    Rcpp::IntegerVector fishery = target["fishery"];
+//    if (target_no > fishery.size()){
+//        Rcpp::stop("In fwdControl::get_target_fishery. target_no > number of targets\n");
+//    }
+//    return fishery[target_no-1];
+//}
 
 // Returns the age range - literally just the values in target
 Rcpp::IntegerVector fwdControl::get_age_range(const int target_no) const{
@@ -180,16 +180,52 @@ Rcpp::IntegerVector fwdControl::get_age_range(const int target_no) const{
 
 // It's a 3D array and we want the 2nd column of the 2nd dimension
 // Indexing starts at 1
-double fwdControl::get_target_value(const int target_no, const int col, const int iter) const{
-    Rcpp::IntegerVector dim = target_iters.attr("dim");
-    unsigned int element = (dim[1] * dim[0] * (iter - 1)) + (dim[0] * (col - 1)) + (target_no - 1); 
-    return target_iters(element);
+//double fwdControl::get_target_value(const int target_no, const int col, const int iter) const{
+//    Rcpp::IntegerVector dim = target_iters.attr("dim");
+//    unsigned int element = (dim[1] * dim[0] * (iter - 1)) + (dim[0] * (col - 1)) + (target_no - 1); 
+//    return target_iters(element);
+//}
+
+
+
+/*! \brief Get the number of simultaneous targets associated with a target number
+ *
+ * A target can have multiple simultaneous targets. For example, if you have 2 FLFishery objects aiming to hit 2 catches at the same time. 
+ * This method returns the number of simultanous targets associated with a target.
+ * \param target_no References the target column in the control dataframe.
+ */
+unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
+    Rcpp::IntegerVector targets = target["target"];
+    //unsigned int count = 0;
+    //for (unsigned int target_count = 0; target_count < targets.size(); ++target_count){
+    //    if (targets[target_count] == target_no){
+    //        count++;
+    //    }
+    //}
+    // return count;
+
+    // Or do it all with STL - probably slower but looks fancy
+    // Sort them
+    std::sort(targets.begin(), targets.end());
+    // [&] means capture variable, means we can get target_no
+    auto it_greater = std::find_if(targets.begin(), targets.end(), [&] (const unsigned int& x) {return x > target_no;});
+    auto it_value = std::find(targets.begin(), targets.end(), target_no);
+    return it_greater - it_value;
 }
 
 // It's a 3D array and we want the 2nd column of the 2nd dimension
 // Indexing starts at 1
 // Get all iters
 // Could write this with some container magic
+/*! \brief get the target value from the control object
+ *
+ * Get all iterations, from all simultaneous targets, in the control frame.
+ * Returns a single vector of length niter * nsimtarget
+ * with simtarget1 taking indices 0:(niter-1), simtarget2 taking indices niter:(2*niter-1) and so on.
+ * Returns the value, min or max values depending on the 'col' argument.
+ * \param target_no References the target column in the control dataframe.
+ * \param col 1 for min, 2 for value, 3 for max column
+ */
 std::vector<double> fwdControl::get_target_value(const int target_no, const int col) const{
     Rcpp::IntegerVector dim = target_iters.attr("dim");
     std::vector<double> out(dim[2], 0.0);

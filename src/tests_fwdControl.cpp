@@ -49,37 +49,43 @@ int test_fwdControl_get_niter(const fwdControl control){
 }
 
 // [[Rcpp::export]]
-int test_fwdControl_get_target_fishery(const fwdControl control, const int target_no){
-    return control.get_target_fishery(target_no);
+unsigned int test_fwdControl_get_nsim_target(const fwdControl control, unsigned int target_no){
+    return control.get_nsim_target(target_no);
 }
 
-// [[Rcpp::export]]
-int test_fwdControl_get_target_year(const fwdControl control, const int target_no){
-    return control.get_target_year(target_no);
-}
 
-// [[Rcpp::export]]
-int test_fwdControl_get_target_season(const fwdControl control, const int target_no){
-    return control.get_target_season(target_no);
-}
+//// [[Rcpp::export]]
+//int test_fwdControl_get_target_fishery(const fwdControl control, const int target_no){
+//    return control.get_target_fishery(target_no);
+//}
+//
+//// [[Rcpp::export]]
+//int test_fwdControl_get_target_year(const fwdControl control, const int target_no){
+//    return control.get_target_year(target_no);
+//}
+//
+//// [[Rcpp::export]]
+//int test_fwdControl_get_target_season(const fwdControl control, const int target_no){
+//    return control.get_target_season(target_no);
+//}
+//
+//// [[Rcpp::export]]
+//int test_fwdControl_get_target_rel_year(const fwdControl control, const int target_no){
+//    return control.get_target_rel_year(target_no);
+//}
+//
+//// [[Rcpp::export]]
+//int test_fwdControl_get_target_rel_season(const fwdControl control, const int target_no){
+//    return control.get_target_rel_season(target_no);
+//}
 
-// [[Rcpp::export]]
-int test_fwdControl_get_target_rel_year(const fwdControl control, const int target_no){
-    return control.get_target_rel_year(target_no);
-}
-
-// [[Rcpp::export]]
-int test_fwdControl_get_target_rel_season(const fwdControl control, const int target_no){
-    return control.get_target_rel_season(target_no);
-}
-
-// [[Rcpp::export]]
-Rcpp::List test_fwdControl_get_target_value(const fwdControl control, const int target_no, const int col, const int iter){
-    double value =  control.get_target_value(target_no, col, iter);
-    std::vector<double> values =  control.get_target_value(target_no, col);
-	return Rcpp::List::create(Rcpp::Named("value", value),
-                            Rcpp::Named("values",values));
-}
+//// [[Rcpp::export]]
+//Rcpp::List test_fwdControl_get_target_value(const fwdControl control, const int target_no, const int col, const int iter){
+//    double value =  control.get_target_value(target_no, col, iter);
+//    std::vector<double> values =  control.get_target_value(target_no, col);
+//	return Rcpp::List::create(Rcpp::Named("value", value),
+//                            Rcpp::Named("values",values));
+//}
 
 // [[Rcpp::export]]
 std::string test_fwdControl_get_target_quantity(const fwdControl control, const int target_no){

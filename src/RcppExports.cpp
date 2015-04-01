@@ -5149,77 +5149,15 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// test_fwdControl_get_target_fishery
-int test_fwdControl_get_target_fishery(const fwdControl control, const int target_no);
-RcppExport SEXP FLasher_test_fwdControl_get_target_fishery(SEXP controlSEXP, SEXP target_noSEXP) {
+// test_fwdControl_get_nsim_target
+unsigned int test_fwdControl_get_nsim_target(const fwdControl control, unsigned int target_no);
+RcppExport SEXP FLasher_test_fwdControl_get_nsim_target(SEXP controlSEXP, SEXP target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
-    Rcpp::traits::input_parameter< const int >::type target_no(target_noSEXP);
-    __result = Rcpp::wrap(test_fwdControl_get_target_fishery(control, target_no));
-    return __result;
-END_RCPP
-}
-// test_fwdControl_get_target_year
-int test_fwdControl_get_target_year(const fwdControl control, const int target_no);
-RcppExport SEXP FLasher_test_fwdControl_get_target_year(SEXP controlSEXP, SEXP target_noSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
-    Rcpp::traits::input_parameter< const int >::type target_no(target_noSEXP);
-    __result = Rcpp::wrap(test_fwdControl_get_target_year(control, target_no));
-    return __result;
-END_RCPP
-}
-// test_fwdControl_get_target_season
-int test_fwdControl_get_target_season(const fwdControl control, const int target_no);
-RcppExport SEXP FLasher_test_fwdControl_get_target_season(SEXP controlSEXP, SEXP target_noSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
-    Rcpp::traits::input_parameter< const int >::type target_no(target_noSEXP);
-    __result = Rcpp::wrap(test_fwdControl_get_target_season(control, target_no));
-    return __result;
-END_RCPP
-}
-// test_fwdControl_get_target_rel_year
-int test_fwdControl_get_target_rel_year(const fwdControl control, const int target_no);
-RcppExport SEXP FLasher_test_fwdControl_get_target_rel_year(SEXP controlSEXP, SEXP target_noSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
-    Rcpp::traits::input_parameter< const int >::type target_no(target_noSEXP);
-    __result = Rcpp::wrap(test_fwdControl_get_target_rel_year(control, target_no));
-    return __result;
-END_RCPP
-}
-// test_fwdControl_get_target_rel_season
-int test_fwdControl_get_target_rel_season(const fwdControl control, const int target_no);
-RcppExport SEXP FLasher_test_fwdControl_get_target_rel_season(SEXP controlSEXP, SEXP target_noSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
-    Rcpp::traits::input_parameter< const int >::type target_no(target_noSEXP);
-    __result = Rcpp::wrap(test_fwdControl_get_target_rel_season(control, target_no));
-    return __result;
-END_RCPP
-}
-// test_fwdControl_get_target_value
-Rcpp::List test_fwdControl_get_target_value(const fwdControl control, const int target_no, const int col, const int iter);
-RcppExport SEXP FLasher_test_fwdControl_get_target_value(SEXP controlSEXP, SEXP target_noSEXP, SEXP colSEXP, SEXP iterSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
-    Rcpp::traits::input_parameter< const int >::type target_no(target_noSEXP);
-    Rcpp::traits::input_parameter< const int >::type col(colSEXP);
-    Rcpp::traits::input_parameter< const int >::type iter(iterSEXP);
-    __result = Rcpp::wrap(test_fwdControl_get_target_value(control, target_no, col, iter));
+    Rcpp::traits::input_parameter< unsigned int >::type target_no(target_noSEXP);
+    __result = Rcpp::wrap(test_fwdControl_get_nsim_target(control, target_no));
     return __result;
 END_RCPP
 }
