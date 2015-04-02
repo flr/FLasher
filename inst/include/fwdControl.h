@@ -61,8 +61,8 @@ class fwdControl {
         //double get_target_value(const int target_no, const int col, const int iter) const; // col: 1 = min, 2 = value, 3 = max
         std::vector<double> get_target_value(const int target_no, const int col) const; // gets all iters. col: 1 = min, 2 = value, 3 = max
 
-        std::string get_target_quantity(const int target_no) const;
-        fwdControlTargetType get_target_type(const int target_no) const;
+        std::string get_target_quantity(const int target_no, const int sim_target_no) const;
+        fwdControlTargetType get_target_type(const int target_no, const int sim_target_no) const;
         void init_target_map();
         // FCB accessors
         Rcpp::IntegerMatrix get_FC(const int biol_no) const;

@@ -5213,14 +5213,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_fwdControl_get_target_quantity
-std::string test_fwdControl_get_target_quantity(const fwdControl control, const int target_no);
-RcppExport SEXP FLasher_test_fwdControl_get_target_quantity(SEXP controlSEXP, SEXP target_noSEXP) {
+std::string test_fwdControl_get_target_quantity(const fwdControl control, const int target_no, const int sim_target_no);
+RcppExport SEXP FLasher_test_fwdControl_get_target_quantity(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
     Rcpp::traits::input_parameter< const int >::type target_no(target_noSEXP);
-    __result = Rcpp::wrap(test_fwdControl_get_target_quantity(control, target_no));
+    Rcpp::traits::input_parameter< const int >::type sim_target_no(sim_target_noSEXP);
+    __result = Rcpp::wrap(test_fwdControl_get_target_quantity(control, target_no, sim_target_no));
     return __result;
 END_RCPP
 }
@@ -5802,6 +5803,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
     Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
     __result = Rcpp::wrap(test_operatingModel_SSB_subset(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max));
+    return __result;
+END_RCPP
+}
+// test_operatingModel_get_target_value
+std::vector<double> test_operatingModel_get_target_value(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int target_no);
+RcppExport SEXP FLasher_test_operatingModel_get_target_value(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP target_noSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type flbs_list_sexp(flbs_list_sexpSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const int >::type target_no(target_noSEXP);
+    __result = Rcpp::wrap(test_operatingModel_get_target_value(flfs, flbs_list_sexp, ctrl, target_no));
     return __result;
 END_RCPP
 }

@@ -331,15 +331,20 @@ simple_fisheries_project <- function(flfs, flb, flsr, f, f_spwn, sr_residuals, s
 #' @export
 #' @return A fwdControl object
 dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=5,max=10)), niters = round(runif(1,min=5,max=10))){
+    quantities <- c("f","catch","landings","discards")
     target <- data.frame(year=years,
                           value=rlnorm(length(years)),
-                          quantity='f',
+                          quantity=NA,
                           season = 1L, # when calling fwd() season must be an integer
                           minAge = 1,
                           maxAge = 5,
                           fishery = NA,
                           catch = NA
                           )
+
+    # Randomly pick some quantities
+    target$quantity <- quantities[round(runif(nrow(target),min=1,max=length(quantities)))]
+
     # Force integers - should be done in fwd() dispatch or constructor
     target$fishery <- as.integer(target$fishery)
     target$catch <- as.integer(target$catch)

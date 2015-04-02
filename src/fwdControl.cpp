@@ -254,18 +254,20 @@ Rcpp::IntegerVector fwdControl::get_target_int_col(const int target_no, const st
 //}
 
 
-// target_no starts at 1
-std::string fwdControl::get_target_quantity(const int target_no) const{
+/*! \brief Get the target quantity from the control object
+ *
+ * 
+ * \param target_no References the target column in the control dataframe.
+ * \param sim_target_no
+ */
+std::string fwdControl::get_target_quantity(const int target_no, const int sim_target_no) const{
+    auto row = get_target_row(target_no, sim_target_no);
     Rcpp::CharacterVector quantities = target["quantity"];
-    if (target_no > quantities.size()){
-        Rcpp::stop("In fwdControl::get_target_type. target_no > number of targets\n");
-    }
-    return Rcpp::as<std::string>(quantities[target_no - 1]);
+    return Rcpp::as<std::string>(quantities[row]);
 }
 
-// target_no starts at 1
-fwdControlTargetType fwdControl::get_target_type(const int target_no) const{
-    std::string quantity = get_target_quantity(target_no);
+fwdControlTargetType fwdControl::get_target_type(const int target_no, const int sim_target_no) const{
+    std::string quantity = get_target_quantity(target_no, sim_target_no);
     target_map_type::const_iterator type_pair_found = target_map.find(quantity);
     if (type_pair_found == target_map.end()){
         Rcpp::stop("Unable to find target quantity in fwdControl target_map\n");

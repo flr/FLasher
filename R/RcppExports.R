@@ -1605,8 +1605,8 @@ test_fwdControl_get_target_value <- function(control, target_no, col) {
     .Call('FLasher_test_fwdControl_get_target_value', PACKAGE = 'FLasher', control, target_no, col)
 }
 
-test_fwdControl_get_target_quantity <- function(control, target_no) {
-    .Call('FLasher_test_fwdControl_get_target_quantity', PACKAGE = 'FLasher', control, target_no)
+test_fwdControl_get_target_quantity <- function(control, target_no, sim_target_no) {
+    .Call('FLasher_test_fwdControl_get_target_quantity', PACKAGE = 'FLasher', control, target_no, sim_target_no)
 }
 
 test_fwdControl_get_age_range <- function(control, target_no) {
@@ -1767,6 +1767,10 @@ test_operatingModel_SSB_FLQ <- function(flfs, flbs_list_sexp, ctrl, biol_no) {
 
 test_operatingModel_SSB_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
     .Call('FLasher_test_operatingModel_SSB_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_get_target_value <- function(flfs, flbs_list_sexp, ctrl, target_no) {
+    .Call('FLasher_test_operatingModel_get_target_value', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, target_no)
 }
 
 test_operatingModel_run <- function(flfs, flbs_list_sexp, ctrl) {

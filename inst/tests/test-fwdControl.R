@@ -86,27 +86,20 @@ test_that("fwdControl accessors", {
 
     # relSeason
     fc@target@element$relSeason <- as.integer(NA)
-    expect_that(fc@target@element$relYear[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "relSeason")))
-    fc@target@element$relSeason <- 1:(1+length(fc@target@element$relYear)-1)
-    expect_that(fc@target@element$relYear[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "relSeason")))
+    expect_that(fc@target@element$relSeason[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "relSeason")))
+    fc@target@element$relSeason <- 1:(1+length(fc@target@element$relSeason)-1)
+    expect_that(fc@target@element$relSeason[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "relSeason")))
 
+    # get target type / quantity
+    type <- test_fwdControl_get_target_quantity(fc, target_no, sim_target_no)
+    expect_that(type, is_identical_to(as.character(fc@target@element[target_rows[sim_target_no], "quantity"])))
+    expect_that(test_fwdControl_get_target_quantity(fc, max(fc@target@element$target)+1, sim_target_no), throws_error()) # target number too high
 
-    #rel_season <- test_fwdControl_get_target_rel_season(fc, target_no)
-    #expect_that(rel_year, is_identical_to(fc@target@element[target_no, "relYear"]))
-    #expect_that(rel_season, is_identical_to(fc@target@element[target_no, "relSeason"]))
-    #fc@target@element$relYear <- fc@target@element[target_no, "year"]
-    #fc@target@element$relSeason <- fc@target@element[target_no, "season"]
-    #rel_year <- test_fwdControl_get_target_rel_year(fc, target_no)
-    #rel_season <- test_fwdControl_get_target_rel_season(fc, target_no)
-    #expect_that(rel_year, is_identical_to(fc@target@element[target_no, "relYear"]))
-    #expect_that(rel_season, is_identical_to(fc@target@element[target_no, "relSeason"]))
     ## force fishery column to be integer
     #fishery <- test_fwdControl_get_target_fishery(fc, target_no)
     #expect_that(fc@target@element[target_no, "fishery"], is_identical_to(fishery))
-    ## get target type / quantity
-    #type <- test_fwdControl_get_target_quantity(fc, target_no)
-    #expect_that(type, is_identical_to(as.character(fc@target@element[target_no, "quantity"])))
-    #expect_that(test_fwdControl_get_target_quantity(fc, nrow(fc@target@element)+1), throws_error())
+
+
     ## age range    
     #age_range <- test_fwdControl_get_age_range(fc, target_no)
     #expect_that(unname(unlist(fc@target@element[target_no,c("minAge", "maxAge")])), is_identical_to(age_range))
