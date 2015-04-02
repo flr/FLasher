@@ -155,7 +155,7 @@ unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
 }
 
 
-/*! \name
+/*! \name get row(s) of the control datafram given the target number
  */
 //@{
 /*! \brief Given the target_no return the corresponding row numbers in the control object.
@@ -223,6 +223,9 @@ std::vector<double> fwdControl::get_target_value(const int target_no, const int 
     return out;
 }
 
+/*! \name Get the value(s) of an integer column in the control dataframe
+ */
+//@{
 /*! \brief Subset an integer column in the control object by the target_no
  *
  * Can be used on non-Integer columns (no check is made) but who knows what the result will be?!?!
@@ -243,6 +246,21 @@ Rcpp::IntegerVector fwdControl::get_target_int_col(const int target_no, const st
     }
     return subset;
 }
+
+/*! \brief Pull out a value of an integer column in the control object by the target and simultaneous target nos
+ *
+ * Can be used on non-Integer columns (no check is made) but who knows what the result will be?!?!
+ * \param target_no References the target column in the control dataframe.
+ * \param sim_target_no The simultaneous target number
+ */
+unsigned int fwdControl::get_target_int_col(const int target_no, const int sim_target_no, const std::string col) const {
+    Rcpp::IntegerVector values = get_target_int_col(target_no, col);
+    if (sim_target_no > values.size()){
+        Rcpp::stop("In fwdControl::get_target_int_col. sim_target_no is too big\n");
+    }
+    return values[sim_target_no];
+}
+//@}
 
 
 //int fwdControl::get_target_fishery(const int target_no) const {

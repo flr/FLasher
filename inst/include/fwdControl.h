@@ -55,6 +55,7 @@ class fwdControl {
 
         // Rcpp::IntegerVector to ensure that NA is properly handled (std::vector handles OK too, but does not return NA to R)
         Rcpp::IntegerVector get_target_int_col(const int target_no, const std::string col) const;
+        unsigned int get_target_int_col(const int target_no, const int sim_target_no, const std::string col) const;
         //int get_target_fishery(const int target_no) const;
         Rcpp::IntegerVector get_age_range(const int target_no) const; // Returns the age range - literally just the values in target
 

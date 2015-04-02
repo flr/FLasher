@@ -80,13 +80,13 @@ test_that("fwdControl accessors", {
 
     # relYear
     fc@target@element$relYear <- as.integer(NA)
-    expect_that(fc@target@element$relYear[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "relYear")))
+    expect_that(fc@target@element$relYear[target_rows], equals(as.integer(test_fwdControl_get_target_int_col(fc, target_no, "relYear"))))
     fc@target@element$relYear <- 1990:(1990+length(fc@target@element$relYear)-1)
     expect_that(fc@target@element$relYear[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "relYear")))
 
     # relSeason
     fc@target@element$relSeason <- as.integer(NA)
-    expect_that(fc@target@element$relSeason[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "relSeason")))
+    expect_that(fc@target@element$relSeason[target_rows], equals(as.integer(test_fwdControl_get_target_int_col(fc, target_no, "relSeason"))))
     fc@target@element$relSeason <- 1:(1+length(fc@target@element$relSeason)-1)
     expect_that(fc@target@element$relSeason[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "relSeason")))
 
@@ -95,9 +95,12 @@ test_that("fwdControl accessors", {
     expect_that(type, is_identical_to(as.character(fc@target@element[target_rows[sim_target_no], "quantity"])))
     expect_that(test_fwdControl_get_target_quantity(fc, max(fc@target@element$target)+1, sim_target_no), throws_error()) # target number too high
 
-    ## force fishery column to be integer
-    #fishery <- test_fwdControl_get_target_fishery(fc, target_no)
-    #expect_that(fc@target@element[target_no, "fishery"], is_identical_to(fishery))
+    # fishery - just pull out 1 value - Need to force to be int in case it's an NA
+    #as.integer(test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "fishery"))
+    # Throws warning as we convert to NA
+    expect_that(fc@target@element$fishery[row_no], equals(as.integer(test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "fishery"))))
+    fc@target@element$fishery <- as.integer(round(runif(length(fc@target@element$fishery), min = 1, max = 3)))
+    expect_that(fc@target@element$fishery[row_no], equals(as.integer(test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "fishery"))))
 
 
     ## age range    
