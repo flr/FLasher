@@ -68,25 +68,12 @@ std::vector<unsigned int> test_fwdControl_get_target_rows(const fwdControl contr
 //    return control.get_target_fishery(target_no);
 //}
 //
-//// [[Rcpp::export]]
-//int test_fwdControl_get_target_year(const fwdControl control, const int target_no){
-//    return control.get_target_year(target_no);
-//}
-//
-//// [[Rcpp::export]]
-//int test_fwdControl_get_target_season(const fwdControl control, const int target_no){
-//    return control.get_target_season(target_no);
-//}
-//
-//// [[Rcpp::export]]
-//int test_fwdControl_get_target_rel_year(const fwdControl control, const int target_no){
-//    return control.get_target_rel_year(target_no);
-//}
-//
-//// [[Rcpp::export]]
-//int test_fwdControl_get_target_rel_season(const fwdControl control, const int target_no){
-//    return control.get_target_rel_season(target_no);
-//}
+
+// [[Rcpp::export]]
+Rcpp::IntegerVector test_fwdControl_get_target_int_col(const fwdControl control, const int target_no, const std::string col){
+    return control.get_target_int_col(target_no, col);
+}
+
 
 // [[Rcpp::export]]
 std::vector<double> test_fwdControl_get_target_value(const fwdControl control, const int target_no, const int col){

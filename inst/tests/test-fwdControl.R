@@ -62,15 +62,8 @@ test_that("fwdControl accessors", {
     sim_target_no <- round(runif(1, min=1, max=nsim_target))
     row_no <- which(fc@target@element$target==target_no)[sim_target_no]
     expect_that(row_no, equals(test_fwdControl_get_target_row(fc, target_no, sim_target_no) + 1)) # +1 as start at 0
-    #test_fwdControl_get_target_row(fc, target_no, sim_target_no)
-    #test_fwdControl_get_target_row(fc, 1, 1)
-    #test_fwdControl_get_target_rows(fc, 1)
-    #fc@target@element$target <- 1
-    #fc@target@element$target <- c(1,2,1,3,2)
-    #test_fwdControl_get_target_rows(fc, 3)
     row_nos <- which(fc@target@element$target==target_no)
     expect_that(row_nos - 1, equals(test_fwdControl_get_target_rows(fc, target_no)))
-    #test_fwdControl_get_target_rows(fc, target_no)
 
     # get target value
     col_no <- round(runif(1,min=1,max=3))
@@ -78,19 +71,23 @@ test_that("fwdControl accessors", {
     target_rows <- which(fc@target@element$target==target_no)
     expect_that(c(t(fc@target@iters[target_rows,col_no,])), equals(values))
 
-    ## get year, season, fishery of target
-    #target_no <- round(runif(1, min=1, max=nrow(fc@target@element)))
-    #year <- test_fwdControl_get_target_year(fc, target_no)
-    #expect_that(fc@target@element[target_no, "year"], is_identical_to(year))
-    #season <- test_fwdControl_get_target_season(fc, target_no)
-    #expect_that(fc@target@element[target_no, "season"], is_identical_to(season))
-    #fc@target@element[target_no,"fishery"] <- as.integer(round(runif(1)))
-    ## get rel_year and rel_season of target
-    ## Test with NA first then some real values
-    #target_no <- round(runif(1, min=1, max=nrow(fc@target@element)))
-    #fc@target@element$relYear <- as.integer(NA)
-    #fc@target@element$relSeason <- as.integer(NA)
-    #rel_year <- test_fwdControl_get_target_rel_year(fc, target_no)
+    # year and season
+    expect_that(fc@target@element$year[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "year")))
+    expect_that(fc@target@element$season[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "season")))
+
+    # relYear
+    fc@target@element$relYear <- as.integer(NA)
+    expect_that(fc@target@element$relYear[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "relYear")))
+    fc@target@element$relYear <- 1990:(1990+length(fc@target@element$relYear)-1)
+    expect_that(fc@target@element$relYear[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "relYear")))
+
+    # relSeason
+    fc@target@element$relSeason <- as.integer(NA)
+    expect_that(fc@target@element$relYear[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "relSeason")))
+    fc@target@element$relSeason <- 1:(1+length(fc@target@element$relYear)-1)
+    expect_that(fc@target@element$relYear[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "relSeason")))
+
+
     #rel_season <- test_fwdControl_get_target_rel_season(fc, target_no)
     #expect_that(rel_year, is_identical_to(fc@target@element[target_no, "relYear"]))
     #expect_that(rel_season, is_identical_to(fc@target@element[target_no, "relSeason"]))

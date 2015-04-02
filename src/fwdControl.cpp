@@ -120,51 +120,6 @@ unsigned int fwdControl::get_niter() const{
      return dim[2];
 }
 
-// Returns the year and season of the target - used to calculate the timestep in the projection loop
-// These are integer indices - not characters
-//int fwdControl::get_target_year(const int target_no) const {
-//    Rcpp::IntegerVector year = target["year"];
-//    if (target_no > year.size()){
-//        Rcpp::stop("In fwdControl::get_target_year. target_no > number of targets\n");
-//    }
-//    return year[target_no-1];
-//}
-
-//std::vector<unsigned int> fwdControl::get_target_rel_year(const int target_no) const {
-//    Rcpp::IntegerVector rel_year = target["relYear"];
-//
-//
-//
-//    if (target_no > rel_year.size()){
-//        Rcpp::stop("In fwdControl::get_target_rel_year. target_no > number of targets\n");
-//    }
-//    return rel_year[target_no-1];
-//}
-
-//int fwdControl::get_target_season(const int target_no) const {
-//    Rcpp::IntegerVector season = target["season"];
-//    if (target_no > season.size()){
-//        Rcpp::stop("In fwdControl::get_target_season. target_no > number of targets\n");
-//    }
-//    return season[target_no-1];
-//}
-//
-//int fwdControl::get_target_rel_season(const int target_no) const {
-//    Rcpp::IntegerVector rel_season = target["relSeason"];
-//    if (target_no > rel_season.size()){
-//        Rcpp::stop("In fwdControl::get_target_rel_season. target_no > number of targets\n");
-//    }
-//    return rel_season[target_no-1];
-//}
-//
-//int fwdControl::get_target_fishery(const int target_no) const {
-//    Rcpp::IntegerVector fishery = target["fishery"];
-//    if (target_no > fishery.size()){
-//        Rcpp::stop("In fwdControl::get_target_fishery. target_no > number of targets\n");
-//    }
-//    return fishery[target_no-1];
-//}
-
 // Returns the age range - literally just the values in target
 Rcpp::IntegerVector fwdControl::get_age_range(const int target_no) const{
     Rcpp::IntegerVector min_age = target["minAge"];
@@ -178,17 +133,6 @@ Rcpp::IntegerVector fwdControl::get_age_range(const int target_no) const{
     return age_range;
 
 } 
-
-
-
-// It's a 3D array and we want the 2nd column of the 2nd dimension
-// Indexing starts at 1
-//double fwdControl::get_target_value(const int target_no, const int col, const int iter) const{
-//    Rcpp::IntegerVector dim = target_iters.attr("dim");
-//    unsigned int element = (dim[1] * dim[0] * (iter - 1)) + (dim[0] * (col - 1)) + (target_no - 1); 
-//    return target_iters(element);
-//}
-
 
 /*! \brief Get the number of simultaneous targets associated with a target number
  *
@@ -278,6 +222,30 @@ std::vector<double> fwdControl::get_target_value(const int target_no, const int 
     }
     return out;
 }
+
+/*! \brief Subset an integer column in the control object by the target_no
+ *
+ * Can be used on non-Integer columns (no check is made) but who knows what the result will be?!?!
+ * \param target_no References the target column in the control dataframe.
+ */
+Rcpp::IntegerVector fwdControl::get_target_int_col(const int target_no, const std::string col) const {
+    Rcpp::IntegerVector all = target[col];
+    std::vector<unsigned int> rows = get_target_row(target_no);
+    Rcpp::IntegerVector subset(rows.size());
+    for (auto i=0; i < subset.size(); i++){
+        subset[i] = all[rows[i]];
+    }
+    return subset;
+}
+
+
+//int fwdControl::get_target_fishery(const int target_no) const {
+//    Rcpp::IntegerVector fishery = target["fishery"];
+//    if (target_no > fishery.size()){
+//        Rcpp::stop("In fwdControl::get_target_fishery. target_no > number of targets\n");
+//    }
+//    return fishery[target_no-1];
+//}
 
 
 // target_no starts at 1

@@ -53,12 +53,8 @@ class fwdControl {
         unsigned int get_target_row(unsigned int target_no, unsigned int sim_target_no) const;
         std::vector<unsigned int> get_target_row(unsigned int target_no) const;
 
-        // Return index values, starting at 1 (i.e. not the character string of year and season)
-        //std::vector<unsigned int> get_target_year(const int target_no) const;
-        //std::vector<unsigned int> get_target_season(const int target_no) const;
-        //std::vector<unsigned int> get_target_rel_year(const int target_no) const;
-        //std::vector<unsigned int> get_target_rel_season(const int target_no) const;
-        //int get_target_rel_season(const int target_no) const;
+        // Rcpp::IntegerVector to ensure that NA is properly handled (std::vector handles OK too, but does not return NA to R)
+        Rcpp::IntegerVector get_target_int_col(const int target_no, const std::string col) const;
         //int get_target_fishery(const int target_no) const;
         Rcpp::IntegerVector get_age_range(const int target_no) const; // Returns the age range - literally just the values in target
 
