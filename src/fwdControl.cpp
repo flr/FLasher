@@ -229,6 +229,12 @@ std::vector<double> fwdControl::get_target_value(const int target_no, const int 
  * \param target_no References the target column in the control dataframe.
  */
 Rcpp::IntegerVector fwdControl::get_target_int_col(const int target_no, const std::string col) const {
+    // Check that column exists in data.frame
+    std::vector<std::string> names = target.attr("names");
+    auto it = std::find(names.begin(), names.end(), col);
+    if (it == names.end()){
+        Rcpp::stop("In fwdControl::get_target_int_col. Column name not found,\n");
+    }
     Rcpp::IntegerVector all = target[col];
     std::vector<unsigned int> rows = get_target_row(target_no);
     Rcpp::IntegerVector subset(rows.size());

@@ -71,6 +71,9 @@ test_that("fwdControl accessors", {
     target_rows <- which(fc@target@element$target==target_no)
     expect_that(c(t(fc@target@iters[target_rows,col_no,])), equals(values))
 
+    # int_col
+    expect_that(test_fwdControl_get_target_int_col(fc, target_no, "balls"), throws_error()) # column name not in control
+
     # year and season
     expect_that(fc@target@element$year[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "year")))
     expect_that(fc@target@element$season[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "season")))
