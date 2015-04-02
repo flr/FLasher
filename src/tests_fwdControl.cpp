@@ -58,6 +58,10 @@ unsigned int test_fwdControl_get_target_row(const fwdControl control, unsigned i
     return control.get_target_row(target_no, sim_target_no);
 }
 
+// [[Rcpp::export]]
+std::vector<unsigned int> test_fwdControl_get_target_rows(const fwdControl control, unsigned int target_no){
+    return control.get_target_row(target_no);
+}
 
 //// [[Rcpp::export]]
 //int test_fwdControl_get_target_fishery(const fwdControl control, const int target_no){

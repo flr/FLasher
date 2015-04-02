@@ -52,14 +52,25 @@ test_that("fwdControl accessors", {
     expect_that(niter, is_identical_to(dim(fc@target@iters)[3]))
 
     target_no <- fc@target@element$target[round(runif(1, min=1, max=length(fc@target@element$target)))]
+
     # nsim_target
     expect_that(sum(fc@target@element$target == target_no), equals(test_fwdControl_get_nsim_target(fc, target_no)))
+    expect_that(test_fwdControl_get_nsim_target(fc, max(fc@target@element$target)+1), throws_error()) # Out of bounds
 
+    # get target row and rows
     nsim_target <- sum(fc@target@element$target == target_no)
     sim_target_no <- round(runif(1, min=1, max=nsim_target))
     row_no <- which(fc@target@element$target==target_no)[sim_target_no]
-    expect_that(row_no-1, equals(test_fwdControl_get_target_row(fc, target_no, sim_target_no)))
+    expect_that(row_no, equals(test_fwdControl_get_target_row(fc, target_no, sim_target_no) + 1)) # +1 as start at 0
     #test_fwdControl_get_target_row(fc, target_no, sim_target_no)
+    #test_fwdControl_get_target_row(fc, 1, 1)
+    #test_fwdControl_get_target_rows(fc, 1)
+    #fc@target@element$target <- 1
+    #fc@target@element$target <- c(1,2,1,3,2)
+    #test_fwdControl_get_target_rows(fc, 3)
+    row_nos <- which(fc@target@element$target==target_no)
+    expect_that(row_nos - 1, equals(test_fwdControl_get_target_rows(fc, target_no)))
+    #test_fwdControl_get_target_rows(fc, target_no)
 
     # get target value
     col_no <- round(runif(1,min=1,max=3))

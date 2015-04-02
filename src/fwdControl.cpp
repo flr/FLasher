@@ -129,15 +129,18 @@ unsigned int fwdControl::get_niter() const{
 //    }
 //    return year[target_no-1];
 //}
-//
-//int fwdControl::get_target_rel_year(const int target_no) const {
+
+//std::vector<unsigned int> fwdControl::get_target_rel_year(const int target_no) const {
 //    Rcpp::IntegerVector rel_year = target["relYear"];
+//
+//
+//
 //    if (target_no > rel_year.size()){
 //        Rcpp::stop("In fwdControl::get_target_rel_year. target_no > number of targets\n");
 //    }
 //    return rel_year[target_no-1];
 //}
-//
+
 //int fwdControl::get_target_season(const int target_no) const {
 //    Rcpp::IntegerVector season = target["season"];
 //    if (target_no > season.size()){
@@ -187,7 +190,6 @@ Rcpp::IntegerVector fwdControl::get_age_range(const int target_no) const{
 //}
 
 
-
 /*! \brief Get the number of simultaneous targets associated with a target number
  *
  * A target can have multiple simultaneous targets. For example, if you have 2 FLFishery objects aiming to hit 2 catches at the same time. 
@@ -202,28 +204,51 @@ unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
     // [&] means capture variable, means we can get target_no
     auto it_greater = std::find_if(targets.begin(), targets.end(), [&] (const unsigned int& x) {return x > target_no;});
     auto it_value = std::find(targets.begin(), targets.end(), target_no);
+    if (it_value == targets.end()){
+        Rcpp::stop("In fwdControl::get_nsim_target. target_no not found in target column\n");
+    }
     return it_greater - it_value;
 }
 
 
-/*! \brief Given the target_no and the sim_target_no, return the corresponding row number in the control object
- *
- * Row number starts at 0
- * \param target_no References the target column in the control dataframe.
- * \param sim_target_no Number of the simultaneous target within the target set (default = 1).
+/*! \name
  */
-unsigned int fwdControl::get_target_row(unsigned int target_no, unsigned int sim_target_no) const{
+//@{
+/*! \brief Given the target_no return the corresponding row numbers in the control object.
+ *
+ * Returned row number starts at 0
+ * \param target_no References the target column in the control dataframe.
+ */
+std::vector<unsigned int> fwdControl::get_target_row(unsigned int target_no) const {
     Rcpp::IntegerVector targets = target["target"];
+    unsigned int nsim_target = get_nsim_target(target_no);
+    std::vector<unsigned int> rows(nsim_target);
     auto current_target = targets.begin();
-    for (unsigned int target_count = 0; target_count < sim_target_no; ++target_count){
+    for (unsigned int target_count = 0; target_count < nsim_target; ++target_count){
         current_target = std::find(current_target, targets.end(), target_no);
         if (current_target == targets.end()){
             Rcpp::stop("In fwdControl::get_target_row. target row not found\n");
         }
+        rows[target_count] = current_target - targets.begin();
         current_target++;
     }
-    return current_target - targets.begin() - 1;
+    return rows;
 }
+
+/*! \brief Given the target_no and the sim_target_no, return the corresponding row number in the control object.
+ *
+ * Returned row number starts at 0
+ * \param target_no References the target column in the control dataframe.
+ * \param sim_target_no Number of the simultaneous target within the target set.
+ */
+unsigned int fwdControl::get_target_row(unsigned int target_no, unsigned int sim_target_no) const{
+    std::vector<unsigned int> rows = get_target_row(target_no);
+    if (sim_target_no > rows.size()){
+            Rcpp::stop("In fwdControl::get_target_row. sim_target_no out of range\n");
+    }
+    return rows[sim_target_no-1];
+}
+//@}
 
 // It's a 3D array and we want the 2nd column of the 2nd dimension
 // Indexing starts at 1
