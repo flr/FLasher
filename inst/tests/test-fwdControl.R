@@ -1,15 +1,15 @@
 context("Implementation of fwdControl")
 
 test_that("fwdControl as and wrap",{
-    fc_in <- dummy_fwdControl_generator(years = 1:10, niters = 10)
+    fc_in <- random_fwdControl_generator(years = 1:10, niters = 10)
     fc_out <- test_as_wrap_fwdControl(fc_in)
     attr(fc_in@target,"FCB") <- NULL
     expect_that(fc_in@target, is_identical_to(fc_out@target)) # Tests FCB attr too
 })
 
-test_that("fwdControl copy constructor and assignement operator", {
+test_that("fwdControl copy constructor and assignment operator", {
     # No need to test if values change after copy as we cannot change the values of fwdControl
-    fc_in <- dummy_fwdControl_generator(years = 1:10, niters = 10)
+    fc_in <- random_fwdControl_generator(years = 1:10, niters = 10)
     # Copy constructor
     fcs <- test_fwdControl_copy_constructor(fc_in)
     # Assignment
@@ -20,37 +20,34 @@ test_that("fwdControl copy constructor and assignement operator", {
     expect_that(fc_in, is_identical_to(fc_out))
 })
 
-
 test_that("fwdControl accessors", {
-    fc <- dummy_fwdControl_generator()
-    fc@target@element$minAge <- as.integer(round(runif(dim(fc@target@element)[1], min=1, max = 10)))
-    fc@target@element$maxAge <- as.integer(fc@target@element$minAge * 2)
-    # fill up min and max too - just for the accessor checks
-    fc@target@iters[,"min",] <- rnorm(prod(dim(fc@target@iters)[c(1,3)]))
-    fc@target@iters[,"max",] <- rnorm(prod(dim(fc@target@iters)[c(1,3)]))
+    fc <- random_fwdControl_generator()
 
-    # get target
+    # get target - just the data.frame
     target <- test_fwdControl_get_target(fc)
     expect_that(target, is_identical_to(fc@target@element))
 
     # Tests for the timestep column
-    # No timestep column
-    expect_that(test_fwdControl_get_ntimestep(fc), throws_error())
-    # Add the timestep column 
-    fc@target@element$timestep <- fc@target@element$year + 2
+    # If no timestep column - fail
+    fc2 <- fc
+    fc2@target@element <- fc2@target@element[,colnames(fc2@target@element) != "timestep"]
+    expect_that(test_fwdControl_get_ntimestep(fc2), throws_error())
+    # With timestep column
     expect_that(max(fc@target@element$timestep) - min(fc@target@element$timestep) + 1, equals(test_fwdControl_get_ntimestep(fc)))
 
     # get ntarget
-    # No target column
-    expect_that(test_fwdControl_get_ntarget(fc), throws_error())
-    # Add the target column 
-    fc@target@element$target <- rep(1:ceiling(nrow(fc@target@element)/2), each = 2)[1:nrow(fc@target@element)]
+    # If no target column - fail
+    fc2 <- fc
+    fc2@target@element <- fc2@target@element[,colnames(fc2@target@element) != "target"]
+    expect_that(test_fwdControl_get_ntarget(fc2), throws_error())
+    # With target column
     expect_that(test_fwdControl_get_ntarget(fc), equals(max(fc@target@element$target) - min(fc@target@element$target) + 1))
 
     # get niter
     niter <- test_fwdControl_get_niter(fc)
     expect_that(niter, is_identical_to(dim(fc@target@iters)[3]))
 
+    # Pull out random target for testing - would be good to pull out a target with sim targets
     target_no <- fc@target@element$target[round(runif(1, min=1, max=length(fc@target@element$target)))]
 
     # nsim_target
@@ -63,7 +60,7 @@ test_that("fwdControl accessors", {
     row_no <- which(fc@target@element$target==target_no)[sim_target_no]
     expect_that(row_no, equals(test_fwdControl_get_target_row(fc, target_no, sim_target_no) + 1)) # +1 as start at 0
     row_nos <- which(fc@target@element$target==target_no)
-    expect_that(row_nos - 1, equals(test_fwdControl_get_target_rows(fc, target_no)))
+    expect_that(row_nos, equals(test_fwdControl_get_target_rows(fc, target_no) + 1))
 
     # get target value
     col_no <- round(runif(1,min=1,max=3))
@@ -71,7 +68,7 @@ test_that("fwdControl accessors", {
     target_rows <- which(fc@target@element$target==target_no)
     expect_that(c(t(fc@target@iters[target_rows,col_no,])), equals(values))
 
-    # int_col
+    # int_col - attempt a column that isn't there
     expect_that(test_fwdControl_get_target_int_col(fc, target_no, "balls"), throws_error()) # column name not in control
 
     # year and season
@@ -95,22 +92,30 @@ test_that("fwdControl accessors", {
     expect_that(type, is_identical_to(as.character(fc@target@element[target_rows[sim_target_no], "quantity"])))
     expect_that(test_fwdControl_get_target_quantity(fc, max(fc@target@element$target)+1, sim_target_no), throws_error()) # target number too high
 
-    # fishery - just pull out 1 value - Need to force to be int in case it's an NA
+    # fishery, catch, biol - just pull out 1 value - Need to force to be int in case it's an NA
     #as.integer(test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "fishery"))
     # Throws warning as we convert to NA
-    expect_that(fc@target@element$fishery[row_no], equals(as.integer(test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "fishery"))))
-    fc@target@element$fishery <- as.integer(round(runif(length(fc@target@element$fishery), min = 1, max = 3)))
-    expect_that(fc@target@element$fishery[row_no], equals(as.integer(test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "fishery"))))
+    expect_that(fc@target@element$fishery[row_no] , equals(as.integer(test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "fishery")))) 
+    expect_that(fc@target@element$catch[row_no] , equals(as.integer(test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "catch")))) 
+    expect_that(fc@target@element$biol[row_no] , equals(as.integer(test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "biol")))) 
 
+    # age range    
+    age_range <- test_fwdControl_get_age_range(fc, target_no, sim_target_no)
+    expect_that(unname(unlist( fc@target@element[row_no,c("minAge", "maxAge")])), equals(age_range))
 
-    ## age range    
-    #age_range <- test_fwdControl_get_age_range(fc, target_no)
-    #expect_that(unname(unlist(fc@target@element[target_no,c("minAge", "maxAge")])), is_identical_to(age_range))
+    # effort timestep
+    timestep_out <- test_fwdControl_get_target_effort_timestep(fc, target_no, sim_target_no)
+    timestep_in <- fc@target@element$timestep[row_no]
+    qs <- fc@target@element$quantity[row_no]
+    if (qs %in% c("biomass", "ssb")){
+        timestep_in <- timestep_in - 1
+    }
+    expect_that(timestep_in, equals(timestep_out))
 
 })
 
 test_that("fwdControl get_FCB methods", {
-    fwc <- dummy_fwdControl_generator()
+    fwc <- random_fwdControl_generator()
     # Make a temporary FCB attribute - add to class later
     #FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
     #colnames(FCB) <- c("F","C","B")

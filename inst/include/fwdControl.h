@@ -44,6 +44,10 @@ class fwdControl {
         operator SEXP() const; // Used as intrusive 'wrap'
 		fwdControl(const fwdControl& fwdControl_source); // copy constructor to ensure that copies (i.e. when passing to functions) are deep
 		fwdControl& operator = (const fwdControl& fwdControl_source); // Assignment operator for a deep copy
+
+        // For mapping target string to type
+        void init_target_map();
+
         // Accessors
         Rcpp::DataFrame get_target() const;
         unsigned int get_ntimestep() const;
@@ -52,19 +56,18 @@ class fwdControl {
         unsigned int get_nsim_target(unsigned int target_no) const;
         unsigned int get_target_row(unsigned int target_no, unsigned int sim_target_no) const;
         std::vector<unsigned int> get_target_row(unsigned int target_no) const;
-
         // Rcpp::IntegerVector to ensure that NA is properly handled (std::vector handles OK too, but does not return NA to R)
         Rcpp::IntegerVector get_target_int_col(const int target_no, const std::string col) const;
         unsigned int get_target_int_col(const int target_no, const int sim_target_no, const std::string col) const;
-        //int get_target_fishery(const int target_no) const;
-        Rcpp::IntegerVector get_age_range(const int target_no) const; // Returns the age range - literally just the values in target
-
-        //double get_target_value(const int target_no, const int col, const int iter) const; // col: 1 = min, 2 = value, 3 = max
         std::vector<double> get_target_value(const int target_no, const int col) const; // gets all iters. col: 1 = min, 2 = value, 3 = max
-
         std::string get_target_quantity(const int target_no, const int sim_target_no) const;
         fwdControlTargetType get_target_type(const int target_no, const int sim_target_no) const;
-        void init_target_map();
+
+        unsigned int get_target_effort_timestep(unsigned int target_no, unsigned int sim_target_no) const;
+        
+        
+        std::vector<unsigned int> get_age_range(const int target_no, const int sim_target_no) const; // Returns the age range - literally just the values in target
+
         // FCB accessors
         Rcpp::IntegerMatrix get_FC(const int biol_no) const;
         std::vector<int> get_B(const int fishery_no, const int catch_no) const;
@@ -75,6 +78,8 @@ class fwdControl {
         //std::map<std::string, fwdControlTargetType> target_map;
         target_map_type target_map;
         Rcpp::IntegerMatrix FCB; // an (n x 3) matrix with columns F, C and B
+        // Add more abundance target types if necessary
+        std::vector<fwdControlTargetType> abundance_targets {target_ssb, target_biomass};
 };
 
 

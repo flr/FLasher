@@ -1613,8 +1613,12 @@ test_fwdControl_get_target_quantity <- function(control, target_no, sim_target_n
     .Call('FLasher_test_fwdControl_get_target_quantity', PACKAGE = 'FLasher', control, target_no, sim_target_no)
 }
 
-test_fwdControl_get_age_range <- function(control, target_no) {
-    .Call('FLasher_test_fwdControl_get_age_range', PACKAGE = 'FLasher', control, target_no)
+test_fwdControl_get_age_range <- function(control, target_no, sim_target_no) {
+    .Call('FLasher_test_fwdControl_get_age_range', PACKAGE = 'FLasher', control, target_no, sim_target_no)
+}
+
+test_fwdControl_get_target_effort_timestep <- function(control, target_no, sim_target_no) {
+    .Call('FLasher_test_fwdControl_get_target_effort_timestep', PACKAGE = 'FLasher', control, target_no, sim_target_no)
 }
 
 test_fwdControl_get_FC <- function(control, biol_no) {

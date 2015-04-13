@@ -63,12 +63,6 @@ std::vector<unsigned int> test_fwdControl_get_target_rows(const fwdControl contr
     return control.get_target_row(target_no);
 }
 
-//// [[Rcpp::export]]
-//int test_fwdControl_get_target_fishery(const fwdControl control, const int target_no){
-//    return control.get_target_fishery(target_no);
-//}
-//
-
 // [[Rcpp::export]]
 Rcpp::IntegerVector test_fwdControl_get_target_int_col(const fwdControl control, const int target_no, const std::string col){
     return control.get_target_int_col(target_no, col);
@@ -92,8 +86,13 @@ std::string test_fwdControl_get_target_quantity(const fwdControl control, const 
 }
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector test_fwdControl_get_age_range(const fwdControl control, const int target_no){
-    return control.get_age_range(target_no);
+std::vector<unsigned int> test_fwdControl_get_age_range(const fwdControl control, const int target_no, const int sim_target_no){
+    return control.get_age_range(target_no, sim_target_no);
+}
+
+// [[Rcpp::export]]
+unsigned int test_fwdControl_get_target_effort_timestep(const fwdControl control, const int target_no, const int sim_target_no){
+    return control.get_target_effort_timestep(target_no, sim_target_no);
 }
 
 // [[Rcpp::export]]

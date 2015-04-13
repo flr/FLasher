@@ -5240,14 +5240,28 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_fwdControl_get_age_range
-Rcpp::IntegerVector test_fwdControl_get_age_range(const fwdControl control, const int target_no);
-RcppExport SEXP FLasher_test_fwdControl_get_age_range(SEXP controlSEXP, SEXP target_noSEXP) {
+std::vector<unsigned int> test_fwdControl_get_age_range(const fwdControl control, const int target_no, const int sim_target_no);
+RcppExport SEXP FLasher_test_fwdControl_get_age_range(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
     Rcpp::traits::input_parameter< const int >::type target_no(target_noSEXP);
-    __result = Rcpp::wrap(test_fwdControl_get_age_range(control, target_no));
+    Rcpp::traits::input_parameter< const int >::type sim_target_no(sim_target_noSEXP);
+    __result = Rcpp::wrap(test_fwdControl_get_age_range(control, target_no, sim_target_no));
+    return __result;
+END_RCPP
+}
+// test_fwdControl_get_target_effort_timestep
+unsigned int test_fwdControl_get_target_effort_timestep(const fwdControl control, const int target_no, const int sim_target_no);
+RcppExport SEXP FLasher_test_fwdControl_get_target_effort_timestep(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
+    Rcpp::traits::input_parameter< const int >::type target_no(target_noSEXP);
+    Rcpp::traits::input_parameter< const int >::type sim_target_no(sim_target_noSEXP);
+    __result = Rcpp::wrap(test_fwdControl_get_target_effort_timestep(control, target_no, sim_target_no));
     return __result;
 END_RCPP
 }

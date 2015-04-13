@@ -321,42 +321,101 @@ simple_fisheries_project <- function(flfs, flb, flsr, f, f_spwn, sr_residuals, s
 }
 
 
-#' Dummy fwdControl object creator
+#' Random fwdControl object creator
 #'
-#' Creates a dummy fwdControl object for testing purposes
+#' Creates a random fwdControl object for testing purposes
 #'
 #' @param years numeric vector of years in the control object. Default value is 1:random interger (max = 10).
+#' @param nseasons number of seasons in the projection
+#' @param max_nsim_target maximum number of simultaneous targets in each timestep
 #' @param niters the number of iterations. Default number is random integer (max = 10).
 #' 
 #' @export
 #' @return A fwdControl object
-dummy_fwdControl_generator <- function(years = 1:round(runif(1, min=5,max=10)), niters = round(runif(1,min=5,max=10))){
-    quantities <- c("f","catch","landings","discards")
-    target <- data.frame(year=years,
-                          value=rlnorm(length(years)),
+random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), nseasons = 2, max_nsim_target = 3, niters = round(runif(1,min=5,max=10))){
+    quantities <- c("f","catch","landings","discards", "ssb", "biomass")
+    abundance_quantities <- c("ssb", "biomass", "f")
+    f_quantities <- c("f") # either B, or FCB
+    # Randomly set simultaneous targets
+    nsim_each <- round(runif(length(years) * nseasons, min = 1, max = max_nsim_target))
+    years_col <- rep(years, each = nseasons)
+    years_col <- rep(years_col, nsim_each)
+    seasons_col <- rep(1:nseasons, length(years))
+    seasons_col <- rep(seasons_col, nsim_each)
+    target <- data.frame(year=years_col,
+                          value=rlnorm(years_col),
+                          min = NA,
+                          max = NA,
                           quantity=NA,
-                          season = 1L, # when calling fwd() season must be an integer
+                          season = seasons_col,
                           minAge = 1,
                           maxAge = 5,
                           fishery = NA,
-                          catch = NA
+                          catch = NA,
+                          biol = NA
                           )
+
+    target$minAge <- as.integer(round(runif(dim(target)[1], min=1, max = 10)))
+    target$maxAge <- as.integer(target$minAge * 2)
 
     # Randomly pick some quantities
     target$quantity <- quantities[round(runif(nrow(target),min=1,max=length(quantities)))]
+    # But force last one to be an abundance target to help with testing
+    target$quantity[length(target$quantity)] <- "biomass"
+    # And for catch too
+    target$quantity[length(target$quantity)-1] <- "catch"
+
+    # Randomly set FCB (based on target)
+    # Fishery targets
+    fish_targets <- which(!(target$quantity %in% abundance_quantities))
+    # Half of these are FC, the others B
+    FC_targets <- sample(fish_targets, ceiling(length(fish_targets) / 2))
+    B_targets <- fish_targets[!(fish_targets %in% FC_targets)]
+    target[FC_targets,c("fishery","catch")] <- round(runif(length(FC_targets)*2, min = 1, max = 4))
+    target[B_targets,"biol"] <- round(runif(length(B_targets), min = 1, max = 4))
+    # Abundance targets are biol only
+    biol_targets <- which(target$quantity %in% abundance_quantities)
+    target[biol_targets, "biol"] <- round(runif(length(biol_targets), min = 1, max = 4))
+    # Fix f targets, either B, or FCB
+    f_targets <- which(target$quantity %in% f_quantities)
+    f_FCB_targets <- sample(f_targets, ceiling(length(f_targets) / 2))
+    if (length(f_FCB_targets > 0)){
+        target[f_FCB_targets,c("fishery","catch")] <- round(runif(length(f_FCB_targets)*2, min = 1, max = 4))
+    }
 
     # Force integers - should be done in fwd() dispatch or constructor
     target$fishery <- as.integer(target$fishery)
     target$catch <- as.integer(target$catch)
+    target$biol <- as.integer(target$biol)
     target$year <- as.integer(target$year)
     target$season <- as.integer(target$season)
     target$quantity <- as.character(target$quantity)
 
-    # Better creator than this too
+    # Some targets are min and max 
+    min_max_row <- sample(1:nrow(target), ceiling(nrow(target) / 2))
+    min_row <- min_max_row[1:(length(min_max_row)/2)]
+    max_row <- min_max_row[!(min_max_row %in% min_row)]
+    target[min_row, "value"] <- NA
+    target[min_row, "min"] <- rnorm(length(min_row))
+    target[max_row, "value"] <- NA
+    target[max_row, "max"] <- rnorm(length(max_row))
+    value_row <- which(!( (1:nrow(target)) %in% min_max_row))
+
+    # Make iter values - better creator than this too
     target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(target_no=1:nrow(target), c("min","value","max"), iter=1:niters))
-    target_iters[,"min",] <- NA
-    target_iters[,"value",] <- runif(dim(target_iters)[1] * dim(target_iters)[3], min=0.3, max=0.4)
-    target_iters[,"max",] <- NA
+    target_iters[value_row,"value",] <- runif(niters, min=0.3, max=0.4)
+    target_iters[min_row,"min",] <- runif(niters, min=0.3, max=0.4)
+    target_iters[max_row,"max",] <- runif(niters, min=0.3, max=0.4)
+
+    # Add target and timestep column - not set by user - should be added before dispatching to C++
+    target$timestep <- (target$year-1) * nseasons + target$season
+    target <- target[order(target$timestep),]
+    tsteps <- unique(target$timestep)
+    names(tsteps) <- 1:length(tsteps)
+    # Look away!
+    for (i in 1:length(tsteps)){
+        target[target[,"timestep"] %in% tsteps[i], "target"] <- as.integer(names(tsteps)[i])
+    }
 
     fwc <- fwdControl(target=target, iters=target_iters)
 
@@ -440,7 +499,7 @@ make_test_operatingModel1 <- function(niters = 1000){
     fisheries@desc <- "fisheries"
 
     # fwdControl
-    fwc <- dummy_fwdControl_generator()
+    fwc <- random_fwdControl_generator()
     # Make a temporary FCB attribute - add to class later
     FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
     colnames(FCB) <- c("F","C","B")

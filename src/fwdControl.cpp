@@ -92,7 +92,7 @@ unsigned int fwdControl::get_ntimestep() const{
     }
     std::vector<unsigned int> timestep = target["timestep"];
     // Assume that they are contiguous
-    // get max, get min
+    // get max, get min, then difference
     auto max = *std::max_element(timestep.begin(), timestep.end());
     auto min = *std::min_element(timestep.begin(), timestep.end());
     auto ntimestep = (max - min + 1);
@@ -121,17 +121,14 @@ unsigned int fwdControl::get_niter() const{
 }
 
 // Returns the age range - literally just the values in target
-Rcpp::IntegerVector fwdControl::get_age_range(const int target_no) const{
-    Rcpp::IntegerVector min_age = target["minAge"];
-    Rcpp::IntegerVector max_age = target["maxAge"];
-    if (target_no > min_age.size()){
-        Rcpp::stop("In fwdControl::get_target_fishery. target_no > number of targets\n");
-    }
-    Rcpp::IntegerVector age_range(2);
-    age_range[0] = min_age[target_no-1];
-    age_range[1] = max_age[target_no-1];
+std::vector<unsigned int> fwdControl::get_age_range(const int target_no, const int sim_target_no) const{
+    unsigned int row = get_target_row(target_no, sim_target_no);
+    std::vector<unsigned int> min_age = target["minAge"];
+    std::vector<unsigned int> max_age = target["maxAge"];
+    std::vector<unsigned int> age_range(2);
+    age_range[0] = min_age[row];
+    age_range[1] = max_age[row];
     return age_range;
-
 } 
 
 /*! \brief Get the number of simultaneous targets associated with a target number
@@ -258,19 +255,34 @@ unsigned int fwdControl::get_target_int_col(const int target_no, const int sim_t
     if (sim_target_no > values.size()){
         Rcpp::stop("In fwdControl::get_target_int_col. sim_target_no is too big\n");
     }
-    return values[sim_target_no];
+    return values[sim_target_no-1];
 }
 //@}
 
-
-//int fwdControl::get_target_fishery(const int target_no) const {
-//    Rcpp::IntegerVector fishery = target["fishery"];
-//    if (target_no > fishery.size()){
-//        Rcpp::stop("In fwdControl::get_target_fishery. target_no > number of targets\n");
-//    }
-//    return fishery[target_no-1];
-//}
-
+// Adjust this for biol abundance targets
+/*! \brief Get the timestep in which we must adjust effort to hit the target
+ *
+ * For fishery target types (catch, F) etc, the effort timestep is the same as the target timestep.
+ * For biological abundance based targets (e.g. SSB and biomass), the abundance is reported at the beginning of the timestep (in line with FLR objects).
+ * This means that the effort in the previous timestep determines the abundance value.
+ * \param target_no References the target column in the control dataframe.
+ * \param sim_target_no
+ */
+unsigned int fwdControl::get_target_effort_timestep(unsigned int target_no, unsigned int sim_target_no) const {
+    auto target_timestep = get_target_int_col(target_no, sim_target_no, "timestep");
+    fwdControlTargetType target_type = get_target_type(target_no, sim_target_no);
+    // Is it an abundance target?
+    auto it = std::find(abundance_targets.begin(), abundance_targets.end(), target_type);
+    // If so, subtract 1
+    if (it != abundance_targets.end()){
+        target_timestep -= 1;
+    }
+    // No need for following test as unsigned int is always >= 0
+    //if (target_timestep < 0){
+    //    Rcpp::stop("In fwdControl::get_target_effort_timestep. Effort timestep is less than 1\n");
+    //}
+    return target_timestep;
+}
 
 /*! \brief Get the target quantity from the control object
  *
