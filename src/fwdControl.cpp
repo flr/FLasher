@@ -225,6 +225,8 @@ std::vector<double> fwdControl::get_target_value(const int target_no, const int 
 //@{
 /*! \brief Subset an integer column in the control object by the target_no
  *
+ * Rcpp::IntegerVector is used as return type as this preserves any NAs passed from R.
+ * Converting to std::vector<unsigned int> does not work with is_na() (but it does compile).
  * Can be used on non-Integer columns (no check is made) but who knows what the result will be?!?!
  * \param target_no References the target column in the control dataframe.
  */
@@ -246,6 +248,7 @@ Rcpp::IntegerVector fwdControl::get_target_int_col(const int target_no, const st
 
 /*! \brief Pull out a value of an integer column in the control object by the target and simultaneous target nos
  *
+ * The returned unsigned int is still able to handle NA values as it is pulled from an Rcpp::IntegerVector.
  * Can be used on non-Integer columns (no check is made) but who knows what the result will be?!?!
  * \param target_no References the target column in the control dataframe.
  * \param sim_target_no The simultaneous target number

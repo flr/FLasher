@@ -98,6 +98,13 @@ test_that("fwdControl accessors", {
     expect_that(fc@target@element$fishery[row_no] , equals(as.integer(test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "fishery")))) 
     expect_that(fc@target@element$catch[row_no] , equals(as.integer(test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "catch")))) 
     expect_that(fc@target@element$biol[row_no] , equals(as.integer(test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "biol")))) 
+    # Do these work with NA?
+    if (any(is.na(fc@target@element$fishery))){
+        na_row <- which(is.na(fc@target@element$fishery))[1]
+        na_target_no <- fc@target@element$target[na_row]
+        na_sim_target_no <- which(which(fc@target@element$target == na_target_no) == na_row)
+        expect_that(is.na(as.integer(test_fwdControl_get_target_int_col2(fc, na_target_no, na_sim_target_no, "fishery"))), is_true())
+    }
 
     # age range    
     age_range <- test_fwdControl_get_age_range(fc, target_no, sim_target_no)

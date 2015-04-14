@@ -14,6 +14,54 @@
  * They are not called as part of the testing suite - they are called by the R scratch script
  */
 
+//--------- NA tests -------------
+
+
+// NAs passed in as a std::vector or converted to std::vector using as<> (same thing) is NOT detected by Rcpp::IntegerVector::is_na()
+// But an unsigned int created from an Rcpp::IntegerVector IS detected (weird)
+// [[Rcpp::export]]
+void test_integer_NA(const Rcpp::IntegerVector vec1, const std::vector<unsigned int> vec2){
+
+    Rprintf("Testing integers\n");
+    Rprintf("Testing Rcpp::IntegerVector\n");
+    if (Rcpp::IntegerVector::is_na(vec1[0])){
+            Rprintf("It's NA\n");
+    }
+    else {
+        Rprintf("It's not NA\n");
+    }
+    Rprintf("Testing std::vector<unsigned int>\n");
+    if (Rcpp::IntegerVector::is_na(vec2[0])){
+            Rprintf("It's NA\n");
+    }
+    else {
+        Rprintf("It's not NA\n");
+    }
+    unsigned int x = vec1[0];
+    Rprintf("Testing unsigned int from Rcpp::IntegerVector\n");
+    if (Rcpp::IntegerVector::is_na(x)){
+            Rprintf("It's NA\n");
+    }
+    else {
+        Rprintf("It's not NA\n");
+    }
+    std::vector<unsigned int> vec3 = Rcpp::as<std::vector<unsigned int>>(vec1);
+    Rprintf("Testing std::vector<unsigned int> from Rcpp::IntegerVector\n");
+    if (Rcpp::IntegerVector::is_na(vec3[0])){
+            Rprintf("It's NA\n");
+    }
+    else {
+        Rprintf("It's not NA\n");
+    }
+
+            
+// Rcpp::IntegerVector::is_na
+
+
+}
+
+
+
 //--------- biomass --------------
 
 // [[Rcpp::export]]

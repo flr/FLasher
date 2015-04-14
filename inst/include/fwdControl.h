@@ -56,7 +56,7 @@ class fwdControl {
         unsigned int get_nsim_target(unsigned int target_no) const;
         unsigned int get_target_row(unsigned int target_no, unsigned int sim_target_no) const;
         std::vector<unsigned int> get_target_row(unsigned int target_no) const;
-        // Rcpp::IntegerVector to ensure that NA is properly handled (std::vector handles OK too, but does not return NA to R)
+        // Rcpp::IntegerVector to ensure that NA is properly handled (std::vector does not work properly with Rcpp::IntegerVector::is_na())
         Rcpp::IntegerVector get_target_int_col(const int target_no, const std::string col) const;
         unsigned int get_target_int_col(const int target_no, const int sim_target_no, const std::string col) const;
         std::vector<double> get_target_value(const int target_no, const int col) const; // gets all iters. col: 1 = min, 2 = value, 3 = max

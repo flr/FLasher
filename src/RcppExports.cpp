@@ -5902,6 +5902,17 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_integer_NA
+void test_integer_NA(const Rcpp::IntegerVector vec1, const std::vector<unsigned int> vec2);
+RcppExport SEXP FLasher_test_integer_NA(SEXP vec1SEXP, SEXP vec2SEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector >::type vec1(vec1SEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type vec2(vec2SEXP);
+    test_integer_NA(vec1, vec2);
+    return R_NilValue;
+END_RCPP
+}
 // fwdBiolAD_biomass_subset_speed
 void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const unsigned int year, const int unsigned season, const int rep);
 RcppExport SEXP FLasher_fwdBiolAD_biomass_subset_speed(SEXP fwdbSEXP, SEXP yearSEXP, SEXP seasonSEXP, SEXP repSEXP) {

@@ -1797,6 +1797,10 @@ test_operatingModel_run_catch_demo <- function(flfs, flbs_list_sexp, ctrl) {
     .Call('FLasher_test_operatingModel_run_catch_demo', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl)
 }
 
+test_integer_NA <- function(vec1, vec2) {
+    invisible(.Call('FLasher_test_integer_NA', PACKAGE = 'FLasher', vec1, vec2))
+}
+
 fwdBiolAD_biomass_subset_speed <- function(fwdb, year, season, rep) {
     invisible(.Call('FLasher_fwdBiolAD_biomass_subset_speed', PACKAGE = 'FLasher', fwdb, year, season, rep))
 }
