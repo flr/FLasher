@@ -92,6 +92,7 @@ class operatingModel {
 
         FLQuantAD z(const int biol_no) const;
 
+        void run(); 
         void run_effort_demo(); 
         void run_catch_demo(); 
 
@@ -107,20 +108,19 @@ class operatingModel {
         */
         void project_timestep(const int timestep);
 
-        //void load_ad_members(const int timestep);
-        //void update_from_ad_members(const int timestep);
-        
-        // Timestep in which to use fmult to affect the target value
-        int get_target_fmult_timestep(const int target_no);
+        // Timestep of effort which drives the target value
+        // int get_target_effort_timestep(const int target_no);
         
         // age range indices for the f based targets
-        Rcpp::IntegerVector get_target_age_range_indices(const int target_no, const int biol_no) const; // Returns the indices of the age range, starts at 0
+        //Rcpp::IntegerVector get_target_age_range_indices(const int target_no, const int biol_no) const; // Returns the indices of the age range, starts at 0
 
         // Given the target no, evaluate the current value in the operatingModel
-        FLQuantAD eval_target(const int target_no) const;
+        FLQuantAD eval_target(const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
         // The target value we are trying to hit - either directly from the control object or a min / max / rel value calculation
-        std::vector<double> calc_target_value(const int target_no) const; 
+        std::vector<double> get_target_value(const int target_no) const; 
+        // The actual current target values in the OM - to be compared to the desired values
+        std::vector<adouble> get_target_value_hat(const int target_no) const; 
 
         // The target value calculations
         // fbar from a catch and fishery on a stock - i.e. partial F - will need to adapt this to include multiple biols in the future

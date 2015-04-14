@@ -138,6 +138,11 @@ std::vector<unsigned int> fwdControl::get_age_range(const int target_no, const i
  * \param target_no References the target column in the control dataframe.
  */
 unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
+    // Check that the target column exists 
+    std::vector<std::string> col_names = target.attr("names");
+    if (std::find(col_names.begin(), col_names.end(), "target") == col_names.end()){
+        Rcpp::stop("In fwdControl::get_ntarget - no target column in control dataframe\n");
+    }
     Rcpp::IntegerVector targets = target["target"];
     // Do it all with STL - probably slower but looks fancy
     // Sort them
@@ -161,6 +166,11 @@ unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
  * \param target_no References the target column in the control dataframe.
  */
 std::vector<unsigned int> fwdControl::get_target_row(unsigned int target_no) const {
+    // Check that the target column exists 
+    std::vector<std::string> col_names = target.attr("names");
+    if (std::find(col_names.begin(), col_names.end(), "target") == col_names.end()){
+        Rcpp::stop("In fwdControl::get_ntarget - no target column in control dataframe\n");
+    }
     Rcpp::IntegerVector targets = target["target"];
     unsigned int nsim_target = get_nsim_target(target_no);
     std::vector<unsigned int> rows(nsim_target);
@@ -198,6 +208,7 @@ unsigned int fwdControl::get_target_row(unsigned int target_no, unsigned int sim
 /*! \brief Get the target value from the control object
  *
  * Get all iterations, from all simultaneous targets, in the control frame.
+ * Indexing starts at 1.
  * Returns a single vector of length niter * nsimtarget
  * with simtarget1 taking indices 0:(niter-1), simtarget2 taking indices niter:(2*niter-1) and so on.
  * Returns the value, min or max values depending on the 'col' argument.

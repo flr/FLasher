@@ -325,27 +325,47 @@ int test_operatingModel_get_target_fmult_timestep(FLFisheriesAD flfs, SEXP flb_s
     operatingModel om(flfs, biol, f, f_spwn, ctrl);
     return om.get_target_fmult_timestep(target_no);
 }
-
-// [[Rcpp::export]]
-FLQuantAD test_operatingModel_eval_target(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl, const int target_no){
-    fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
-    operatingModel om(flfs, biol, f, f_spwn, ctrl);
-    FLQuantAD out = om.eval_target(target_no);
-    return out;
-}
-
-// [[Rcpp::export]]
-std::vector<double> test_operatingModel_calc_target_value(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl, const int target_no){
-    fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
-    operatingModel om(flfs, biol, f, f_spwn, ctrl);
-    // Pull out values
-    std::vector<double> out = om.calc_target_value(target_no);
-    return out;
-}
-
-
-
 */
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_eval_target(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD out = om.eval_target(target_no, sim_target_no, indices_min, indices_max);
+    return out;
+}
+
+
+// [[Rcpp::export]]
+std::vector<double> test_operatingModel_get_target_value(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int target_no){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    std::vector<double> out = om.get_target_value(target_no);
+    return out;
+}
+
+// [[Rcpp::export]]
+std::vector<double> test_operatingModel_get_target_value_hat(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int target_no){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    std::vector<adouble> out_ad = om.get_target_value_hat(target_no);
+    std::vector<double> out(out_ad.size());
+    std::transform(out_ad.begin(), out_ad.end(), out.begin(), [](adouble x) {return Value(x);});
+    return out;
+}
+
+
+
+
+// [[Rcpp::export]]
+operatingModel test_operatingModel_run(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    om.run();
+    return om;
+}
+
+
 
 // [[Rcpp::export]]
 operatingModel test_operatingModel_run_effort_demo(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl){
