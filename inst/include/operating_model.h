@@ -134,15 +134,6 @@ class operatingModel {
         FLQuantAD landings(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD discards(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
-        // landings from a FLCatch in a fishery on a biol
-        //FLQuantAD landings(const int fishery_no, const int catch_no) const;
-        // Total landings from a biol
-        //FLQuantAD landings(const int biol_no) const;
-        // discards from a FLCatch in a fishery on a biol
-        //FLQuantAD discards(const int fishery_no, const int catch_no) const;
-        // Total discards from a biol
-        //FLQuantAD discards(const int biol_no) const;
-
         // Total biomass from a biol
         //FLQuantAD biomass(const int biol_no) const;
 

@@ -191,25 +191,6 @@ operatingModel test_operatingModel_project(FLFisheriesAD flfs, SEXP flbs_list_se
     return om;
 }
 
-
-
-/*
-// [[Rcpp::export]]
-operatingModel test_operatingModel_project_timestep(const FLFisheriesAD fisheries, SEXP FLBiolSEXP, const std::string srr_model_name, const FLQuant srr_params, const int srr_timelag, const FLQuant srr_residuals, const bool srr_residuals_mult, FLQuant7AD f, FLQuant7 f_spwn, fwdControl ctrl, const std::vector<int> timesteps){
-    // Make the fwdBiol from the FLBiol and SRR bits
-    fwdBiolAD biol(FLBiolSEXP, srr_model_name, srr_params, srr_timelag, srr_residuals, TRUE); 
-    // Make the OM
-    operatingModel om(fisheries, biol, f, f_spwn, ctrl);
-    //om.load_ad_members(timestep);
-    for (int timestep = timesteps[0]; timestep <= timesteps[timesteps.size()-1]; ++timestep){
-        om.project_timestep(timestep);
-    }
-
-    return om;
-
-}
-*/
-
 /*----------- target calculations--------------*/
 
 // [[Rcpp::export]]
@@ -290,41 +271,6 @@ Rcpp::IntegerVector test_operating_model_get_target_age_range_indices(FLFisherie
 
 
 
-// [[Rcpp::export]]
-Rcpp::List test_operating_model_targets(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl, const int fishery_no, const int catch_no, const int target_no){
-    fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
-    operatingModel om(flfs, biol, f, f_spwn, ctrl);
-    const int biol_no = 1;
-    Rcpp::IntegerVector age_range_indices = om.get_target_age_range_indices(target_no, biol_no);
-    FLQuantAD fbar_catch = om.fbar(age_range_indices, fishery_no, catch_no, biol_no);
-    FLQuantAD fbar = om.fbar(age_range_indices, biol_no);
-    FLQuantAD catches_catch_out = om.catches(fishery_no, catch_no, 1);
-    FLQuantAD catches_out = om.catches(1);
-    FLQuantAD landings_catch_out = om.landings(fishery_no, catch_no, 1);
-    FLQuantAD landings_out = om.landings(1);
-    FLQuantAD discards_catch_out = om.discards(fishery_no, catch_no, 1);
-    FLQuantAD discards_out = om.discards(1);
-    FLQuantAD ssb_out = om.ssb(biol_no);
-    FLQuantAD biomass_out = om.biomass(biol_no);
-
-	return Rcpp::List::create(Rcpp::Named("fbar_catch", fbar_catch),
-                            Rcpp::Named("fbar",fbar),
-                            Rcpp::Named("catches_catch",catches_catch_out),
-                            Rcpp::Named("catches",catches_out),
-                            Rcpp::Named("landings_catch",landings_catch_out),
-                            Rcpp::Named("landings",landings_out),
-                            Rcpp::Named("discards_catch",discards_catch_out),
-                            Rcpp::Named("discards",discards_out),
-                            Rcpp::Named("biomass",biomass_out),
-                            Rcpp::Named("ssb",ssb_out));
-}
-
-// [[Rcpp::export]]
-int test_operatingModel_get_target_fmult_timestep(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl, const int target_no){
-    fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
-    operatingModel om(flfs, biol, f, f_spwn, ctrl);
-    return om.get_target_fmult_timestep(target_no);
-}
 */
 
 // [[Rcpp::export]]

@@ -784,13 +784,20 @@ FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsign
             }
         break;
         //case target_ssb:
+        // Do you mean SSB at start of year OR at time of spawning?
+        // SSB in the SRR methods is at time of spawning
         //    Rprintf("target_ssb\n");
         //    //out = ssb(biol_no);
         //    break;
-        //case target_biomass:
-        //    Rprintf("target_biomass\n");
-        //    //out = biols(biol_no).biomass();
-        //    break;
+        case target_biomass:
+            Rprintf("target_biomass\n");
+            if (Rcpp::IntegerVector::is_na(biol_no)){
+                Rcpp::stop("In operatingModel eval_target. Trying to evaluate biomass target when biol no. is NA. Problem with control object?\n");
+            }
+            else {
+                out = biols(biol_no).biomass(indices_min, indices_max);
+            }
+        break;
         default:
             Rcpp::stop("target_type not found in switch statement - giving up\n");
         break;
@@ -1149,25 +1156,6 @@ FLQuantAD operatingModel::fbar(const Rcpp::IntegerVector age_range_indices, cons
 }
 */
 
-// Catch of a particular fishery
-/*
-FLQuantAD operatingModel::catches(const int fishery_no, const int catch_no) const{
-    return fisheries(fishery_no, catch_no).catches();
-}
-*/
-
-// Total catch from an FLBiol
-// Assumes the catch is the first FLCatch in the FLFishery
-/*
-FLQuantAD operatingModel::catches(const int biol_no) const{
-    // Get the catch from the first fishery
-    FLQuantAD catches_out = catches(1,1,biol_no);
-    for (unsigned int fishery_count = 2; fishery_count <= fisheries.get_nfisheries(); ++fishery_count){
-        catches_out = catches_out + catches(fishery_count,1,biol_no);
-    }
-    return catches_out;
-}
-*/
 
 /*! \brief Subset the total landings from a single biol 
  * If the catch that catches the biol only catches from that biol, the landings are taken directly from the landings in the FLCatch object, i.e. they are not recalculated. Therefore, if effort or something has changed, this method will not reflect those changes.
@@ -1294,45 +1282,4 @@ FLQuantAD operatingModel::catches(const int biol_no, const std::vector<unsigned 
     return total_catches;
 }
 
-// Landings of a particular fishery and catch
-/*
-FLQuantAD operatingModel::landings(const int fishery_no, const int catch_no) const{
-    return fisheries(fishery_no, catch_no).landings();
-}
-*/
 
-// Total catch from an FLBiol
-// Assumes the catch is the first FLCatch in the FLFishery
-/*
-FLQuantAD operatingModel::landings(const int biol_no) const{
-    // Get the catch from the first fishery
-    FLQuantAD landings_out = landings(1,1,biol_no);
-    for (unsigned int fishery_count = 2; fishery_count <= fisheries.get_nfisheries(); ++fishery_count){
-        landings_out = landings_out + landings(fishery_count,1,biol_no);
-    }
-    return landings_out;
-}
-*/
-
-
-// Catch of a particular fishery
-/*
-FLQuantAD operatingModel::discards(const int fishery_no, const int catch_no) const{
-    return fisheries(fishery_no, catch_no).discards();
-}
-*/
-
-// Total catch from an FLBiol
-// Assumes the catch is the first FLCatch in the FLFishery
-/*
-FLQuantAD operatingModel::discards(const int biol_no) const{
-    // Get the catch from the first fishery
-    FLQuantAD discards_out = discards(1,1,biol_no);
-    for (unsigned int fishery_count = 2; fishery_count <= fisheries.get_nfisheries(); ++fishery_count){
-        discards_out = discards_out + discards(fishery_count,1,biol_no);
-    }
-    return discards_out;
-}
-*/
-
-//----------------------------------------------------
