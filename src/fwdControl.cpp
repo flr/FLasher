@@ -291,10 +291,6 @@ unsigned int fwdControl::get_target_effort_timestep(unsigned int target_no, unsi
     if (it != abundance_targets.end()){
         target_timestep -= 1;
     }
-    // No need for following test as unsigned int is always >= 0
-    //if (target_timestep < 0){
-    //    Rcpp::stop("In fwdControl::get_target_effort_timestep. Effort timestep is less than 1\n");
-    //}
     return target_timestep;
 }
 

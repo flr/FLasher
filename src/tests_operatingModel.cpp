@@ -366,20 +366,3 @@ operatingModel test_operatingModel_run(FLFisheriesAD flfs, SEXP flbs_list_sexp, 
 }
 
 
-
-// [[Rcpp::export]]
-operatingModel test_operatingModel_run_effort_demo(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl){
-    fwdBiolsAD biols(flbs_list_sexp);
-    operatingModel om(flfs, biols, ctrl);
-    om.run_effort_demo();
-    return om;
-}
-
-
-// [[Rcpp::export]]
-operatingModel test_operatingModel_run_catch_demo(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl){
-    fwdBiolsAD biols(flbs_list_sexp);
-    operatingModel om(flfs, biols, ctrl);
-    om.run_catch_demo();
-    return om;
-}

@@ -5892,32 +5892,6 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// test_operatingModel_run_effort_demo
-operatingModel test_operatingModel_run_effort_demo(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl);
-RcppExport SEXP FLasher_test_operatingModel_run_effort_demo(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type flbs_list_sexp(flbs_list_sexpSEXP);
-    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
-    __result = Rcpp::wrap(test_operatingModel_run_effort_demo(flfs, flbs_list_sexp, ctrl));
-    return __result;
-END_RCPP
-}
-// test_operatingModel_run_catch_demo
-operatingModel test_operatingModel_run_catch_demo(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl);
-RcppExport SEXP FLasher_test_operatingModel_run_catch_demo(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type flbs_list_sexp(flbs_list_sexpSEXP);
-    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
-    __result = Rcpp::wrap(test_operatingModel_run_catch_demo(flfs, flbs_list_sexp, ctrl));
-    return __result;
-END_RCPP
-}
 // test_integer_NA
 void test_integer_NA(const Rcpp::IntegerVector vec1, const std::vector<unsigned int> vec2);
 RcppExport SEXP FLasher_test_integer_NA(SEXP vec1SEXP, SEXP vec2SEXP) {

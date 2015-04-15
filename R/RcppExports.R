@@ -1793,14 +1793,6 @@ test_operatingModel_run <- function(flfs, flbs_list_sexp, ctrl) {
     .Call('FLasher_test_operatingModel_run', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl)
 }
 
-test_operatingModel_run_effort_demo <- function(flfs, flbs_list_sexp, ctrl) {
-    .Call('FLasher_test_operatingModel_run_effort_demo', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl)
-}
-
-test_operatingModel_run_catch_demo <- function(flfs, flbs_list_sexp, ctrl) {
-    .Call('FLasher_test_operatingModel_run_catch_demo', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl)
-}
-
 test_integer_NA <- function(vec1, vec2) {
     invisible(.Call('FLasher_test_integer_NA', PACKAGE = 'FLasher', vec1, vec2))
 }
