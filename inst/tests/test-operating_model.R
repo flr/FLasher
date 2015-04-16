@@ -640,7 +640,7 @@ test_that("operatingModel eval_target, get_target_value_hat methods", {
                      relBiol = c(NA,NA,NA,NA,NA,NA,1)
                      )
     target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(target_no=1:nrow(target), c("min","value","max"), iter=1:niters))
-    target_iters[,"value",] <- abs(rnorm(niters, mean = target$value, sd = 1))
+    target_iters[,"value",] <- abs(rnorm(niters * nrow(target), mean = target$value, sd = 1))
     fwc <- fwdControl(target=target, iters=target_iters)
     # Add timestep column to control object - necessary for abundance timesteps
     fwc@target@element$timestep <- fwc@target@element$year
@@ -672,6 +672,11 @@ test_that("operatingModel eval_target, get_target_value_hat methods", {
     # All sim targets
     val_out <- test_operatingModel_get_target_value_hat(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1)
     expect_that(val_out, equals(c(catch_in, landings_in)))
+    # Single sim target
+    nsim_target <- sum(om[["fwc"]]@target@element$target == 1)
+    sim_target_no <- round(runif(1, min=1, max=nsim_target))
+    val_out <- test_operatingModel_get_target_value_hat2(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, sim_target_no)
+    expect_that(c(catch_in, landings_in)[((sim_target_no-1) * niters + 1):(sim_target_no * niters)], equals(val_out))
 
     # Target 2
     # Check eval_target
@@ -690,6 +695,11 @@ test_that("operatingModel eval_target, get_target_value_hat methods", {
     # All sim targets
     val_out <- test_operatingModel_get_target_value_hat(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2)
     expect_that(val_out, equals(c(discards_in, biomass_in)))
+    # Single sim target
+    nsim_target <- sum(om[["fwc"]]@target@element$target == 2)
+    sim_target_no <- round(runif(1, min=1, max=nsim_target))
+    val_out <- test_operatingModel_get_target_value_hat2(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, sim_target_no)
+    expect_that(c(discards_in, biomass_in)[((sim_target_no-1) * niters + 1):(sim_target_no * niters)], equals(val_out))
 
     # Target 3 - relative
     # The non-relative bit
@@ -706,6 +716,11 @@ test_that("operatingModel eval_target, get_target_value_hat methods", {
     expect_that(rel_out@.Data, equals(rel_catch_in@.Data))
     # All sim targets - should return proportion
     val_out <- test_operatingModel_get_target_value_hat(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3)
+    expect_that(c(catch_in / rel_catch_in), equals(val_out))
+    # Single sim target
+    nsim_target <- sum(om[["fwc"]]@target@element$target == 3)
+    sim_target_no <- round(runif(1, min=1, max=nsim_target))
+    val_out <- test_operatingModel_get_target_value_hat2(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, sim_target_no)
     expect_that(c(catch_in / rel_catch_in), equals(val_out))
     
     # relF,relC,relB not set up right so throw error

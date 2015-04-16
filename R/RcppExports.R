@@ -1793,6 +1793,10 @@ test_operatingModel_get_target_value_hat <- function(flfs, flbs_list_sexp, ctrl,
     .Call('FLasher_test_operatingModel_get_target_value_hat', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, target_no)
 }
 
+test_operatingModel_get_target_value_hat2 <- function(flfs, flbs_list_sexp, ctrl, target_no, sim_target_no) {
+    .Call('FLasher_test_operatingModel_get_target_value_hat2', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, target_no, sim_target_no)
+}
+
 test_operatingModel_run <- function(flfs, flbs_list_sexp, ctrl) {
     .Call('FLasher_test_operatingModel_run', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl)
 }
