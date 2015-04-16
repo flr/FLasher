@@ -115,7 +115,7 @@ class operatingModel {
         //Rcpp::IntegerVector get_target_age_range_indices(const int target_no, const int biol_no) const; // Returns the indices of the age range, starts at 0
 
         // Given the target no, evaluate the current value in the operatingModel
-        FLQuantAD eval_target(const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD eval_target(const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const bool relative_target = false) const;
 
         // The target value we are trying to hit - either directly from the control object or a min / max / rel value calculation
         std::vector<double> get_target_value(const int target_no) const; 

@@ -709,32 +709,44 @@ Rcpp::IntegerVector operatingModel::get_target_age_range_indices(const int targe
 }
 */
 
-// Do we want this to return a std::vector<adouble> or FLQuantAD?
-// It will be a vector of length niter
 /*! \brief Get the current target value in the operating model
  *
  * Interrogates the control object to get the target type and time, then
  * returns the current value in the operating Model.
  * Any FLQuant range can be specified, i.e. to get values over a range of years and seasons
+ * A target can be relative to another fishery / catch / biol.
+ * Therefore it is possible to the evaluate the target of the relative fishery / catch / biol.
  * \param target_no References the target column in the control dataframe.
  * \param sim_target_no Which simultaneous target.
  * \param indices_min Vector of minimum FLQuant dims for subsetting.
  * \param indices_max Vector of maximum FLQuant dims for subsetting.
+ * \param relative_target Get the relative target (evaluates the target for the relative fishery / catch / biol)
  */
-FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const bool relative_target) const {
     Rprintf("In operatingModel::eval_target. target_no: %i sim_target_no: %i\n", target_no, sim_target_no);
     FLQuantAD out;
     fwdControlTargetType target_type = ctrl.get_target_type(target_no, sim_target_no);
-    auto fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
-    auto catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
-    auto biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "biol");
     auto niter = ctrl.get_niter();
-
-    //auto year = ctrl.get_target_int_col(target_no, sim_target_no, "year");
-    //auto season = ctrl.get_target_int_col(target_no, sim_target_no, "season");
-    //// Indices for subsetting the target values
-    //std::vector<unsigned int> indices_min {year,1,season,1,1};
-    //std::vector<unsigned int> indices_max {year,1,season,1,niter};
+    // Do we want to evaluate the relative target?
+    auto fishery_no = 0;
+    auto catch_no = 0;
+    auto biol_no = 0;
+    if (relative_target){
+        Rprintf("Getting values from relative target quantity\n");
+        fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "relFishery");
+        catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "relCatch");
+        biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "relBiol");
+    }
+    else {
+        fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
+        catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
+        biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "biol");
+    }
+    // Check patterns of F, C and B to see if they make sense
+    // You can have 
+    if ((Rcpp::IntegerVector::is_na(catch_no) ^ Rcpp::IntegerVector::is_na(fishery_no)) | (!(Rcpp::IntegerVector::is_na(biol_no) ^ Rcpp::IntegerVector::is_na(fishery_no)))){
+        Rcpp::stop("In operatingModel::eval_target. Either biol_no or (catch_no and fishery_no) or all three must not be NA\n");
+    }
 
     //Rcpp::IntegerVector age_range_indices;
     // Get the output depending on target type
@@ -809,6 +821,7 @@ FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsign
 /*! \brief Get the current target values in the operating model
  *
  * Returns a vector of the current simultaneous target values.
+ * If the target is relative, the method calculates the current relative state.
  * The values can be compared to the desired target values from get_target_value(). 
  * \param target_no References the target column in the control dataframe. Starts at 1.
  */
@@ -816,14 +829,48 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no) c
     auto nsim_target = ctrl.get_nsim_target(target_no);
     auto niter = ctrl.get_niter();
     std::vector<adouble> value;
+
+    // Are we dealing with absolute or relative values?
+    // Each target set can have a mix
+    Rcpp::IntegerVector target_rel_year = ctrl.get_target_int_col(target_no, "relYear");
+    Rcpp::IntegerVector target_rel_season = ctrl.get_target_int_col(target_no, "relSeason");
+
     for (auto sim_target_count = 1; sim_target_count <= nsim_target; ++sim_target_count){
+        Rprintf("sim_target_count: %i\n", sim_target_count);
         unsigned int year = ctrl.get_target_int_col(target_no, sim_target_count, "year");
         unsigned int season = ctrl.get_target_int_col(target_no, sim_target_count, "season");
         // Indices for subsetting the target values
         std::vector<unsigned int> indices_min = {year,1,season,1,1};
         std::vector<unsigned int> indices_max = {year,1,season,1,niter};
-        // Get the current values
+        // Get the current absolute values, i.e. not relative
         FLQuantAD sim_target_value = eval_target(target_no, sim_target_count, indices_min, indices_max);
+
+        // Test for a relative target value - is the relative year or season NA?
+        unsigned int rel_year = target_rel_year[sim_target_count-1];
+        unsigned int rel_season = target_rel_season[sim_target_count-1];
+        bool target_rel_year_na = Rcpp::IntegerVector::is_na(rel_year);
+        bool target_rel_season_na = Rcpp::IntegerVector::is_na(rel_season);
+        Rprintf("rel_year: %s\n", !target_rel_year_na ? "true" : "false");
+        Rprintf("rel_season: %s\n", !target_rel_season_na ? "true" : "false");
+        // Both are either NA, or neither are, if one or other is NA then something has gone wrong (XOR!)
+        if ((target_rel_year_na ^ target_rel_season_na)){
+            Rcpp::stop("in operatingModel::calc_target_value. Only one of rel_year or rel_season is NA. Must be neither or both.\n");
+        }
+
+        // If target is relative we have to get the current actual value (done above) and the actual value it is relative to
+        // Then calculate the relative difference (to be compared to the target)
+        if (!target_rel_year_na){
+            Rprintf("Relative target\n");
+            // Get the value we are relative to
+            std::vector<unsigned int> rel_indices_min = {rel_year,1,rel_season,1,1};
+            std::vector<unsigned int> rel_indices_max = {rel_year,1,rel_season,1,niter};
+            FLQuantAD sim_target_rel_value = eval_target(target_no, sim_target_count, rel_indices_min, rel_indices_max, true);
+            Rprintf("transforming\n");
+            // value = value / rel_value
+            std::transform(sim_target_rel_value.begin(), sim_target_rel_value.end(), sim_target_value.begin(), sim_target_value.begin(),
+                    [](adouble x, adouble y){return y / x;});
+            Rprintf("Done transforming\n");
+        }
         // Stick them into the return object - 
         value.insert(value.end(), sim_target_value.begin(), sim_target_value.end());
     }
@@ -854,36 +901,37 @@ std::vector<double> operatingModel::get_target_value(const int target_no) const{
 
     // Process one sim target at a time
     for (auto sim_target_count = 1; sim_target_count <= nsim_target; ++sim_target_count){
-        //Rprintf("sim_target_count: %i\n", sim_target_count);
+        Rprintf("sim_target_count: %i\n", sim_target_count);
 
         // Is the relative year or season NA 
         unsigned int rel_year = target_rel_year[sim_target_count-1];
         unsigned int rel_season = target_rel_season[sim_target_count-1];
         bool target_rel_year_na = Rcpp::IntegerVector::is_na(rel_year);
         bool target_rel_season_na = Rcpp::IntegerVector::is_na(rel_season);
-        //Rprintf("rel_year: %s\n", target_rel_year_na ? "true" : "false");
-        //Rprintf("rel_season: %s\n", target_rel_season_na ? "true" : "false");
+        Rprintf("rel_year: %s\n", !target_rel_year_na ? "true" : "false");
+        Rprintf("rel_season: %s\n", !target_rel_season_na ? "true" : "false");
         // Both are either NA, or neither are, if one or other is NA then something has gone wrong (XOR!)
         if ((target_rel_year_na ^ target_rel_season_na)){
             Rcpp::stop("in operatingModel::calc_target_value. Only one of rel_year or rel_season is NA. Must be neither or both.\n");
         }
+
         // If target is relative we have to calc the value
-        if (!target_rel_year_na){
-            Rprintf("Relative target\n");
-            // Get the value we are relative to from the operatingModel
-            std::vector<unsigned int> indices_min = {rel_year,1,rel_season,1,1};
-            std::vector<unsigned int> indices_max = {rel_year,1,rel_season,1,niter};
-            FLQuantAD rel_value = eval_target(target_no, sim_target_count, indices_min, indices_max);
+        //if (!target_rel_year_na){
+        //    Rprintf("Relative target\n");
+        //    // Get the value we are relative to from the operatingModel
+        //    std::vector<unsigned int> indices_min = {rel_year,1,rel_season,1,1};
+        //    std::vector<unsigned int> indices_max = {rel_year,1,rel_season,1,niter};
+        //    FLQuantAD rel_value = eval_target(target_no, sim_target_count, indices_min, indices_max);
 
-            Rprintf("transforming\n");
-            // Multiply rel_value by value column - Adding on to the iterator isn't terribly safe
-            std::transform(rel_value.begin(), rel_value.end(), value.begin() + niter * (sim_target_count-1), value.begin() + niter * (sim_target_count-1),
-                    [](adouble x, double y){return y * Value(x);});
-            Rprintf("Done transforming\n");
-            //for (auto i = (sim_target_count - 1); i < 
+        //    Rprintf("transforming\n");
+        //    // Multiply rel_value by value column - Adding on to the iterator isn't terribly safe
+        //    std::transform(rel_value.begin(), rel_value.end(), value.begin() + niter * (sim_target_count-1), value.begin() + niter * (sim_target_count-1),
+        //            [](adouble x, double y){return y * Value(x);});
+        //    Rprintf("Done transforming\n");
+        //    //for (auto i = (sim_target_count - 1); i < 
 
 
-        }
+        //}
         
 
 
@@ -948,8 +996,6 @@ std::vector<double> operatingModel::get_target_value(const int target_no) const{
     return value;
 }
 
-// Basic at the moment
-// Need to think about timing of abundance targets
 void operatingModel::run(){
     Rprintf("In run\n");
 

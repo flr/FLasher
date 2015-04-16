@@ -626,13 +626,18 @@ test_that("operatingModel eval_target, get_target_value_hat methods", {
     # Simple OM - 2 fisheries / catches, 1 biol
     niters <- 10 
     om <- make_test_operatingModel2(niters)
-    target <- data.frame(year = c(4,4,4,5),
-                     season = rep(1,4),
-                     value = c(1000, 2000, 500, 3000),
-                     quantity = c('catch', 'landings', 'discards', 'biomass'),
-                     fishery = c(1,2,1,NA),
-                     catch = c(1,1,1,NA),
-                     biol = c(NA,NA,NA,1)
+    target <- data.frame(year = c(4,4,4,5,6,6,6),
+                     season = rep(1,7),
+                     value = c(1000, 2000, 500, 3000, 0.9, 0.9, 0.9),
+                     quantity = c('catch', 'landings', 'discards', 'biomass', 'catch', 'catch', 'catch'),
+                     fishery = c(1,2,1,NA,1,1,1),
+                     catch = c(1,1,1,NA,1,1,1),
+                     biol = c(NA,NA,NA,1,NA,NA,NA),
+                     relYear = c(NA,NA,NA,NA,3,5,5), # relative to a different year
+                     relSeason = c(NA,NA,NA,NA,1,1,1),
+                     relFishery = c(NA,NA,NA,NA,2,NA,1), # relative to a different fishery
+                     relCatch = c(NA,NA,NA,NA,1,1,NA),
+                     relBiol = c(NA,NA,NA,NA,NA,NA,1)
                      )
     target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(target_no=1:nrow(target), c("min","value","max"), iter=1:niters))
     target_iters[,"value",] <- abs(rnorm(niters, mean = target$value, sd = 1))
@@ -640,13 +645,17 @@ test_that("operatingModel eval_target, get_target_value_hat methods", {
     # Add timestep column to control object - necessary for abundance timesteps
     fwc@target@element$timestep <- fwc@target@element$year
     # Add target column to control object
-    fwc@target@element$target <- c(1,1,2,2)
+    fwc@target@element$target <- c(1,1,2,2,3,4,5)
     # Add FCB array - will be constructed on R side before calling fwd()
     FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
     colnames(FCB) <- c("F","C","B")
     attr(fwc@target, "FCB") <- FCB
     om[["fwc"]] <- fwc
     years <- om[["fwc"]]@target@element$year
+    rel_years <- om[["fwc"]]@target@element$relYear
+    rel_fishery <- om[["fwc"]]@target@element$relFishery
+    rel_catch <- om[["fwc"]]@target@element$relCatch
+    rel_biol <- om[["fwc"]]@target@element$relBiol
 
     # Target 1
     indices_min <- c(years[1],1,1,1,1)
@@ -682,6 +691,27 @@ test_that("operatingModel eval_target, get_target_value_hat methods", {
     val_out <- test_operatingModel_get_target_value_hat(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2)
     expect_that(val_out, equals(c(discards_in, biomass_in)))
 
+    # Target 3 - relative
+    # The non-relative bit
+    indices_min <- c(years[5],1,1,1,1)
+    indices_max <- c(years[5],1,1,1,niters)
+    out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, 1, indices_min, indices_max)
+    catch_in <- catch(om[["fisheries"]][[1]][[1]])[,years[5]]
+    expect_that(out@.Data, equals(catch_in@.Data))
+    # The relative bit
+    rel_indices_min <- c(rel_years[5],1,1,1,1)
+    rel_indices_max <- c(rel_years[5],1,1,1,niters)
+    rel_out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, 1, rel_indices_min, rel_indices_max, TRUE)
+    rel_catch_in <- catch(om[["fisheries"]][[rel_fishery[5]]][[rel_catch[5]]])[,rel_years[5]]
+    expect_that(rel_out@.Data, equals(rel_catch_in@.Data))
+    # All sim targets - should return proportion
+    val_out <- test_operatingModel_get_target_value_hat(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3)
+    expect_that(c(catch_in / rel_catch_in), equals(val_out))
+    
+    # relF,relC,relB not set up right so throw error
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, 1, rel_indices_min, rel_indices_max, TRUE), throws_error()) 
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5, 1, rel_indices_min, rel_indices_max, TRUE), throws_error())
+
 
 })
 
@@ -692,18 +722,18 @@ test_that("operatingModel get_target_value methods", {
     niters <- 10 
     om <- make_test_operatingModel1(niters)
     # Make a suitable control object
-    target <- data.frame(year = c(2,2,3),
-                     relYear = c(NA, 1, 2),
-                     relSeason = c(NA, 1, 1),
+    target <- data.frame(year = c(2,2),
+                     relYear = c(NA, 1),
+                     relSeason = c(NA, 1),
                      season = 1L, 
-                     value = c(50000, 0.9, 1.1),
+                     value = c(50000, 0.9),
                      #max = rep(NA, 12),
-                     quantity = c('catch', 'catch', 'landings'),
+                     quantity = c('catch', 'catch'),
                      #minAge = 1,
                      #maxAge = 5,
-                     fishery = c(1,NA,1),
-                     catch = c(1,NA,2),
-                     biol = c(NA,2,NA)
+                     fishery = c(1,NA),
+                     catch = c(1,NA),
+                     biol = c(NA,2)
                      )
     # Force types - should be done in fwd() dispatch or constructor
     target$fishery <- as.integer(target$fishery)
@@ -717,7 +747,6 @@ test_that("operatingModel get_target_value methods", {
     target_iters[,"min",] <- NA
     target_iters[1,"value",] <- abs(rnorm(niters, mean = 50000, sd = 10))
     target_iters[2,"value",] <-  abs(rnorm(niters, mean = 0.9, sd = 0.1))
-    target_iters[3,"value",] <-  abs(rnorm(niters, mean = 1.1, sd = 0.1))
     target_iters[,"max",] <- NA
     fwc <- fwdControl(target=target, iters=target_iters)
     # Add FCB array - will be constructed on R side before calling fwd()
@@ -728,24 +757,22 @@ test_that("operatingModel get_target_value methods", {
     # Check timesteps are consecutive
     #om[["fwc"]]@target@element$timestep <- 2
     # Add target column to control object
-    fwc@target@element$target <- c(1,1,2)
+    fwc@target@element$target <- c(1,1)
     om[["fwc"]] <- fwc
 
     # Catch target - 1 target, 2 sim
     val_out <- test_operatingModel_get_target_value(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1)
-    # First niters of them are just catch from the control object
+    # First sim target just catch from the control object
     expect_that(unname(om[["fwc"]]@target@iters[1,"value",]), equals(val_out[1:niters]))
-    # Secon niters is catch in prev year * rel
-    orig_catch <- (catch(om[["fisheries"]][[1]][[2]]) + catch(om[["fisheries"]][[2]][[1]]))[,1]
-    expect_that(c(om[["fwc"]]@target@iters[2,"value",] * orig_catch), equals(val_out[(niters+1):length(val_out)]))
+    # Second sim target is relative
+    expect_that(unname(om[["fwc"]]@target@iters[2,"value",]), equals(val_out[(niters+1):length(val_out)]))
 
-    # Relative landings target
-    val_out <- test_operatingModel_get_target_value(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2)
-    orig_landings <- landings(om[["fisheries"]][[1]][[2]])[,2]
-    expect_that(c(om[["fwc"]]@target@iters[3,"value",] * orig_landings), equals(val_out)) 
+})
 
 
-x <- 5
+
+
+
 #test_that("operatingModel target values and eval_target method", {
 #    # Make an FLFishery with X FLFishery objects. Each FLFishery has an FLCatch that catches the FLBiol
 #    # This is all a massive faff

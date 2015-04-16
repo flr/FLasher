@@ -5835,8 +5835,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_operatingModel_eval_target
-FLQuantAD test_operatingModel_eval_target(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_eval_target(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+FLQuantAD test_operatingModel_eval_target(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const bool relative_target);
+RcppExport SEXP FLasher_test_operatingModel_eval_target(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP, SEXP relative_targetSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -5847,7 +5847,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const unsigned int >::type sim_target_no(sim_target_noSEXP);
     Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
     Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
-    __result = Rcpp::wrap(test_operatingModel_eval_target(flfs, flbs_list_sexp, ctrl, target_no, sim_target_no, indices_min, indices_max));
+    Rcpp::traits::input_parameter< const bool >::type relative_target(relative_targetSEXP);
+    __result = Rcpp::wrap(test_operatingModel_eval_target(flfs, flbs_list_sexp, ctrl, target_no, sim_target_no, indices_min, indices_max, relative_target));
     return __result;
 END_RCPP
 }

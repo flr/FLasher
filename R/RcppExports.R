@@ -1777,8 +1777,8 @@ test_operatingModel_SSB_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, 
     .Call('FLasher_test_operatingModel_SSB_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
 }
 
-test_operatingModel_eval_target <- function(flfs, flbs_list_sexp, ctrl, target_no, sim_target_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_eval_target', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, target_no, sim_target_no, indices_min, indices_max)
+test_operatingModel_eval_target <- function(flfs, flbs_list_sexp, ctrl, target_no, sim_target_no, indices_min, indices_max, relative_target = FALSE) {
+    .Call('FLasher_test_operatingModel_eval_target', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, target_no, sim_target_no, indices_min, indices_max, relative_target)
 }
 
 test_operatingModel_get_target_value <- function(flfs, flbs_list_sexp, ctrl, target_no) {

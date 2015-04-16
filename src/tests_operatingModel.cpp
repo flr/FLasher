@@ -274,10 +274,10 @@ Rcpp::IntegerVector test_operating_model_get_target_age_range_indices(FLFisherie
 */
 
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_eval_target(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+FLQuantAD test_operatingModel_eval_target(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const bool relative_target = false){
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);
-    FLQuantAD out = om.eval_target(target_no, sim_target_no, indices_min, indices_max);
+    FLQuantAD out = om.eval_target(target_no, sim_target_no, indices_min, indices_max, relative_target);
     return out;
 }
 
