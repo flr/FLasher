@@ -81,6 +81,12 @@ std::vector<double> test_fwdControl_get_target_value(const fwdControl control, c
 }
 
 // [[Rcpp::export]]
+std::vector<double> test_fwdControl_get_target_value2(const fwdControl control, const int target_no, const int sim_target_no, const int col){
+    std::vector<double> values =  control.get_target_value(target_no, sim_target_no, col);
+	return values;
+}
+
+// [[Rcpp::export]]
 std::string test_fwdControl_get_target_quantity(const fwdControl control, const int target_no, const int sim_target_no){
     return control.get_target_quantity(target_no, sim_target_no);
 }

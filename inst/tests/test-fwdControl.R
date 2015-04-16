@@ -64,9 +64,13 @@ test_that("fwdControl accessors", {
 
     # get target value
     col_no <- round(runif(1,min=1,max=3))
+    # all sim targets
     values <- test_fwdControl_get_target_value(fc, target_no, col_no)
     target_rows <- which(fc@target@element$target==target_no)
     expect_that(c(t(fc@target@iters[target_rows,col_no,])), equals(values))
+    # a single sim target
+    values <- test_fwdControl_get_target_value2(fc, target_no, sim_target_no, col_no)
+    expect_that(unname(fc@target@iters[target_rows[sim_target_no],col_no,]), equals(values))
 
     # int_col - attempt a column that isn't there
     expect_that(test_fwdControl_get_target_int_col(fc, target_no, "balls"), throws_error()) # column name not in control

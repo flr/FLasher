@@ -205,7 +205,10 @@ unsigned int fwdControl::get_target_row(unsigned int target_no, unsigned int sim
 // Indexing starts at 1
 // Get all iters
 // Could write this with some container magic
-/*! \brief Get the target value from the control object
+/*! \name Get the target value from the control object
+ */
+//@{
+/*! \brief Get the target value from the control object for all simultaneous targets.
  *
  * Get all iterations, from all simultaneous targets, in the control frame.
  * Indexing starts at 1.
@@ -217,19 +220,38 @@ unsigned int fwdControl::get_target_row(unsigned int target_no, unsigned int sim
  */
 std::vector<double> fwdControl::get_target_value(const int target_no, const int col) const{
     auto nsim_target = get_nsim_target(target_no);
-    Rcpp::IntegerVector dim = target_iters.attr("dim");
-    std::vector<double> out(dim[2] * nsim_target, 0.0);
-    unsigned int target_element = 0;
-    unsigned int target_row = 0;
+    std::vector<double> out;
     for (unsigned int sim_target_count = 1; sim_target_count <= nsim_target; ++sim_target_count){
-        target_row = get_target_row(target_no, sim_target_count);
-        for (unsigned int iter_count = 0; iter_count < dim[2]; ++iter_count){
-            target_element = (dim[1] * dim[0] * (iter_count)) + (dim[0] * (col - 1)) + target_row; 
-            out[iter_count + (dim[2] * (sim_target_count-1))] = target_iters(target_element);
-        }
+        std::vector<double> sim_target_value = get_target_value(target_no, sim_target_count, col);
+        out.insert(out.end(), sim_target_value.begin(), sim_target_value.end());
     }
     return out;
 }
+
+/*! \brief Get the target value from the control object for one simultaneous target.
+ *
+ * Get all iterations, from a single simultaneous target, in the control frame.
+ * Indexing starts at 1.
+ * Returns a single vector of length niter 
+ * Returns the value, min or max values depending on the 'col' argument.
+ * \param target_no References the target column in the control dataframe.
+ * \param sim_target_no The number of the simultaneous target.
+ * \param col 1 for min, 2 for value, 3 for max column.
+ */
+std::vector<double> fwdControl::get_target_value(const int target_no, const int sim_target_no, const int col) const{
+    Rcpp::IntegerVector dim = target_iters.attr("dim");
+    std::vector<double> out(dim[2]); // 3rd dim is the iterations
+    unsigned int target_element = 0;
+    unsigned int target_row = 0;
+    target_row = get_target_row(target_no, sim_target_no); // target row is posn. on first dim
+    for (unsigned int iter_count = 0; iter_count < dim[2]; ++iter_count){
+        target_element = (dim[1] * dim[0] * (iter_count)) + (dim[0] * (col - 1)) + target_row; 
+        out[iter_count] = target_iters(target_element);
+    }
+    return out;
+}
+//@}
+
 
 /*! \name Get the value(s) of an integer column in the control dataframe
  */
@@ -266,6 +288,48 @@ Rcpp::IntegerVector fwdControl::get_target_int_col(const int target_no, const st
  */
 unsigned int fwdControl::get_target_int_col(const int target_no, const int sim_target_no, const std::string col) const {
     Rcpp::IntegerVector values = get_target_int_col(target_no, col);
+    if (sim_target_no > values.size()){
+        Rcpp::stop("In fwdControl::get_target_int_col. sim_target_no is too big\n");
+    }
+    return values[sim_target_no-1];
+}
+//@}
+
+/*! \name Get the value(s) of a numeric column in the control dataframe
+ */
+//@{
+/*! \brief Subset an numeric column in the control object by the target_no
+ *
+ * Rcpp::NumericVector is used as return type as this preserves any NAs passed from R.
+ * Converting to std::vector<unsigned int> does not work with is_na() (but it does compile).
+ * Can be used on non-Numeric columns (no check is made) but who knows what the result will be?!?!
+ * \param target_no References the target column in the control dataframe.
+ */
+Rcpp::NumericVector fwdControl::get_target_num_col(const int target_no, const std::string col) const {
+    // Check that column exists in data.frame
+    std::vector<std::string> names = target.attr("names");
+    auto it = std::find(names.begin(), names.end(), col);
+    if (it == names.end()){
+        Rcpp::stop("In fwdControl::get_target_num_col. Column name not found,\n");
+    }
+    Rcpp::NumericVector all = target[col];
+    std::vector<unsigned int> rows = get_target_row(target_no);
+    Rcpp::NumericVector subset(rows.size());
+    for (auto i=0; i < subset.size(); i++){
+        subset[i] = all[rows[i]];
+    }
+    return subset;
+}
+
+/*! \brief Pull out a value of a numeric column in the control object by the target and simultaneous target nos
+ *
+ * The returned double is still able to handle NA values as it is pulled from an Rcpp::NumericVector.
+ * Can be used on non-Numeric columns (no check is made) but who knows what the result will be?!?!
+ * \param target_no References the target column in the control dataframe.
+ * \param sim_target_no The simultaneous target number
+ */
+double fwdControl::get_target_num_col(const int target_no, const int sim_target_no, const std::string col) const {
+    Rcpp::NumericVector values = get_target_num_col(target_no, col);
     if (sim_target_no > values.size()){
         Rcpp::stop("In fwdControl::get_target_int_col. sim_target_no is too big\n");
     }
