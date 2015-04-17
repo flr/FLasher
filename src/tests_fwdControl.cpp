@@ -73,6 +73,15 @@ unsigned int test_fwdControl_get_target_int_col2(const fwdControl control, const
     return control.get_target_int_col(target_no, sim_target_no, col);
 }
 
+// [[Rcpp::export]]
+Rcpp::NumericVector test_fwdControl_get_target_num_col(const fwdControl control, const int target_no, const std::string col){
+    return control.get_target_num_col(target_no, col);
+}
+
+// [[Rcpp::export]]
+double test_fwdControl_get_target_num_col2(const fwdControl control, const int target_no, const int sim_target_no, const std::string col){
+    return control.get_target_num_col(target_no, sim_target_no, col);
+}
 
 // [[Rcpp::export]]
 std::vector<double> test_fwdControl_get_target_value(const fwdControl control, const int target_no, const int col){

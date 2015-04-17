@@ -890,99 +890,67 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
 //@}
 
 
-// Similar to fwdControl::get_target_value but calcs value from relative values
-// gets all iters. col: 1 = min, 2 = value, 3 = max
-/*! \brief Get the desired target values in the operating model
- *
- * These values may be based on max / min or relative values so some calculation may be required.
- * Returns a vector of the simultaneous target values of a target. 
+/*! \name Get the desired target values in the operating model
+ */
+//@{
+/*! \brief Get the desired target values in the operating model for all simultaneous targets in a target set.
+ * If the target values are relative, the returned values are the proportions from the control object, not the actual values.
+ * If values are based on max / min some calculation is required.
+ * Returns a vector of the simultaneous target values of a target set. 
  * \param target_no References the target column in the control dataframe. Starts at 1.
  */
 std::vector<double> operatingModel::get_target_value(const int target_no) const{
-    Rprintf("In get_target_value\n");
-    // Pull out the min, value and max iterations of all sim targets from the control object
-    std::vector<double> value = ctrl.get_target_value(target_no, 2);
-    std::vector<double> min_value = ctrl.get_target_value(target_no, 1);
-    std::vector<double> max_value = ctrl.get_target_value(target_no, 3);
+    Rprintf("In get_target_value all sim targets\n");
     auto nsim_target = ctrl.get_nsim_target(target_no);
-    auto niter = ctrl.get_niter();
-    // Process one sim target at a time
+    std::vector<double> value;
     for (auto sim_target_count = 1; sim_target_count <= nsim_target; ++sim_target_count){
-        Rprintf("sim_target_count: %i\n", sim_target_count);
-
-        // Are we dealing with a min / max value?
-        // Check first value to see if NA
-        // change this when we have value for sim target only
-        
-        double max_col = ctrl.get_target_num_col(target_no, sim_target_count, "max");
-        if(!Rcpp::NumericVector::is_na(max_col)){
-            Rprintf("Max target\n");
-            // Current state of OM
-            std::vector<adouble> current_value = get_target_value_hat(target_no);
-            // value is min of current_value and max_value - put result in value
-            std::transform(max_value.begin() + niter * (sim_target_count - 1), max_value.begin() + niter * sim_target_count, current_value.begin() + niter * (sim_target_count - 1), value.begin() + niter * (sim_target_count - 1), [](double x, adouble y) {return std::min(x, Value(y));});
-        }
-
-
+        auto sim_target_value = get_target_value(target_no, sim_target_count);
+        value.insert(value.end(), sim_target_value.begin(), sim_target_value.end());
     }
-
-
-
-
-/*
-    // If target is relative we have to calc the value
-    if (!target_rel_year_na){
-        Rprintf("Relative target\n");
-        // Get the value we are relative to from the operatingModel
-        FLQuantAD rel_value = eval_target(target_no);
-        // Modify it by the relative amount
-        double rel_single_value = 0.0;
-        for (unsigned int iter_count = 0; iter_count < value.size(); ++iter_count){
-            //rel_single_value = rel_value(1,target_rel_year,1,target_rel_season, 1, iter_count+1).value();
-            // if rel single value depends on fmult then we cannot use Value() (http://www.coin-or.org/CppAD/Doc/value.cpp.xml)
-            rel_single_value = Value(rel_value(1,target_rel_year,1,target_rel_season, 1, iter_count+1));
-            value[iter_count] = value[iter_count] * rel_single_value;
-            min_value[iter_count] = min_value[iter_count] * rel_single_value;
-            max_value[iter_count] = max_value[iter_count] * rel_single_value;
-        }
-    }
-    // Sort out minimum and maximum stuff
-    int target_year = ctrl.get_target_year(target_no);
-    int target_season = ctrl.get_target_season(target_no);
-    // If we have minimum and maximum values then we shouldn't have values (values == NA)
-    // If values are NA, then calculate them from the operatingModel
-    // As all iterations should be either NA or a real value, just check the first iteration
-    if(Rcpp::NumericVector::is_na(value[0])){
-        // Annoyingly eval_target returns adouble, so we need to take the value
-        FLQuantAD value_ad = eval_target(target_no);
-        for (unsigned int iter_count = 0; iter_count < value.size(); ++iter_count){
-            //value[iter_count] = value_ad(1, target_year, 1, target_season, 1, iter_count+1).value();
-            value[iter_count] = Value(value_ad(1, target_year, 1, target_season, 1, iter_count+1));
-        }
-    }
-    // If first iter of min_value is NA, then all of them are
-    if(!Rcpp::NumericVector::is_na(min_value[0])){ 
-    Rprintf("Minimum target set\n");
-    // Update each iter accordingly
-        for (unsigned int iter_count = 0; iter_count < value.size(); ++iter_count){
-            if(value[iter_count] < min_value[iter_count]){
-                value[iter_count] = min_value[iter_count];
-            }
-        }
-    }
-    // If first iter of max_value is NA, then all of them are
-    if(!Rcpp::NumericVector::is_na(max_value[0])){ 
-    Rprintf("Maximum target set\n");
-    // Update each iter accordingly
-        for (unsigned int iter_count = 0; iter_count < value.size(); ++iter_count){
-            if(value[iter_count] > max_value[iter_count]){
-                value[iter_count] = max_value[iter_count];
-            }
-        }
-    }
-*/
     return value;
 }
+/*! \brief Get the desired target values in the operating model for a single simultaneous target
+ * If the target values are relative, the returned values are the proportions from the control object, not the actual values.
+ * If values are based on max / min some calculation is required.
+ * Returns a vector of values of the simultaneous target from the target set. 
+ * \param target_no References the target column in the control dataframe. Starts at 1.
+ * \param sim_target_no References the target column in the control dataframe. Starts at 1.
+ */
+std::vector<double> operatingModel::get_target_value(const int target_no, const int sim_target_no) const{
+    // Pull out values for all iterations for the sim targets from the control object
+    auto niter = ctrl.get_niter();
+    std::vector<double> value(niter);
+    // Are we dealing with a min / max value?
+    // If so we need to get the current state of the operating model to compare with
+    double max_col = ctrl.get_target_num_col(target_no, sim_target_no, "max");
+    double min_col = ctrl.get_target_num_col(target_no, sim_target_no, "min");
+    auto max_na = Rcpp::NumericVector::is_na(max_col);
+    auto min_na = Rcpp::NumericVector::is_na(min_col);
+    if (!max_na | !min_na){
+        // Need to make <double> from <adouble>
+        std::vector<adouble> current_value = get_target_value_hat(target_no, sim_target_no);
+        std::transform(current_value.begin(), current_value.end(), value.begin(), [](adouble x){return Value(x);});
+        if(!max_na){
+            Rprintf("Max target\n");
+            // value is min of current_value and max_value - put result in value
+            std::vector<double> max_value = ctrl.get_target_value(target_no, sim_target_no, 3);
+            std::transform(max_value.begin(), max_value.end(), value.begin(), value.begin(), [](double x, double y) {return std::min(x, y);});
+        }
+        if(!min_na){
+            Rprintf("Min target\n");
+            // value is max of current_value and min_value - put result in correct position in value
+            std::vector<double> min_value = ctrl.get_target_value(target_no, sim_target_no, 1);
+            std::transform(min_value.begin(), min_value.end(), value.begin(), value.begin(), [](double x, double y) {return std::max(x, y);});
+        }
+    }
+    // If not min or max, just get the values from the control object
+    else {
+        value = ctrl.get_target_value(target_no, sim_target_no, 2);
+    }
+    return value;
+}
+//@}
+
 
 void operatingModel::run(){
     Rprintf("In run\n");

@@ -91,11 +91,6 @@ test_that("fwdControl accessors", {
     fc@target@element$relSeason <- 1:(1+length(fc@target@element$relSeason)-1)
     expect_that(fc@target@element$relSeason[target_rows], equals(test_fwdControl_get_target_int_col(fc, target_no, "relSeason")))
 
-    # get target type / quantity
-    type <- test_fwdControl_get_target_quantity(fc, target_no, sim_target_no)
-    expect_that(type, is_identical_to(as.character(fc@target@element[target_rows[sim_target_no], "quantity"])))
-    expect_that(test_fwdControl_get_target_quantity(fc, max(fc@target@element$target)+1, sim_target_no), throws_error()) # target number too high
-
     # fishery, catch, biol - just pull out 1 value - Need to force to be int in case it's an NA
     #as.integer(test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "fishery"))
     # Throws warning as we convert to NA
@@ -109,6 +104,15 @@ test_that("fwdControl accessors", {
         na_sim_target_no <- which(which(fc@target@element$target == na_target_no) == na_row)
         expect_that(is.na(as.integer(test_fwdControl_get_target_int_col2(fc, na_target_no, na_sim_target_no, "fishery"))), is_true())
     }
+
+    # get_target_num_col
+    expect_that(fc@target@element$value[target_rows], equals(test_fwdControl_get_target_num_col(fc, target_no, "value")))
+    expect_that(fc@target@element$value[row_no], equals(as.numeric(test_fwdControl_get_target_num_col2(fc, target_no, sim_target_no, "value")))) 
+    
+    # get target type / quantity
+    type <- test_fwdControl_get_target_quantity(fc, target_no, sim_target_no)
+    expect_that(type, is_identical_to(as.character(fc@target@element[target_rows[sim_target_no], "quantity"])))
+    expect_that(test_fwdControl_get_target_quantity(fc, max(fc@target@element$target)+1, sim_target_no), throws_error()) # target number too high
 
     # age range    
     age_range <- test_fwdControl_get_age_range(fc, target_no, sim_target_no)

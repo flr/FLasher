@@ -640,7 +640,8 @@ test_that("operatingModel eval_target, get_target_value_hat methods", {
                      relBiol = c(NA,NA,NA,NA,NA,NA,1)
                      )
     target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(target_no=1:nrow(target), c("min","value","max"), iter=1:niters))
-    target_iters[,"value",] <- abs(rnorm(niters * nrow(target), mean = target$value, sd = 1))
+    target_iters[1:7, "value",] <- abs(rnorm(niters * 7, mean = target$value[1:7], sd = 1))
+
     fwc <- fwdControl(target=target, iters=target_iters)
     # Add timestep column to control object - necessary for abundance timesteps
     fwc@target@element$timestep <- fwc@target@element$year
@@ -723,64 +724,115 @@ test_that("operatingModel eval_target, get_target_value_hat methods", {
     val_out <- test_operatingModel_get_target_value_hat2(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, sim_target_no)
     expect_that(c(catch_in / rel_catch_in), equals(val_out))
     
+    # Targets 4 and 5 should throw errors
     # relF,relC,relB not set up right so throw error
     expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, 1, rel_indices_min, rel_indices_max, TRUE), throws_error()) 
     expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5, 1, rel_indices_min, rel_indices_max, TRUE), throws_error())
 
 
+
 })
 
 
 
-# Evaluate the state of the OM
+# Evaluate the control object
 test_that("operatingModel get_target_value methods", {
-    niters <- 10 
-    om <- make_test_operatingModel1(niters)
-    # Make a suitable control object
-    target <- data.frame(year = c(2,2),
-                     relYear = c(NA, 1),
-                     relSeason = c(NA, 1),
-                     season = 1L, 
-                     value = c(50000, 0.9),
-                     #max = rep(NA, 12),
-                     quantity = c('catch', 'catch'),
-                     #minAge = 1,
-                     #maxAge = 5,
-                     fishery = c(1,NA),
-                     catch = c(1,NA),
-                     biol = c(NA,2)
+    # Get actual values (inc relative)
+    # Get min / max
+    # Get relative min / max
+    # rel min and max on same line
+    niters <- 20 
+    om <- make_test_operatingModel2(niters)
+    # Set up some min max landings values for testing
+    min_discards <- apply(discards(om[["fisheries"]][[1]][[1]]), 2, min) * 1.01
+    max_biomass <- apply(quantSums(n(om[["biols"]][[1]][["biol"]]) * wt(om[["biols"]][[1]][["biol"]])), 2, max) * 0.99
+    rel_min_catch <- min(c(catch(om[["fisheries"]][[1]][[1]])[,8] / catch(om[["fisheries"]][[1]][[1]])[,7])) * 1.01
+    rel_max_catch <- max(c(catch(om[["fisheries"]][[1]][[1]])[,8] / catch(om[["fisheries"]][[1]][[1]])[,7])) * 0.99 
+    rel_max_landings <- max(c(landings(om[["fisheries"]][[2]][[1]])[,9] / landings(om[["fisheries"]][[1]][[1]])[,9])) * 0.99
+
+    target <- data.frame(year = c(4,5,6,7,8,9,8),
+                     season = rep(1,7),
+                     value = c(1000, 0.9, NA, NA, NA, NA, NA),
+                     min = c(NA, NA, min_discards[,6], NA, rel_min_catch, NA, rel_min_catch),
+                     max = c(NA, NA, NA, max_biomass[,7], NA, rel_max_landings, rel_max_catch),
+                     quantity = c('catch', 'landings', 'discards', 'biomass', 'catch', 'landings', 'catch'),
+                     fishery = c(1,2,1,NA,1,2,1),
+                     catch = c(1,1,1,NA,1,1,1),
+                     biol = c(NA,NA,NA,1,NA,NA,NA),
+                     relYear = c(NA,4,NA,NA,7,9,7), 
+                     relSeason = c(NA,1,NA,NA,1,1,1),
+                     relFishery = c(NA,2,NA,NA,1,1,1), 
+                     relCatch = c(NA,1,NA,NA,1,1,1),
+                     relBiol = c(NA,NA,NA,NA,NA,NA,NA)
                      )
-    # Force types - should be done in fwd() dispatch or constructor
-    target$fishery <- as.integer(target$fishery)
-    target$catch <- as.integer(target$catch)
-    target$biol <- as.integer(target$biol)
-    target$year <- as.integer(target$year)
-    target$season <- as.integer(target$season)
-    target$quantity <- as.character(target$quantity)
-    # Actual values are held in the iters element
     target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(target_no=1:nrow(target), c("min","value","max"), iter=1:niters))
-    target_iters[,"min",] <- NA
-    target_iters[1,"value",] <- abs(rnorm(niters, mean = 50000, sd = 10))
-    target_iters[2,"value",] <-  abs(rnorm(niters, mean = 0.9, sd = 0.1))
-    target_iters[,"max",] <- NA
+    target_iters[1:2, "value",] <- abs(rnorm(niters * 2, mean = target$value[1:2], sd = 1))
+    target_iters[c(3,5), "min",] <- abs(rnorm(niters * 2, mean = target$min[c(3,5)], sd = 0))
+    target_iters[c(4,6), "max",] <- abs(rnorm(niters * 2, mean = target$max[c(4,6)], sd = 0))
+    target_iters[7, "max",] <- abs(rnorm(niters, mean = target$max[7], sd = 0))
+    target_iters[7, "min",] <- abs(rnorm(niters, mean = target$min[7], sd = 0))
+
     fwc <- fwdControl(target=target, iters=target_iters)
+    # Add timestep column to control object - necessary for abundance timesteps
+    fwc@target@element$timestep <- fwc@target@element$year
+    # Add target column to control object
+    fwc@target@element$target <- c(1,1,2,2,3,3,4)
     # Add FCB array - will be constructed on R side before calling fwd()
-    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+    FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
     colnames(FCB) <- c("F","C","B")
     attr(fwc@target, "FCB") <- FCB
-    # Add timestep column to control object
-    # Check timesteps are consecutive
-    #om[["fwc"]]@target@element$timestep <- 2
-    # Add target column to control object
-    fwc@target@element$target <- c(1,1)
     om[["fwc"]] <- fwc
 
-    # Catch target - 1 target, 2 sim
+    # Handy subsets
+    years <- om[["fwc"]]@target@element$year
+
+    # Target 1 - abs catch and rel landings
     val_out <- test_operatingModel_get_target_value(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1)
-    # First sim target just catch from the control object
+    # First sim target just from the control object
     expect_that(unname(om[["fwc"]]@target@iters[1,"value",]), equals(val_out[1:niters]))
-    # Second sim target is relative
+    # Second sim target is relative but still from control object
     expect_that(unname(om[["fwc"]]@target@iters[2,"value",]), equals(val_out[(niters+1):length(val_out)]))
+
+    # Target 2 - min discards and max biomass
+    val_out <- test_operatingModel_get_target_value(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2)
+    # sim target 1
+    # All val_out should be greater than min_discards
+    sub_val <- val_out[1:niters]
+    discards_in <- c(discards(om[["fisheries"]][[1]][[1]])[,years[3]])
+    min_vals <- (discards_in < c(min_discards[,6]))
+    expect_that(sub_val[min_vals], equals(rep(c(min_discards[,6]), sum(min_vals))))
+    expect_that(sub_val[!min_vals], equals(discards_in[!min_vals]))
+    # biomass target 
+    sub_val <- val_out[(niters+1):(2*niters)]
+    biomass_in <- c(quantSums(n(om[["biols"]][[1]][["biol"]]) * wt(om[["biols"]][[1]][["biol"]]))[,years[4]])
+    max_vals <- (biomass_in > c(max_biomass[,years[4]]))
+    expect_that(sub_val[max_vals], equals(rep(c(max_biomass[,years[4]]), sum(max_vals))))
+    expect_that(sub_val[!max_vals], equals(biomass_in[!max_vals]))
+
+    # Target 3 - relative min catch, relative max landings
+    val_out <- test_operatingModel_get_target_value(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3)
+    # rel min catch
+    sub_val <- val_out[1:niters]
+    rel_catch_in <- c(catch(om[["fisheries"]][[1]][[1]])[,8] / catch(om[["fisheries"]][[1]][[1]])[,7])
+    min_vals <- (rel_catch_in < rel_min_catch)
+    expect_that(sub_val[min_vals], equals(rep(rel_min_catch, sum(min_vals))))
+    expect_that(sub_val[!min_vals], equals(rel_catch_in[!min_vals]))
+    # rel max landings - relative within same timestep!
+    sub_val <- val_out[(niters+1):(2*niters)]
+    rel_landings_in <- c(landings(om[["fisheries"]][[2]][[1]])[,9] / landings(om[["fisheries"]][[1]][[1]])[,9])
+    max_vals <- (rel_landings_in > rel_max_landings)
+    expect_that(sub_val[max_vals], equals(rep(rel_max_landings, sum(max_vals))))
+    expect_that(sub_val[!max_vals], equals(rel_landings_in[!max_vals]))
+
+    # Target 4 - relative min and max on the same line
+    val_out <- test_operatingModel_get_target_value(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4)
+    rel_catch_in <- c(catch(om[["fisheries"]][[1]][[1]])[,8] / catch(om[["fisheries"]][[1]][[1]])[,7])
+    min_vals <- (rel_catch_in < rel_min_catch)
+    expect_that(val_out[min_vals], equals(rep(rel_min_catch, sum(min_vals))))
+    max_vals <- (rel_catch_in > rel_max_catch)
+    expect_that(val_out[max_vals], equals(rep(rel_max_catch, sum(max_vals))))
+    expect_that( val_out[(!max_vals) & (!min_vals)] , equals(rel_catch_in[(!max_vals) & (!min_vals)]))
+
 
 })
 
@@ -788,272 +840,6 @@ test_that("operatingModel get_target_value methods", {
 
 
 
-#test_that("operatingModel target values and eval_target method", {
-#    # Make an FLFishery with X FLFishery objects. Each FLFishery has an FLCatch that catches the FLBiol
-#    # This is all a massive faff
-#    # Have at least 5 years and 10 ages, random number of seasons
-#    nyears <- 10
-#    flq <- random_FLQuant_generator(fixed_dim=c(10,nyears,NA,NA,NA,NA), sd=1)
-#    # Single FLBiol
-#    flb <- random_FLBiol_generator(fixed_dims = dim(flq), sd = 1 )
-#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=5, min_catches = 1, max_catches = 3, sd=1)
-#    # Each element of F is F from an FLCatch attacking the same FLBiol
-#    f <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq), sd=1)
-#    f <- lapply(f,abs)
-#    f_spwn <- random_FLQuant_list_generator(min_elements=length(flfs), max_elements=length(flfs), fixed_dims = dim(flq), sd=1)
-#    f_spwn <- lapply(f_spwn,abs)
-#    # SRR bits
-#    srr_model_name <- "ricker"
-#    params_sr <- as.FLQuant(FLPar(a=10, b = 4))
-#    residuals_sr <- flq[1,]
-#    residuals_mult <- TRUE
-#    srr_timelag <- 1
-#    # Catch no has be to 1 at the moment - we only have 1 biol and we need to think about how to link a biol to a catch
-#    catch_no <- 1 # round(runif(n=1,min=1,max=min(unlist(lapply(flfs, length))))) # which catch no of each fishery
-#    fishery_no <- round(runif(1, min=1, max=length(flfs)))
-#
-#    #------------ Test age range indices --------------------
-#    fc <- dummy_fwdControl_generator(years = 1:6, niters = dim(n(flb))[6])
-#    fc@target@element[1,c("minAge","maxAge")] <- c(1L,5L)
-#    fc@target@element[2,c("minAge","maxAge")] <- c(2L,3L)
-#    fc@target@element[3,c("minAge","maxAge")] <- c(20L,30L)
-#    fc@target@element[4,c("minAge","maxAge")] <- c(2L,30L)
-#    fc@target@element[5,c("minAge","maxAge")] <- c(0L,30L)
-#    fc@target@element[6,c("minAge","maxAge")] <- c(as.integer(NA),as.integer(NA))
-#
-#    age_indices <- test_operating_model_get_target_age_range_indices(flfs, flb, "ricker", params_sr, srr_timelag, residuals_sr, residuals_mult, f, f_spwn, fc, 1)
-#    expect_that(age_indices, equals(unname(unlist(fc@target@element[1,c("minAge","maxAge")])) - as.numeric(dimnames(n(flb))[[1]][1])))
-#    age_indices <- test_operating_model_get_target_age_range_indices(flfs, flb, "ricker", params_sr, srr_timelag, residuals_sr, residuals_mult, f, f_spwn, fc, 2)
-#    expect_that(age_indices, equals(unname(unlist(fc@target@element[2,c("minAge","maxAge")])) - as.numeric(dimnames(n(flb))[[1]][1])))
-#    # outside range - error
-#    expect_that(test_operating_model_get_target_age_range_indices(flfs, flb, "ricker", params_sr, srr_timelag, residuals_sr, residuals_mult, f, f_spwn, fc, 3), throws_error())
-#    expect_that(test_operating_model_get_target_age_range_indices(flfs, flb, "ricker", params_sr, srr_timelag, residuals_sr, residuals_mult, f, f_spwn, fc, 4), throws_error())
-#    expect_that(test_operating_model_get_target_age_range_indices(flfs, flb, "ricker", params_sr, srr_timelag, residuals_sr, residuals_mult, f, f_spwn, fc, 5), throws_error())
-#    # range not set
-#    expect_that(test_operating_model_get_target_age_range_indices(flfs, flb, "ricker", params_sr, srr_timelag, residuals_sr, residuals_mult, f, f_spwn, fc, 6), throws_error())
-#
-#
-#    #---------- Test target methods ---------------
-#    # Get the target values from the C++ code
-#    # Nothing to do with the target quantities in the control here - just testing internal methods
-#    targets <- test_operating_model_targets(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, fishery_no, catch_no, 1)
-#    # fbar of a single catch 
-#    expect_that(targets[["fbar_catch"]], equals(apply(f[[fishery_no]][fc@target@element[1,"minAge"]:fc@target@element[1,"maxAge"],],2:6,mean)))
-#    # a different age range
-#    targets <- test_operating_model_targets(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, fishery_no, catch_no, 2)
-#    # fbar of a single catch 
-#    expect_that(targets[["fbar_catch"]], equals(apply(f[[fishery_no]][fc@target@element[2,"minAge"]:fc@target@element[2,"maxAge"],],2:6,mean)))
-#
-#    # total fbar of all fisheries
-#    f2 <- lapply(f, function(x) 
-#        apply(x[fc@target@element[2,"minAge"]:fc@target@element[2,"maxAge"],],2:6,mean)
-#    )
-#    f_total <- f2[[1]]
-#    f_total[] <- 0
-#    for (i in 1:length(flfs)){
-#        f_total <- f_total + f2[[i]]
-#    }
-#    expect_that(targets[["fbar"]]@.Data, is_identical_to(f_total@.Data))
-#
-#    # catches - single
-#    expect_that(targets[["catches_catch"]]@.Data , equals(catch(flfs[[fishery_no]][[catch_no]])@.Data))
-#    # catches - total
-#    catches_total <- catch(flfs[[fishery_no]][[catch_no]])
-#    catches_total[] <- 0
-#    for (i in 1:length(flfs)){
-#        catches_total <- catches_total + catch(flfs[[i]][[catch_no]])
-#    }
-#    expect_that(targets[["catches"]]@.Data, equals(catches_total@.Data))
-#
-#    # landings - single
-#    expect_that(targets[["landings_catch"]]@.Data , equals(landings(flfs[[fishery_no]][[catch_no]])@.Data))
-#    # landings - total
-#    landings_total <- landings(flfs[[fishery_no]][[catch_no]])
-#    landings_total[] <- 0
-#    for (i in 1:length(flfs)){
-#        landings_total <- landings_total + landings(flfs[[i]][[catch_no]])
-#    }
-#    expect_that(targets[["landings"]]@.Data, equals(landings_total@.Data))
-#
-#    # discards - single
-#    expect_that(targets[["discards_catch"]]@.Data , equals(discards(flfs[[fishery_no]][[catch_no]])@.Data))
-#    # discards - total
-#    discards_total <- discards(flfs[[fishery_no]][[catch_no]])
-#    discards_total[] <- 0
-#    for (i in 1:length(flfs)){
-#        discards_total <- discards_total + discards(flfs[[i]][[catch_no]])
-#    }
-#    expect_that(targets[["discards"]]@.Data, equals(discards_total@.Data))
-#
-#    # SSB - f portion from all catches
-#    f_portion <- f_spwn[[1]] * f[[1]]
-#    for (i in 2:length(f)){
-#        f_portion <- f_portion + (f_spwn[[i]] * f[[i]])
-#    }
-#    ssb_in <- quantSums(n(flb) * wt(flb) * fec(flb) * exp(-f_portion - m(flb) * spwn(flb)))
-#    expect_that(ssb_in@.Data, equals(targets[["ssb"]]@.Data))
-#
-#    # Biomass
-#    expect_that(targets[["biomass"]]@.Data, equals(quantSums(n(flb) * wt(flb))@.Data))
-#
-#    #-------- Test eval_target by target number----------
-#    # Set up fc to test the output
-#    # By defaulf fishery = NA
-#    fishery_no <- round(runif(1, min=1,max=length(f)))
-#    fc <- dummy_fwdControl_generator(years = 1:dim(flb@n)[2], niters = dim(n(flb))[6])
-#    fc@target@element$minAge <- 2
-#    fc@target@element$maxAge <- 5
-#    f2 <- lapply(f, function(x) 
-#        apply(x[fc@target@element[1,"minAge"]:fc@target@element[1,"maxAge"],],2:6,mean)
-#    )
-#    f_total <- f2[[1]]
-#    f_total[] <- 0
-#    for (i in 1:length(flfs)){
-#        f_total <- f_total + f2[[i]]
-#    }
-#    # No fishery
-#    fc@target@element[1,"quantity"] <- "f"
-#    fc@target@element[2,"quantity"] <- "catch"
-#    fc@target@element[3,"quantity"] <- "ssb"
-#    fc@target@element[4,"quantity"] <- "biomass"
-#
-#    # Testing eval_target - is the correct quantity calculation called
-#    min_iter <- 1
-#    max_iter <- dim(fc@target@iters)[3]
-#
-#    # fbar
-#    target_no <- 1 
-#    fout <- test_operatingModel_eval_target(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, target_no)
-#    expect_that(fout@.Data, equals(f_total@.Data))
-#    # catch
-#    target_no <- 2 
-#    cout <- test_operatingModel_eval_target(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, target_no)
-#    expect_that(cout@.Data, equals(catches_total@.Data))
-#    # ssb 
-#    target_no <- 3 
-#    ssb_out <- test_operatingModel_eval_target(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, target_no)
-#    expect_that(ssb_out@.Data, equals(ssb_in@.Data))
-#    # biomass
-#    target_no <- 4 
-#    biomass_out <- test_operatingModel_eval_target(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, target_no)
-#    biomass_in <- quantSums(n(flb) * wt(flb))
-#    expect_that(biomass_out@.Data, equals(biomass_in@.Data))
-#
-#    #----------- Test calc_target_value  ----------
-#    # Not a relative target - should just the values in the target_iter slot
-#    target_no <- 1 # f target
-#    fout <- test_operatingModel_calc_target_value(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, target_no) 
-#    expect_that(fout, is_identical_to(unname(c(fc@target@iters[target_no,"value",]))))
-#    target_no <- 2 # catch target
-#    cout <- test_operatingModel_calc_target_value(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, target_no) 
-#    expect_that(cout, is_identical_to(unname(c(fc@target@iters[target_no,"value",]))))
-#    target_no <- 3 # ssb target
-#    ssb_out <- test_operatingModel_calc_target_value(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, target_no) 
-#    expect_that(ssb_out, is_identical_to(unname(c(fc@target@iters[target_no,"value",]))))
-#    target_no <- 4 # biomass target
-#    biomass_out <- test_operatingModel_calc_target_value(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, target_no) 
-#    expect_that(biomass_out, is_identical_to(unname(c(fc@target@iters[target_no,"value",]))))
-#
-#    # Add a relative f target
-#    fc@target@element[3,"quantity"] <- "f"
-#    fc@target@element[3,"relYear"] <- 1
-#    fc@target@element[3,"relSeason"] <- round(runif(1,min=1,max=dim(flq)[4]))
-#    target_no <- 3
-#    fout <- test_operatingModel_calc_target_value(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, target_no) 
-#    expect_that(unname(c(f_total[1,1,1,fc@target@element[3,"relSeason"],1,]) * fc@target@iters[target_no,"value",]), equals(fout))
-#    # Add a relative catch target
-#    fc@target[4,"quantity"] <- "catch"
-#    fc@target[4,"relYear"] <- 2
-#    fc@target[4,"relSeason"] <- round(runif(1,min=1,max=dim(flq)[4]))
-#    target_no <- 4
-#    cout <- test_operatingModel_calc_target_value(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, target_no) 
-#    expect_that(unname(c(catches_total[1,2,1,fc@target@element[4,"relSeason"],1,]) * fc@target@iters[target_no,"value",]), equals(cout))
-#    # Add a relative ssb target
-#    fc@target[5,"quantity"] <- "ssb"
-#    fc@target[5,"relYear"] <- 3
-#    fc@target[5,"relSeason"] <- round(runif(1,min=1,max=dim(flq)[4]))
-#    target_no <- 5
-#    ssb_out <- test_operatingModel_calc_target_value(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, target_no) 
-#    expect_that(unname(c(ssb_in[1,3,1,fc@target@element[5,"relSeason"],1,]) * fc@target@iters[target_no,"value",]), equals(ssb_out))
-#    # Relative biomass target
-#    fc@target[6,"quantity"] <- "biomass"
-#    fc@target[6,"relYear"] <- 4
-#    fc@target[6,"relSeason"] <- round(runif(1,min=1,max=dim(flq)[4]))
-#    target_no <- 6
-#    biomass_out <- test_operatingModel_calc_target_value(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, target_no) 
-#    expect_that(unname(c(biomass_in[1,4,1,fc@target@element[6,"relSeason"],1,]) * fc@target@iters[target_no,"value",]), equals(biomass_out))
-#
-#    # Min and max values
-#    # Set a Min bound to start with
-#    fc@target[7,"quantity"] <- "catch"
-#    fc@target@iters[7,"value",] <- NA
-#    fc@target@iters[7,"max",] <- NA
-#    fc@target@iters[7,"min",] <- rnorm(dim(fc@target@iters)[3], mean = 1000)
-#    # Set Catch in that year to be 0 so that catch should be 0 - but will be constrained by min catch
-#    flfs_min <- flfs
-#    for (i in 1:length(flfs_min)){
-#        flfs_min[[i]][[1]]@landings.n[,fc@target@element[7,"year"],,fc@target@element[7,"season"],,] <- 0
-#        flfs_min[[i]][[1]]@discards.n[,fc@target@element[7,"year"],,fc@target@element[7,"season"],,] <- 0
-#    }
-#    flfs_min@desc <- flfs@desc # eck
-#    cout <- test_operatingModel_calc_target_value(flfs_min, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, 7) 
-#    expect_that(cout, is_identical_to(unname(fc@target@iters[7,"min",])))
-#    # Try a Max value
-#    fc@target[8,"quantity"] <- "catch"
-#    fc@target@iters[8,"value",] <- NA
-#    fc@target@iters[8,"min",] <- NA
-#    fc@target@iters[8,"max",] <- rnorm(dim(fc@target@iters)[3], mean = 1000)
-#    # Set Catch in that year to be larger than the catch in that year so that catch should be very big - but will be constrained by max catch
-#    flfs_max <- flfs
-#    for (i in 1:length(flfs_max)){
-#        flfs_max[[i]][[1]]@landings.n[,fc@target@element[8,"year"],,fc@target@element[8,"season"],,] <- fc@target@iters[8,"max",] + 1
-#        flfs_max[[i]][[1]]@discards.n[,fc@target@element[8,"year"],,fc@target@element[8,"season"],,] <- fc@target@iters[8,"max",] + 1
-#    }
-#    flfs_max@desc <- flfs@desc # eck
-#    cout <- test_operatingModel_calc_target_value(flfs_max, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, 8) 
-#    expect_that(cout, is_identical_to(unname(fc@target@iters[8,"max",])))
-#
-#    # Try Min and Max values
-#    # some iters are min, some are max, some are OK
-#    catches_total <- catch(flfs[[1]][[1]])
-#    catches_total[] <- 0
-#    for (i in 1:length(flfs)){
-#        catches_total <- catches_total + catch(flfs[[i]][[1]])
-#    }
-#    current_catches <- c(catches_total[,fc@target@element[7,"year"],1,fc@target@element[7,"season"],1,])
-#    min_iters <- as.logical(round(runif(dim(flq)[6], min = 0, max = 1)))
-#    max_iters <- !min_iters
-#    max_catches <- current_catches
-#    min_catches <- current_catches
-#    min_catches[min_iters] <- min_catches[min_iters] * 1.01
-#    max_catches[min_iters] <- max_catches[min_iters] * 1.1
-#    min_catches[max_iters] <- min_catches[max_iters] * 0.9
-#    max_catches[max_iters] <- max_catches[max_iters] * 0.99
-#    fc@target@element[7,"quantity"] <- "catch"
-#    fc@target@iters[7,"value",] <- NA
-#    fc@target@iters[7,"min",] <- min_catches
-#    fc@target@iters[7,"max",] <- max_catches
-#    cout <- test_operatingModel_calc_target_value(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, 7) 
-#    expect_that(cout[min_iters], is_identical_to(min_catches[min_iters]))
-#    expect_that(cout[max_iters], is_identical_to(max_catches[max_iters]))
-#    
-#    # Try Min and Max relative values
-#    # Catch cannot change by more than 5% in year 4
-#    fc@target@element[8,"relYear"] <- 4L
-#    fc@target@element[8,"relSeason"] <- 1L
-#    fc@target@element[8,"quantity"] <- "catch"
-#    fc@target@iters[8,"value",] <- NA
-#    fc@target@iters[8,"min",] <- 0.95
-#    fc@target@iters[8,"max",] <- 1.05
-#    cout <- test_operatingModel_calc_target_value(flfs, flb, "ricker", params_sr, 1, residuals_sr, residuals_mult, f, f_spwn, fc, 8) 
-#    current_catches4 <- c(catches_total[,fc@target@element[4,"year"],1,fc@target@element[4,"season"],1,])
-#    current_catches8 <- c(catches_total[,fc@target@element[8,"year"],1,fc@target@element[8,"season"],1,])
-#    min_lim <- current_catches8 >= current_catches4
-#    expect_that(all((cout[min_lim] / current_catches4[min_lim]) >= 0.95), is_true())
-#    max_lim <- current_catches8 < current_catches4
-#    expect_that(all((cout[max_lim] / current_catches4[max_lim]) <= 1.05), is_true())
-#})
-#
 #
 #test_that("Test projection with individual targets",{
 #    # Test operating model.

@@ -1605,6 +1605,14 @@ test_fwdControl_get_target_int_col2 <- function(control, target_no, sim_target_n
     .Call('FLasher_test_fwdControl_get_target_int_col2', PACKAGE = 'FLasher', control, target_no, sim_target_no, col)
 }
 
+test_fwdControl_get_target_num_col <- function(control, target_no, col) {
+    .Call('FLasher_test_fwdControl_get_target_num_col', PACKAGE = 'FLasher', control, target_no, col)
+}
+
+test_fwdControl_get_target_num_col2 <- function(control, target_no, sim_target_no, col) {
+    .Call('FLasher_test_fwdControl_get_target_num_col2', PACKAGE = 'FLasher', control, target_no, sim_target_no, col)
+}
+
 test_fwdControl_get_target_value <- function(control, target_no, col) {
     .Call('FLasher_test_fwdControl_get_target_value', PACKAGE = 'FLasher', control, target_no, col)
 }
@@ -1787,6 +1795,10 @@ test_operatingModel_eval_target <- function(flfs, flbs_list_sexp, ctrl, target_n
 
 test_operatingModel_get_target_value <- function(flfs, flbs_list_sexp, ctrl, target_no) {
     .Call('FLasher_test_operatingModel_get_target_value', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, target_no)
+}
+
+test_operatingModel_get_target_value2 <- function(flfs, flbs_list_sexp, ctrl, target_no, sim_target_no) {
+    .Call('FLasher_test_operatingModel_get_target_value2', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, target_no, sim_target_no)
 }
 
 test_operatingModel_get_target_value_hat <- function(flfs, flbs_list_sexp, ctrl, target_no) {

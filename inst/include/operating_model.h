@@ -119,6 +119,7 @@ class operatingModel {
 
         // The target value we are trying to hit - either directly from the control object or a min / max / rel value calculation
         std::vector<double> get_target_value(const int target_no) const; 
+        std::vector<double> get_target_value(const int target_no, const int sim_target_no) const; 
         // The actual current target values in the OM - to be compared to the desired values
         std::vector<adouble> get_target_value_hat(const int target_no) const; 
         std::vector<adouble> get_target_value_hat(const int target_no, const int sim_target_no) const; 
