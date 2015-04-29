@@ -11,7 +11,7 @@ Author: Finlay Scott, Iago Mosqueira, EC JRC G03.
 Maintainer: Iago Mosqueira <iago.mosqueira@jrc.ec.europa.eu>
 Copyright: European Union
 Description: The very best
-Collate: classes.R generics.R accessors.R methods.R fwd.R constructors.R RcppExports.R help.R test_helper_functions.R
+Collate: classes.R generics.R accessors.R methods.R fwd.R constructors.R RcppExports.R help.R test_helper_functions.R rcpp_plugin.R
 Depends:
     FLCore(>= 2.5.0),
     FLFishery(>= 0.1)
