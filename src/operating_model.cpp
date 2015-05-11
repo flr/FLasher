@@ -70,43 +70,42 @@ double euclid_norm(std::vector<double> x){
  * \param nsim_targets The number of targets to solve for in each iteration (determines of the size of the Jacobian chunks).
  * \param indep_min The minimum value of the independent variable (default is 0).
  * \param indep_max The maximum value of the independent variable (default is 1000).
- * \param max_iters The maximum number of solver iterations.
+ * \param max_iters The maximum number of solver iterations (not FLR iterations).
  * \param tolerance The tolerance of the solutions.
  */
-int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const int niter, const int nsim_targets, const double indep_min, const double indep_max, const int max_iters, const double tolerance){
+std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const int niter, const int nsim_targets, const double indep_min, const double indep_max, const int max_iters, const double tolerance){
     // Check that product of niter and nsim_targets = length of indep (otherwise something has gone wrong)
     if (indep.size() != (niter * nsim_targets)){
         Rcpp::stop("In newton_raphson: length of indep does not equal product of niter and nsim_targets\n");
     }
 
-    double logdet = 0.0;
+    double logdet = 0.0; // Not sure what this actually does but is used in the CppAD LUsolve function
     std::vector<double> y(niter * nsim_targets, 1000.0);
     std::vector<double> delta_indep(niter * nsim_targets, 0.0); // For updating indep in final step
     std::vector<double> jac(niter * nsim_targets * niter * nsim_targets);
     std::vector<double> iter_jac(nsim_targets * nsim_targets);
     std::vector<double> iter_y(nsim_targets);
     std::vector<int> iter_solved(niter, 0); // If 0, that iter has not been solved
-
     int jac_element = 0; // an index for Jacobian used for subsetting the Jacobian for each iter
-    int nr_count = 0;
-    int reason_for_stopping = 0; // 0 - tolerance met; 1 - iter limit reached; 2 - max limit reached
 
-    // Test all iters have been solved
+    // Reasons for stopping
+    //  1 - Solved within tolerance
+    // -1 - Itertion limit reached;
+    // -2 - Min limit reached;
+    // -3 - Max limit reached
+    std::vector<int> success_code (niter, -1); 
+    int nr_count = 0;
+    // Keep looping until all sim_targets have been solved, or number of iterations (NR iterations, not FLR iterations) has been hit
     while((std::accumulate(iter_solved.begin(), iter_solved.end(), 0) < niter) & (nr_count < max_iters)){ 
-    //for (nr_count = 0; nr_count < 10; ++nr_count){
         ++nr_count;
-        Rprintf("nr_count: %i\n", nr_count);
+        //Rprintf("nr_count: %i\n", nr_count);
         // Get y = f(x0)
         y = fun.Forward(0, indep); 
-        Rprintf("indep: %f\n", indep[0]);
-        Rprintf("y: %f\n", y[0]);
-        // Get f'(x0)
+        // Get f'(x0) -  gets Jacobian for all simultaneous targets
         jac = fun.SparseJacobian(indep);
-        //Rprintf("jac 0: %f\n", jac[0]);
         // Get w (f(x0) / f'(x0)) for each iteration if necessary
-        // Loop over iters, solving if necessary
+        // Loop over simultaneous targets, solving if necessary
         for (int iter_count = 0; iter_count < niter; ++iter_count){
-            //Rprintf("iter_count: %i\n", iter_count);
             // Only solve if that iter has not been solved
             if(iter_solved[iter_count] == 0){
                 //Rprintf("Iter %i not yet solved\n", iter_count);
@@ -120,36 +119,39 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
                     }
                 }
                 // Solve to get w = f(x0) / f'(x0)
-                // Puts resulting w into iter_y
+                // Puts resulting w (delta_indep) into iter_y
                 CppAD::LuSolve(nsim_targets, nsim_targets, iter_jac, iter_y, iter_y, logdet); 
-
-                //Rprintf("logdet: %f\n", logdet);
                 // Has iter now been solved? If so, set the flag to 1
                 if (euclid_norm(iter_y) < tolerance){
-                    for (auto i = 0; i < iter_y.size(); ++i){
-                        //Rprintf("iter_y: %f\n", iter_y[i] * 1e12);
-                    }
-                    //Rprintf("iter %i now solved\n", iter_count);
-                    //Rprintf("euclid_norm * 1e12: %f\n", euclid_norm(iter_y)*1e12);
                     iter_solved[iter_count] = 1;
+                    success_code[iter_count] = 1;
                 }
-                // put iter_y back into delta_indep - needs for loop
+                // put iter_y into delta_indep - needs for loop
                 for(int jac_count = 0; jac_count < nsim_targets; ++jac_count){
                     delta_indep[iter_count * nsim_targets + jac_count] = iter_y[jac_count];
                 }
             }
         }
-        //CppAD::LuSolve(niter * nsim_targets, niter * nsim_targets, jac, y, y, logdet); 
-
         // Update x = x - w
         // Ideally should only update the iterations that have not hit the tolerance
-        //Rprintf("delta_indep[0] %f\n", delta_indep[0]);
         std::transform(indep.begin(),indep.end(),delta_indep.begin(),indep.begin(),std::minus<double>());
 
         // indep cannot be less than minimum value or greater than maximum value
-        std::transform(indep.begin(), indep.end(), indep.begin(), [&](double x){return std::min(indep_max, std::max(x, indep_min));});
+        for (auto minmax_counter = 0; minmax_counter < indep.size(); ++minmax_counter){
+            // Have we breached min limit?
+            if (indep[minmax_counter] < indep_min){
+                indep[minmax_counter] = indep_min;
+                // Which iter is this
+                success_code[minmax_counter / nsim_targets] = -2;
+            }
+            // Have we breached max limit?
+            if (indep[minmax_counter] > indep_max){
+                indep[minmax_counter] = indep_max;
+                success_code[minmax_counter / nsim_targets] = -3;
+            }
+        } 
     }
-    return reason_for_stopping;
+    return success_code;
 }
 
 
@@ -1059,6 +1061,8 @@ void operatingModel::run(const double indep_min, const double indep_max){
         auto nr_out = newton_raphson(effort_mult, fun, niter, nsim_targets, indep_min, indep_max);
         //auto nr_out = newton_raphson(log_effort_mult, fun, niter, nsim_targets);
         Rprintf("NR done\n");
+
+        // Check nr_out - if not all 1 then something has gone wrong - flag up warning
 
         // Get effort
         //std::transform(log_effort_mult.begin(), log_effort_mult.end(), effort_mult.begin(), [](double x){return exp(x);});

@@ -1681,12 +1681,12 @@ test_euclid_norm <- function(xvec) {
     .Call('FLasher_test_euclid_norm', PACKAGE = 'FLasher', xvec)
 }
 
-test_NR1 <- function(initial_value, max_iters, tolerance) {
-    .Call('FLasher_test_NR1', PACKAGE = 'FLasher', initial_value, max_iters, tolerance)
+test_NR1 <- function(initial_value, max_iters, indep_min, indep_max, tolerance) {
+    .Call('FLasher_test_NR1', PACKAGE = 'FLasher', initial_value, max_iters, indep_min, indep_max, tolerance)
 }
 
-test_NR2 <- function(initial_value, max_iters, tolerance) {
-    .Call('FLasher_test_NR2', PACKAGE = 'FLasher', initial_value, max_iters, tolerance)
+test_NR2 <- function(initial_value, max_iters, indep_min, indep_max, tolerance) {
+    .Call('FLasher_test_NR2', PACKAGE = 'FLasher', initial_value, max_iters, indep_min, indep_max, tolerance)
 }
 
 test_year_season_to_timestep_FLQuant_double <- function(flq, year, season) {
