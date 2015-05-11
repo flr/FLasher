@@ -96,11 +96,13 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
         ++nr_count;
         Rprintf("nr_count: %i\n", nr_count);
         // Get y = f(x0)
-        y = fun.Forward(0, indep); // HERE - why is y changing
-        //Rprintf("indep: %f\n", indep[0]);
-        //Rprintf("y: %f\n", y[0]);
+        y = fun.Forward(0, indep); 
+        Rprintf("indep: %f\n", indep[0]);
+        Rprintf("y: %f\n", y[0]);
         // Get f'(x0)
         jac = fun.SparseJacobian(indep);
+        //jac = fun.Jacobian(indep);
+        Rprintf("jac 0: %f\n", jac[0]);
         // Get w (f(x0) / f'(x0)) for each iteration if necessary
         // Loop over iters, solving if necessary
         for (int iter_count = 0; iter_count < niter; ++iter_count){
@@ -120,9 +122,13 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
                 // Solve to get w = f(x0) / f'(x0)
                 // Puts resulting w into iter_y
                 CppAD::LuSolve(nsim_targets, nsim_targets, iter_jac, iter_y, iter_y, logdet); 
-                //Rprintf("iter_y[0] %f\n", iter_y[0]*1e12);
+
+                //Rprintf("logdet: %f\n", logdet);
                 // Has iter now been solved? If so, set the flag to 1
                 if (euclid_norm(iter_y) < tolerance){
+                    for (auto i = 0; i < iter_y.size(); ++i){
+                        Rprintf("iter_y: %f\n", iter_y[i] * 1e12);
+                    }
                     //Rprintf("iter %i now solved\n", iter_count);
                     //Rprintf("euclid_norm * 1e12: %f\n", euclid_norm(iter_y)*1e12);
                     iter_solved[iter_count] = 1;
@@ -137,6 +143,7 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
 
         // Update x = x - w
         // Ideally should only update the iterations that have not hit the tolerance
+        Rprintf("delta_indep[0] %f\n", delta_indep[0]);
         std::transform(indep.begin(),indep.end(),delta_indep.begin(),indep.begin(),std::minus<double>());
     }
     return reason_for_stopping;
@@ -961,10 +968,15 @@ void operatingModel::run(){
     Rprintf("%i targets to solve\n", ntarget);
     auto neffort = fisheries.get_nfisheries(); // how many efforts, i.e. number of FLFishery objects in OM
     Rprintf("%i fisheries to solve effort for\n", neffort);
-    auto effort_mult_initial = 1.0; 
+    //auto effort_mult_initial = 1.0; 
+    auto effort_mult_initial = 2.0; 
     // Set up effort multipliers - do all iters at once, but keep timesteps, areas, units separate
     std::vector<double> effort_mult(neffort * niter, effort_mult_initial);
     std::vector<adouble> effort_mult_ad(neffort * niter, effort_mult_initial);
+
+    // Solve for the log of effort so we get always positive effort
+    std::vector<adouble> log_effort_mult_ad(neffort * niter, log(effort_mult_initial));
+    std::vector<double> log_effort_mult(neffort * niter, log(effort_mult_initial));
 
     // Loop over targets and solve all simultaneous targets in that target set
     // e.g. With 2 fisheries with 2 efforts, we can set 2 catch targets to be solved at the same time
@@ -991,8 +1003,16 @@ void operatingModel::run(){
 
         // Turn tape on
         CppAD::Independent(effort_mult_ad);
+        //CppAD::Independent(log_effort_mult_ad);
         Rprintf("Turned on tape\n");
         // Update fisheries.effort() with effort multiplier in that timestep (area and unit effectively ignored)
+
+        // Get effort_mult_ad
+        //std::transform(log_effort_mult_ad.begin(), log_effort_mult_ad.end(), effort_mult_ad.begin(), [](adouble x){return exp(x);});
+        //for (auto i=0; i<effort_mult_ad.size(); ++i){
+        //    Rprintf("effort_mult_ad: %f\n", Value(effort_mult_ad[i]));
+        //}
+
         Rprintf("Updating effort with multipler\n");
         for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
             for (int iter_count = 1; iter_count <= niter; ++ iter_count){
@@ -1009,8 +1029,8 @@ void operatingModel::run(){
         // Calc error
         Rprintf("Getting new state of operating model\n");
         std::vector<adouble> target_value_hat = get_target_value_hat(target_count); 
-        Rprintf("Length of target_value_hat: %i\n", target_value.size());
-        Rprintf("Length of target_value: %i\n", target_value.size());
+        //Rprintf("Length of target_value_hat: %i\n", target_value.size());
+        //Rprintf("Length of target_value: %i\n", target_value.size());
         // Check they are the same length? 
         std::vector<adouble> error(target_value_hat.size());
         Rprintf("Calculating error\n");
@@ -1019,21 +1039,35 @@ void operatingModel::run(){
 
         // Stop recording
         Rprintf("Turning off tape\n");
-        CppAD::ADFun<double> fun(effort_mult_ad, error);
+        //CppAD::ADFun<double> fun(effort_mult_ad, error);
+        //CppAD::ADFun<double> fun(log_effort_mult_ad, error);
+        CppAD::ADFun<double> fun;
+        fun.Dependent(effort_mult_ad, error);
+        //fun.Dependent(log_effort_mult_ad, error);
+
         Rprintf("Turned off tape\n");
 
         // Solve the target
         // Reset initial solver value - solver changes the values
         std::fill(effort_mult.begin(), effort_mult.end(), effort_mult_initial);
+        //std::fill(log_effort_mult.begin(), log_effort_mult.end(), log(effort_mult_initial));
+
         Rprintf("Calling NR\n");
         auto nr_out = newton_raphson(effort_mult, fun, niter, nsim_targets);
+        //auto nr_out = newton_raphson(log_effort_mult, fun, niter, nsim_targets);
         Rprintf("NR done\n");
+
+        // Get effort
+        //std::transform(log_effort_mult.begin(), log_effort_mult.end(), effort_mult.begin(), [](double x){return exp(x);});
+        //for (auto i=0; i<effort_mult_ad.size(); ++i){
+        //    Rprintf("effort_mult: %f\n", effort_mult[i]);
+        //}
 
         Rprintf("Updating effort with solved effort mult\n");
         for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
             for (int iter_count = 1; iter_count <= niter; ++ iter_count){
                 fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) = 
-                    fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) * 
+                   fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) * 
                     effort_mult[(fisheries_count - 1) * niter + iter_count - 1] / effort_mult_initial;
             }
         }
