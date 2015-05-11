@@ -1681,12 +1681,12 @@ test_euclid_norm <- function(xvec) {
     .Call('FLasher_test_euclid_norm', PACKAGE = 'FLasher', xvec)
 }
 
-test_NR1 <- function(initial_value, max_iters, max_limit, tolerance) {
-    .Call('FLasher_test_NR1', PACKAGE = 'FLasher', initial_value, max_iters, max_limit, tolerance)
+test_NR1 <- function(initial_value, max_iters, tolerance) {
+    .Call('FLasher_test_NR1', PACKAGE = 'FLasher', initial_value, max_iters, tolerance)
 }
 
-test_NR2 <- function(initial_value, max_iters, max_limit, tolerance) {
-    .Call('FLasher_test_NR2', PACKAGE = 'FLasher', initial_value, max_iters, max_limit, tolerance)
+test_NR2 <- function(initial_value, max_iters, tolerance) {
+    .Call('FLasher_test_NR2', PACKAGE = 'FLasher', initial_value, max_iters, tolerance)
 }
 
 test_year_season_to_timestep_FLQuant_double <- function(flq, year, season) {
@@ -1809,8 +1809,8 @@ test_operatingModel_get_target_value_hat2 <- function(flfs, flbs_list_sexp, ctrl
     .Call('FLasher_test_operatingModel_get_target_value_hat2', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, target_no, sim_target_no)
 }
 
-test_operatingModel_run <- function(flfs, flbs_list_sexp, ctrl) {
-    .Call('FLasher_test_operatingModel_run', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl)
+test_operatingModel_run <- function(flfs, flbs_list_sexp, ctrl, indep_min, indep_max) {
+    .Call('FLasher_test_operatingModel_run', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, indep_min, indep_max)
 }
 
 test_integer_NA <- function(vec1, vec2) {

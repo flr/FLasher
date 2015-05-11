@@ -319,10 +319,10 @@ std::vector<double> test_operatingModel_get_target_value_hat2(FLFisheriesAD flfs
 }
 
 // [[Rcpp::export]]
-operatingModel test_operatingModel_run(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl){
+operatingModel test_operatingModel_run(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const double indep_min, const double indep_max){
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);
-    om.run();
+    om.run(indep_min, indep_max);
     return om;
 }
 

@@ -68,11 +68,12 @@ double euclid_norm(std::vector<double> x){
  * \param fun The CppAD function object.
  * \param niter The number of iterations in the simulations.
  * \param nsim_targets The number of targets to solve for in each iteration (determines of the size of the Jacobian chunks).
+ * \param indep_min The minimum value of the independent variable (default is 0).
+ * \param indep_max The maximum value of the independent variable (default is 1000).
  * \param max_iters The maximum number of solver iterations.
- * \param max_limit The maximum value of the solution (not yet used).
  * \param tolerance The tolerance of the solutions.
  */
-int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const int niter, const int nsim_targets, const int max_iters, const double max_limit, const double tolerance){
+int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const int niter, const int nsim_targets, const double indep_min, const double indep_max, const int max_iters, const double tolerance){
     // Check that product of niter and nsim_targets = length of indep (otherwise something has gone wrong)
     if (indep.size() != (niter * nsim_targets)){
         Rcpp::stop("In newton_raphson: length of indep does not equal product of niter and nsim_targets\n");
@@ -101,8 +102,7 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
         Rprintf("y: %f\n", y[0]);
         // Get f'(x0)
         jac = fun.SparseJacobian(indep);
-        //jac = fun.Jacobian(indep);
-        Rprintf("jac 0: %f\n", jac[0]);
+        //Rprintf("jac 0: %f\n", jac[0]);
         // Get w (f(x0) / f'(x0)) for each iteration if necessary
         // Loop over iters, solving if necessary
         for (int iter_count = 0; iter_count < niter; ++iter_count){
@@ -127,7 +127,7 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
                 // Has iter now been solved? If so, set the flag to 1
                 if (euclid_norm(iter_y) < tolerance){
                     for (auto i = 0; i < iter_y.size(); ++i){
-                        Rprintf("iter_y: %f\n", iter_y[i] * 1e12);
+                        //Rprintf("iter_y: %f\n", iter_y[i] * 1e12);
                     }
                     //Rprintf("iter %i now solved\n", iter_count);
                     //Rprintf("euclid_norm * 1e12: %f\n", euclid_norm(iter_y)*1e12);
@@ -143,8 +143,11 @@ int newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const 
 
         // Update x = x - w
         // Ideally should only update the iterations that have not hit the tolerance
-        Rprintf("delta_indep[0] %f\n", delta_indep[0]);
+        //Rprintf("delta_indep[0] %f\n", delta_indep[0]);
         std::transform(indep.begin(),indep.end(),delta_indep.begin(),indep.begin(),std::minus<double>());
+
+        // indep cannot be less than minimum value or greater than maximum value
+        std::transform(indep.begin(), indep.end(), indep.begin(), [&](double x){return std::min(indep_max, std::max(x, indep_min));});
     }
     return reason_for_stopping;
 }
@@ -959,7 +962,7 @@ std::vector<double> operatingModel::get_target_value(const int target_no, const 
 //@}
 
 
-void operatingModel::run(){
+void operatingModel::run(const double indep_min, const double indep_max){
     Rprintf("In run\n");
 
     auto niter = ctrl.get_niter(); // number of iters taken from control object
@@ -968,12 +971,12 @@ void operatingModel::run(){
     Rprintf("%i targets to solve\n", ntarget);
     auto neffort = fisheries.get_nfisheries(); // how many efforts, i.e. number of FLFishery objects in OM
     Rprintf("%i fisheries to solve effort for\n", neffort);
-    //auto effort_mult_initial = 1.0; 
-    auto effort_mult_initial = 2.0; 
+
+    auto effort_mult_initial = 1.0; 
+    //auto effort_mult_initial = 2.0; 
     // Set up effort multipliers - do all iters at once, but keep timesteps, areas, units separate
     std::vector<double> effort_mult(neffort * niter, effort_mult_initial);
     std::vector<adouble> effort_mult_ad(neffort * niter, effort_mult_initial);
-
     // Solve for the log of effort so we get always positive effort
     std::vector<adouble> log_effort_mult_ad(neffort * niter, log(effort_mult_initial));
     std::vector<double> log_effort_mult(neffort * niter, log(effort_mult_initial));
@@ -1012,6 +1015,7 @@ void operatingModel::run(){
         //for (auto i=0; i<effort_mult_ad.size(); ++i){
         //    Rprintf("effort_mult_ad: %f\n", Value(effort_mult_ad[i]));
         //}
+        //
 
         Rprintf("Updating effort with multipler\n");
         for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
@@ -1036,14 +1040,12 @@ void operatingModel::run(){
         Rprintf("Calculating error\n");
         std::transform(target_value.begin(), target_value.end(), target_value_hat.begin(), error.begin(),
                 [](double x, adouble y){return x - y;});
+                //[](double x, adouble y){return (x - y) * (x - y);}); // squared error - doesn't seem so effective
 
         // Stop recording
         Rprintf("Turning off tape\n");
-        //CppAD::ADFun<double> fun(effort_mult_ad, error);
+        CppAD::ADFun<double> fun(effort_mult_ad, error);
         //CppAD::ADFun<double> fun(log_effort_mult_ad, error);
-        CppAD::ADFun<double> fun;
-        fun.Dependent(effort_mult_ad, error);
-        //fun.Dependent(log_effort_mult_ad, error);
 
         Rprintf("Turned off tape\n");
 
@@ -1053,7 +1055,8 @@ void operatingModel::run(){
         //std::fill(log_effort_mult.begin(), log_effort_mult.end(), log(effort_mult_initial));
 
         Rprintf("Calling NR\n");
-        auto nr_out = newton_raphson(effort_mult, fun, niter, nsim_targets);
+        // indep_min and max should be arguments to run and passable from R
+        auto nr_out = newton_raphson(effort_mult, fun, niter, nsim_targets, indep_min, indep_max);
         //auto nr_out = newton_raphson(log_effort_mult, fun, niter, nsim_targets);
         Rprintf("NR done\n");
 
@@ -1072,7 +1075,6 @@ void operatingModel::run(){
             }
         }
 
-        Rprintf("Projecting again with the new effort\n");
         project_timestep(target_effort_timestep);
     }
     Rprintf("Leaving run\n");
