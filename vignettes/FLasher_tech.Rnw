@@ -69,10 +69,6 @@ opts_chunk$set(dev='png', cache=TRUE, fig.align='center', warning=FALSE, message
 @
 
 
-<<load_libraries, message=FALSE, warning=FALSE>>=
-library(FLasher)
-@
-
 This document is the technical manual for the \pkg{FLasher} package.
 It explains the basic structure of package, with particular emphasis on the C++ code.
 This will allow further expansion of the package.
@@ -83,7 +79,44 @@ The C++ side of \pkg{FLasher} uses the classes described in REF and some additio
 
 The package makes use of the CppAD library for automatic differentation (REF).
 
+
+The document has several examples, so we need to load \pkg{FLasher}.
+
+<<load_libraries, message=FALSE, warning=FALSE>>=
+library(FLasher)
+@
+
 \section{The \class{fwdControl} class}
+
+The C++ \class{fwdControl} implements the basic functionality of the FLR \class{fwdControl} class.
+
+The main members are \code{target}, which is a copy of the \class{data.frame} in the \code{fwdControl@target@element} slot plus some additional columns (see below for details) and
+\code{target\_iters} which holds the information in the \code{fwdControl@target@iters} slot as an \code{Rcpp::NumericVector} and has appropriate accessors.
+
+Intrinsic \code{<as>} and \code{<wrap>} methods have been written to allow \class{fwdControl} objects to be passed to and from \R and C++ easily. However, for the \code{<as>} to work, an additional attribute, \code{FCB}, must be added to the object in R before dispatch, else it will fail (see below).
+
+\subsection{The FCB member}
+
+An important additional member that is not present in the FLR version of the class is \code{FCB}. This is a 2D matrix that contains a map of a which Fishery and Catch catches which Biol. \code{FCB} has 3 columns, \textit{F}, \textit{C} and \textit{B} for Fishery, Catch and Biol indices respectively. Each row is a mapping of a Fishery / Catch onto a Biol. The indices start at 1 and refer to positions within the \class{FLFisheries}, \class{FLFishery} and \class{fwdBiols} objects respectively (the \class{FLFisheries} object is really just a list of \class{FLFishery} objects, and each \class{FLFishery} object contains a list of \class{FLCatch} objects; the \class{fwdBiols} class is a list of \class{fwdBiol} objects).
+For example, a row with values \code{(1,2,1)} means that the second \class{FLCatch} in the first \class{FLFishery} of the \class{FLFisheries} member catches the first \class{fwdBiol} of the \class{fwdBiols} member.
+
+\code{FCB} is not a slot in the FLR version of \class{fwdControl}. Instead, it must be generated seperately in R as a matrix, and then attached as an attribute called \textit{FCB} to the \code{target} slot before sending it to C++.
+
+There may be a way of generating the \code{FCB} matrix automatically from the information in the \code{fwdControl@target@element} slot.
+
+If you try to pass an \class{fwdControl} from R to C++ without the \code{FCB} attribute it will fail.
+As \code{FCB} is only an attribute of the \class{fwdControl} object and not an actual slot, it is not returned by the intrinsic \code{<wrap>}.
+
+
+EXAMPLE
+
+\subsection{Target types}
+
+Adding 
+
+Abundance targets - special case
+
+Things you need to add to control that are different in Cpp to R version, e.g. target col
 
 \section{The \class{operatingModel} class}
 
@@ -137,6 +170,10 @@ The basic sequence for each target is:
 We take a look at some of these steps in more detail.
 
 \subsubsection{Getting the desired target values}
+
+
+
+
 \subsubsection{Getting the current target values}
 
 
