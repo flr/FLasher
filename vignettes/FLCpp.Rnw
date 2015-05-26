@@ -848,6 +848,8 @@ flqs[[2]]
 \section{\class{fwdBiols}}
 \label{sec:fwdBiols}
 
+\section{Basic use}
+
 The \class{fwdBiols} class is a \code{std::vector} of \class{fwdBiol} objects. The use is simple. You can add additional objects to the list and access them through the \code() operator (indices start at 1, not 0).
 This class is used in the \class{operatingModel} class to store the biological information of the stocks.
 
@@ -902,6 +904,57 @@ out <- test_fwdBiols_accessor(ple4_biol1, ple4_biol2)
 is(out)
 @
 
+\subsection{Making an \class{fwdBiols} object from a list of components}
+
+We saw above that you can make an \class{fwdBiol} object from an \class{FLBiol} and the SRR components.
+As well as making an \class{fwdBiols} object from individual, already constructed \class{fwdBiol} objects, you can make it from a list.
+Each element of the list is also a list which contains elements needed to make a single \class{fwdBiol}:
+
+\begin{itemize}
+    \item An \class{FLBiol}, called 'biol';
+    \item A character string of the SRR model name called 'srr\_model\_name';
+    \item An \class{FLQuant} of residuals called 'srr\_residuals';
+    \item An integer for the time lag, called 'srr\_timelag';
+    \item An \class{FLQuant} of parameters called 'srr\_params';
+    \item A boolean t describe if the residuals are multiplicative called 'srr\_residuals\_mult'
+\end{itemize}
+
+The order of the items in the list is not important, but the names are.
+The list of lists must also have names.
+
+Internally, all these elements are used to make \class{fwdBiol} objects which are then added to the \class{fwdBiols} object.
+The SRR components (elements 2 - 6 in the above list) are used to make the \class{fwdSR} object, as described above.
+
+This is all a bit of a faff so please feel free to come up with a better way.
+
+<<fwdBiols_constructor>>=
+source = '
+    fwdBiol test_fwdBiols_constructor(SEXP biols_list){
+        // Make the fwdBiols object
+        fwdBiols biols(biols_list);
+        // Pull out second fwdBiol from fwdBiols
+        fwdBiol biol = biols(2);
+        return biol;
+    }
+'
+cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+@
+
+Test this with the objects we created above.
+
+<<fwdBiols_constructor_test>>=
+# Make a list of fwdBiol bits
+biol_bits <- list(biol = ple4_biol,
+                   srr_model_name = 'ricker',
+                   srr_params = year_params,
+                   srr_residuals = residuals,
+                   srr_residuals_mult = residuals_mult,
+                   srr_timelag = timelag)
+# Make a list with identical components - give them names
+biols <- list(biol1 = biol_bits, biol12 = biol_bits)
+# Test the constructor
+biol_out <- test_fwdBiols_constructor(biols)
+@
 
 \section{\class{FLCatch}}
 \label{sec:FLCatch}
