@@ -110,7 +110,7 @@ class fwdBiols_base {
     public:
         /* Constructors */
 		fwdBiols_base();
-		fwdBiols_base(SEXP flbs_list_sexp); // Used as intrusive 'as', takes a list of fwdBiol objects - remove. Better to make each fwdBiol separately and add to list
+		fwdBiols_base(SEXP flbs_list_sexp); // Used as intrusive 'as', takes a list of fwdBiol objects components as an SEXP (could take a Rcpp::List for more safety)
         operator SEXP() const; // Used as intrusive 'wrap' - returns an FLBiols
 		fwdBiols_base(fwdBiol_base<T> flb); // Constructor from an fwdBiol object
 		fwdBiols_base(const fwdBiols_base& fwdBiols_base_source); // copy constructor to ensure that copy is a deep copy 
