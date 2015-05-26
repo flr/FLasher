@@ -201,41 +201,31 @@ These columns are:
 Here we demonstrate the methods of the \class{fwdControl} class.
 First we make an example object. We assume that the operating model contains two fisheries, each with one catch, both of which catch the same stock.
 
+% Fix this example as the min target is actually a new target
+
 <<makeFakefwdControl2>>=
 # Set up data.frames of the two targets
 # Both catches have a target catch from biol 1
-target1 <- data.frame(year = 2000,
-                     quantity = rep('catch',2),
-                     value = rep(1000,2),
-                     min = NA,
-                     fishery = c(1,2),
-                     catch = c(1,1),
-                     biol = c(1,1),
-                     # Include target and timestep column - user should not have to do this
-                     timestep = 1,
-                     target = 1
-                     )
-# Same as first target but now with biomass constraint
-target2 <- data.frame(year = c(2001, 2001, 2002),
+# Also include a minimum constraint on the biomass - must be treated as a new target
+target <- data.frame(year = c(2000, 2000, 2001),
                      quantity = c('catch', 'catch', 'biomass'),
                      value = c(1000, 1000, NA),
                      min = c(NA, NA, 10000),
-                     fishery = c(1, 1, NA),
-                     catch = c(1, 1, NA),
-                     biol = 1,
+                     fishery = c(1,2,NA),
+                     catch = c(1,1,NA),
+                     biol = c(1,1,1),
                      # Include target and timestep column - user should not have to do this
-                     timestep = c(2, 2, 3),
-                     target = 2
+                     timestep = c(1,1,2),
+                     target = c(1,1,2)
                      )
 
-target <- rbind(target1, target2)
 fc_in <- fwdControl(target)
 # Set up the iters array to have 5 iters
 target_iters <- array(NA, dim=c(nrow(target),3,5), dimnames=list(target_no=1:nrow(target),
                                                                  c("min","value","max"),
                                                                  iter=1:5))
-target_iters[1:4,'value',] <- rnorm(20,mean=1000,sd=1)
-target_iters[5,'min',] <- rnorm(5,mean=10000,sd=10)
+target_iters[1:2,'value',] <- rnorm(10,mean=1000,sd=1)
+target_iters[3,'min',] <- rnorm(5,mean=10000,sd=10)
 fc_in@target@iters <- target_iters
 # Set FCB
 FCB <- array(c(1,1,1), dim = c(1,3), dimnames = list(1, c('F','C','B')))
@@ -260,10 +250,10 @@ test_fwdControl_get_target_rows(fc_in, 1)
 test_fwdControl_get_target_rows(fc_in, 2)
 # Get the row number of simultaneous target in a target set
 test_fwdControl_get_target_row(fc_in, 1, 1)
-test_fwdControl_get_target_row(fc_in, 2, 2)
+test_fwdControl_get_target_row(fc_in, 2, 1)
 # Pull out all targets from an integer column
 test_fwdControl_get_target_int_col(fc_in, 1, 'year')
-test_fwdControl_get_target_int_col(fc_in, 2, 'fishery')
+test_fwdControl_get_target_int_col(fc_in, 2, 'biol')
 # Pull out all targets from a numeric column - why do we have this?
 test_fwdControl_get_target_int_col(fc_in, 1, 'value')
 test_fwdControl_get_target_int_col(fc_in, 2, 'value')
@@ -273,12 +263,12 @@ test_fwdControl_get_target_value(fc_in, 1, 2) # value of target 1
 test_fwdControl_get_target_value(fc_in, 2, 1) # min of target 2
 # Just one simultaneous target
 test_fwdControl_get_target_value2(fc_in, 1, 1, 2) # value of sim target 1 from arget 1
-test_fwdControl_get_target_value2(fc_in, 2, 3, 1) # min of sim target 3 from target 2
+test_fwdControl_get_target_value2(fc_in, 2, 1, 1) # min of sim target 3 from target 2
 # Get the quantity of the type of sim target in target
 test_fwdControl_get_target_quantity(fc_in, 1, 1)
 # Get timestep of effort that affects sim target
-test_fwdControl_get_target_effort_timestep(fc_in, 2, 1) # catch in timestep 2
-test_fwdControl_get_target_effort_timestep(fc_in, 2, 3) # biomass in timestep 3
+test_fwdControl_get_target_effort_timestep(fc_in, 1, 1) # catch in timestep 1
+test_fwdControl_get_target_effort_timestep(fc_in, 2, 1) # biomass in timestep 2
 @
 
 
@@ -288,6 +278,13 @@ The C++ class responsible for running the projections is \class{operatingModel}.
 Many of the methods of the \pkg{operatingModel} class are directly callable from \R though this functionality will really only be useful for testing and demonstrating purposes. 
 
 \subsection{The basic process}
+
+The basic process for using the \class{operatingModel} is:
+
+\begin{itemize}
+    \item Create the necessary \class{FLFisheries}, \class{fwdBiols}, stock recruitment and \class{fwdControl} objects in FLR.
+    \item Pass into C++ and create the \class{operatingModel} class.
+    \item 
 
 Pass from R
 
