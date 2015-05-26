@@ -283,21 +283,26 @@ The basic process for using the \class{operatingModel} is:
 
 \begin{itemize}
     \item Create the necessary \class{FLFisheries}, \class{fwdBiols}, stock recruitment and \class{fwdControl} objects in FLR.
-    \item Pass into C++ and create the \class{operatingModel} class.
-    \item 
-
-Pass from R
-
-Create OM
-
-Call Run
-
-Return Object
+    \item Pass the objects into C++ and create the \class{operatingModel} class.
+    \item Call the \code{run()} method.
+    \item Return the \pkg{operatingModel} object to R as a list.
+\end{itemize}
 
 
+\subsection{Creating an \class{operatingModel}}
 
+The C++ objects we need to create an \pkg{operatingModel} in C++ are:
 
-\subsection{What happens you pass objects from \R - creating an \class{operatingModel}}
+\begin{itemize}
+    \item An \class{FLFisheries} object;
+    \item An \class{fwdBiols} object;
+    \item An \class{fwdControl} object;
+\end{itemize}
+
+The \class{FLFisheries} and \class{fwdControl} objects can be passed in directly from R using the intrinsic \code{<as>} methods.
+The \class{fwdBiols} object is more complicated. This needs to be constructed in C++ first.
+It can be constructed from a list of \class{FLBiol}s and SRR components (see FLRCPP REF).
+
 
 \subsection{Inside \code{run()}}
 
@@ -330,14 +335,9 @@ The basic sequence for each target is:
 
 We take a look at some of these steps in more detail.
 
-\subsubsection{Getting the desired target values}
-
-
-
-
-\subsubsection{Getting the current target values}
-
-
+%\subsubsection{Getting the desired target values}
+%
+%\subsubsection{Getting the current target values}
 
 \subsection{The future}
 
