@@ -1,0 +1,100 @@
+\documentclass[a4paper,english,10pt]{article}
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{FLCpp}
+%\VignetteKeywords{R,FLR,Rcpp}
+%\VignettePackage{FLasher}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{color} 
+\usepackage{float}
+\usepackage{longtable}
+\usepackage[bottom]{footmisc}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{authblk}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{babel}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{verbose,a4paper,tmargin=3cm,bmargin=2cm,lmargin=2cm,rmargin=3cm}
+\setlength{\parskip}{\medskipamount}
+\setlength{\parindent}{0pt}
+\hypersetup{
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=blue,        % color of internal links
+    citecolor=red,         % color of links to bibliography
+    filecolor=blue,        % color of file links
+    urlcolor=blue          % color of external links
+}
+
+% Define some handy formatting
+\newcommand{\initiative}[1]{{\texttt{#1}}}
+\newcommand{\code}[1]{{\texttt{#1}}}
+\newcommand{\pkg}[1]{{\texttt{#1}}}
+\newcommand{\class}[1]{{\textit{#1}}}
+\newcommand{\R}{{\normalfont\textsf{R }}{}}
+\newcommand{\args}[1]{{\texttt{#1}}}
+\newcommand{\E}[1]{\text{E}\left[#1\right]}
+\newcommand{\Var}[1]{\text{Var}\left[#1\right]}
+
+
+%----------------------------------------------------------------------------------
+
+\begin{document}
+
+\title{FLasher\\Multi-species, multi-fishery projections with FLR\\User maual}
+
+\author[1]{Finlay Scott}
+\author[1]{Iago Mosqueira}
+\affil[1]{European Commission, Joint Research Centre, IPSC / Maritime Affairs Unit, 21027 Ispra (VA), Italy}
+\affil[*]{Corresponding author \href{mailto:finlay.scott@jrc.ec.europa.eu}{finlay.scott@jrc.ec.europa.eu}}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+This document is the user manual for \pkg{FLasher}.
+It is structured around examples which also acts as tests.
+
+
+<<knitr_opts, echo=FALSE, message=FALSE, warning=FALSE>>=
+library(knitr)
+css = eclipse_theme(43)
+thm = knit_theme$get(css)
+knit_theme$set(thm)
+opts_chunk$set(dev='png', cache=TRUE, fig.align='center', warning=FALSE, message=FALSE, dev="png", dev.args=list(type="cairo"), dpi=96, highlight=TRUE, background='#F2F2F2', fig.lp="fig:", fig.pos="H", width=60)
+@
+
+
+<<load_libraries, message=FALSE, warning=FALSE>>=
+library(FLasher)
+@
+
+\section{Basics - what you need}
+
+FLStock
+
+FLBiol + FLFishery
+
+SRR
+
+fwdControl
+
+\section{Simple example}
+
+\section{Multi-fishery example}
+
+\section{Multi-species, multi-fishery example}
+
+\section{Example with a seasonal time step}
+
+
+\end{document}
+

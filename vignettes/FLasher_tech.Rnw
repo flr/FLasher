@@ -1,0 +1,153 @@
+\documentclass[a4paper,english,10pt]{article}
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{FLCpp}
+%\VignetteKeywords{R,FLR,Rcpp}
+%\VignettePackage{FLasher}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{color} 
+\usepackage{float}
+\usepackage{longtable}
+\usepackage[bottom]{footmisc}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{authblk}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage{babel}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{verbose,a4paper,tmargin=3cm,bmargin=2cm,lmargin=2cm,rmargin=3cm}
+\setlength{\parskip}{\medskipamount}
+\setlength{\parindent}{0pt}
+\hypersetup{
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=blue,        % color of internal links
+    citecolor=red,         % color of links to bibliography
+    filecolor=blue,        % color of file links
+    urlcolor=blue          % color of external links
+}
+
+% Define some handy formatting
+\newcommand{\initiative}[1]{{\texttt{#1}}}
+\newcommand{\code}[1]{{\texttt{#1}}}
+\newcommand{\pkg}[1]{{\texttt{#1}}}
+\newcommand{\class}[1]{{\textit{#1}}}
+\newcommand{\R}{{\normalfont\textsf{R }}{}}
+\newcommand{\args}[1]{{\texttt{#1}}}
+\newcommand{\E}[1]{\text{E}\left[#1\right]}
+\newcommand{\Var}[1]{\text{Var}\left[#1\right]}
+
+
+%----------------------------------------------------------------------------------
+
+\begin{document}
+
+\title{FLasher\\Multi-species, multi-fishery projections with FLR\\Technical maual}
+
+\author[1]{Finlay Scott}
+\author[1]{Iago Mosqueira}
+\affil[1]{European Commission, Joint Research Centre, IPSC / Maritime Affairs Unit, 21027 Ispra (VA), Italy}
+\affil[*]{Corresponding author \href{mailto:finlay.scott@jrc.ec.europa.eu}{finlay.scott@jrc.ec.europa.eu}}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+<<knitr_opts, echo=FALSE, message=FALSE, warning=FALSE>>=
+library(knitr)
+css = eclipse_theme(43)
+thm = knit_theme$get(css)
+knit_theme$set(thm)
+opts_chunk$set(dev='png', cache=TRUE, fig.align='center', warning=FALSE, message=FALSE, dev="png", dev.args=list(type="cairo"), dpi=96, highlight=TRUE, background='#F2F2F2', fig.lp="fig:", fig.pos="H", width=60)
+@
+
+
+<<load_libraries, message=FALSE, warning=FALSE>>=
+library(FLasher)
+@
+
+This document is the technical manual for the \pkg{FLasher} package.
+It explains the basic structure of package, with particular emphasis on the C++ code.
+This will allow further expansion of the package.
+
+\pkg{FLasher} is made up of \R code and C++ code. The \R code provides the user front-end and is written using the FLR libraries.
+The C++ code does the heavy lifting and makes up the majority of the source code.
+The C++ side of \pkg{FLasher} uses the classes described in REF and some additional classes and functions that are described here.
+
+The package makes use of the CppAD library for automatic differentation (REF).
+
+\section{The \class{fwdControl} class}
+
+\section{The \class{operatingModel} class}
+
+The C++ class responsible for running the projections is \class{operatingModel}. The source code can be found in src/operatingModel.cpp
+Many of the methods of the \pkg{operatingModel} class are directly callable from \R though this functionality will really only be useful for testing and demonstrating purposes. 
+
+\subsection{The basic process}
+
+Pass from R
+
+Create OM
+
+Call Run
+
+Return Object
+
+
+
+
+\subsection{What happens you pass objects from \R - creating an \class{operatingModel}}
+
+\subsection{Inside \code{run()}}
+
+The input to a fishery is the fishing effort. This is the variable that we control to hit the desired targets in a particular time step.
+Inside the \code{run()} method, we really find the effort multiplier in that time step, and then apply it.
+
+As we can have mutiple fisheries and stocks it is possible to have multiple targets in the same time step. We then need to find the effort multiplier for each fishery to hit all targets (if possible).
+Each \textit{target} is therefore made up of one or more \textit{simultaneous targets}.
+
+Inside \code{run()}, each target (set of simultaneous targets) is processed in turn.
+The number of targets is taken from the \code{get\_ntarget()} method. This accesses the \code(target) column in the control data.frame and relies on the target number staring at 1 and being contiguous.
+
+The basic sequence for each target is:
+
+\begin{itemize}
+    \item Get the number of simultaneous targets inside that target (using the \code{get\_nsim\_target()} method).
+    \item Get the timestep that we need to adjust effort in that will allow us to hit the target (using the \code{get\_target\_effort\_timestep()} method which accounts for the biomass being the result of effort in the previous timestep).
+    \item Get the desired target values, i.e. the values of the simultaneous targets we want to hit (using the \code{get\_target\_value() method}).
+    \item Set the independent variable (effort multiplier) the for the automatic differentiation recording.
+    \item Update the effort in each fishery by the effort multiplier.
+    \item Project the operating model in the target timestep (using the \code{project\_timestep()} method).
+    \item Get the current values of the simultaneous targets, i.e. the values that resulted from using that effort multiplier (using the \code{get\_target\_value\_hat()} method).
+    \item Calculate the error which is the difference between the target values we wanted and the the values we actually have. The length of the error variable is the same as the number of simultaneous targets.
+    \item Store the error as the dependent variable for the automatic differentiation recording.
+    \item Find the effort multipliers needed to reduce the errors to 0 (using the \code{newton\_raphson()} method).
+    \item Update the effort of each fishery with the new effort multipliers.
+    \item Project the operating model in that timestep again, this time with the new effort values.
+    \item Go to the next target.
+\end{itemize}
+
+We take a look at some of these steps in more detail.
+
+\subsubsection{Getting the desired target values}
+\subsubsection{Getting the current target values}
+
+
+
+\subsection{The future}
+
+Adding target types
+
+Parallel
+
+\section{The Newton Raphson solver}
+
+\end{document}
+
