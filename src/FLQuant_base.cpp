@@ -474,7 +474,7 @@ FLQuant_base<T> FLQuant_base<T>::propagate_iters(const int iters) const{
     std::vector<std::string> iter_dimnames(iters);
     // Copy data
     for (int iter_counter = 0; iter_counter < iters; ++iter_counter){
-        iter_dimnames[iter_counter] = number_to_string(iter_counter+1);
+        iter_dimnames[iter_counter] = std::to_string(iter_counter+1);
         for (unsigned int size_counter = 0; size_counter < data.size(); ++size_counter){
             new_data[size_counter+(iter_counter*data.size())] = data[size_counter];
         }
@@ -1274,13 +1274,6 @@ FLQuant_base<T> scale_by_max_quant(const FLQuant_base<T>& flq){
                         }
     }}}}}
     return scaled_flq;
-}
-
-template <typename T>
-std::string number_to_string (T number) {
-    std::ostringstream ss;
-    ss << number;
-    return ss.str();
 }
 
 // Not templated - these are parameters so no need to AD them

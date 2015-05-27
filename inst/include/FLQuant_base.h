@@ -182,10 +182,6 @@ typedef FLQuant_base<adouble> FLQuantAD;
 int dim_matcher(const std::vector<unsigned int> a, const std::vector<unsigned int> b);
 int dim5_matcher(const std::vector<unsigned int> a, const std::vector<unsigned int> b);
 
-
-template <typename T>
-std::string number_to_string (T number);
-
 // Turn an FLPar (straight from R) into FLQuant
 FLQuant FLPar_to_FLQuant(SEXP flp); 
 
