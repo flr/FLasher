@@ -16,6 +16,8 @@ void fwdSR_base<T>::init_model_map(){
     map_model_name_to_function["Ricker"] = &ricker;
     map_model_name_to_function["bevholt"] = &bevholt;
     map_model_name_to_function["Bevholt"] = &bevholt;
+    map_model_name_to_function["mean"] = &mean;
+    map_model_name_to_function["Mean"] = &mean;
     return;
 }
 
@@ -154,6 +156,14 @@ T bevholt(const T ssb, const std::vector<double> params){
     T rec;
     // rec = a * ssb / (b + ssb)
     rec = params[0] * ssb / (params[1] + ssb);
+    return rec;
+}
+
+template <typename T>
+T mean(const T ssb, const std::vector<double> params){
+    T rec;
+    // rec = a 
+    rec = params[0]; 
     return rec;
 }
 

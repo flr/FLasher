@@ -71,6 +71,9 @@ T ricker(const T ssb, const std::vector<double> params);
 template <typename T>
 T bevholt(const T ssb, const std::vector<double> params);
 
+template <typename T>
+T mean(const T ssb, const std::vector<double> params);
+
 // std::vec<T> ricker(const std::vec<T> ssb, const FLQuant params);
 // FLQuant_base<T> ricker(const FLQuant<T> ssb, const FLQuant params);
 

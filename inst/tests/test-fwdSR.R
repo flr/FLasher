@@ -8,6 +8,9 @@ test_that("fwdSR constructors",{
     ple4.sr.bevholt <- fmle(as.FLSR(ple4,model="bevholt"), control  = list(trace=0))
     params.bevholt <- as.FLQuant(params(ple4.sr.bevholt))
     residuals.bevholt <- FLQuant(rnorm(100), dimnames = list(year = 1:10, iter = 1:10))
+    ple4.sr.mean <- fmle(as.FLSR(ple4,model="geomean"), method = "Brent", lower = 0, upper = 1e12, control  = list(trace=0))
+    params.mean <- as.FLQuant(params(ple4.sr.mean))
+    residuals.mean <- FLQuant(rnorm(100), dimnames = list(year = 1:10, iter = 1:10))
     residuals_mult <- TRUE
     timelag = 0
     # Empty constructor - shouldn't fail
@@ -26,8 +29,12 @@ test_that("fwdSR constructors",{
     expect_that(rec, is_identical_to(c(predict(ple4.sr.bevholt)[1,1,])))
     rec <- test_fwdSR_eval_simple("Bevholt", params.bevholt, timelag, residuals.bevholt, residuals_mult, c(ssb(ple4.sr.bevholt)[1,1,]))
     expect_that(rec, is_identical_to(c(predict(ple4.sr.bevholt)[1,1,])))
+    rec <- test_fwdSR_eval_simple("mean", params.mean, timelag, residuals.mean, residuals_mult, c(ssb(ple4.sr.mean)[1,1,]))
+    expect_that(rec, is_identical_to(c(predict(ple4.sr.mean)[1,1,])))
     # test get_nparams
     expect_that(dim(params.ricker)[1], is_identical_to(test_fwdSR_get_nparams("ricker", params.ricker, timelag, residuals.ricker, residuals_mult)))
+    expect_that(dim(params.mean)[1], is_identical_to(test_fwdSR_get_nparams("mean", params.mean, timelag, residuals.mean, residuals_mult)))
+    # timelag
     timelag <- as.integer(round(runif(1,min=0,max=10)))
     expect_that(timelag, is_identical_to(test_fwdSR_get_timelag("ricker", params.ricker, timelag, residuals.ricker, residuals_mult)))
     # Copy constructor
@@ -48,9 +55,12 @@ test_that("fwdSR eval_model",{
     ple4.sr.bevholt <- fmle(as.FLSR(ple4,model="bevholt"), control  = list(trace=0))
     params.bevholt <- as.FLQuant(params(ple4.sr.bevholt))
     residuals.bevholt <- FLQuant(rnorm(100), dimnames = list(year = 1:10, iter = 1:10))
+    ple4.sr.mean <- fmle(as.FLSR(ple4,model="geomean"), method = "Brent", lower = 0, upper = 1e12, control  = list(trace=0))
+    params.mean <- as.FLQuant(params(ple4.sr.mean))
+    residuals.mean <- FLQuant(rnorm(100), dimnames = list(year = 1:10, iter = 1:10))
     residuals_mult <- TRUE
     timelag <- 0
-    # simple eval
+    # simple eval - repetition from above
     rec <- test_fwdSR_eval_simple("ricker", params.ricker, timelag, residuals.ricker, residuals_mult, c(ssb(ple4.sr.ricker)[1,1,]))
     expect_that(rec, is_identical_to(c(predict(ple4.sr.ricker)[1,1,])))
     rec <- test_fwdSR_eval_simple("Ricker", params.ricker, timelag, residuals.ricker, residuals_mult, c(ssb(ple4.sr.ricker)[1,1,]))
@@ -59,6 +69,10 @@ test_that("fwdSR eval_model",{
     expect_that(rec, is_identical_to(c(predict(ple4.sr.bevholt)[1,1,])))
     rec <- test_fwdSR_eval_simple("Bevholt", params.bevholt, timelag, residuals.bevholt, residuals_mult, c(ssb(ple4.sr.bevholt)[1,1,]))
     expect_that(rec, is_identical_to(c(predict(ple4.sr.bevholt)[1,1,])))
+    rec <- test_fwdSR_eval_simple("mean", params.mean, timelag, residuals.mean, residuals_mult, c(ssb(ple4.sr.mean)[1,1,]))
+    expect_that(rec, is_identical_to(c(predict(ple4.sr.mean)[1,1,])))
+    rec <- test_fwdSR_eval_simple("Mean", params.mean, timelag, residuals.mean, residuals_mult, c(ssb(ple4.sr.mean)[1,1,]))
+    expect_that(rec, is_identical_to(c(predict(ple4.sr.mean)[1,1,])))
     # test eval with multiple years etc
     ssb <- 1000
     year <- round(runif(1,min=2,max=10))
@@ -68,7 +82,6 @@ test_that("fwdSR eval_model",{
     iter <- round(runif(1,min=2,max=10))
     rec <- test_fwdSR_eval_full("ricker", params.ricker, timelag, residuals.ricker, residuals_mult, ssb, year, unit, season, area, iter)
     expect_that(rec, is_identical_to(c(predict(ple4.sr.ricker, ssb=FLQuant(ssb)))))
-
     # random indices for dims
     indices <- round(runif(6,min=2,max=10))
     # Multi years - accessing other dims with dim greater than their lengths
@@ -106,15 +119,21 @@ test_that("fwdSR eval_model",{
     rec_C <- test_fwdSR_eval_full("ricker", as.FLQuant(params.multi), timelag, residuals.ricker, residuals_mult, ssb, year, indices[3], nseasons+1, indices[5], indices[6])
     rec_R <- params.multi["a",year,1,1] * ssb * exp(-params.multi["b",year,1,1] * ssb)
     expect_that(c(rec_R), is_identical_to(rec_C))
-
     # with iters
     nyears <- round(runif(1,min=2,max=10))
     niters <- round(runif(1,min=2,max=10))
+    # ricker
     params.multi <- FLPar(abs(rnorm(nyears*2, sd=c(params(ple4.sr.ricker)))), dimnames=list(params = c("a","b"), year=1:nyears, unit=1,season=1,area=1,iter=1:niters))
     year <- round(runif(1,min=1,max=nyears))
     iter <- round(runif(1,min=1,max=niters))
     rec_R <- params.multi["a",year,1,1,1,iter] * ssb * exp(-params.multi["b",year,1,1,1,iter] * ssb)
     rec_C <- test_fwdSR_eval_full("ricker", as.FLQuant(params.multi), timelag, residuals.ricker, residuals_mult, ssb, year, indices[3], indices[4], indices[5], iter)
     expect_that(c(rec_R), is_identical_to(rec_C))
-
+    # mean
+    params.multi <- FLPar(abs(rnorm(nyears, sd=c(params(ple4.sr.mean)))), dimnames=list(params = c("a"), year=1:nyears, unit=1,season=1,area=1,iter=1:niters))
+    year <- round(runif(1,min=1,max=nyears))
+    iter <- round(runif(1,min=1,max=niters))
+    rec_R <- params.multi["a",year,1,1,1,iter] 
+    rec_C <- test_fwdSR_eval_full("mean", as.FLQuant(params.multi), timelag, residuals.mean, residuals_mult, ssb, year, indices[3], indices[4], indices[5], iter)
+    expect_that(c(rec_R), is_identical_to(rec_C))
 })
