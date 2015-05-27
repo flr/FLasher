@@ -93,8 +93,6 @@ class operatingModel {
         FLQuantAD z(const int biol_no) const;
 
         void run(const double indep_min = 0, const double indep_max = 1e9); 
-        void run_effort_demo(); 
-        void run_catch_demo(); 
 
         //void run_all_iters(); 
         
@@ -126,11 +124,10 @@ class operatingModel {
         std::vector<adouble> get_target_value_hat(const int target_no, const int sim_target_no) const; 
 
         // The target value calculations
-        // fbar from a catch and fishery on a stock - i.e. partial F - will need to adapt this to include multiple biols in the future
+        // Partial fbar of a single catch on a single biol
         FLQuantAD fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        // Total fbar on a biol (possibly from multiple catches)
         FLQuantAD fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        // Total fbar on a biol
-        //FLQuantAD fbar(const Rcpp::IntegerVector age_range_indices, const int biol_no) const;
 
         // catches from an FLCatch and fishery on a stock 
         //FLQuantAD catches(const int fishery_no, const int catch_no) const;

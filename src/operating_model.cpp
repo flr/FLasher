@@ -759,22 +759,29 @@ FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsign
         Rcpp::stop("In operatingModel::eval_target. Either biol_no or (catch_no and fishery_no) or all three must not be NA\n");
     }
 
-    //Rcpp::IntegerVector age_range_indices;
     // Get the output depending on target type
     switch(target_type){
         //case target_effort:
         //break;
-        //case target_f:
-        //    Rprintf("target_f\n");
-        //    // If no fishery in the control object get total fbar on biol
-        //    //if (Rcpp::IntegerVector::is_na(fishery_no)){
-        //    //age_range_indices = get_target_age_range_indices(target_no, biol_no);
-        //    // out = fbar(age_range_indices, biol_no);
-        //    //}
-        //    //else {
-        //    //    out_flq = fbar(age_range_indices, fishery_no, catch_no, biol_no);
-        //    //}
-        //   break;
+        case target_fbar: {
+            Rprintf("target_fbar\n");
+            // Indices needs age range
+            std::vector<unsigned int> age_range_indices = get_target_age_range_indices(target_no, sim_target_no, biol_no); // indices start at 0
+            std::vector<unsigned int> age_indices_min = indices_min;
+            std::vector<unsigned int> age_indices_max = indices_max;
+            age_indices_min.insert(age_indices_min.begin(), age_range_indices[0] + 1); // +1 because accessor starts at 1 but age indices 0 - sorry
+            age_indices_max.insert(age_indices_max.begin(), age_range_indices[1] + 1);
+            // Is it total fbar on a biol, or fbar of an FLCatch
+            if (Rcpp::IntegerVector::is_na(catch_no)){
+                Rprintf("catch_no is NA. fbar is total fbar from biol %i\n", biol_no);
+                out = fbar(biol_no, indices_min, indices_max);
+            }
+            else {
+                Rprintf("fbar is from FLCatch %i in FLFishery %i\n on biol %i", catch_no, fishery_no, biol_no);
+                out = fbar(fishery_no, catch_no, biol_no, indices_min, indices_max);
+            }
+            break;
+        }
         case target_catch:
             Rprintf("target_catch\n");
             // Is it total catch of a biol, or catch of an FLCatch
@@ -1174,19 +1181,8 @@ adouble operatingModel::ssb(const int year, const int unit, const int season, co
 */
 
 
-/*
-FLQuantAD operatingModel::fbar(const Rcpp::IntegerVector age_range_indices, const int fishery_no, const int catch_no, const int biol_no) const{
-    Rcpp::IntegerVector fdim = f(fishery_no).get_dim();
-    FLQuantAD f_age_trim = f(fishery_no)(age_range_indices[0]+1, age_range_indices[1]+1, 1, fdim[1], 1, fdim[2], 1, fdim[3], 1, fdim[4], 1, fdim[5]);  // subsetting
-    FLQuantAD fbar_out = quant_mean(f_age_trim);
-    return fbar_out;
-
-}
-*/
-
-// indices_min and indices_max - these are indices, not dimnames
+// indices_min and indices_max - these are indices starting at 1, not dimnames
 // i.e. the first dimension does not hold actual ages, just indices
-
 FLQuantAD operatingModel::fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
     // Get the F, then mean over the first dimension
     FLQuantAD f = partial_f(fishery_no, catch_no, biol_no, indices_min, indices_max); 
@@ -1200,18 +1196,6 @@ FLQuantAD operatingModel::fbar(const int biol_no, const std::vector<unsigned int
     FLQuantAD fbar = quant_mean(f);
     return fbar;
 }
-
-// Assume that catch is catches[[1]] for the moment
-/*
-FLQuantAD operatingModel::fbar(const Rcpp::IntegerVector age_range_indices, const int biol_no) const{
-    //// Make an empty FLQ with the right dims - based on the first fishery
-    FLQuantAD fbar_out = fbar(age_range_indices, 1,1,biol_no);
-    for (unsigned int fishery_count = 2; fishery_count <= fisheries.get_nfisheries(); ++fishery_count){
-        fbar_out = fbar_out + fbar(age_range_indices, fishery_count,1,biol_no);
-    }
-    return fbar_out;
-}
-*/
 
 
 /*! \brief Subset the total landings from a single biol 
