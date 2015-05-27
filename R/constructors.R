@@ -1,4 +1,4 @@
-# constructors.R - DESC
+# constructors.R - Constructor methods for fwdElement and fwdControl
 # FLasher/R/constructors.R
 
 # Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later

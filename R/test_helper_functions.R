@@ -173,7 +173,7 @@ random_FLCatches_generator <- function(min_catches = 2, max_catches = 5, ...){
 #' @export
 #' @return An FLFishery object 
 #' @examples
-#' flf <- random_FLFishery_list_generator()
+#' flf <- FLasher:::random_FLFishery_list_generator()
 #' summary(flf)
 #' flf <- random_FLFishery_generator(fixed_dims = c(NA,10,1,1,1,1))
 #' lapply(flf, summary)
@@ -206,7 +206,7 @@ random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 10
 #' @export
 #' @return An FLFishery object 
 #' @examples
-#' flf <- random_FLFishery_list_generator()
+#' flf <- FLasher:::random_FLFishery_list_generator()
 #' summary(flf)
 #' flf <- random_FLFishery_generator(fixed_dims = c(NA,10,1,1,1,1))
 #' lapply(flf, summary)
