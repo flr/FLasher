@@ -1757,6 +1757,14 @@ test_operatingModel_partial_f_subset <- function(flfs, flbs_list_sexp, ctrl, fis
     .Call('FLasher_test_operatingModel_partial_f_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max)
 }
 
+test_operatingModel_partial_fbar_subset <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_partial_fbar_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_fbar_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_fbar_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
+}
+
 test_operatingModel_project_timestep <- function(flfs, flbs_list_sexp, ctrl, timestep) {
     .Call('FLasher_test_operatingModel_project_timestep', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, timestep)
 }

@@ -127,9 +127,11 @@ class operatingModel {
 
         // The target value calculations
         // fbar from a catch and fishery on a stock - i.e. partial F - will need to adapt this to include multiple biols in the future
-        FLQuantAD fbar(const Rcpp::IntegerVector age_range_indices, const int fishery_no, const int catch_no, const int biol_no) const;
+        FLQuantAD fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         // Total fbar on a biol
-        FLQuantAD fbar(const Rcpp::IntegerVector age_range_indices, const int biol_no) const;
+        //FLQuantAD fbar(const Rcpp::IntegerVector age_range_indices, const int biol_no) const;
+
         // catches from an FLCatch and fishery on a stock 
         //FLQuantAD catches(const int fishery_no, const int catch_no) const;
         // Total catches / landings / discards from a biol

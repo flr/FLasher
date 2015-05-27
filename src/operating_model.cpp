@@ -375,7 +375,7 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
 //@}
 
 /*! \name Calculate the partial instantaneous fishing mortality on a single biol from a single fishery / catch
- * Checks are made to see if the fishery / catch actuall catches the biol.
+ * Checks are made to see if the fishery / catch actually catches the biol.
  * If the fishery / catch does not actually fish that biol, then the partial fishing mortality will be 0.
  * biol_no is included as an argument in case the fishery / catch catches more than one biol.
  */
@@ -1184,6 +1184,22 @@ FLQuantAD operatingModel::fbar(const Rcpp::IntegerVector age_range_indices, cons
 }
 */
 
+// indices_min and indices_max - these are indices, not dimnames
+// i.e. the first dimension does not hold actual ages, just indices
+
+FLQuantAD operatingModel::fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    // Get the F, then mean over the first dimension
+    FLQuantAD f = partial_f(fishery_no, catch_no, biol_no, indices_min, indices_max); 
+    FLQuantAD fbar = quant_mean(f);
+    return fbar;
+}
+
+FLQuantAD operatingModel::fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    // Get the F, then mean over the first dimension
+    FLQuantAD f = total_f(biol_no, indices_min, indices_max); 
+    FLQuantAD fbar = quant_mean(f);
+    return fbar;
+}
 
 // Assume that catch is catches[[1]] for the moment
 /*

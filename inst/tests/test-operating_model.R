@@ -150,9 +150,13 @@ test_that("operatingModel annual project",{
     # Total F on the biol
     f1 <- test_operatingModel_total_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
     f1_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max)
+    fbar1 <- test_operatingModel_fbar_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max)
+    expect_that(apply(f1_sub, 2:6, mean), equals(fbar1))
     # Partial F from FC
     pf11 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no)
     pf11_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
+    fbar11 <- test_operatingModel_partial_fbar_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, dim_min, dim_max)
+    expect_that(apply(pf11_sub, 2:6, mean), equals(fbar11))
     # Total Z of biol
     z1 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
     # SSB of biol
@@ -214,17 +218,22 @@ test_that("operatingModel annual project",{
     # Total F on the biol
     f2 <- test_operatingModel_total_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
     f2_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max)
+    fbar2 <- test_operatingModel_fbar_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max)
+    expect_that(apply(f2_sub, 2:6, mean), equals(fbar2))
     # Partial F from FC
     pf12 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, biol_no)
     pf21 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 1, biol_no)
     pf12_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, biol_no, dim_min, dim_max)
     pf21_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 1, biol_no, dim_min, dim_max)
+    fbar12 <- test_operatingModel_partial_fbar_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, biol_no, dim_min, dim_max)
+    fbar21 <- test_operatingModel_partial_fbar_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 1,  biol_no, dim_min, dim_max)
+    expect_that(apply(pf12_sub, 2:6, mean), equals(fbar12))
+    expect_that(apply(pf21_sub, 2:6, mean), equals(fbar21))
     # Total Z of biol
     z2 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
     # SSB of biol
     ssb2_out <- test_operatingModel_SSB_FLQ(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no)
     ssb2_out_subset <- test_operatingModel_SSB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
-
     # Get metrics from IP OM
     biomass_in <- quantSums(n(om[["biols"]][[biol_no]][["biol"]]) * wt(om[["biols"]][[biol_no]][["biol"]]))
     cq_flq_12 <- as(catch.q(om[["fisheries"]][[1]][[2]]), "FLQuant")
@@ -295,11 +304,19 @@ test_that("operatingModel annual project",{
     f3_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, dim_min, dim_max)
     f4 <- test_operatingModel_total_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4)
     f4_sub <- test_operatingModel_total_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, dim_min, dim_max)
+    fbar3_sub <- test_operatingModel_fbar_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, dim_min, dim_max)
+    fbar4_sub <- test_operatingModel_fbar_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, dim_min, dim_max)
+    expect_that(apply(f3_sub, 2:6, mean), equals(fbar3_sub))
+    expect_that(apply(f3_sub, 2:6, mean), equals(fbar3_sub))
     # Partial F from FC
     pf223 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 3)
     pf224 <- test_operatingModel_partial_f(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 4)
     pf223_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 3, dim_min, dim_max)
     pf224_sub <- test_operatingModel_partial_f_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 4, dim_min, dim_max)
+    fbar223_sub <- test_operatingModel_partial_fbar_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 3, dim_min, dim_max)
+    fbar224_sub <- test_operatingModel_partial_fbar_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, 4, dim_min, dim_max)
+    expect_that(apply(pf223_sub, 2:6, mean), equals(fbar223))
+    expect_that(apply(pf224_sub, 2:6, mean), equals(fbar224))
     # Total Z of biol
     z3 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3)
     z4 <- test_operatingModel_Z(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4)

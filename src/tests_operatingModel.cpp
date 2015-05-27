@@ -165,6 +165,23 @@ FLQuantAD test_operatingModel_partial_f_subset(FLFisheriesAD flfs, SEXP flbs_lis
 }
 
 // [[Rcpp::export]]
+FLQuantAD test_operatingModel_partial_fbar_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD pf = om.fbar(fishery_no, catch_no, biol_no, indices_min, indices_max);
+    return pf;
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_fbar_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD pf = om.fbar(biol_no, indices_min, indices_max);
+    return pf;
+}
+
+
+// [[Rcpp::export]]
 operatingModel test_operatingModel_project_timestep(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int timestep){
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);
