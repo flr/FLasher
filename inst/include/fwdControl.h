@@ -72,7 +72,7 @@ class fwdControl {
         unsigned int get_target_effort_timestep(unsigned int target_no, unsigned int sim_target_no) const;
         
         
-        std::vector<unsigned int> get_age_range(const int target_no, const int sim_target_no) const; // Returns the age range - literally just the values in target
+        std::vector<unsigned int> get_age_range(const unsigned int target_no, const unsigned int sim_target_no) const; // Returns the age range - literally just the values in target
 
         // FCB accessors
         Rcpp::IntegerMatrix get_FC(const int biol_no) const;

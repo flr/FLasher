@@ -5877,6 +5877,22 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_operatingModel_get_target_age_range_indices
+std::vector<unsigned int> test_operatingModel_get_target_age_range_indices(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const unsigned int biol_no);
+RcppExport SEXP FLasher_test_operatingModel_get_target_age_range_indices(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP biol_noSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type flbs_list_sexp(flbs_list_sexpSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type target_no(target_noSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type sim_target_no(sim_target_noSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type biol_no(biol_noSEXP);
+    __result = Rcpp::wrap(test_operatingModel_get_target_age_range_indices(flfs, flbs_list_sexp, ctrl, target_no, sim_target_no, biol_no));
+    return __result;
+END_RCPP
+}
 // test_operatingModel_eval_target
 FLQuantAD test_operatingModel_eval_target(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const bool relative_target);
 RcppExport SEXP FLasher_test_operatingModel_eval_target(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP, SEXP relative_targetSEXP) {

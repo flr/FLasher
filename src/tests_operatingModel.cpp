@@ -258,20 +258,15 @@ double test_operatingModel_SSB_single_iter_year_season(FLFisheriesAD flfs, SEXP 
     return Value(out);
 }
 
+*/
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector test_operating_model_get_target_age_range_indices(FLFisheriesAD flfs, SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult, const FLQuant7AD f, const FLQuant7 f_spwn, const fwdControl ctrl, const int target_no){
-    fwdBiolAD biol(flb_sexp, model_name, params, timelag, residuals, residuals_mult);
-    operatingModel om(flfs, biol, f, f_spwn, ctrl);
-    const int biol_no = 1;
-    Rcpp::IntegerVector age_range_indices = om.get_target_age_range_indices(target_no, biol_no);
+std::vector<unsigned int> test_operatingModel_get_target_age_range_indices(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const unsigned int biol_no){ 
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    std::vector<unsigned int> age_range_indices = om.get_target_age_range_indices(target_no, sim_target_no, biol_no);
     return age_range_indices;
 }
-
-
-
-
-*/
 
 // [[Rcpp::export]]
 FLQuantAD test_operatingModel_eval_target(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const bool relative_target = false){
