@@ -121,7 +121,8 @@ unsigned int fwdControl::get_niter() const{
 }
 
 // Returns the age range - literally just the values in target
-std::vector<unsigned int> fwdControl::get_age_range(const int target_no, const int sim_target_no) const{
+// Not indices - these will be actual ages that need to be matched to the dimnames in the Biol
+std::vector<unsigned int> fwdControl::get_age_range(const unsigned int target_no, const unsigned int sim_target_no) const{
     unsigned int row = get_target_row(target_no, sim_target_no);
     std::vector<unsigned int> min_age = target["minAge"];
     std::vector<unsigned int> max_age = target["maxAge"];

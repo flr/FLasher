@@ -696,21 +696,21 @@ void operatingModel::project_timestep(const int timestep){
 
 
 // Returns the indices of the age range, starts at 0
-/*
-Rcpp::IntegerVector operatingModel::get_target_age_range_indices(const int target_no, const int biol_no) const {
-    Rcpp::IntegerVector age_range = ctrl.get_age_range(target_no);
-    Rcpp::IntegerVector age_range_indices(2);
+std::vector<unsigned int> operatingModel::get_target_age_range_indices(const unsigned int target_no, const unsigned int sim_target_no, const unsigned int biol_no) const {
+    std::vector<unsigned int> age_range = ctrl.get_age_range(target_no, sim_target_no);
+    std::vector<unsigned int> age_range_indices(2);
+    // Get age dimnames - then find position of ages from control in them
     // Convert the age names to a vector of strings
     std::vector<std::string> age_names = Rcpp::as<std::vector<std::string> >(biols(biol_no).n().get_dimnames()[0]);
     // Use find() to match names - precheck in R that they exist - if not find, returns the last
-    std::vector<std::string>::iterator age_min_iterator = find(age_names.begin(), age_names.end(), number_to_string(age_range[0]));
+    std::vector<std::string>::iterator age_min_iterator = find(age_names.begin(), age_names.end(), std::to_string(age_range[0]));
     if(age_min_iterator != age_names.end()){
         age_range_indices[0] = std::distance(age_names.begin(), age_min_iterator);
     }
     else {
         Rcpp::stop("minAge in control not found in dimnames of FLBiol\n");
     }
-    std::vector<std::string>::iterator age_max_iterator = find(age_names.begin(), age_names.end(), number_to_string(age_range[1]));
+    std::vector<std::string>::iterator age_max_iterator = find(age_names.begin(), age_names.end(), std::to_string(age_range[1]));
     if(age_max_iterator != age_names.end()){
         age_range_indices[1] = std::distance(age_names.begin(), age_max_iterator);
     }
@@ -719,7 +719,6 @@ Rcpp::IntegerVector operatingModel::get_target_age_range_indices(const int targe
     }
     return age_range_indices;
 }
-*/
 
 /*! \brief Get the current target value in the operating model
  *
@@ -1325,3 +1324,32 @@ FLQuantAD operatingModel::catches(const int biol_no, const std::vector<unsigned 
 }
 
 
+//-------------------------------------------------
+
+
+//// Define some pointers to function 
+//typedef std::vector<adouble> (*funcPtrAD)(const std::vector<adouble>& x);
+//typedef std::vector<double> (*funcPtr)(const std::vector<double>& x);
+//
+//
+//// Returning a whole ADFun might be expensive - return as pointer?
+//CppAD::ADFun<double> tape_my_func(std::vector<double>& xin, funcPtrAD fun){
+//    // How to easily make an adouble vector?
+//    std::vector<adouble> x(xin.size());
+//    std::copy(xin.begin(), xin.end(), x.begin());
+//    // Tape on
+//    CppAD::Independent(x);
+//    std::vector<adouble> y = fun(x);
+//    CppAD::ADFun<double> f(x, y);
+//    return f;
+//}
+//
+//// [[Rcpp::export]]
+//Rcpp::List solve_my_func(std::vector<double> xin, Rcpp::XPtr<funcPtrAD> xptr){
+//    funcPtrAD func = *xptr; // the typedef
+//    CppAD::ADFun<double> fun = tape_my_func(xin, func);
+//    std::vector<int> success = newton_raphson(xin, fun, 1, 2, -1e9, 1e9, 50, 1e-12);
+//    return Rcpp::List::create(Rcpp::Named("indep") = xin,
+//                              Rcpp::Named("success") = success);
+//}
+//

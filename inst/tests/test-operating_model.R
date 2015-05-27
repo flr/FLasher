@@ -70,6 +70,31 @@ test_that("operatingModel Q methods",{
     expect_that(qout, equals(c(qin[1, indices[1],indices[2],indices[3],indices[4],indices[5]])))
 })
 
+test_that("age_range_indices", {
+    # Ages 1 to 10
+    flq <- random_FLQuant_generator(fixed_dims = 10)
+    dimnames(flq)$age = as.character(1:10)
+    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
+    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
+    fc@target@element[1,c("minAge", "maxAge", "target")] <- c(1, 10, 1)
+    range <- test_operatingModel_get_target_age_range_indices(flfs, flbs, fc, 1, 1, 1)
+    expect_that(range, equals(c(0,9)))
+    # Start ages 3 
+    dimnames(flq)$age = as.character(3:12)
+    flb <- FLBiol(n = flq, desc = "something", name = "something")
+    flbs[[1]][["biol"]] <- flb
+    fc@target@element[1,c("minAge", "maxAge", "target")] <- c(5, 10, 1)
+    range <- test_operatingModel_get_target_age_range_indices(flfs, flbs, fc, 1, 1, 1)
+    expect_that(range, equals(c(2,7)))
+    # Outside min age
+    fc@target@element[1,c("minAge", "maxAge", "target")] <- c(2, 10, 1)
+    expect_that(test_operatingModel_get_target_age_range_indices(flfs, flbs, fc, 1, 1, 1), throws_error())
+    # Outside max
+    fc@target@element[1,c("minAge", "maxAge", "target")] <- c(3, 15, 1)
+    expect_that(test_operatingModel_get_target_age_range_indices(flfs, flbs, fc, 1, 1, 1), throws_error())
+})
+
 # Test F method with random Biols and Fisheries
 # No check if FC catches B
 test_that("operatingModel basic F method",{

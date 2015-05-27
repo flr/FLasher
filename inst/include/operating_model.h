@@ -112,7 +112,8 @@ class operatingModel {
         // int get_target_effort_timestep(const int target_no);
         
         // age range indices for the f based targets
-        //Rcpp::IntegerVector get_target_age_range_indices(const int target_no, const int biol_no) const; // Returns the indices of the age range, starts at 0
+        // Returns the indices of the age range, starts at 0
+        std::vector<unsigned int> get_target_age_range_indices(const unsigned int target_no, const unsigned int sim_target_no, const unsigned int biol_no) const; 
 
         // Given the target no, evaluate the current value in the operatingModel
         FLQuantAD eval_target(const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const bool relative_target = false) const;
