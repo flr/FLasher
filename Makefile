@@ -37,13 +37,17 @@ build:
 	cd ..;\
 	R CMD build $(PKGSRC)
 
+buildNV:
+	cd ..;\
+	R CMD build --no-build-vignettes $(PKGSRC)
+
 install: build
 	cd ..;\
 	R CMD INSTALL $(PKGNAME)_$(PKGVERS).tar.gz
 
-check: build
+check: buildNV
 	cd ..;\
-	R CMD check $(PKGNAME)_$(PKGVERS).tar.gz --as-cran
+	R CMD check $(PKGNAME)_$(PKGVERS).tar.gz --as-cran 
 
 clean:
 	cd ..;\

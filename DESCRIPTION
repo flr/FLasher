@@ -1,6 +1,6 @@
 Package: FLasher
 Type: Package
-Title: What can I say?
+Title: What Can I Say?
 Version: 0.1.20140909
 Date: 20140909
 Authors@R: c(person(given = 'Finlay', family = 'Scott', role = c('aut', 'cre'),
