@@ -21,6 +21,7 @@
 void fwdControl::init_target_map(){
     // Fill up the map
     target_map["f"] = target_fbar;
+    target_map["fbar"] = target_fbar;
     target_map["catch"] = target_catch;
     target_map["landings"] = target_landings;
     target_map["discards"] = target_discards;

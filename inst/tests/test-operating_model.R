@@ -662,33 +662,255 @@ test_that("operatingModel landings, catch and discards targets",{
 
 })
 
+test_that("operatingModel eval_target", {
+    niters <- 10 
+    om <- make_test_operatingModel2(niters)
+
+    # catch targets
+    target <- data.frame(year = 4,
+                     season = 1,
+                     value = 1000,
+                     quantity = 'catch',
+                     fishery = c(1,2,NA,1,1,NA),
+                     catch =   c(1,1,NA,1,NA,1),
+                     biol = c(NA,NA,1,1,1,1)
+                     )
+    target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(target_no=1:nrow(target), c("min","value","max"), iter=1:niters))
+    target_iters[1:nrow(target), "value",] <- abs(rnorm(niters * nrow(target), mean = target$value[1:nrow(target)], sd = 0.1))
+    fwc <- fwdControl(target=target, iters=target_iters)
+    # Add timestep column to control object - necessary for abundance timesteps
+    fwc@target@element$timestep <- fwc@target@element$year
+    # Add target column to control object - make them all sim targets for testing
+    fwc@target@element$target <- 1
+    # Add FCB array - will be constructed on R side before calling fwd()
+    FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
+    colnames(FCB) <- c("F","C","B")
+    attr(fwc@target, "FCB") <- FCB
+    om[["fwc"]] <- fwc
+    # Short cuts
+    years <- om[["fwc"]]@target@element$year
+     
+    indices_min <- c(years[1],1,1,1,1)
+    indices_max <- c(years[1],1,1,1,niters)
+
+    # Catch
+    # Check eval_target
+    # Sim target 1 - no biol
+    out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, indices_min, indices_max)
+    catch_in <- catch(om[["fisheries"]][[1]][[1]])[,years[1]]
+    expect_that(out@.Data, equals(catch_in@.Data))
+    # Sim target 2 - no biol
+    out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, indices_min, indices_max)
+    catch_in <- catch(om[["fisheries"]][[2]][[1]])[,years[1]]
+    expect_that(out@.Data, equals(catch_in@.Data))
+    # Sim target 3 - catch from a biol
+    out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 3, indices_min, indices_max)
+    catch_in <- catch(om[["fisheries"]][[1]][[1]])[,years[1]] + catch(om[["fisheries"]][[2]][[1]])[,years[1]]
+    expect_that(c(out@.Data), equals(c(catch_in@.Data)))
+    # Sim target 4 - catch from a biol, fishery, catch - should fail
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 4, indices_min, indices_max), throws_error())
+    # Sim target 5-6 - either only catch or fishery specifed - should fail
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 5, indices_min, indices_max), throws_error())
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 6, indices_min, indices_max), throws_error())
+
+    # Landings
+    om[["fwc"]]@target@element$quantity <- 'landings'
+    out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, indices_min, indices_max)
+    landings_in <- landings(om[["fisheries"]][[1]][[1]])[,years[1]]
+    expect_that(out@.Data, equals(landings_in@.Data))
+    # Sim target 2 - no biol
+    out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, indices_min, indices_max)
+    landings_in <- landings(om[["fisheries"]][[2]][[1]])[,years[1]]
+    expect_that(out@.Data, equals(landings_in@.Data))
+    # Sim target 3 - landings from a biol
+    out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 3, indices_min, indices_max)
+    landings_in <- landings(om[["fisheries"]][[1]][[1]])[,years[1]] + landings(om[["fisheries"]][[2]][[1]])[,years[1]]
+    expect_that(c(out@.Data), equals(c(landings_in@.Data)))
+    # Sim target 4 - catch from a biol, fishery, catch - should fail
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 4, indices_min, indices_max), throws_error())
+    # Sim target 5-6 - either only catch or fishery specifed - should fail
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 5, indices_min, indices_max), throws_error())
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 6, indices_min, indices_max), throws_error())
+
+    # Discards
+    om[["fwc"]]@target@element$quantity <- 'discards'
+    out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, indices_min, indices_max)
+    discards_in <- discards(om[["fisheries"]][[1]][[1]])[,years[1]]
+    expect_that(out@.Data, equals(discards_in@.Data))
+    # Sim target 2 - no biol
+    out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, indices_min, indices_max)
+    discards_in <- discards(om[["fisheries"]][[2]][[1]])[,years[1]]
+    expect_that(out@.Data, equals(discards_in@.Data))
+    # Sim target 3 - discards from a biol
+    out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 3, indices_min, indices_max)
+    discards_in <- discards(om[["fisheries"]][[1]][[1]])[,years[1]] + discards(om[["fisheries"]][[2]][[1]])[,years[1]]
+    expect_that(c(out@.Data), equals(c(discards_in@.Data)))
+    # Sim target 4 - catch from a biol, fishery, catch - should fail
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 4, indices_min, indices_max), throws_error())
+    # Sim target 5-6 - either only catch or fishery specifed - should fail
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 5, indices_min, indices_max), throws_error())
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 6, indices_min, indices_max), throws_error())
+
+    # Fbar
+    target <- data.frame(year = 4,
+                     season = 1,
+                     value = 1,
+                     quantity = 'f',
+                     fishery = c(1,2,NA,1,1,NA),
+                     catch =   c(1,1,NA,1,NA,1),
+                     biol =    c(1,1,1,NA,1,1),
+                     minAge = 2,
+                     maxAge = 5
+                     )
+    target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(target_no=1:nrow(target), c("min","value","max"), iter=1:niters))
+    target_iters[1:nrow(target), "value",] <- abs(rnorm(niters * nrow(target), mean = target$value[1:nrow(target)], sd = 0.1))
+    fwc <- fwdControl(target=target, iters=target_iters)
+    # Add timestep column to control object - necessary for abundance timesteps
+    fwc@target@element$timestep <- fwc@target@element$year
+    # Add target column to control object - make them all sim targets for testing
+    fwc@target@element$target <- 1
+    # Add FCB array - will be constructed on R side before calling fwd()
+    FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
+    colnames(FCB) <- c("F","C","B")
+    attr(fwc@target, "FCB") <- FCB
+    om[["fwc"]] <- fwc
+    # Short cuts
+    # F = Q * effort * sel
+    # F = alpha * B ^ -beta * effort * sel
+    q1 <- c(catch.q(om[["fisheries"]][[1]][[1]])['alpha',]) * (tsb(om[["biols"]][[1]][["biol"]]) ^ -c(catch.q(om[["fisheries"]][[1]][[1]])['beta',]))
+    q2 <- c(catch.q(om[["fisheries"]][[2]][[1]])['alpha',]) * (tsb(om[["biols"]][[1]][["biol"]]) ^ -c(catch.q(om[["fisheries"]][[2]][[1]])['beta',]))
+    fin1 <- sweep(catch.sel(om[["fisheries"]][[1]][[1]]), 2:6, q1 * effort(om[["fisheries"]][[1]]), "*")[,4]
+    fin2 <- sweep(catch.sel(om[["fisheries"]][[2]][[1]]), 2:6, q2 * effort(om[["fisheries"]][[2]]), "*")[,4]
+    fin <- fin1 + fin2
+    fbar_in1 <- apply(fin1[as.character(fwc@target@element[1,"minAge"]:fwc@target@element[1,"maxAge"]),], 2:6, mean)
+    fbar_in2 <- apply(fin2[as.character(fwc@target@element[1,"minAge"]:fwc@target@element[1,"maxAge"]),], 2:6, mean)
+    fbar_in <- apply(fin[as.character(fwc@target@element[1,"minAge"]:fwc@target@element[1,"maxAge"]),], 2:6, mean)
+
+    # Sim target 1 - F of a fishery and catch on a biol
+    fbar_out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, indices_min, indices_max)
+    expect_that(c(fbar_out), equals(c(fbar_in1)))
+    # Sim target 2 - F of a fishery and catch on a biol
+    fbar_out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, indices_min, indices_max)
+    expect_that(c(fbar_out), equals(c(fbar_in2)))
+    # Sim target 3 - F on a biol
+    fbar_out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 3, indices_min, indices_max)
+    expect_that(c(fbar_out), equals(c(fbar_in)))
+    # Sim target 4 - 6 - F on a catch and fishery only, or mismatch fishery and catch - all fail
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 4, indices_min, indices_max), throws_error())
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 5, indices_min, indices_max), throws_error())
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 6, indices_min, indices_max), throws_error())
+
+    # Abundance targets
+    target <- data.frame(year = 4,
+                     season = 1,
+                     value = 1,
+                     quantity = 'biomass',
+                     fishery = c(1,2,NA,1),
+                     catch =   c(1,1,NA,1),
+                     biol =    c(1,1,1,NA)
+                     )
+    target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(target_no=1:nrow(target), c("min","value","max"), iter=1:niters))
+    target_iters[1:nrow(target), "value",] <- abs(rnorm(niters * nrow(target), mean = target$value[1:nrow(target)], sd = 0.1))
+    fwc <- fwdControl(target=target, iters=target_iters)
+    # Add timestep column to control object - necessary for abundance timesteps
+    fwc@target@element$timestep <- fwc@target@element$year
+    # Add target column to control object - make them all sim targets for testing
+    fwc@target@element$target <- 1
+    # Add FCB array - will be constructed on R side before calling fwd()
+    FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
+    colnames(FCB) <- c("F","C","B")
+    attr(fwc@target, "FCB") <- FCB
+    om[["fwc"]] <- fwc
+
+    biomass_in <- tsb(om[["biols"]][[1]][["biol"]])[,4]
+    # Sim target 1 & 2 - Biomass of a biol, fishery and catch also specified but ignored
+    out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, indices_min, indices_max)
+    expect_that(c(out), equals(c(biomass_in)))
+    out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, indices_min, indices_max)
+    expect_that(c(out), equals(c(biomass_in)))
+    # Sim target 3 - Just biol specified 
+    out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 3, indices_min, indices_max)
+    expect_that(c(out), equals(c(biomass_in)))
+    # Sim target 4 - No biol specified 
+    expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 4, indices_min, indices_max), throws_error())
+
+
+})
+
+test_that("get_target_value_hat", {
+    # Target types are evaluated seperately
+    # Need a couple of targets and sim targets
+    target <- data.frame(year = 4,
+                     season = 1,
+                     value = 1,
+                     quantity = c('biomass','catch','landings', 'discards'),
+                     fishery = c(NA,1,1,2),
+                     catch = c(NA,1,1,1),
+                     biol = c(1,NA,NA,NA)
+                     )
+    target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(target_no=1:nrow(target), c("min","value","max"), iter=1:niters))
+    target_iters[1:nrow(target), "value",] <- abs(rnorm(niters * nrow(target), mean = target$value[1:nrow(target)], sd = 0.1))
+    fwc <- fwdControl(target=target, iters=target_iters)
+    # Add timestep column to control object - necessary for abundance timesteps
+    fwc@target@element$timestep <- fwc@target@element$year
+    # Add target column to control object - make them all sim targets for testing
+    fwc@target@element$target <- c(1,1,2,2)
+    # Add FCB array - will be constructed on R side before calling fwd()
+    FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
+    colnames(FCB) <- c("F","C","B")
+    attr(fwc@target, "FCB") <- FCB
+    om[["fwc"]] <- fwc
+
+    biomass_in <- tsb(om[["biols"]][[1]][["biol"]])[,4]
+    discards_in <- discards(om[["fisheries"]][[2]][[1]])[,4]
+    catch_in <- catch(om[["fisheries"]][[1]][[1]])[,4]
+    landings_in <- landings(om[["fisheries"]][[1]][[1]])[,4]
+
+    # Whole target
+    out <- test_operatingModel_get_target_value_hat(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1)
+    expect_that(c(out), equals(c(biomass_in, catch_in)))
+    out <- test_operatingModel_get_target_value_hat(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2)
+    expect_that(c(out), equals(c(landings_in, discards_in)))
+
+    # Target and Sim target
+    out <- test_operatingModel_get_target_value_hat2(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1)
+    expect_that(c(out), equals(c(biomass_in)))
+    out <- test_operatingModel_get_target_value_hat2(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2)
+    expect_that(c(out), equals(c(catch_in)))
+    out <- test_operatingModel_get_target_value_hat2(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 1)
+    expect_that(c(out), equals(c(landings_in)))
+    out <- test_operatingModel_get_target_value_hat2(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2)
+    expect_that(c(out), equals(c(discards_in)))
+}
+
 
 # Evaluate the state of the OM
 test_that("operatingModel eval_target, get_target_value_hat methods", {
     # Simple OM - 2 fisheries / catches, 1 biol
     niters <- 10 
     om <- make_test_operatingModel2(niters)
-    target <- data.frame(year = c(4,4,4,5,6,6,6),
-                     season = rep(1,7),
-                     value = c(1000, 2000, 500, 3000, 0.9, 0.9, 0.9),
-                     quantity = c('catch', 'landings', 'discards', 'biomass', 'catch', 'catch', 'catch'),
-                     fishery = c(1,2,1,NA,1,1,1),
-                     catch = c(1,1,1,NA,1,1,1),
-                     biol = c(NA,NA,NA,1,NA,NA,NA),
-                     relYear = c(NA,NA,NA,NA,3,5,5), # relative to a different year
-                     relSeason = c(NA,NA,NA,NA,1,1,1),
-                     relFishery = c(NA,NA,NA,NA,2,NA,1), # relative to a different fishery
-                     relCatch = c(NA,NA,NA,NA,1,1,NA),
-                     relBiol = c(NA,NA,NA,NA,NA,NA,1)
+    target <- data.frame(year = c(4,4,4,5,6,6,6,7,7),
+                     season = 1,
+                     value = c(1000, 2000, 500, 3000, 0.9, 0.9, 0.9, 0.5, 0.5),
+                     quantity = c('catch', 'landings', 'discards', 'biomass', 'catch', 'catch', 'catch', 'f', 'f'),
+                     fishery = c(1,2,1,NA,1,1,1,NA, 1),
+                     catch = c(1,1,1,NA,1,1,1, NA, 1),
+                     biol = c(NA,NA,NA,1,NA,NA,NA, 1, 1),
+                     relYear = c(NA,NA,NA,NA,3,5,5, NA, NA), # relative to a different year
+                     relSeason = c(NA,NA,NA,NA,1,1,1, NA, NA),
+                     relFishery = c(NA,NA,NA,NA,2,NA,1, NA, NA), # relative to a different fishery
+                     relCatch = c(NA,NA,NA,NA,1,1,NA, NA, NA),
+                     relBiol = c(NA,NA,NA,NA,NA,NA,1, NA, NA),
+                     minAge = c(NA,NA,NA,NA,NA,NA,NA,2,2),
+                     maxAge = c(NA,NA,NA,NA,NA,NA,NA,5,5)
                      )
     target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(target_no=1:nrow(target), c("min","value","max"), iter=1:niters))
-    target_iters[1:7, "value",] <- abs(rnorm(niters * 7, mean = target$value[1:7], sd = 1))
-
+    target_iters[1:nrow(target), "value",] <- abs(rnorm(niters * nrow(target), mean = target$value[1:nrow(target)], sd = 0.1))
     fwc <- fwdControl(target=target, iters=target_iters)
     # Add timestep column to control object - necessary for abundance timesteps
     fwc@target@element$timestep <- fwc@target@element$year
     # Add target column to control object
-    fwc@target@element$target <- c(1,1,2,2,3,4,5)
+    fwc@target@element$target <- c(1,1,2,2,3,4,5,6,7)
     # Add FCB array - will be constructed on R side before calling fwd()
     FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
     colnames(FCB) <- c("F","C","B")
@@ -770,6 +992,35 @@ test_that("operatingModel eval_target, get_target_value_hat methods", {
     # relF,relC,relB not set up right so throw error
     expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, 1, rel_indices_min, rel_indices_max, TRUE), throws_error()) 
     expect_that(test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 5, 1, rel_indices_min, rel_indices_max, TRUE), throws_error())
+
+    # Target 6 - total f on a biol
+    indices_min <- c(years[8],1,1,1,1)
+    indices_max <- c(years[8],1,1,1,niters)
+    # F = Q * effort * sel
+    # F = alpha * B ^ -beta * effort * sel
+    q1 <- c(catch.q(om[["fisheries"]][[1]][[1]])['alpha',]) * (tsb(om[["biols"]][[1]][["biol"]]) ^ -c(catch.q(om[["fisheries"]][[1]][[1]])['beta',]))
+    q2 <- c(catch.q(om[["fisheries"]][[2]][[1]])['alpha',]) * (tsb(om[["biols"]][[1]][["biol"]]) ^ -c(catch.q(om[["fisheries"]][[2]][[1]])['beta',]))
+    fin1 <- sweep(catch.sel(om[["fisheries"]][[1]][[1]]), 2:6, q1 * effort(om[["fisheries"]][[1]]), "*")
+    fin2 <- sweep(catch.sel(om[["fisheries"]][[2]][[1]]), 2:6, q2 * effort(om[["fisheries"]][[1]]), "*")
+    fin <- (fin1 + fin2)[,years[8]]
+    fbar_in <- apply(fin[as.character(fwc@target@element[8,"minAge"]:fwc@target@element[8,"maxAge"]),], 2:6, mean)
+    fbar_out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 6, 1, indices_min, indices_max)
+    expect_that(c(fbar_in), equals(c(fbar_out)))
+
+    # Target 7 - F from a catch in a biol
+    indices_min <- c(years[9],1,1,1,1)
+    indices_max <- c(years[9],1,1,1,niters)
+    # F = Q * effort * sel
+    # F = alpha * B ^ -beta * effort * sel
+    fishery_no <- fwc@target@element[9,"fishery"]
+    catch_no <- fwc@target@element[9,"catch"]
+    q1 <- c(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]])['alpha',]) * (tsb(om[["biols"]][[1]][["biol"]]) ^ -c(catch.q(om[["fisheries"]][[fishery_no]][[catch_no]])['beta',]))
+    fin <- sweep(catch.sel(om[["fisheries"]][[fishery_no]][[catch_no]]), 2:6, q1 * effort(om[["fisheries"]][[fishery_no]]), "*")[,years[9]]
+    fbar_in <- apply(fin[as.character(fwc@target@element[9,"minAge"]:fwc@target@element[9,"maxAge"]),], 2:6, mean)
+    fbar_out <- test_operatingModel_eval_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 7, 1, indices_min, indices_max)
+    expect_that(c(fbar_in), equals(c(fbar_out)))
+
+    # Make another target frame full of things that will fail
 
 
 

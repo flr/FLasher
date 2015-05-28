@@ -246,7 +246,7 @@ operatingModel::operator SEXP() const{
 /*!
  * \name Catchability
  * Calculate the catchability of a fishery / catch fishing a biol. 
- * Catchability = alpha * Biomass ^ beta,
+ * Catchability = alpha * Biomass ^ -beta,
  * where alpha and beta are the catchability params.
  * It is assumed that the fishery / catch catches the biol (no check is made).
  */
@@ -753,10 +753,16 @@ FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsign
         catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
         biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "biol");
     }
-    // Check patterns of F, C and B to see if they make sense
-    // You can have 
-    if ((Rcpp::IntegerVector::is_na(catch_no) ^ Rcpp::IntegerVector::is_na(fishery_no)) | (!(Rcpp::IntegerVector::is_na(biol_no) ^ Rcpp::IntegerVector::is_na(fishery_no)))){
-        Rcpp::stop("In operatingModel::eval_target. Either biol_no or (catch_no and fishery_no) or all three must not be NA\n");
+
+    //// Check patterns of F, C and B to see if they make sense
+    //// You can have 
+    //if ((Rcpp::IntegerVector::is_na(catch_no) ^ Rcpp::IntegerVector::is_na(fishery_no)) | (!(Rcpp::IntegerVector::is_na(biol_no) ^ Rcpp::IntegerVector::is_na(fishery_no)))){
+    //    Rcpp::stop("In operatingModel::eval_target. Either biol_no or (catch_no and fishery_no) or all three must not be NA\n");
+    //}
+
+    // If we have a catch_no, we must also have a fishery_no: XOR! 
+    if(Rcpp::IntegerVector::is_na(catch_no) ^ Rcpp::IntegerVector::is_na(fishery_no)){
+        Rcpp::stop("In operatingModel::eval_target. If you specify a catch_no, you must also specify a fishery_no (relative or not)\n");
     }
 
     // Get the output depending on target type
@@ -765,61 +771,76 @@ FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsign
         //break;
         case target_fbar: {
             Rprintf("target_fbar\n");
-            // Indices needs age range
+            // Indices only 5D when passed in - needs age range
+            if (Rcpp::IntegerVector::is_na(biol_no)) {
+                Rcpp::stop("In operatingModel::eval_target. Asking for fbar when biol_na is NA. Not yet implemented.\n");
+            }
             std::vector<unsigned int> age_range_indices = get_target_age_range_indices(target_no, sim_target_no, biol_no); // indices start at 0
             std::vector<unsigned int> age_indices_min = indices_min;
             std::vector<unsigned int> age_indices_max = indices_max;
             age_indices_min.insert(age_indices_min.begin(), age_range_indices[0] + 1); // +1 because accessor starts at 1 but age indices 0 - sorry
             age_indices_max.insert(age_indices_max.begin(), age_range_indices[1] + 1);
             // Is it total fbar on a biol, or fbar of an FLCatch
-            if (Rcpp::IntegerVector::is_na(catch_no)){
-                Rprintf("catch_no is NA. fbar is total fbar from biol %i\n", biol_no);
-                out = fbar(biol_no, indices_min, indices_max);
+            if (!Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
+                Rprintf("fbar is from FLCatch %i in FLFishery %i on biol %i\n", catch_no, fishery_no, biol_no);
+                out = fbar(fishery_no, catch_no, biol_no, age_indices_min, age_indices_max);
             }
             else {
-                Rprintf("fbar is from FLCatch %i in FLFishery %i\n on biol %i", catch_no, fishery_no, biol_no);
-                out = fbar(fishery_no, catch_no, biol_no, indices_min, indices_max);
+                Rprintf("catch_no is NA. fbar is total fbar from biol %i\n", biol_no);
+                out = fbar(biol_no, age_indices_min, age_indices_max);
             }
             break;
         }
-        case target_catch:
+        case target_catch: {
             Rprintf("target_catch\n");
             // Is it total catch of a biol, or catch of an FLCatch
-            if (Rcpp::IntegerVector::is_na(biol_no)){
+            if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
                 Rprintf("biol_no is NA, catch is from FLCatch %i in FLFishery %i\n", catch_no, fishery_no);
                 out = fisheries(fishery_no, catch_no).catches(indices_min, indices_max);
             }
-            else {
+            else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 Rprintf("catch is total catch from biol %i\n", biol_no);
                 out =  catches(biol_no, indices_min, indices_max);
             }
-        break;
-        case target_landings:
+            else {
+                Rcpp::stop("In operatingModel::eval_target. Asking for catch from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total catch from just the biol instead?\n");
+            }
+            break;
+        }
+        case target_landings: {
             Rprintf("target_landings\n");
-            if (Rcpp::IntegerVector::is_na(biol_no)){
+            if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
                 out = fisheries(fishery_no, catch_no).landings(indices_min, indices_max);
             }
-            else {
+            else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 Rprintf("catch is total landings from biol %i\n", biol_no);
                 out = landings(biol_no, indices_min, indices_max);
             }
-        break;
-        case target_discards:
+            else {
+                Rcpp::stop("In operatingModel::eval_target. Asking for landings from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total landings from just the biol instead?\n");
+            }
+            break;
+        }
+        case target_discards: {
             Rprintf("target_discards\n");
-            if (Rcpp::IntegerVector::is_na(biol_no)){
+            if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
                 out = fisheries(fishery_no, catch_no).discards(indices_min, indices_max);
             }
-            else {
+            else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 out = discards(biol_no, indices_min, indices_max);
             }
-        break;
+            else {
+                Rcpp::stop("In operatingModel::eval_target. Asking for discards from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total discards from just the biol instead?\n");
+            }
+            break;
+        }
         //case target_ssb:
         // Do you mean SSB at start of year OR at time of spawning?
         // SSB in the SRR methods is at time of spawning
         //    Rprintf("target_ssb\n");
         //    //out = ssb(biol_no);
         //    break;
-        case target_biomass:
+        case target_biomass: {
             Rprintf("target_biomass\n");
             if (Rcpp::IntegerVector::is_na(biol_no)){
                 Rcpp::stop("In operatingModel eval_target. Trying to evaluate biomass target when biol no. is NA. Problem with control object?\n");
@@ -827,7 +848,8 @@ FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsign
             else {
                 out = biols(biol_no).biomass(indices_min, indices_max);
             }
-        break;
+            break;
+        }
         default:
             Rcpp::stop("target_type not found in switch statement - giving up\n");
         break;
