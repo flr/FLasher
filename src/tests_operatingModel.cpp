@@ -190,6 +190,33 @@ operatingModel test_operatingModel_project_timestep(FLFisheriesAD flfs, SEXP flb
 }
 
 // [[Rcpp::export]]
+operatingModel test_operatingModel_project_biols(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int timestep){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    om.project_biols(timestep);
+    return om;
+}
+
+// [[Rcpp::export]]
+operatingModel test_operatingModel_project_fisheries(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int timestep){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    om.project_fisheries(timestep);
+    return om;
+}
+
+// [[Rcpp::export]]
+operatingModel test_operatingModel_project_biols_then_fisheries(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int timestep){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    om.project_biols(timestep);
+    om.project_fisheries(timestep);
+    return om;
+}
+
+
+
+// [[Rcpp::export]]
 FLQuantAD test_operatingModel_Z(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no){
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);

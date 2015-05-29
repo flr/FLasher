@@ -502,6 +502,12 @@ FLQuantAD operatingModel::z(const int biol_no) const {
     FLQuantAD z = total_f(biol_no) + biols(biol_no).m();
     return z;
 }
+// The indices_min and max version
+FLQuantAD operatingModel::z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    FLQuantAD z = total_f(biol_no, indices_min, indices_max) + biols(biol_no).m(indices_min, indices_max);
+    return z;
+}
+
 
 // The timestep that fmult affects to calculate the target value
 // e.g. if Biomass is target, then adjust the fmult in the previous timestep
@@ -519,6 +525,200 @@ FLQuantAD operatingModel::z(const int biol_no) const {
 //    }
 //    return target_timestep;
 //}
+
+//! Project the Fisheries in the operatingModel by a single timestep
+/*!
+    Projects the Fisheries in the operatingModel by a single timestep.
+    All catches, landings and discards in the Fisheries are updated for that timestep based on effort in that timestep
+    The Baranov catch equation is used to calculate catches.
+    This assumes that the instantaneous rate of fishing and natural mortalities are constant over time and age and occur simultaneously.
+    \param timestep The time step for the projection.
+ */
+void operatingModel::project_fisheries(const int timestep){
+    // C = (pF / Z) * (1 - exp(-Z)) * N
+    Rprintf("In operatingModel::project_fisheries\n");
+    // What timesteps / years / seasons are we dealing with?
+    unsigned int year = 0;
+    unsigned int season = 0;
+    std::vector<unsigned int> catch_dim = fisheries(1,1).landings_n().get_dim();
+    timestep_to_year_season(timestep, catch_dim[3], year, season);
+    // timestep checks
+    if ((year > catch_dim[1]) | (season > catch_dim[3])){
+        Rcpp::stop("In operatingModel::project_fisheries. timestep outside of range");
+    }
+
+    // CAREFUL WITH NUMBER OF ITERS - do we allow different iterations across objects?
+    // Maybe move this below into loop?
+    unsigned int niter = catch_dim[5];
+    // Not yet set up for units and areas
+    unsigned int unit = 1;
+    unsigned int area = 1;
+
+    // Get total_fs for all biols
+    // Possible different age ranges - hence the indices_min and max
+    FLQuant7AD total_fs;
+    for (int biol_counter=1; biol_counter <= biols.get_nbiols(); ++biol_counter){
+        std::vector<unsigned int> biol_dim = biols(1).n().get_dim();
+        std::vector<unsigned int> indices_min{1, year, unit, season, area, 1};
+        std::vector<unsigned int> indices_max{biol_dim[0], year, unit, season, area, niter};
+        total_fs(total_f(biol_counter, indices_min, indices_max));  
+    }
+    
+    std::vector<int> biols_fished;
+    unsigned int biol_no;
+    FLQuantAD landings;
+    FLQuantAD discards;
+    FLQuantAD discards_ratio_temp;
+    FLQuantAD z_temp;
+    for (int fishery_counter=1; fishery_counter <= fisheries.get_nfisheries(); ++fishery_counter){
+        for (int catch_counter=1; catch_counter <= fisheries(fishery_counter).get_ncatches(); ++catch_counter){
+            // Set up indices for subsetting the timestep
+            // Catch must have same dims as the biol it catches
+            std::vector<unsigned int> catch_dim = fisheries(fishery_counter, catch_counter).landings_n().get_dim();
+            std::vector<unsigned int> indices_min{1, year, unit, season, area, 1};
+            std::vector<unsigned int> indices_max{catch_dim[0], year, unit, season, area, niter};
+            FLQuantAD catches(indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1, indices_max[5] - indices_min[5] + 1); 
+            catches.fill(0.0);
+            // Get B indices for the F/C
+            biols_fished = ctrl.get_B(fishery_counter, catch_counter);
+            if (biols_fished.size() == 0){
+                Rcpp::stop("In project timestep, fishery / catch does not fish anything. Probably a setup error. Stopping\n");
+            }
+            // Get catches from each biol that is fished - in case a Catch fishes more than 1 Biol 
+            for (int biol_counter=1; biol_counter <= biols_fished.size(); ++biol_counter){
+                //Rprintf("biol being fished: %i\n", biols_fished[biol_counter-1]);
+                // C = (pF / Z) * (1 - exp(-Z)) * N
+                biol_no = biols_fished[biol_counter-1];
+                //Rprintf("fishery: %i; catch: %i; biol: %i\n", fishery_counter, catch_counter, biol_no);
+                //Inefficient! Calculating f again - both partial and total_f use the same method which is now being called multiple times
+                z_temp = total_fs(biol_no) + biols(biol_no).m(indices_min, indices_max);
+                // This line is expensive - extra calculation of partial_f
+                catches = catches +
+                    (partial_f(fishery_counter, catch_counter, biol_no, indices_min, indices_max) / z_temp) *
+                    (1.0 - exp(-1.0 * z_temp)) *
+                    biols(biol_no).n(indices_min, indices_max); 
+            } 
+            // Calc landings and discards from catches and discards.ratio
+            discards_ratio_temp = fisheries(fishery_counter, catch_counter).discards_ratio(indices_min, indices_max); 
+            landings = catches * (1.0 - discards_ratio_temp);
+            discards = catches * discards_ratio_temp;
+            // Dish out catches to landings and discards
+            // Only into the timestep - we don't want to overwrite other timesteps
+            for (unsigned int quant_count = 1; quant_count <= fisheries(fishery_counter, catch_counter).landings_n().get_nquant(); ++quant_count){
+                // Again - careful with iters
+                for (unsigned int iter_count = 1; iter_count <= fisheries(fishery_counter, catch_counter).landings_n().get_niter(); ++iter_count){
+                    fisheries(fishery_counter, catch_counter).landings_n()(quant_count,year,unit,season,area,iter_count) = landings(quant_count,1,unit,1,area,iter_count); 
+                    fisheries(fishery_counter, catch_counter).discards_n()(quant_count,year,unit,season,area,iter_count) = discards(quant_count,1,unit,1,area,iter_count); 
+                }
+            }
+        }
+    }
+    return;
+}
+
+//! Project the Biols in the operatingModel by a single timestep
+/*!
+    Projects the Biols in the operatingModel by a single timestep.
+    All abundances in the Biols are updated in the timestep based on the effort in the previous timestep.
+    This assumes that the instantaneous rate of fishing and natural mortalities are constant over time and age and occur simultaneously.
+    If a Biol is caught by multiple Catches, the fishing mortalities happen at the same time (and at the same time as the natural mortality) in the timestep.
+    \param timestep The time step for the projection.
+ */
+void operatingModel::project_biols(const int timestep){
+    // N2 = N1 * (exp -Z)
+    Rprintf("In operatingModel::project_biols\n");
+    if (timestep < 2){
+        Rcpp::stop("In operatingModel::project_biols. timestep must be at least 2.");
+    }
+
+    unsigned int year = 0;
+    unsigned int season = 0;
+    unsigned int prev_year = 0;
+    unsigned int prev_season = 0;
+    std::vector<unsigned int> biol_dim = biols(1).n().get_dim(); // All biols have same year and season range, so pick first one
+    timestep_to_year_season(timestep, biol_dim[3], year, season);
+    timestep_to_year_season(timestep-1, biol_dim[3], prev_year, prev_season);
+    // timestep checks
+    if ((year > biol_dim[1]) | (season > biol_dim[3])){
+        Rcpp::stop("In operatingModel::project_biols. Timestep outside of range");
+    }
+    // CAREFUL WITH NUMBER OF ITERS - do we allow different iterations across objects? - No
+    // In which case we will need to store niter at an operatingModel level
+    unsigned int niter = biol_dim[5];
+    // Not yet set up for units and areas
+    unsigned int unit = 1;
+    unsigned int area = 1;
+
+    // Update biol in timestep based on effort in previous timestep
+    unsigned int ssb_year = 0;
+    unsigned int ssb_season = 0;
+    // In what age do we put next timestep abundance? If beginning of year, everything is one year older
+    int age_shift = 0;
+    if (season == 1){
+        age_shift = 1;
+    }
+
+    for (unsigned int biol_counter=1; biol_counter <= biols.get_nbiols(); ++biol_counter){
+        // Indices for subsetting the previous timestep
+        std::vector<unsigned int> biol_dim = biols(biol_counter).n().get_dim();
+        std::vector<unsigned int> indices_min{1, prev_year, unit, prev_season, area, 1};
+        std::vector<unsigned int> indices_max{biol_dim[0], prev_year, unit, prev_season, area, niter};
+
+        // SSB and Recruitment
+        // Get the year and season of the SSB that will result in recruitment in the timestep
+        unsigned int ssb_timestep = timestep - biols(biol_counter).srr.get_timelag();
+        if (ssb_timestep < 1){
+            Rcpp::stop("project_timestep: ssb timestep outside of range");
+        }
+        timestep_to_year_season(ssb_timestep, biol_dim[3], ssb_year, ssb_season);
+        // Update min and max_indices for ssb and get it
+        std::vector<unsigned int> ssb_indices_min = {ssb_year, unit, ssb_season, area, 1};
+        std::vector<unsigned int> ssb_indices_max = {ssb_year, unit, ssb_season, area, niter};
+        FLQuantAD ssb_flq = ssb(biol_counter, ssb_indices_min, ssb_indices_max);
+
+        // Get abundances in next timestep from rec+1 to pg
+        FLQuantAD z_temp = z(biol_counter, indices_min, indices_max);
+        FLQuantAD next_n = biols(biol_counter).n(indices_min, indices_max) * exp(-1.0 * z_temp);
+
+        // Update biol in next timestep using next n = current n * exp(-z) taking care of age shifts and plus groups
+        for (int iter_count = 1; iter_count <= niter; ++iter_count){
+            // Recruitment
+            // rec is calculated in a scalar way - i.e. not passing it a vector of SSBs, so have to do one iter at a time
+            adouble ssb_temp = ssb_flq(1,1,1,1,1,iter_count);
+            //Rprintf("year: %i, season: %i, ssb_year: %i, ssb_season: %i, ssb_temp: %f\n", year, season, ssb_year, ssb_season, Value(ssb_temp));
+            adouble rec_temp = biols(biol_counter).srr.eval_model(ssb_temp, year, 1, season, 1, iter_count);
+            //Rprintf("iter_count %i; ssb_temp %f; rec_temp %f\n", iter_count, Value(ssb_temp), Value(rec_temp));
+            // Apply the residuals to rec_temp
+            // Use of if statement is OK because for each taping it will only branch the same way (depending on residuals_mult)
+            if (biols(biol_counter).srr.get_residuals_mult()){
+                rec_temp = rec_temp * exp(biols(biol_counter).srr.get_residuals()(1,year,1,season,1,iter_count));
+            }
+            else{
+                rec_temp = rec_temp + biols(biol_counter).srr.get_residuals()(1,year,1,season,1,iter_count);
+            }
+
+            // Update ages rec+1 upto final age 
+            for (int quant_count = 2; quant_count <= biol_dim[0]; ++quant_count){
+                biols(biol_counter).n()(quant_count, year, 1, season, 1, iter_count) = next_n(quant_count - age_shift, 1,unit,1,area,iter_count);
+            }
+            // Fix Plus Group and add in recruitment
+            // If next_season is start of the year assume last age is a plusgroup and abundance in first age group is ONLY recruitment
+            if (season == 1){
+                biols(biol_counter).n()(biol_dim[0], year, 1, season, 1, iter_count) = biols(biol_counter).n()(biol_dim[0], year, 1, season, 1, iter_count) + next_n(biol_dim[0],1,unit,1,area,iter_count);
+                // Rec in first age is only the calculated recruitment
+                biols(biol_counter).n()(1,year,1,season,1,iter_count) = rec_temp;
+            }
+            // Otherwise add in recruitment to first age group
+            else {
+                // Add rec to the existing age 1
+                biols(biol_counter).n()(1, year, 1, season, 1, iter_count) = next_n(1, 1, unit, 1, area, iter_count) + rec_temp;
+            }
+        }
+    }
+
+
+    return;
+}
 
 
 // Baranov catch equation: assumes that instantaneous rate of fishing and natural mortalities are constant over time and age

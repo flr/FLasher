@@ -1769,6 +1769,18 @@ test_operatingModel_project_timestep <- function(flfs, flbs_list_sexp, ctrl, tim
     .Call('FLasher_test_operatingModel_project_timestep', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, timestep)
 }
 
+test_operatingModel_project_biols <- function(flfs, flbs_list_sexp, ctrl, timestep) {
+    .Call('FLasher_test_operatingModel_project_biols', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, timestep)
+}
+
+test_operatingModel_project_fisheries <- function(flfs, flbs_list_sexp, ctrl, timestep) {
+    .Call('FLasher_test_operatingModel_project_fisheries', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, timestep)
+}
+
+test_operatingModel_project_biols_then_fisheries <- function(flfs, flbs_list_sexp, ctrl, timestep) {
+    .Call('FLasher_test_operatingModel_project_biols_then_fisheries', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, timestep)
+}
+
 test_operatingModel_Z <- function(flfs, flbs_list_sexp, ctrl, biol_no) {
     .Call('FLasher_test_operatingModel_Z', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no)
 }

@@ -91,6 +91,7 @@ class operatingModel {
         FLQuantAD total_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
         FLQuantAD z(const int biol_no) const;
+        FLQuantAD z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
         void run(const double indep_min = 0, const double indep_max = 1e9); 
 
@@ -105,6 +106,8 @@ class operatingModel {
             @param timestep the timestep to project for
         */
         void project_timestep(const int timestep);
+        void project_biols(const int timestep); // Uses effort in previous timestep
+        void project_fisheries(const int timestep); // Uses effort in that timestep
 
         // Timestep of effort which drives the target value
         // int get_target_effort_timestep(const int target_no);
