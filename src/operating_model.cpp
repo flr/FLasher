@@ -74,6 +74,7 @@ double euclid_norm(std::vector<double> x){
  * \param tolerance The tolerance of the solutions.
  */
 std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const int niter, const int nsim_targets, const double indep_min, const double indep_max, const int max_iters, const double tolerance){
+    Rprintf("In newton raphson\n");
     // Check that product of niter and nsim_targets = length of indep (otherwise something has gone wrong)
     if (indep.size() != (niter * nsim_targets)){
         Rcpp::stop("In newton_raphson: length of indep does not equal product of niter and nsim_targets\n");
@@ -96,20 +97,28 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
     std::vector<int> success_code (niter, -1); 
     int nr_count = 0;
     // Keep looping until all sim_targets have been solved, or number of iterations (NR iterations, not FLR iterations) has been hit
+    
     while((std::accumulate(iter_solved.begin(), iter_solved.end(), 0) < niter) & (nr_count < max_iters)){ 
         ++nr_count;
-        //Rprintf("nr_count: %i\n", nr_count);
+        Rprintf("nr_count: %i\n", nr_count);
         // Get y = f(x0)
+        Rprintf("Forward\n");
         y = fun.Forward(0, indep); 
+        Rprintf("indep: %f\n", indep[0]);
+        Rprintf("y: %f\n", y[0]);
         // Get f'(x0) -  gets Jacobian for all simultaneous targets
+        Rprintf("Getting SparseJacobian\n");
         jac = fun.SparseJacobian(indep);
+        Rprintf("Got it\n");
         // Get w (f(x0) / f'(x0)) for each iteration if necessary
         // Loop over simultaneous targets, solving if necessary
         for (int iter_count = 0; iter_count < niter; ++iter_count){
+            Rprintf("iter_count: %i\n", iter_count);
             // Only solve if that iter has not been solved
             if(iter_solved[iter_count] == 0){
-                //Rprintf("Iter %i not yet solved\n", iter_count);
+                Rprintf("Iter %i not yet solved\n", iter_count);
                 // Subsetting y and Jacobian for that iter only
+                Rprintf("Subsetting\n");
                 for(int jac_count_row = 0; jac_count_row < nsim_targets; ++jac_count_row){
                     iter_y[jac_count_row] = y[iter_count * nsim_targets + jac_count_row];
                     // Fill up mini Jacobian for that iteration 
@@ -118,9 +127,15 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
                         iter_jac[jac_count_row + (jac_count_col * nsim_targets)] = jac[jac_element];
                     }
                 }
+                Rprintf("Done subsetting\n");
                 // Solve to get w = f(x0) / f'(x0)
                 // Puts resulting w (delta_indep) into iter_y
+                Rprintf("LU Solving\n");
+                Rprintf("nsim_targets: %i\n", nsim_targets);
+                Rprintf("iter_jac: %f\n", iter_jac[0]);
+                Rprintf("iter_y: %f\n", iter_y[0]);
                 CppAD::LuSolve(nsim_targets, nsim_targets, iter_jac, iter_y, iter_y, logdet); 
+                Rprintf("Done LU Solving\n");
                 // Has iter now been solved? If so, set the flag to 1
                 if (euclid_norm(iter_y) < tolerance){
                     iter_solved[iter_count] = 1;
@@ -775,6 +790,14 @@ FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsign
             if (Rcpp::IntegerVector::is_na(biol_no)) {
                 Rcpp::stop("In operatingModel::eval_target. Asking for fbar when biol_na is NA. Not yet implemented.\n");
             }
+                //Rprintf("indices_min\n");
+                //for (auto i=0; i<5; ++i){
+                //    Rprintf("indices_min %i\n", indices_min[i]);
+                //}
+                //Rprintf("indices_max\n");
+                //for (auto i=0; i<5; ++i){
+                //    Rprintf("indices_max %i\n", indices_max[i]);
+                //}
             std::vector<unsigned int> age_range_indices = get_target_age_range_indices(target_no, sim_target_no, biol_no); // indices start at 0
             std::vector<unsigned int> age_indices_min = indices_min;
             std::vector<unsigned int> age_indices_max = indices_max;
@@ -787,6 +810,14 @@ FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsign
             }
             else {
                 Rprintf("catch_no is NA. fbar is total fbar from biol %i\n", biol_no);
+                Rprintf("ages_indices_min\n");
+                for (auto i=0; i<6; ++i){
+                    Rprintf("age_indices_min %i\n", age_indices_min[i]);
+                }
+                Rprintf("ages_indices_max\n");
+                for (auto i=0; i<6; ++i){
+                    Rprintf("age_indices_max %i\n", age_indices_max[i]);
+                }
                 out = fbar(biol_no, age_indices_min, age_indices_max);
             }
             break;
@@ -869,6 +900,7 @@ FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsign
  * \param target_no References the target column in the control dataframe. Starts at 1.
  */
 std::vector<adouble> operatingModel::get_target_value_hat(const int target_no) const{
+    Rprintf("In get_target_value_hat target_no\n");
     auto nsim_target = ctrl.get_nsim_target(target_no);
     std::vector<adouble> value;
     for (auto sim_target_count = 1; sim_target_count <= nsim_target; ++sim_target_count){
@@ -887,7 +919,7 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no) c
  * \param sim_target_no References the simultaneous target in the target set. Starts at 1.
  */
 std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, const int sim_target_no) const{
-    //Rprintf("In get_target_value_hat sim_target_no\n");
+    Rprintf("In get_target_value_hat sim_target_no\n");
     auto niter = ctrl.get_niter();
     std::vector<adouble> value;
     // Are we dealing with absolute or relative values?
@@ -902,6 +934,9 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     std::vector<unsigned int> indices_max = {year,1,season,1,niter};
     // Get the current absolute values, i.e. not relative
     FLQuantAD sim_target_value = eval_target(target_no, sim_target_no, indices_min, indices_max);
+
+    Rprintf("sim_target_value: %f\n", Value(sim_target_value(1,1,1,1,1,1)));
+
     // Test for a relative target value - is the relative year or season NA?
     unsigned int rel_year = target_rel_year[sim_target_no-1];
     unsigned int rel_season = target_rel_season[sim_target_no-1];
@@ -925,6 +960,7 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     }
     // Clumsy - if relative we already copied the result back into sim_target_value - could copy direct into value and else{} the next line
     value.insert(value.end(), sim_target_value.begin(), sim_target_value.end());
+    Rprintf("Leaving get_target_value_hat sim_target\n");
     return value;
 } 
 //@}
@@ -1063,6 +1099,7 @@ void operatingModel::run(const double indep_min, const double indep_max){
         // Calc error
         Rprintf("Getting new state of operating model\n");
         std::vector<adouble> target_value_hat = get_target_value_hat(target_count); 
+        Rprintf("Back from target_value_hat\n");
         //Rprintf("Length of target_value_hat: %i\n", target_value.size());
         //Rprintf("Length of target_value: %i\n", target_value.size());
         // Check they are the same length? 
@@ -1072,6 +1109,9 @@ void operatingModel::run(const double indep_min, const double indep_max){
                 [](double x, adouble y){return x - y;});
                 //[](double x, adouble y){return (x - y) * (x - y);}); // squared error - doesn't seem so effective
 
+        Rprintf("target_value: %f\n", target_value[0]);
+        Rprintf("target_value_hat: %f\n", Value(target_value_hat[0]));
+        Rprintf("error: %f\n", Value(error[0]));
         // Stop recording
         Rprintf("Turning off tape\n");
         CppAD::ADFun<double> fun(effort_mult_ad, error);
@@ -1097,6 +1137,8 @@ void operatingModel::run(const double indep_min, const double indep_max){
         //for (auto i=0; i<effort_mult_ad.size(); ++i){
         //    Rprintf("effort_mult: %f\n", effort_mult[i]);
         //}
+        
+       Rprintf("effort_mult: %f\n", effort_mult[0]);
 
         Rprintf("Updating effort with solved effort mult\n");
         for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
@@ -1107,7 +1149,9 @@ void operatingModel::run(const double indep_min, const double indep_max){
             }
         }
 
+        Rprintf("Projecting again\n");
         project_timestep(target_effort_timestep);
+        Rprintf("Done projecting again\n");
     }
     Rprintf("Leaving run\n");
 }
