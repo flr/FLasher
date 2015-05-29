@@ -1244,8 +1244,16 @@ void operatingModel::run(const double indep_min, const double indep_max){
     std::vector<double> effort_mult(neffort * niter, effort_mult_initial);
     std::vector<adouble> effort_mult_ad(neffort * niter, effort_mult_initial);
     // Solve for the log of effort so we get always positive effort
-    std::vector<adouble> log_effort_mult_ad(neffort * niter, log(effort_mult_initial));
-    std::vector<double> log_effort_mult(neffort * niter, log(effort_mult_initial));
+    //std::vector<adouble> log_effort_mult_ad(neffort * niter, log(effort_mult_initial));
+    //std::vector<double> log_effort_mult(neffort * niter, log(effort_mult_initial));
+
+    // Update N at start of minimum target timestep (not effort timestep)
+    // Assumes it's in the first target set
+    Rcpp::IntegerVector target_timestep = ctrl.get_target_int_col(1, "timestep");
+    // Get min of this
+    auto min_target_timestep = *std::min_element(std::begin(target_timestep), std::end(target_timestep));
+    Rprintf("min target timestep:%i\n", min_target_timestep);
+    project_biols(min_target_timestep);
 
     // Loop over targets and solve all simultaneous targets in that target set
     // e.g. With 2 fisheries with 2 efforts, we can set 2 catch targets to be solved at the same time
@@ -1258,7 +1266,7 @@ void operatingModel::run(const double indep_min, const double indep_max){
         // Timestep in which we find effort has to be the same for all simultaneous targets in a target set
         // Cannot just read from the control object because the abundance (biomass, SSB etc.) is determined
         // by effort in previous timestep
-        // so just get time step of first sim target.
+        // Get time step of first sim target.
         unsigned int target_effort_timestep = ctrl.get_target_effort_timestep(target_count, 1);
         unsigned int target_effort_year = 0;
         unsigned int target_effort_season = 0;
@@ -1293,7 +1301,13 @@ void operatingModel::run(const double indep_min, const double indep_max){
         }
 
         Rprintf("About to project\n");
-        project_timestep(target_effort_timestep); 
+        //project_timestep(target_effort_timestep); 
+        project_fisheries(target_effort_timestep); 
+        // If space, update biols too
+        //if ((target_effort_timestep+1) <= biols(1).n().get_dim()[0]){
+        if ((target_effort_timestep+1) <= (biols(1).n().get_dim()[1] * biols(1).n().get_dim()[3])){
+            project_biols(target_effort_timestep+1); 
+        }
         Rprintf("Back from project\n");
 
         // Calc error
@@ -1350,7 +1364,12 @@ void operatingModel::run(const double indep_min, const double indep_max){
         }
 
         Rprintf("Projecting again\n");
-        project_timestep(target_effort_timestep);
+        //project_timestep(target_effort_timestep);
+        project_fisheries(target_effort_timestep); 
+        // If space, update biols too
+        if ((target_effort_timestep+1) <= (biols(1).n().get_dim()[1] * biols(1).n().get_dim()[3])){
+            project_biols(target_effort_timestep+1); 
+        }
         Rprintf("Done projecting again\n");
     }
     Rprintf("Leaving run\n");
