@@ -6,6 +6,13 @@
 # Soundtrack:
 # Notes:
 
+# fwdElement
 setGeneric('fwdElement', function(element, iters, ...) standardGeneric("fwdElement"))
 
+# fwdControl
 setGeneric('fwdControl', function(target, iters, ...) standardGeneric("fwdControl"))
+
+# target, target<-
+setGeneric('target', function(object, ...) standardGeneric('target'))
+setGeneric('target<-', function(object, ..., value) standardGeneric('target<-'))
+
