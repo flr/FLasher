@@ -102,23 +102,23 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
         ++nr_count;
         Rprintf("nr_count: %i\n", nr_count);
         // Get y = f(x0)
-        Rprintf("Forward\n");
+        //Rprintf("Forward\n");
         y = fun.Forward(0, indep); 
-        Rprintf("indep: %f\n", indep[0]);
-        Rprintf("y: %f\n", y[0]);
+        //Rprintf("indep: %f\n", indep[0]);
+        //Rprintf("y: %f\n", y[0]);
         // Get f'(x0) -  gets Jacobian for all simultaneous targets
-        Rprintf("Getting SparseJacobian\n");
+        //Rprintf("Getting SparseJacobian\n");
         jac = fun.SparseJacobian(indep);
-        Rprintf("Got it\n");
+        //Rprintf("Got it\n");
         // Get w (f(x0) / f'(x0)) for each iteration if necessary
         // Loop over simultaneous targets, solving if necessary
         for (int iter_count = 0; iter_count < niter; ++iter_count){
-            Rprintf("iter_count: %i\n", iter_count);
+            //Rprintf("iter_count: %i\n", iter_count);
             // Only solve if that iter has not been solved
             if(iter_solved[iter_count] == 0){
-                Rprintf("Iter %i not yet solved\n", iter_count);
+                //Rprintf("Iter %i not yet solved\n", iter_count);
                 // Subsetting y and Jacobian for that iter only
-                Rprintf("Subsetting\n");
+                //Rprintf("Subsetting\n");
                 for(int jac_count_row = 0; jac_count_row < nsim_targets; ++jac_count_row){
                     iter_y[jac_count_row] = y[iter_count * nsim_targets + jac_count_row];
                     // Fill up mini Jacobian for that iteration 
@@ -127,15 +127,15 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
                         iter_jac[jac_count_row + (jac_count_col * nsim_targets)] = jac[jac_element];
                     }
                 }
-                Rprintf("Done subsetting\n");
+                //Rprintf("Done subsetting\n");
                 // Solve to get w = f(x0) / f'(x0)
                 // Puts resulting w (delta_indep) into iter_y
-                Rprintf("LU Solving\n");
-                Rprintf("nsim_targets: %i\n", nsim_targets);
-                Rprintf("iter_jac: %f\n", iter_jac[0]);
-                Rprintf("iter_y: %f\n", iter_y[0]);
+                //Rprintf("LU Solving\n");
+                //Rprintf("nsim_targets: %i\n", nsim_targets);
+                //Rprintf("iter_jac: %f\n", iter_jac[0]);
+                //Rprintf("iter_y: %f\n", iter_y[0]);
                 CppAD::LuSolve(nsim_targets, nsim_targets, iter_jac, iter_y, iter_y, logdet); 
-                Rprintf("Done LU Solving\n");
+                //Rprintf("Done LU Solving\n");
                 // Has iter now been solved? If so, set the flag to 1
                 if (euclid_norm(iter_y) < tolerance){
                     iter_solved[iter_count] = 1;
@@ -990,14 +990,6 @@ FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsign
             if (Rcpp::IntegerVector::is_na(biol_no)) {
                 Rcpp::stop("In operatingModel::eval_target. Asking for fbar when biol_na is NA. Not yet implemented.\n");
             }
-                //Rprintf("indices_min\n");
-                //for (auto i=0; i<5; ++i){
-                //    Rprintf("indices_min %i\n", indices_min[i]);
-                //}
-                //Rprintf("indices_max\n");
-                //for (auto i=0; i<5; ++i){
-                //    Rprintf("indices_max %i\n", indices_max[i]);
-                //}
             std::vector<unsigned int> age_range_indices = get_target_age_range_indices(target_no, sim_target_no, biol_no); // indices start at 0
             std::vector<unsigned int> age_indices_min = indices_min;
             std::vector<unsigned int> age_indices_max = indices_max;
@@ -1044,7 +1036,7 @@ FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsign
                 out = fisheries(fishery_no, catch_no).landings(indices_min, indices_max);
             }
             else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
-                Rprintf("catch is total landings from biol %i\n", biol_no);
+                Rprintf("landings are total landings from biol %i\n", biol_no);
                 out = landings(biol_no, indices_min, indices_max);
             }
             else {
@@ -1058,6 +1050,7 @@ FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsign
                 out = fisheries(fishery_no, catch_no).discards(indices_min, indices_max);
             }
             else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
+                Rprintf("discards are total discards from biol %i\n", biol_no);
                 out = discards(biol_no, indices_min, indices_max);
             }
             else {
@@ -1065,12 +1058,17 @@ FLQuantAD operatingModel::eval_target(const unsigned int target_no, const unsign
             }
             break;
         }
-        //case target_ssb:
-        // Do you mean SSB at start of year OR at time of spawning?
-        // SSB in the SRR methods is at time of spawning
-        //    Rprintf("target_ssb\n");
-        //    //out = ssb(biol_no);
-        //    break;
+        case target_srp: {
+            // Spawning reproductive potential
+            Rprintf("target_srp\n");
+            if (Rcpp::IntegerVector::is_na(biol_no)){
+                Rcpp::stop("In operatingModel eval_target. Trying to evaluate SRP target when biol no. is NA. Problem with control object?\n");
+            }
+            else {
+                out = ssb(biol_no, indices_min, indices_max);
+            }
+        break;
+    }
         case target_biomass: {
             Rprintf("target_biomass\n");
             if (Rcpp::IntegerVector::is_na(biol_no)){
@@ -1134,9 +1132,7 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     std::vector<unsigned int> indices_max = {year,1,season,1,niter};
     // Get the current absolute values, i.e. not relative
     FLQuantAD sim_target_value = eval_target(target_no, sim_target_no, indices_min, indices_max);
-
-    Rprintf("sim_target_value: %f\n", Value(sim_target_value(1,1,1,1,1,1)));
-
+    //Rprintf("sim_target_value: %f\n", Value(sim_target_value(1,1,1,1,1,1)));
     // Test for a relative target value - is the relative year or season NA?
     unsigned int rel_year = target_rel_year[sim_target_no-1];
     unsigned int rel_season = target_rel_season[sim_target_no-1];
@@ -1236,7 +1232,7 @@ void operatingModel::run(const double indep_min, const double indep_max){
     auto ntarget = ctrl.get_ntarget();
     Rprintf("%i targets to solve\n", ntarget);
     auto neffort = fisheries.get_nfisheries(); // how many efforts, i.e. number of FLFishery objects in OM
-    Rprintf("%i fisheries to solve effort for\n", neffort);
+    //Rprintf("%i fisheries to solve effort for\n", neffort);
 
     auto effort_mult_initial = 1.0; 
     //auto effort_mult_initial = 2.0; 
@@ -1252,14 +1248,14 @@ void operatingModel::run(const double indep_min, const double indep_max){
     Rcpp::IntegerVector target_timestep = ctrl.get_target_int_col(1, "timestep");
     // Get min of this
     auto min_target_timestep = *std::min_element(std::begin(target_timestep), std::end(target_timestep));
-    Rprintf("min target timestep:%i\n", min_target_timestep);
+    //Rprintf("min target timestep:%i\n", min_target_timestep);
     project_biols(min_target_timestep);
 
     // Loop over targets and solve all simultaneous targets in that target set
     // e.g. With 2 fisheries with 2 efforts, we can set 2 catch targets to be solved at the same time
     // Indexing of targets starts at 1
     for (auto target_count = 1; target_count <= ntarget; ++target_count){
-        Rprintf("Processing target: %i\n", target_count);
+        Rprintf("\nProcessing target: %i\n", target_count);
         auto nsim_targets = ctrl.get_nsim_target(target_count);
         Rprintf("Number of simultaneous targets: %i\n", nsim_targets);
 
@@ -1275,13 +1271,13 @@ void operatingModel::run(const double indep_min, const double indep_max){
         Rprintf("target_effort_year: %i\n", target_effort_year);
         Rprintf("target_effort_season: %i\n", target_effort_season);
 
-        Rprintf("Getting desired target values\n");
+        //Rprintf("Getting desired target values\n");
         std::vector<double> target_value = get_target_value(target_count);
 
         // Turn tape on
         CppAD::Independent(effort_mult_ad);
         //CppAD::Independent(log_effort_mult_ad);
-        Rprintf("Turned on tape\n");
+        //Rprintf("Turned on tape\n");
         // Update fisheries.effort() with effort multiplier in that timestep (area and unit effectively ignored)
 
         // Get effort_mult_ad
@@ -1291,7 +1287,7 @@ void operatingModel::run(const double indep_min, const double indep_max){
         //}
         //
 
-        Rprintf("Updating effort with multipler\n");
+        //Rprintf("Updating effort with multipler\n");
         for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
             for (int iter_count = 1; iter_count <= niter; ++ iter_count){
                 fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) = 
@@ -1300,7 +1296,7 @@ void operatingModel::run(const double indep_min, const double indep_max){
             }
         }
 
-        Rprintf("About to project\n");
+        //Rprintf("About to project\n");
         //project_timestep(target_effort_timestep); 
         project_fisheries(target_effort_timestep); 
         // If space, update biols too
@@ -1308,12 +1304,12 @@ void operatingModel::run(const double indep_min, const double indep_max){
         if ((target_effort_timestep+1) <= (biols(1).n().get_dim()[1] * biols(1).n().get_dim()[3])){
             project_biols(target_effort_timestep+1); 
         }
-        Rprintf("Back from project\n");
+        //Rprintf("Back from project\n");
 
         // Calc error
-        Rprintf("Getting new state of operating model\n");
+        //Rprintf("Getting new state of operating model\n");
         std::vector<adouble> target_value_hat = get_target_value_hat(target_count); 
-        Rprintf("Back from target_value_hat\n");
+        //Rprintf("Back from target_value_hat\n");
         //Rprintf("Length of target_value_hat: %i\n", target_value.size());
         //Rprintf("Length of target_value: %i\n", target_value.size());
         // Check they are the same length? 
@@ -1327,22 +1323,22 @@ void operatingModel::run(const double indep_min, const double indep_max){
         Rprintf("target_value_hat: %f\n", Value(target_value_hat[0]));
         Rprintf("error: %f\n", Value(error[0]));
         // Stop recording
-        Rprintf("Turning off tape\n");
+        //Rprintf("Turning off tape\n");
         CppAD::ADFun<double> fun(effort_mult_ad, error);
         //CppAD::ADFun<double> fun(log_effort_mult_ad, error);
 
-        Rprintf("Turned off tape\n");
+        //Rprintf("Turned off tape\n");
 
         // Solve the target
         // Reset initial solver value - solver changes the values
         std::fill(effort_mult.begin(), effort_mult.end(), effort_mult_initial);
         //std::fill(log_effort_mult.begin(), log_effort_mult.end(), log(effort_mult_initial));
 
-        Rprintf("Calling NR\n");
+        //Rprintf("Calling NR\n");
         // indep_min and max should be arguments to run and passable from R
         auto nr_out = newton_raphson(effort_mult, fun, niter, nsim_targets, indep_min, indep_max);
         //auto nr_out = newton_raphson(log_effort_mult, fun, niter, nsim_targets);
-        Rprintf("NR done\n");
+        //Rprintf("NR done\n");
 
         // Check nr_out - if not all 1 then something has gone wrong - flag up warning
 
@@ -1363,14 +1359,14 @@ void operatingModel::run(const double indep_min, const double indep_max){
             }
         }
 
-        Rprintf("Projecting again\n");
+        //Rprintf("Projecting again\n");
         //project_timestep(target_effort_timestep);
         project_fisheries(target_effort_timestep); 
         // If space, update biols too
         if ((target_effort_timestep+1) <= (biols(1).n().get_dim()[1] * biols(1).n().get_dim()[3])){
             project_biols(target_effort_timestep+1); 
         }
-        Rprintf("Done projecting again\n");
+        //Rprintf("Done projecting again\n");
     }
     Rprintf("Leaving run\n");
 }

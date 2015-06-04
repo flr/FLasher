@@ -28,7 +28,7 @@ enum fwdControlTargetType {
     target_catch,
     target_landings,
     target_discards,
-    target_ssb,
+    target_srp,
     target_biomass
 };
 
@@ -85,7 +85,7 @@ class fwdControl {
         target_map_type target_map;
         Rcpp::IntegerMatrix FCB; // an (n x 3) matrix with columns F, C and B
         // Add more abundance target types if necessary
-        std::vector<fwdControlTargetType> abundance_targets {target_ssb, target_biomass};
+        std::vector<fwdControlTargetType> abundance_targets {target_srp, target_biomass};
 };
 
 
