@@ -25,7 +25,8 @@ void fwdControl::init_target_map(){
     target_map["catch"] = target_catch;
     target_map["landings"] = target_landings;
     target_map["discards"] = target_discards;
-    target_map["ssb"] = target_ssb;
+    target_map["srp"] = target_srp;
+    target_map["ssb"] = target_srp;
     target_map["biomass"] = target_biomass;
     return;
 }
@@ -270,7 +271,7 @@ Rcpp::IntegerVector fwdControl::get_target_int_col(const int target_no, const st
     std::vector<std::string> names = target.attr("names");
     auto it = std::find(names.begin(), names.end(), col);
     if (it == names.end()){
-        Rcpp::stop("In fwdControl::get_target_int_col. Column name not found,\n");
+        Rcpp::stop("In fwdControl::get_target_int_col. Column name '%s' not found,\n", col);
     }
     Rcpp::IntegerVector all = target[col];
     std::vector<unsigned int> rows = get_target_row(target_no);
