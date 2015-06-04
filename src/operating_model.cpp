@@ -217,6 +217,12 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsA
     biols = biols_in;
     fisheries = fisheries_in;
     ctrl = ctrl_in;
+
+    // Iters in ctrl need to match those in biols
+    if (ctrl.get_niter() != biols(1).n().get_niter()){
+        Rcpp::stop("In operatingModel constructor. Iters in biol must equal those in fwdControl.\n");
+    }
+
 }
 
 /*! \brief The copy constructor
@@ -691,7 +697,8 @@ void operatingModel::project_biols(const int timestep){
             // Apply the residuals to rec_temp
             // Use of if statement is OK because for each taping it will only branch the same way (depending on residuals_mult)
             if (biols(biol_counter).srr.get_residuals_mult()){
-                rec_temp = rec_temp * exp(biols(biol_counter).srr.get_residuals()(1,year,1,season,1,iter_count));
+                //rec_temp = rec_temp * exp(biols(biol_counter).srr.get_residuals()(1,year,1,season,1,iter_count));
+                rec_temp = rec_temp * biols(biol_counter).srr.get_residuals()(1,year,1,season,1,iter_count);
             }
             else{
                 rec_temp = rec_temp + biols(biol_counter).srr.get_residuals()(1,year,1,season,1,iter_count);
@@ -872,7 +879,7 @@ void operatingModel::project_timestep(const int timestep){
                 // Apply the residuals to rec_temp
                 // Use of if statement is OK because for each taping it will only branch the same way (depending on residuals_mult)
                 if (biols(biol_counter).srr.get_residuals_mult()){
-                    rec_temp = rec_temp * exp(biols(biol_counter).srr.get_residuals()(1,next_year,1,next_season,1,iter_count));
+                    rec_temp = rec_temp * biols(biol_counter).srr.get_residuals()(1,next_year,1,next_season,1,iter_count);
                 }
                 else{
                     rec_temp = rec_temp + biols(biol_counter).srr.get_residuals()(1,next_year,1,next_season,1,iter_count);
