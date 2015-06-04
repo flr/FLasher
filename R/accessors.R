@@ -7,8 +7,6 @@
 # Notes:
 
 # target
-setGeneric('target', function(object, ...) standardGeneric('target'))
-
 setMethod("target", signature(object="fwdControl"),
 	function(object) {
 		return(object@target)
@@ -16,8 +14,6 @@ setMethod("target", signature(object="fwdControl"),
 )
 
 # target<-
-setGeneric('target<-', function(object, ..., value) standardGeneric('target<-'))
-
 setReplaceMethod("target", signature(object="fwdControl", value="fwdElement"),
 	function(object, value) {
 		slot(object, 'target') <- value
