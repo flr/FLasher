@@ -75,7 +75,7 @@ This will allow further expansion of the package.
 
 \pkg{FLasher} is made up of \R code and C++ code. The \R code provides the user front-end and is written using the FLR libraries.
 The C++ code does the heavy lifting and makes up the majority of the source code.
-The C++ side of \pkg{FLasher} uses the classes described in REF and some additional classes and functions that are described here.
+The C++ side of \pkg{FLasher} uses the classes described in FLRCPP REF and some additional classes and functions that are described here.
 
 The package makes use of the CppAD library for automatic differentation (REF).
 
@@ -87,7 +87,7 @@ library(FLasher)
 library(testthat)
 @
 
-\section{The \class{fwdControl} class}
+\section{The C++ \class{fwdControl} class}
 
 The C++ \class{fwdControl} implements the basic functionality of the FLR \class{fwdControl} class.
 It is a member of the \class{operatingModel} class and controls the projections.
@@ -99,7 +99,7 @@ Intrinsic \code{<as>} and \code{<wrap>} methods have been written to allow \clas
 
 \subsection{The FCB member}
 
-An important additional member that is not present in the FLR version of the class is \code{FCB}. This is a 2D matrix that contains a map of a which Fishery and Catch catches which Biol. \code{FCB} has 3 columns, \textit{F}, \textit{C} and \textit{B} for Fishery, Catch and Biol indices respectively. Each row is a mapping of a Fishery / Catch onto a Biol. The indices start at 1 and refer to positions within the \class{FLFisheries}, \class{FLFishery} and \class{fwdBiols} objects respectively (the \class{FLFisheries} object is really just a list of \class{FLFishery} objects, and each \class{FLFishery} object contains a list of \class{FLCatch} objects; the \class{fwdBiols} class is a list of \class{fwdBiol} objects).
+An important additional member that is not (yet) present in the FLR version of the class is \code{FCB}. This is a 2D matrix that contains a map of a which Fishery and Catch catches which Biol. \code{FCB} has 3 columns, \textit{F}, \textit{C} and \textit{B} for Fishery, Catch and Biol indices respectively. Each row is a mapping of a Fishery / Catch onto a Biol. The indices start at 1 and refer to positions within the \class{FLFisheries}, \class{FLFishery} and \class{fwdBiols} objects respectively (the \class{FLFisheries} object is really just a list of \class{FLFishery} objects, and each \class{FLFishery} object contains a list of \class{FLCatch} objects; the \class{fwdBiols} class is a list of \class{fwdBiol} objects).
 For example, a row with values \code{(1,2,1)} means that the second \class{FLCatch} in the first \class{FLFishery} of the \class{FLFisheries} member catches the first \class{fwdBiol} of the \class{fwdBiols} member.
 
 \code{FCB} is not a slot in the FLR version of \class{fwdControl}. Instead, it must be generated seperately in R as a matrix, and then attached as an attribute called \textit{FCB} to the \code{target} slot before sending it to C++.
@@ -168,8 +168,6 @@ At the time of writing only SSB and biomass were included.
 To add another type to the vector, simply add it here.
 
 \subsection{Target numbers and simultaneous targets}
-
-As can deal with multiple fisheries and stocks, it can also solve multiple targets at the same time.
 
 As \pkg{FLasher} can have mutiple fisheries and stocks it is possible to have multiple targets in the same time step.
 Each \textit{target} is therefore made up of one or more \textit{simultaneous targets}.
@@ -313,6 +311,9 @@ As mentioned above, as we can have mutiple fisheries and stocks it is possible t
 Each \textit{target} is therefore made up of one or more \textit{simultaneous targets}.
 
 Inside \code{run()}, each target (set of simultaneous targets) is processed in turn.
+Before the first target is processed, the biology in the first target time step is updated, using effort in the previous time step, i.e. the survivors from the last time step of fishing.
+This ensures that we can calculate landings and discards using the effort in the target time step and the abundances.
+It means that we ensure that the biological abundances in the first projection year are consistent with fishing effort in the previous year (and hope that landings and discards are also consistent).
 The number of targets is taken from the \code{get\_ntarget()} method. This accesses the \code(target) column in the control data.frame and relies on the target number staring at 1 and being contiguous.
 
 The basic sequence for each target is:
@@ -323,7 +324,8 @@ The basic sequence for each target is:
     \item Get the desired target values, i.e. the values of the simultaneous targets we want to hit (using the \code{get\_target\_value() method}).
     \item Set the independent variable (effort multiplier) the for the automatic differentiation recording.
     \item Update the effort in each fishery by the effort multiplier.
-    \item Project the operating model in the target timestep (using the \code{project\_timestep()} method).
+    \item Project the biology in the operating model in the target timestep (using the \code{project\_biols()} method). This updates the biology in the timestep, based on the effort in the previous timestep.
+    \item Project the fisheries in the operating model in the target timestep (using the \code{project\_fisheries()} method). This updates the landings and discards in each \class{FLCatch} based on the effort and biology in the timestep.
     \item Get the current values of the simultaneous targets, i.e. the values that resulted from using that effort multiplier (using the \code{get\_target\_value\_hat()} method).
     \item Calculate the error which is the difference between the target values we wanted and the the values we actually have. The length of the error variable is the same as the number of simultaneous targets.
     \item Store the error as the dependent variable for the automatic differentiation recording.

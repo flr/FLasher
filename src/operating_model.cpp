@@ -1246,9 +1246,6 @@ void operatingModel::run(const double indep_min, const double indep_max){
     // Set up effort multipliers - do all iters at once, but keep timesteps, areas, units separate
     std::vector<double> effort_mult(neffort * niter, effort_mult_initial);
     std::vector<adouble> effort_mult_ad(neffort * niter, effort_mult_initial);
-    // Solve for the log of effort so we get always positive effort
-    //std::vector<adouble> log_effort_mult_ad(neffort * niter, log(effort_mult_initial));
-    //std::vector<double> log_effort_mult(neffort * niter, log(effort_mult_initial));
 
     // Update N at start of minimum target timestep (not effort timestep)
     // Assumes it's in the first target set
@@ -1256,6 +1253,10 @@ void operatingModel::run(const double indep_min, const double indep_max){
     // Get min of this
     auto min_target_timestep = *std::min_element(std::begin(target_timestep), std::end(target_timestep));
     //Rprintf("min target timestep:%i\n", min_target_timestep);
+    
+    // Assuming that the target timesteps are contiguous,
+    // we first update the biology in the first target timestep.
+    // This ensures that we have abundance numbers in the first timestep of the projection
     project_biols(min_target_timestep);
 
     // Loop over targets and solve all simultaneous targets in that target set
@@ -1283,17 +1284,9 @@ void operatingModel::run(const double indep_min, const double indep_max){
 
         // Turn tape on
         CppAD::Independent(effort_mult_ad);
-        //CppAD::Independent(log_effort_mult_ad);
         //Rprintf("Turned on tape\n");
-        // Update fisheries.effort() with effort multiplier in that timestep (area and unit effectively ignored)
 
-        // Get effort_mult_ad
-        //std::transform(log_effort_mult_ad.begin(), log_effort_mult_ad.end(), effort_mult_ad.begin(), [](adouble x){return exp(x);});
-        //for (auto i=0; i<effort_mult_ad.size(); ++i){
-        //    Rprintf("effort_mult_ad: %f\n", Value(effort_mult_ad[i]));
-        //}
-        //
-
+        // Update fisheries.effort() with effort multiplier in the effort timestep (area and unit effectively ignored)
         //Rprintf("Updating effort with multipler\n");
         for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
             for (int iter_count = 1; iter_count <= niter; ++ iter_count){
@@ -1304,10 +1297,12 @@ void operatingModel::run(const double indep_min, const double indep_max){
         }
 
         //Rprintf("About to project\n");
-        //project_timestep(target_effort_timestep); 
+        // Project fisheries in the target effort timestep
+        // (landings and discards are functions of effort in the effort timestep)
         project_fisheries(target_effort_timestep); 
-        // If space, update biols too
-        //if ((target_effort_timestep+1) <= biols(1).n().get_dim()[0]){
+        // Project biology in the target effort timestep plus 1
+        // (biology abundances are functions of effort in the previous timestep)
+        // Only update if there is room
         if ((target_effort_timestep+1) <= (biols(1).n().get_dim()[1] * biols(1).n().get_dim()[3])){
             project_biols(target_effort_timestep+1); 
         }
@@ -1332,30 +1327,21 @@ void operatingModel::run(const double indep_min, const double indep_max){
         // Stop recording
         //Rprintf("Turning off tape\n");
         CppAD::ADFun<double> fun(effort_mult_ad, error);
-        //CppAD::ADFun<double> fun(log_effort_mult_ad, error);
-
         //Rprintf("Turned off tape\n");
 
         // Solve the target
         // Reset initial solver value - solver changes the values
         std::fill(effort_mult.begin(), effort_mult.end(), effort_mult_initial);
-        //std::fill(log_effort_mult.begin(), log_effort_mult.end(), log(effort_mult_initial));
 
         //Rprintf("Calling NR\n");
         // indep_min and max should be arguments to run and passable from R
         auto nr_out = newton_raphson(effort_mult, fun, niter, nsim_targets, indep_min, indep_max);
-        //auto nr_out = newton_raphson(log_effort_mult, fun, niter, nsim_targets);
         //Rprintf("NR done\n");
 
         // Check nr_out - if not all 1 then something has gone wrong - flag up warning
 
-        // Get effort
-        //std::transform(log_effort_mult.begin(), log_effort_mult.end(), effort_mult.begin(), [](double x){return exp(x);});
-        //for (auto i=0; i<effort_mult_ad.size(); ++i){
-        //    Rprintf("effort_mult: %f\n", effort_mult[i]);
-        //}
         
-       Rprintf("effort_mult: %f\n", effort_mult[0]);
+        Rprintf("effort_mult: %f\n", effort_mult[0]);
 
         Rprintf("Updating effort with solved effort mult\n");
         for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
