@@ -32,6 +32,7 @@ class fwdSR_base {
 
         // Evaluate the model only 1 value at a time
         T eval_model(const T srp, int year, int unit, int season, int area, int iter);
+        T eval_model(const T srp, const std::vector<unsigned int>);
 
         // Typedef for the SRR model functions
         typedef T (*srr_model_ptr)(const T, const std::vector<double>);

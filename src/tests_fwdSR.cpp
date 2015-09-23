@@ -28,7 +28,7 @@ int test_fwdSR_get_nparams(std::string model_name, const FLQuant params, const F
 // [[Rcpp::export]]
 double test_fwdSR_eval(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const double srp, const std::vector<unsigned int> param_indices){
     fwdSR fwdsr(model_name, params, residuals, residuals_mult);
-    double rec = fwdsr.eval_model(srp, param_indices[0], param_indices[1], param_indices[2], param_indices[3], param_indices[4]);
+    double rec = fwdsr.eval_model(srp, param_indices);
     return rec;
 }
 

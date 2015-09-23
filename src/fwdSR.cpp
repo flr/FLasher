@@ -99,13 +99,18 @@ fwdSR_base<T>& fwdSR_base<T>::operator = (const fwdSR_base<T>& fwdSR_source){
 	return *this;
 }
 
-/*! \brief Evaluates the SR model
+
+/*! \name Evaluate the SR model
  *
  * Produces a single value of recruitment given a single value of the SRP.
  * The SR parameters can vary with time, area etc. so it is necessary to also pass in the indices (starting from 1) for the parameters.
  * If the parameters are fixed in any dimension, then the index should be 1 for that dimension.
  * If the index passed in is greater than that dimension in the parameter FLQuant a value of 1 will be used instead.
  *
+ */
+//@{
+/*!
+ * \brief Evaluates the SR model
  * \param srp The spawning reproductive potential that produces the recruitment.
  * \param year The year of the SR parameters to use.
  * \param unit The unit of the SR parameters to use.
@@ -139,6 +144,22 @@ T fwdSR_base<T>::eval_model(const T srp, int year, int unit, int season, int are
     T rec = model(srp, model_params);
     return rec;
 }
+/*!
+ * \brief Evaluates the SR model
+ * \param srp The spawning reproductive potential that produces the recruitment.
+ * \param params_indices The indices of the SR params (starting at 1).
+ */
+template <typename T>
+T fwdSR_base<T>::eval_model(const T srp, const std::vector<unsigned int> params_indices){ 
+    // Check length of params_indices
+    if (params_indices.size() != 5){
+        Rcpp::stop("In fwdSR::eval_model. params_indices must be of length 5.");
+    }
+    T rec = eval_model(srp, params_indices[0], params_indices[1], params_indices[2], params_indices[3], params_indices[4]);
+    return rec;
+}
+//@}
+
 
 /*! \brief Number of SR parameters.
  *
