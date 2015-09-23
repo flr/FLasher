@@ -33,7 +33,7 @@ fwdBiolAD test_fwdBiolAD_as_wrap(fwdBiolAD fwdb){
 
 // [[Rcpp::export]]
 Rcpp::List test_fwdBiol_fwdSR_constructor(SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult){
-    fwdSR fwsr(model_name, params, timelag, residuals, residuals_mult);
+    fwdSR fwsr(model_name, params, residuals, residuals_mult);
     fwdBiol fwb(flb_sexp, fwsr);
 	return Rcpp::List::create(Rcpp::Named("fwb", fwb),
 				Rcpp::Named("srr",fwb.get_srr()));
@@ -48,7 +48,7 @@ Rcpp::List test_fwdBiol_FLSR_bits_constructor(SEXP flb_sexp, const std::string m
 
 // [[Rcpp::export]]
 Rcpp::List test_fwdBiolAD_fwdSRAD_constructor(SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult){
-    fwdSRAD fwsr(model_name, params, timelag, residuals, residuals_mult);
+    fwdSRAD fwsr(model_name, params, residuals, residuals_mult);
     fwdBiolAD fwb(flb_sexp, fwsr);
 	return Rcpp::List::create(Rcpp::Named("fwb", fwb),
 				Rcpp::Named("srr",fwb.get_srr()));

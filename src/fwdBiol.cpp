@@ -61,7 +61,7 @@ fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp, const fwdSR_base<T> srr_in){
 template <typename T>
 fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult){
     //Rprintf("In FLBiol and FLSR bits constructor.\n");
-    fwdSR_base<T> srr(model_name, params, timelag, residuals, residuals_mult);
+    fwdSR_base<T> srr(model_name, params, residuals, residuals_mult);
     init(flb_sexp, srr);
 }
 

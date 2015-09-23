@@ -181,6 +181,7 @@ FLQuantAD test_operatingModel_fbar_subset(FLFisheriesAD flfs, SEXP flbs_list_sex
 }
 
 
+/*
 // [[Rcpp::export]]
 operatingModel test_operatingModel_project_timestep(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int timestep){
     fwdBiolsAD biols(flbs_list_sexp);
@@ -213,6 +214,7 @@ operatingModel test_operatingModel_project_biols_then_fisheries(FLFisheriesAD fl
     om.project_fisheries(timestep);
     return om;
 }
+*/
 
 
 
@@ -227,6 +229,7 @@ FLQuantAD test_operatingModel_Z(FLFisheriesAD flfs, SEXP flbs_list_sexp, const f
 
 /*----------- Project timestep --------------*/
 
+/*
 // [[Rcpp::export]]
 operatingModel test_operatingModel_project(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int timestep){
     fwdBiolsAD biols(flbs_list_sexp);
@@ -234,6 +237,7 @@ operatingModel test_operatingModel_project(FLFisheriesAD flfs, SEXP flbs_list_se
     om.project_timestep(timestep);
     return om;
 }
+*/
 
 /*----------- target calculations--------------*/
 
@@ -357,6 +361,7 @@ std::vector<double> test_operatingModel_get_target_value_hat2(FLFisheriesAD flfs
     return out;
 }
 
+/*
 // [[Rcpp::export]]
 operatingModel test_operatingModel_run(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const double indep_min, const double indep_max){
     fwdBiolsAD biols(flbs_list_sexp);
@@ -365,4 +370,4 @@ operatingModel test_operatingModel_run(FLFisheriesAD flfs, SEXP flbs_list_sexp, 
     return om;
 }
 
-
+*/

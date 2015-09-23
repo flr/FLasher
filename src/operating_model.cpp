@@ -630,6 +630,7 @@ void operatingModel::project_fisheries(const int timestep){
     If a Biol is caught by multiple Catches, the fishing mortalities happen at the same time (and at the same time as the natural mortality) in the timestep.
     \param timestep The time step for the projection.
  */
+/*
 void operatingModel::project_biols(const int timestep){
     // N2 = N1 * (exp -Z)
     Rprintf("In operatingModel::project_biols\n");
@@ -726,6 +727,7 @@ void operatingModel::project_biols(const int timestep){
 
     return;
 }
+*/
 
 
 // Baranov catch equation: assumes that instantaneous rate of fishing and natural mortalities are constant over time and age
@@ -741,6 +743,7 @@ void operatingModel::project_biols(const int timestep){
     If a Biol is caught by multiple Catches, the fishing mortalities happen at the same time (and at the same time as the natural mortality) in the timestep.
     \param timestep The time step for the projection.
  */
+/*
 void operatingModel::project_timestep(const int timestep){
     // C = (pF / Z) * (1 - exp(-Z)) * N
     // N2 = N1 * (exp -Z)
@@ -915,6 +918,7 @@ void operatingModel::project_timestep(const int timestep){
     
     return; 
 }
+*/
 
 
 // Returns the indices of the age range, starts at 0
@@ -1231,6 +1235,7 @@ std::vector<double> operatingModel::get_target_value(const int target_no, const 
 //@}
 
 
+/*
 void operatingModel::run(const double indep_min, const double indep_max){
     Rprintf("In run\n");
 
@@ -1363,6 +1368,7 @@ void operatingModel::run(const double indep_min, const double indep_max){
     }
     Rprintf("Leaving run\n");
 }
+*/
 
 
 
