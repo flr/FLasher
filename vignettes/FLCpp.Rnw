@@ -47,7 +47,7 @@
 
 \begin{document}
 
-\title{FLCpp - FLR classes in C++}
+\title{FLCpp - Fisheries Library in C++}
 
 \author[1]{Finlay Scott}
 \author[1]{Iago Mosqueira}
@@ -522,12 +522,11 @@ expect_that(flqs[[3]], equals(flq1))
 \section{Stock-recruitment relationships with \class{fwdSR}}
 
 The \class{fwdSR} class is used to represent stock-recruitment (SR) dynamics.
-It includes several components:
+It includes several members:
 
 \begin{itemize}
     \item the SR function;
     \item the parameters of the SR function;
-    \item the time lag between spawning and recruitment;
     \item the residuals;
     \item whether the residuals are multiplicative or not.
 \end{itemize}
@@ -536,87 +535,97 @@ It includes several components:
 
 Internally the SR function in a \class{fwdSR} object is a function pointer to one of several already included SR functions.
 A \class{std::map<>} is used to select the correct function for the function pointer.
-The SR functions are declared at the bottom of the fwdSR.h script and defined at the bottom of the fwdSR.cpp script.
-The model map is initialised in the \code{init\_model\_map()} method in fwdSR.cpp.
-The arguments for each function are a single \class{T} value for SSB (where \class{T} is either a \class{double} or an \class{adouble}), and a \class{std::vector<double} for the parameters (of length equal to the number of parameters). The function returns a single \class{T} value of recruitment.
+The SR functions are declared at the bottom of the \code{fwdSR.h} script and defined at the bottom of the \code{fwdSR.cpp} script.
+The model map is initialised by the \code{init\_model\_map()} method which is called by the class constructor.
+The arguments for the included SR functions are the same: are a single \class{T} value for Stock Reproductive Potential (SRP) (where \class{T} is either a \class{double} or an \class{adouble}), and a \class{std::vector<double} for the parameters (of length equal to the number of parameters). The function returns a single \class{T} value of recruitment.
 The possibility of using an \class{adouble} was added in case we can do something exciting with fitting SR models but this hasn't been thought through yet.
 
-At the time of writing only two SR functions have been written: \code{ricker()} and \code{bevholt()}.
+Three SR functions have been written: \code{ricker()}, \code{bevholt()} and \code{constant()}. Multiple names in the model map can be mapped to the same SR function allowing for multiple spellings of the model (e.g. 'Ricker' and 'ricker').
 
-To add a new SR function you have to do three things:
+To add a new permanent SR model to the package you have to do three things:
 
 \begin{enumerate}
-    \item Write a new function declaration in fwdSR.h. The function should have the arguments as described above (see existing functions for structure).
-    \item Write the function code in fwdSR.cpp (again, see existing functions for structure).
-    \item Add the new function to the model map by adding lines to the \code{init\_model\_map()} in fwdSR.cpp. The right-hand side is the name of your new function. The left-hand side is the character string that your model will be called by the user in \R (copy the existing style).
+    \item Write a new SR function declaration in \code{fwdSR.h}. The function should have \textit{exactly} the same arguments as described above (see existing functions for structure).
+    \item Write the function code in \code{fwdSR.cpp} (again, see existing functions for structure).
+    \item Add the new function to the model map by adding lines to the \code{init\_model\_map()} method in \code{fwdSR.cpp}. The right-hand side is the name of your new function, prefixed by \code{&} (the address operator). The left-hand side is the character string that your model will be called by the user in \R (copy the existing style).
 \end{enumerate}
 
-\subsection{The time lag}
+There is the possibility of being able to write a new SR model in a live R session. The code can be written in C++, and through the use of \pkg{Rcpp} external pointers be used by \class{fwdSR}. An example of how this can be implemented is in the \pkg{funcPtrPkg}. This functionality has not yet been added to \pkg{FLasher}.
 
-The time lag is the number of time steps between spawning and recruitment. A time step is in either year or seasons.
-The time lag is not used by the \class{fwdSR} object when calculating recruitment. It is only used by the operating model that uses the \class{fwdSR} to make sure that the correct time step of SSB is used.
+%\subsection{The time lag}
+%
+% REMOVED - ADD TO BIOL
+%The time lag is the number of time steps between spawning and recruitment. A time step is in either year or seasons.
+%The time lag is not used by the \class{fwdSR} object when calculating recruitment. It is only used by the operating model that uses the \class{fwdSR} to make sure that the correct time step of SSB is used.
+%
 
 \subsection{The SR parameters}
 
-The parameters are stored as an \class{FLQuant}. The first dimension is used for the parameters. The other dimensions allow the parameters to vary over year, unit, season, area and iter if necessary. If the parameters are constant in that dimension, for example if the parameters do not change with year or season, then those dimensions have length 1.
+The parameters are stored as an \class{FLQuant}. The first dimension is used for the parameters. The other dimensions allow the parameters to vary over year, unit, season, area and iter if necessary. If the parameters are fixed in a dimension, for example if the parameters do not change with year or season, then those dimensions have length 1.
+For example, in the simplest case, the \code{alpha} and \code{beta} parameters for the Ricker SR function are constant over all dimensions and so would be stored in an \class{FLQuant} with dimensions (2,1,1,1,1,1).
+If the parameters do vary with one of the dimensions, they should have the same length as that dimension in the model. 
+For example, if your SR parameters vary with season and there are 4 seasons in the projection model, the parameter \class{FLQuant} should have a length of 4 in the season dimension.
 
-In the simplest case, the \code{alpha} and \code{beta} parameters for the Ricker SR function are constant over year, unit, season, area and iter and so would be stored in an \class{FLQuant} with dimensions (2,1,1,1,1,1).
-If the parameters do vary with one of the dimensions 2 to 5, they should have the same length as that dimension in the model. Otherwise they should have length 1.
-For example, if your SR parameters vary with season and there are 4 seasons in the model, the parameter \class{FLQuant} should have a length of 4 in the season dimension.
+Note that the order of the parameters in the first dimension is the order they are passed into the SR function. In the SR function they are referenced only by position (starting at 0) not by name.
 
-Note that the order of the parameters in the first dimension is the order they are passed into the SR function.
-
-The SR parameters are passed in from \R as an \class{FLQuant} which means that if they are being taken from an \class{FLSR} object they will need to be converted from an \class{FLPar} class first. NOTE: after developing this class, I added a function to convert \class{FLPar} objects to \class{FLQuant} objects (used by \class{FLCatch}). This code could be used to pass in the SR parameters directly as an \class{FLPar} without the need for additional conversion.
+The SR parameters are passed in from \R as an \class{FLQuant} which means that if they are being taken from an \class{FLSR} object they will need to be converted from an \class{FLPar} class first.
+NOTE: after developing this class, I added a C++ function to convert \class{FLPar} objects to \class{FLQuant} objects (used by \class{FLCatch}). This code could be used to pass in the SR parameters directly as an \class{FLPar} without the need for additional conversion.
 
 \subsection{Evaluating the SR function with the SR parameters}
 
-To evaluate the SR function the \code{eval\_model()} method is used. This takes a single value of the SSB (as either a \class{double} or an \class{adouble}) plus indices for the year to iter dimension. The dimension indices are passed in so that the correct SR params are used. A single value of recruitment, of the same type as SSB, is returned.
+To evaluate the SR function the \code{eval\_model()} method is used. This takes a single value of the SSB (as either a \class{double} or an \class{adouble}) plus indices for the year to iter dimension. The dimension indices are passed in to select the correct SR params from the \code{params} member. A single value of recruitment, of the same type as SSB, is returned.
+Note that the dimension indices start from 1 and cannot be passed as names. For example, if your SR parameters varied with year and had a year range of 2000 to 2010, to evaluate the recruitment in year 2005, the year argument to \code{eval\_model()} would be 6.
 
-Note that the indices start from 1 and cannot be passed as names. For example, if your SR parameters varied with year and had a year range of 2000 to 2010, to evaluate the recruitment in year 2005, the year argument to \code{eval\_model()} would be 6.
+If you try to access SR parameters outside of their range, then an index value of 1 is used and no error is thrown. For example, if your SR params only have one year and you ask for year 10, year 1 is used.
 
-The \code{eval\_model()} method only processes one SSB value at a time.
-It does not apply residuals which are dealt with after \code{eval\_model()} has been called.
+The \code{eval\_model()} method only processes one SRP value at a time, i.e. you cannot pass a vector of SRP values.
+Also, the method does not apply residuals. These are dealt with after \code{eval\_model()} has been called. BY THE PREDICT METHOD
+
 
 \subsection{Residuals}
 
-Residuals are stored as an \class{FLQuant}. No check is made that the residuals are the right size (i.e. are the same size as the other objects in your operating model) but if you try to access the residuals outside of their range then it will fail nicely with a message.
+Residuals are stored as an \class{FLQuant}. No check is made in the constructors that the residuals are the right size (i.e. are the same size as the other objects in your operating model).
+% but if you try to access the residuals outside of their range then it will fail nicely with a message. NOT REALLY TRUE. IT WILL JUST FAIL WITH AN OUT OF RANGE FLQUANT MESSAGE
+
 The residuals are accessed by the \code{get\_residuals()} method.
 
-The residuals are not applied by the \code{eval\_model()}. They are just there for you to use them as you want. The same is true for the member which stores if the residuals are multiplicative or not (accessed throught the \code{get\_residuals\_mult()} method).
-For example, in the \code{project\_timestep()} method of the \class{operatingModel} class, the recruitment is first calculated given the SSB, then the residuals are applied by hand.
+The residuals are not applied by the \code{eval\_model()} as this method was really designed to \textit{only} evaluate the SR function, for a given SRP at a particular timestep, area etc. 
 
-It may be better for the residuals to be applied in the \code{eval\_model()} method, but this method was really designed to \textit{only} evaluate the SR function, i.e. get the deterministic recruitment.
+%They are just there for you to use them as you want. The same is true for the member which stores if the residuals are multiplicative or not (accessed throught the \code{get\_residuals\_mult()} method).
+%For example, in the \code{project\_timestep()} method of the \class{operatingModel} class, the recruitment is first calculated given the SSB, then the residuals are applied by hand.
+% ADD PREDICT METHOD
+
 
 \subsection{Creating and using a \class{fwdSR}}
 \label{sec:usingfwdSR}
 
-Here we give some simple examples that illustrate the \class{fwdSR} class works.
-However, it is not particularly useful to use the class outside of an operating model.
+Here we give some simple examples that illustrate how the \class{fwdSR} class works.
+At the moment it is not particularly useful to use the class outside of an operating model. This could change if fitting models using automatic differentiation becomes a feature.
 
-There is no implict \code{as<>} or \code{wrap<>} code for the \class{fwdSR} class because the class does not exist in FLR, only in the C++ code (Note: you could write an \code{as<>} that based on a \class{list} of components but I didn't see the advantage as you will still have to compile the list of components yourself. Same goes for \code{wrap<>}. We don't need to return an \class{fwdSR} object to \R, except for testing, so there was no point in writing \code{wrap<>}).
+There is no implict \code{as<>} or \code{wrap<>} code for the \class{fwdSR} class because the class does not exist in FLR, only in the C++ code (Note: you could write an \code{as<>} that is based on a \class{list} of components but I didn't see the advantage as you will still have to compile the list of components yourself. Same goes for \code{wrap<>}. We don't need to return an \class{fwdSR} object to \R, except for testing, so there was no point in writing in a proper \code{wrap<>} method (one exists for testing purposes only)).
+
 Instead we need to call the \class{fwdSR} constructor with the right arguments.
 These are:
 
 \begin{itemize}
     \item The name of the model as a character string. The model should be in the model map, otherwise the call to the constructor will fail.
     \item The SR parameters as an \class{FLQuant}.
-    \item The time lag. An integer.
     \item The residuals. An \class{FLQuant} for which dimensions 2 to 6 are of the same size as the other objects in the operating model.
     \item A boolean to describe if the residuals are multiplicative (TRUE) or additive (FALSE).
 \end{itemize}
 
-
 It may be possible to make one from an \class{FLSR} object so if you want to write the code, please do.
 
-First we write a simple wrapper function to the \class{fwdSR} constructor in C++ and evaluate the model with the passed in value of SSB at a particular time step, unit etc.
+First we write a simple wrapper function to the \class{fwdSR} constructor in C++ that evaluates the model with the passed in value of SSB at a particular time step, unit etc.
+This is taken from the test suite for \class{fwdSR}.
 
 <<access_fwdsr_constructor>>=
 source = '
-    double test_fwdSR_eval(std::string model_name, FLQuant params, int timelag, FLQuant residuals, bool residuals_mult, double ssb, int year, int unit, int season, int area, int iter){
-        fwdSR fwdsr(model_name, params, timelag, residuals, residuals_mult);
-        double out = fwdsr.eval_model(ssb, year, unit, season, area, iter);
-        return out;
-    }
+    double test_fwdSR_eval(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const double srp, const std::vector<unsigned int> param_indices){
+        fwdSR fwdsr(model_name, params, residuals, residuals_mult);
+        double rec = fwdsr.eval_model(srp, param_indices);
+        return rec;
+}
 '
 cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
 @
@@ -635,19 +644,19 @@ params <- as.FLQuant(params(ple4_sr_ricker))
 # Look at the params
 dimnames(params)
 # The first dimension is for the parameters a and b.
-# Dimensions 2 to 6 are of length 1.
-# We don't use the residuals or the timelag in this example but we need them for the fwdSR constructor
+# Dimensions 2 to 6 are of length 1 and are for year, season etc.
+# We don't use the residuals in this example but we need them for the fwdSR constructor so must be included.
 # Get the residuals - thay are already an FLQuant
 residuals <- residuals(ple4_sr_ricker)    
 # These are multiplicative on the log scale
 residuals_mult <- TRUE
-# The time lag is 1 time step, i.e. 1 year (e.g. SSB in 2000 determines recruitment in 2001)
-timelag = 1
-# Finally we need a value of SSB 
+# Finally we need a value of SRP 
+# Here we use SSB as a measure of SSB.
 # Just pull out the SSB in the first year of ple4 and make it a single numeric
 ssb <- c(ssb(ple4)[,1])
 # Eval the function for the first year, unit, season etc.
-test_fwdSR_eval('ricker', params, timelag, residuals, residuals_mult, ssb, 1, 1, 1, 1, 1)
+param_indices <- c(1,1,1,1,1)
+test_fwdSR_eval('ricker', params, residuals, residuals_mult, ssb, param_indices)
 # Is this value right? Use the FLR method to check
 predict(ple4_sr_ricker, ssb=FLQuant(ssb))
 @
@@ -657,48 +666,48 @@ predict(ple4_sr_ricker, ssb=FLQuant(ssb))
 In this example, the SR parameters are still fixed in time and other dimensions (2 to 5) but the timestep of the model is seasonal
 with 4 seasons.
 If the season dimension of the SR parameters is of length 1 then the same parameter values will be used for all seasons.
-The \code{project\_timestep()} method in \pkg{FLasher} evaluates the SR model \textit{at every time step}.
+The projection methods in \pkg{FLasher} evaluate the SR model \textit{at every time step}.
 This means that if the season dimension of the SR parameters is of length 1, the stock will effectively recruit at every time step.
-This is probably not what you want.
+This is probably not what you want. We deal with this below. 
 
-Here is an example to demonstrate this using the objects created above. We only have 1 season in the SR params and consequently this is used for all seasons that the SR mode is evaluated:
+Here is an example to demonstrate this behaviour using the objects created above. We only have 1 season in the SR params and consequently this is used for all seasons that the SR mode is evaluated:
 
 <<fwdsr_bad_season_example>>=
 # Evaluate the value in season 1
-test_fwdSR_eval('ricker', params, timelag, residuals, residuals_mult, ssb, 1, 1, 1, 1, 1)
+test_fwdSR_eval('ricker', params, residuals, residuals_mult, ssb, c(1, 1, 1, 1, 1))
 # Evaluate the value in season 2
-test_fwdSR_eval('ricker', params, timelag, residuals, residuals_mult, ssb, 1, 1, 2, 1, 1)
+test_fwdSR_eval('ricker', params, residuals, residuals_mult, ssb, c(1, 1, 2, 1, 1))
 # Evaluate the value in season 3
-test_fwdSR_eval('ricker', params, timelag, residuals, residuals_mult, ssb, 1, 1, 3, 1, 1)
+test_fwdSR_eval('ricker', params, residuals, residuals_mult, ssb, c(1, 1, 3, 1, 1))
 # Evaluate the value in season 4
-test_fwdSR_eval('ricker', params, timelag, residuals, residuals_mult, ssb, 1, 1, 4, 1, 1)
+test_fwdSR_eval('ricker', params, residuals, residuals_mult, ssb, c(1, 1, 4, 1, 1))
 @
 
-If your stock only recruits in 1 season (or twice a year etc.), you must set the SR parameters to have seasons, and set the values of the parameters to give the required recruitment.
+If you have a seasonal model and your stock only recruits in one season (or not in every season), your SR parameters should be seasonally disaggregated and the values set so that recruitment in the non-recruitment seasons is zero.
 
 In the following example, the stock only recruits in season 2.
 We set up an \class{FLQuant} for the parameters, but set the parameter values to 0 in seasons 1, 3 and 4.
 
 <<fwdsr_season_2_example>>=
+# Set up some parameters so that only the values in season 2 are not 0
 season_params <- FLQuant(0, dimnames=list(params = c('a', 'b'), season = 1:4))
 season_params[,,,2] <- c(params(ple4_sr_ricker))
 season_params
 # Evaluate the value in season 1
-test_fwdSR_eval('ricker', season_params, timelag, residuals, residuals_mult, ssb, 1, 1, 1, 1, 1)
+test_fwdSR_eval('ricker', season_params, residuals, residuals_mult, ssb, c(1, 1, 1, 1, 1))
 # Evaluate the value in season 2
-test_fwdSR_eval('ricker', season_params, timelag, residuals, residuals_mult, ssb, 1, 1, 2, 1, 1)
+test_fwdSR_eval('ricker', season_params, residuals, residuals_mult, ssb, c(1, 1, 2, 1, 1))
 # Evaluate the value in season 3
-test_fwdSR_eval('ricker', season_params, timelag, residuals, residuals_mult, ssb, 1, 1, 3, 1, 1)
+test_fwdSR_eval('ricker', season_params, residuals, residuals_mult, ssb, c(1, 1, 3, 1, 1))
 # Evaluate the value in season 4
-test_fwdSR_eval('ricker', season_params, timelag, residuals, residuals_mult, ssb, 1, 1, 4, 1, 1)
+test_fwdSR_eval('ricker', season_params, residuals, residuals_mult, ssb, c(1, 1, 4, 1, 1))
 # Evaluate the value in season 5 - even though there is no season 5
-test_fwdSR_eval('ricker', season_params, timelag, residuals, residuals_mult, ssb, 1, 1, 5, 1, 1)
+test_fwdSR_eval('ricker', season_params, residuals, residuals_mult, ssb, c(1, 1, 5, 1, 1))
 # If the season you ask for is not in the params, it just uses season 1
-# This is dangerous and should be changed to fail or give a warning
+# This is potentially dangerous! 
 @
 
-So now even though \code{project\_timestep()} evaluates the SR function at every timestep, the effective recruitment in the timesteps where the stock does not recruit is 0.
-
+So now even though the projection method evaluates the SR function at every timestep, the effective recruitment in the timesteps where the stock does not recruit is 0.
 
 \subsubsection{An example with parameters changing over time}
 
