@@ -160,6 +160,55 @@ T fwdSR_base<T>::eval_model(const T srp, const std::vector<unsigned int> params_
 }
 //@}
 
+/*! \brief Predict recruitment
+ *
+ * Calculates the recruitment from an FLQuant of SRP. The SRP can be a subset of the 'full' model SRP
+ * (e.g. can be only one season out of all seasons, or several years out of all years).
+ * For this reason it is necessary to also pass in a vector of indices to specify the start
+ * position of the SR params and residuals, relative to the full model range. 
+ * i.e. the index of the params and residuals that corresponds with the first value in the SRP vector.
+ * Calls the eval() method to calculate deterministic recruitment then applies the residuals.
+ *
+ * \param srp The spawning reproductive potential that produces the recruitment.
+ * \param initial_params_indices A vector of length 5 (year, unit, ... iter) to specify the start position of the indices of the SR params relative to the 'whole' operating model (starting at 1).
+ */
+template <typename T>
+FLQuant_base<T> fwdSR_base<T>::predict_recruitment(const FLQuant_base<T> srp, const std::vector<unsigned int> initial_params_indices){ 
+    // Check length of params_indices
+    if (initial_params_indices.size() != 5){
+        Rcpp::stop("In fwdSR::predict_recruitment. initial_params_indices must be of length 5.\n");
+    }
+    std::vector<unsigned int> srp_dim = srp.get_dim();
+    // SRP must be of length 1 in the first dimension
+    if (srp_dim[0] != 1){
+        Rcpp::stop("In fwdSR::predict_recruitment. srp must be of length 1 in the first dimension.\n");
+    }
+    // Empty output object
+    FLQuant_base<T> rec = srp;
+    rec.fill(0.0);
+    // Going to have to loop over the dimensions - not nice
+    std::vector<unsigned int> params_indices = initial_params_indices;
+    for (unsigned int year_counter = 1; year_counter <= srp_dim[1]; ++year_counter){
+        params_indices[0] = initial_params_indices[0] + year_counter - 1;
+        for (unsigned int unit_counter = 1; unit_counter <= srp_dim[2]; ++unit_counter){
+            params_indices[1] = initial_params_indices[1] + unit_counter - 1;
+            for (unsigned int season_counter = 1; season_counter <= srp_dim[3]; ++season_counter){
+                params_indices[2] = initial_params_indices[2] + season_counter - 1;
+                for (unsigned int area_counter = 1; area_counter <= srp_dim[4]; ++area_counter){
+                    params_indices[3] = initial_params_indices[3] + area_counter - 1;
+                    for (unsigned int iter_counter = 1; iter_counter <= srp_dim[5]; ++iter_counter){
+                        params_indices[4] = initial_params_indices[4] + iter_counter - 1;
+                        T rec_temp = eval_model(srp(1, year_counter, unit_counter, season_counter, area_counter, iter_counter), params_indices);
+                            if (residuals_mult == true){
+                                rec_temp *= residuals(1, params_indices[0], params_indices[1], params_indices[2], params_indices[3], params_indices[4]);
+                            }
+                            else {
+                                rec_temp += residuals(1, params_indices[0], params_indices[1], params_indices[2], params_indices[3], params_indices[4]);
+                            }
+                        rec(1, year_counter, unit_counter, season_counter, area_counter, iter_counter) = rec_temp;
+                    }}}}}
+    return rec;
+}
 
 /*! \brief Number of SR parameters.
  *

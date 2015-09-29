@@ -5414,6 +5414,22 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_fwdSR_predict_recruitment
+FLQuant test_fwdSR_predict_recruitment(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const FLQuant srp, const std::vector<unsigned int> initial_params_indices);
+RcppExport SEXP FLasher_test_fwdSR_predict_recruitment(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP srpSEXP, SEXP initial_params_indicesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::string >::type model_name(model_nameSEXP);
+    Rcpp::traits::input_parameter< const FLQuant >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const FLQuant >::type residuals(residualsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP);
+    Rcpp::traits::input_parameter< const FLQuant >::type srp(srpSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type initial_params_indices(initial_params_indicesSEXP);
+    __result = Rcpp::wrap(test_fwdSR_predict_recruitment(model_name, params, residuals, residuals_mult, srp, initial_params_indices));
+    return __result;
+END_RCPP
+}
 // test_euclid_norm
 double test_euclid_norm(std::vector<double> xvec);
 RcppExport SEXP FLasher_test_euclid_norm(SEXP xvecSEXP) {

@@ -571,6 +571,12 @@ Note that the order of the parameters in the first dimension is the order they a
 The SR parameters are passed in from \R as an \class{FLQuant} which means that if they are being taken from an \class{FLSR} object they will need to be converted from an \class{FLPar} class first.
 NOTE: after developing this class, I added a C++ function to convert \class{FLPar} objects to \class{FLQuant} objects (used by \class{FLCatch}). This code could be used to pass in the SR parameters directly as an \class{FLPar} without the need for additional conversion.
 
+\subsection{Residuals}
+
+Residuals are stored as an \class{FLQuant}. No check is made in the constructors that the residuals are the right size (i.e. are the same size as the other objects in your operating model).
+% but if you try to access the residuals outside of their range then it will fail nicely with a message. NOT REALLY TRUE. IT WILL JUST FAIL WITH AN OUT OF RANGE FLQUANT MESSAGE
+The residuals can be accessed by the \code{get\_residuals()} method.
+
 \subsection{Evaluating the SR function with the SR parameters}
 
 To evaluate the SR function the \code{eval\_model()} method is used. This takes a single value of the SSB (as either a \class{double} or an \class{adouble}) plus indices for the year to iter dimension. The dimension indices are passed in to select the correct SR params from the \code{params} member. A single value of recruitment, of the same type as SSB, is returned.
@@ -579,22 +585,16 @@ Note that the dimension indices start from 1 and cannot be passed as names. For 
 If you try to access SR parameters outside of their range, then an index value of 1 is used and no error is thrown. For example, if your SR params only have one year and you ask for year 10, year 1 is used.
 
 The \code{eval\_model()} method only processes one SRP value at a time, i.e. you cannot pass a vector of SRP values.
-Also, the method does not apply residuals. These are dealt with after \code{eval\_model()} has been called. BY THE PREDICT METHOD
+Also, the method does not apply residuals, only deals with the deterministic output from the recruitment function.
+As such it is quite limited and it's direct use by users is not encouraged. Instead the \code{predict\_recruitment()} should be used.
 
+\subsection{Predicting recruitment}
 
-\subsection{Residuals}
+The \code{predict\_recruitment()} method evaluates the SR function for a series of SRP values (passed as an \class{FLQuant}) and applies the residuals (either multiplicative or additive, as determined by the \code{residuals\_mult} member).
 
-Residuals are stored as an \class{FLQuant}. No check is made in the constructors that the residuals are the right size (i.e. are the same size as the other objects in your operating model).
-% but if you try to access the residuals outside of their range then it will fail nicely with a message. NOT REALLY TRUE. IT WILL JUST FAIL WITH AN OUT OF RANGE FLQUANT MESSAGE
+As well as taking an \class{FLQuant} of SRP values, the method also takes a \class{std::vector<unsigned in>} that specifies the initial index position of the required parameters and residuals. This is necessary because it is possible to pass in subsets of the full range of the SRP values and therefore we also need to subset the parameters and residuals appropriately. For example, if we have an operating model with an annual timestep and multiple iterations, we may want to predict recruitment for all iterations but only one of the timesteps (as would happen in the projection methods for an operating model). We would pass in a \class{FLQuant} of SRP values which only had one year and multiple iterations. However, to ensure that the residuals and SR parameters of that particular year were used, we also to tell the method which year we want. This is done using the \code{initial\_params\_indices} argument. It is an integer vector of length 5 that specifies the start positions of the year, unit, season, area and iter of the SR params and residuals to be applied.
 
-The residuals are accessed by the \code{get\_residuals()} method.
-
-The residuals are not applied by the \code{eval\_model()} as this method was really designed to \textit{only} evaluate the SR function, for a given SRP at a particular timestep, area etc. 
-
-%They are just there for you to use them as you want. The same is true for the member which stores if the residuals are multiplicative or not (accessed throught the \code{get\_residuals\_mult()} method).
-%For example, in the \code{project\_timestep()} method of the \class{operatingModel} class, the recruitment is first calculated given the SSB, then the residuals are applied by hand.
-% ADD PREDICT METHOD
-
+The result of \code{predict\_recruitment()} is an \class{FLQuant} of recruitment.
 
 \subsection{Creating and using a \class{fwdSR}}
 \label{sec:usingfwdSR}
@@ -615,6 +615,10 @@ These are:
 \end{itemize}
 
 It may be possible to make one from an \class{FLSR} object so if you want to write the code, please do.
+
+\subsubsection{The \code{eval()} method}
+
+The \code{eval()} method is the method that evaluates the SR function with a given SRP and given SR parameters. It does not apply any residuals to the calculated recruitment.
 
 First we write a simple wrapper function to the \class{fwdSR} constructor in C++ that evaluates the model with the passed in value of SSB at a particular time step, unit etc.
 This is taken from the test suite for \class{fwdSR}.
@@ -654,7 +658,7 @@ residuals_mult <- TRUE
 # Here we use SSB as a measure of SSB.
 # Just pull out the SSB in the first year of ple4 and make it a single numeric
 ssb <- c(ssb(ple4)[,1])
-# Eval the function for the first year, unit, season etc.
+# Eval the C++ function we wrote above for the first year, unit, season etc.
 param_indices <- c(1,1,1,1,1)
 test_fwdSR_eval('ricker', params, residuals, residuals_mult, ssb, param_indices)
 # Is this value right? Use the FLR method to check
@@ -663,14 +667,13 @@ predict(ple4_sr_ricker, ssb=FLQuant(ssb))
 
 \subsubsection{An example with a seasonal timestep}
 
-In this example, the SR parameters are still fixed in time and other dimensions (2 to 5) but the timestep of the model is seasonal
-with 4 seasons.
-If the season dimension of the SR parameters is of length 1 then the same parameter values will be used for all seasons.
+In this example, the SR parameters are still fixed in time but the timestep of the model is seasonal with 4 seasons.
 The projection methods in \pkg{FLasher} evaluate the SR model \textit{at every time step}.
-This means that if the season dimension of the SR parameters is of length 1, the stock will effectively recruit at every time step.
-This is probably not what you want. We deal with this below. 
+This means that if the model has a seasonal timestep, recruitment will happen in every season. If the SR parameters are not disaggregated seasonally, the same SR parameter values will be used to calculate recruitment in every season and year.
+The stock will effectively recruit at every time step, using the same parameter values for each time step.
+This is probably not what you want and we deal with this below. 
 
-Here is an example to demonstrate this behaviour using the objects created above. We only have 1 season in the SR params and consequently this is used for all seasons that the SR mode is evaluated:
+Before we get to that, here is an example to demonstrate this behaviour using the objects created above. We only have 1 season in the SR params and consequently this is used for all seasons that the SR mode is evaluated:
 
 <<fwdsr_bad_season_example>>=
 # Evaluate the value in season 1
@@ -683,6 +686,9 @@ test_fwdSR_eval('ricker', params, residuals, residuals_mult, ssb, c(1, 1, 3, 1, 
 test_fwdSR_eval('ricker', params, residuals, residuals_mult, ssb, c(1, 1, 4, 1, 1))
 @
 
+The effect, as seen above, is that the stock recruits in every season, which is probably not what you want.
+
+The way to control recruitment is through the SR parameters.
 If you have a seasonal model and your stock only recruits in one season (or not in every season), your SR parameters should be seasonally disaggregated and the values set so that recruitment in the non-recruitment seasons is zero.
 
 In the following example, the stock only recruits in season 2.
@@ -701,17 +707,24 @@ test_fwdSR_eval('ricker', season_params, residuals, residuals_mult, ssb, c(1, 1,
 test_fwdSR_eval('ricker', season_params, residuals, residuals_mult, ssb, c(1, 1, 3, 1, 1))
 # Evaluate the value in season 4
 test_fwdSR_eval('ricker', season_params, residuals, residuals_mult, ssb, c(1, 1, 4, 1, 1))
+@
+
+So now even though the projection method evaluates the SR function at every timestep, the effective recruitment in the timesteps where the stock does not recruit is 0.
+
+If you use SR parameter indices that are greater than the dimensions of the SR parameters, then the index will be set to 1 in that dimension.
+For example, if we try to use season 5 of our parameters (which only have 4 seasons), the value for season will be used. An error will not be thrown,
+
+<<example_sr_params_recycling>>=
 # Evaluate the value in season 5 - even though there is no season 5
 test_fwdSR_eval('ricker', season_params, residuals, residuals_mult, ssb, c(1, 1, 5, 1, 1))
 # If the season you ask for is not in the params, it just uses season 1
 # This is potentially dangerous! 
 @
 
-So now even though the projection method evaluates the SR function at every timestep, the effective recruitment in the timesteps where the stock does not recruit is 0.
-
 \subsubsection{An example with parameters changing over time}
 
-To have the SR params change over time / unit / iter etc., simply set up the \class{FLQuant} of parameters to reflect that.
+To have the SR params change over time / unit / iter etc., simply set up the \class{FLQuant} of SR parameters to reflect that.
+For example, here we have SR parameter with an annual timestep, where the parameter values change each year.
 
 <<fwdsr_year_example>>=
 year_params <- FLQuant(NA, dimnames=list(params = c('a', 'b'), year = 1:10))
@@ -721,16 +734,137 @@ year_params['a',] <- c(params['a']) * seq(from=1, to = 1.5, length=10)
 year_params
 
 # Evaluate the value in year 1
-test_fwdSR_eval('ricker', year_params, timelag, residuals, residuals_mult, ssb, 1, 1, 1, 1, 1)
+test_fwdSR_eval('ricker', year_params, residuals, residuals_mult, ssb, c(1, 1, 1, 1, 1))
 # Evaluate the value in year 2 with the same SSB
-test_fwdSR_eval('ricker', year_params, timelag, residuals, residuals_mult, ssb, 2, 1, 1, 1, 1)
+test_fwdSR_eval('ricker', year_params, residuals, residuals_mult, ssb, c(2, 1, 1, 1, 1))
 # Evaluate the value in year 3 with the same SSB
-test_fwdSR_eval('ricker', year_params, timelag, residuals, residuals_mult, ssb, 3, 1, 1, 1, 1)
+test_fwdSR_eval('ricker', year_params, residuals, residuals_mult, ssb, c(3, 1, 1, 1, 1))
 # And so on
 @
 
+This technique can be used when including an environmental covariate in the SR model.
+
 As mentioned above, if you try to access a year or season or whatever that is not in the SR params (i.e. you have gone outside the bounds of the \class{FLQuant}) then the params in position 1 are used.
 
+
+\subsubsection{Predicting recruitment}
+
+The above examples used the \code{eval\_model()} method. This method is limited because it only takes a single value of SRP and does not apply residuals.
+The \code{predict\_recruitment()} method gets round these limitations.
+
+Instead of passing a single value for SRP, you pass in an \class{FLQuant} of SRP. You also need to pass in a vector of integers that specify the initial indices of the residuals and SR parameters.
+
+In the following examples we always use multiplicative residuals. The residuals can be additive by setting the \code{residuals\_mult} member to \code{FALSE}.
+
+First we write a wrapper function that allows us to call the method:
+
+<<wrapper_for_predict_recruitment>>=
+source = '
+    FLQuant test_fwdSR_predict_recruitment(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const FLQuant srp, const std::vector<unsigned int> initial_param_indices){
+        fwdSR fwdsr(model_name, params, residuals, residuals_mult);
+        FLQuant rec = fwdsr.predict_recruitment(srp, initial_param_indices);
+        return rec;
+}
+'
+cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+@
+
+Now we generate some objects to test it. Here we want our SSB and residuals to have an annual timestep and multiple iterations. The SR parameters will be fixed in time and for all iterations.
+
+<<predict_rec_simple_objects>>=
+niters <- 100
+# Make our SSB with iterations - based on ple4 but with noise
+ssb_in <- propagate(ssb(ple4), iter=niters)
+ssb_in[] <- abs(rnorm(prod(dim(ssb_in)), mean=c(ssb(ple4)), sd=10))
+# Shorten it to make it neater
+ssb_in <- window(ssb_in, start=2000, end=2005)
+# Our parameters do not vary by time or have iterations - use the ones above
+params
+# Our residuals have the same dims as the SSB - here we just make up some random numbers
+# The residuals will be multiplicative
+residuals <- ssb_in
+residuals[] <- abs(rnorm(prod(dim(residuals)), mean=1, sd = 0.1))
+residuals
+@
+
+If we wanted the recruitment in all years and iterations, we pass in the objects, specifying that the initial indices are all 1 (the start of the residuals and parameters).
+The vector of initial indices is of length 5, not 6, because the length of the first dimension is always 1 (i.e. the parameters and residuals are not age structured).
+
+<<rec_all_years>>=
+rec <- test_fwdSR_predict_recruitment("ricker", params, residuals, TRUE, ssb_in, c(1, 1, 1, 1, 1))
+rec
+@
+
+If we wanted the recruitment in only one year, we pass in the objects to the method, specifying which year we want for the SR parameters and residuals.
+Here we get the recruitment in year 3 (accessed by index, not by name). The first value of the indices is therefore 3 (the year). The other indices are all 1 (we want all iterations so we start at 1).
+
+<<>>=
+rec <- test_fwdSR_predict_recruitment("ricker", params, residuals, TRUE, ssb_in[,3], c(3, 1, 1, 1, 1))
+rec
+@
+
+In this example we have a seasonal timestep and multiple iterations. First we make the objects.
+Remember that in the projection methods, recruitment happens in every timestep. Here we only want recruitment to happen in season 2. We therefore need to set the SR parameters in seasons 1, 3 and 4 to always give a recruitment value of 0.
+
+<<pred_rec_season_objects>>=
+niters <- 100
+# The SSB object with 4 seasons
+ssb_in <- FLQuant(NA, dim=c(1,dim(ssb(ple4))[2],1,4), iter=niters)
+ssb_in[] <- abs(rnorm(prod(dim(ssb_in)), mean=c(ssb(ple4)), sd=10))
+ssb_in <- window(ssb_in, start=1, end=5)
+ssb_in
+# The parameters
+params_season <- FLQuant(NA, dim=c(2,1,1,4), dimnames=list(param = c("a","b")), iter=niters)
+params_season["a",] <- abs(rnorm(prod(dim(params_season["a",])), mean=c(params["a",]), sd=1))
+params_season["b",] <- abs(rnorm(prod(dim(params_season["b",])), mean=c(params["b",]), sd=1e-6))
+# Set seasons 1, 3, 4 to 0 so that we only reproduces in season 2
+season <- 2
+params_season[,,,!(1:4 %in% 2)] <- 0
+params_season
+# residuals must be same dim as SSB - even if seasonal
+# We also set the residuals to 0 apart from season 2 (only really necessary if additive residuals)
+residuals <- ssb_in
+residuals[] <- abs(rnorm(prod(dim(residuals)), mean=1, sd = 0.1))
+residuals[,,,!(1:4 %in% 2)] <- 0
+residuals
+@
+
+To get the recruitment for all years, seasons and iters, we can just pass in the objects and specify the initial indices to be 1 (the start)
+
+<<rec_season1>>=
+rec <- test_fwdSR_predict_recruitment("ricker", params_season, residuals, TRUE, ssb_in, c(1, 1, 1, 1, 1))
+rec
+@
+
+In a projection it is likely that we only want the recruitment for all iterations in one timestep. Here we get the recruitment in year 2, season 1.
+We subset the SSB and chance the initial indices accordingly.
+
+<<rec_season2>>=
+rec <- test_fwdSR_predict_recruitment("ricker", params_season, residuals, TRUE, ssb_in[,2,,1], c(2, 1, 1, 1, 1))
+rec
+@
+
+It is zero for all iterations (good, we don't recruit in season 1, only season 2).
+
+Here we get the recruitment in year 2, season 2.
+Again, we subset the SSB and chance the initial indices accordingly.
+
+<<rec_season3>>=
+rec <- test_fwdSR_predict_recruitment("ricker", params_season, residuals, TRUE, ssb_in[,2,,2], c(2, 1, 2, 1, 1))
+rec
+@
+
+Is this correct. Let's double check.
+
+<<rec_check>>=
+# Get deterministic recruitment
+recR <- params_season["a",,,2] * ssb_in[,2,,2] * exp(-params_season["b",,,2] * ssb_in[,2,,2])
+# Apply residuals
+recR <- recR * residuals[,2,,2]
+recR
+@
+
+Looks OK.
 
 \section{\class{fwdBiol}}
 \label{sec:fwdBiol}

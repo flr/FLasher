@@ -57,3 +57,10 @@ Rcpp::List test_fwdSR_assignment_operator(std::string model_name, const FLQuant 
 				Rcpp::Named("rec2",rec2));
 }
 
+
+// [[Rcpp::export]]
+FLQuant test_fwdSR_predict_recruitment(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const FLQuant srp, const std::vector<unsigned int> initial_params_indices){
+    fwdSR fwdsr(model_name, params, residuals, residuals_mult);
+    FLQuant rec = fwdsr.predict_recruitment(srp, initial_params_indices);
+    return rec;
+}

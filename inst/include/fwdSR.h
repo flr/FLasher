@@ -32,7 +32,11 @@ class fwdSR_base {
 
         // Evaluate the model only 1 value at a time
         T eval_model(const T srp, int year, int unit, int season, int area, int iter);
-        T eval_model(const T srp, const std::vector<unsigned int>);
+        T eval_model(const T srp, const std::vector<unsigned int> params_indices);
+
+        // Predict recruitment. As eval() but also applies the residuals
+        FLQuant_base<T> predict_recruitment(const FLQuant_base<T> srp, const std::vector<unsigned int> initial_params_indices);
+        
 
         // Typedef for the SRR model functions
         typedef T (*srr_model_ptr)(const T, const std::vector<double>);
