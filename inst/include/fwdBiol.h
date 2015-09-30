@@ -11,7 +11,6 @@
 
 #endif
 
-
 #ifndef _fwdSR_
 #define _fwdSR_
 
@@ -19,8 +18,8 @@
 
 #endif
 
-
 #define _fwdBiol_
+
 /*
  * fwdBiol class
  * Contains biological information (incuding abundance) by age for making projections
@@ -31,19 +30,17 @@
 // Necessary to declare this here so that operatingModel class can have access to fwdSR as a friend
 template <typename T>
 class operatingModel_base;
-/* Making a templated equivalent */
-// Only n is templated and can be ADOLC
-// The other slots are fixed because they are never dependent
-// T is double or adouble
+
 template <typename T>
 class fwdBiol_base {
     public:
-        // /* Constructors */
+        /* Constructors */
 		fwdBiol_base();
-		fwdBiol_base(SEXP flb_sexp); // Used as intrusive 'as', takes an FLBiol but with no SRR
+		fwdBiol_base(const SEXP flb_sexp); // Used as intrusive 'as', takes an FLBiol but with no SRR
+        fwdBiol_base(const SEXP flb_sexp, const fwdSR_base<T> srr_in);  // Pass in FLBiol and fwdSR
+        fwdBiol_base(const SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult); // Pass in FLBiol and bits of fwdSR
+        
         operator SEXP() const; // Used as intrusive 'wrap' - returns an FLBiol
-        fwdBiol_base(const SEXP flb_sexp, const fwdSR_base<T> srr_in); // Pass in FLBiol and fwdSR
-        fwdBiol_base(const SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult = TRUE); // Pass in FLBiol and bits of fwdSR
 
 		fwdBiol_base(const fwdBiol_base& fwdBiol_base_source); // copy constructor to ensure that copy is a deep copy - used when passing FLSs into functions
 		fwdBiol_base& operator = (const fwdBiol_base& fwdBiol_base_source); // Assignment operator for a deep copy
@@ -59,11 +56,8 @@ class fwdBiol_base {
         FLQuant spwn(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant fec() const;
         FLQuant fec(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-
-        // SSB calculations not implemented here - need harvest.spwn information
-        //FLQuant_base<T> ssb() const;
-        //std::vector<T> ssb(const int timestep) const;
-        //T ssb(const int timestep, const int iter) const;
+        FLQuant mat() const;
+        FLQuant mat(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
         // Accessor methods (get and set) for the slots
         FLQuant_base<T>& n();
@@ -71,15 +65,16 @@ class fwdBiol_base {
         FLQuant& m();
         FLQuant& spwn();
         FLQuant& fec();
-
-        // Summary methods
-        FLQuant_base<T> biomass() const;
-        FLQuant_base<T> biomass(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; // subsetting
+        FLQuant& mat();
 
         fwdSR_base<T> get_srr() const;
         std::string get_name() const;
         std::string get_desc() const;
         Rcpp::NumericVector get_range() const;
+
+        // Summary methods
+        FLQuant_base<T> biomass() const;
+        FLQuant_base<T> biomass(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; // subsetting
 
         // Added a friend so that operating model can access the SRR
         friend class operatingModel;
@@ -93,8 +88,7 @@ class fwdBiol_base {
         FLQuant m_flq;
         FLQuant spwn_flq;
         FLQuant fec_flq;
-        // Annoying init because you can't delegate constructors until C++11
-        void init(const SEXP flb_sexp, const fwdSR_base<T> srr_in);
+        FLQuant mat_flq;
         fwdSR_base<T> srr;
 };
 
@@ -110,11 +104,14 @@ class fwdBiols_base {
     public:
         /* Constructors */
 		fwdBiols_base();
-		fwdBiols_base(SEXP flbs_list_sexp); // Used as intrusive 'as', takes a list of fwdBiol objects components as an SEXP (could take a Rcpp::List for more safety)
-        operator SEXP() const; // Used as intrusive 'wrap' - returns an FLBiols
+		//fwdBiols_base(SEXP flbs_list_sexp); // Used as intrusive 'as', takes a list of fwdBiol objects components as an SEXP (could take a Rcpp::List for more safety)
+		fwdBiols_base(Rcpp::List flbs_list); // takes a list of fwdBiol objects components as an SEXP (could take a Rcpp::List for more safety)
 		fwdBiols_base(fwdBiol_base<T> flb); // Constructor from an fwdBiol object
+
 		fwdBiols_base(const fwdBiols_base& fwdBiols_base_source); // copy constructor to ensure that copy is a deep copy 
 		fwdBiols_base& operator = (const fwdBiols_base& fwdBiols_base_source); // Assignment operator for a deep copy
+
+        operator SEXP() const; // Used as intrusive 'wrap' - returns an FLBiols
 
         // Accessors
 		fwdBiol_base<T> operator () (const unsigned int element = 1) const; // Only gets an fwdBiol so const reinforced. Default is the first element
@@ -126,7 +123,6 @@ class fwdBiols_base {
     protected:
         std::vector<fwdBiol_base<T> > biols;
         Rcpp::CharacterVector names; // of the biols
-        // std::string desc;
 };
 
 typedef fwdBiols_base<double> fwdBiols;

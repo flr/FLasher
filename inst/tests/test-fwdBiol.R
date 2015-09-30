@@ -15,6 +15,36 @@ test_that("fwdBiol constructors - double",{
     expect_that(flb_in, is_identical_to(flb_out))
     flb_out <- test_fwdBiolAD_sexp_constructor(flb_in)
     expect_that(flb_in, is_identical_to(flb_out))
+    # FLBiol fwdSR constructor
+    data(ple4)
+    ricker <- fmle(as.FLSR(ple4,model="ricker"), control  = list(trace=0))
+    sr_params <- as.FLQuant(params(ricker))
+    too_small_residuals <- FLQuant(1, dim=c(1, dim(n(flb_in))[2]-1, dim(n(flb_in))[3], dim(n(flb_in))[4], dim(n(flb_in))[5], 1)) 
+    residuals <- FLQuant(1, dim=c(1, dim(n(flb_in))[2], dim(n(flb_in))[3], dim(n(flb_in))[4], dim(n(flb_in))[5], 1)) 
+    residuals_mult <- TRUE
+    expect_error(test_fwdBiol_fwdSR_constructor(flb_in, "ricker", sr_params, too_small_residuals, residuals_mult))
+    out <- test_fwdBiol_fwdSR_constructor(flb_in, "ricker", sr_params, residuals, residuals_mult)
+    expect_that(out[["fwb"]], is_identical_to(flb_in))
+    expect_that(c(out[["srr"]][["params"]]), is_identical_to(c(sr_params)))
+    expect_that(out[["srr"]][["residuals"]], is_identical_to(residuals))
+    expect_that(out[["srr"]][["residuals_mult"]], is_identical_to(residuals_mult))
+    expect_error(test_fwdBiol_fwdSRAD_constructor(flb_in, "ricker", sr_params, too_small_residuals, residuals_mult))
+    out <- test_fwdBiol_fwdSR_constructor(flb_in, "ricker", sr_params, residuals, residuals_mult)
+    expect_that(out[["fwb"]], is_identical_to(flb_in))
+    expect_that(c(out[["srr"]][["params"]]), is_identical_to(c(sr_params)))
+    expect_that(out[["srr"]][["residuals"]], is_identical_to(residuals))
+    expect_that(out[["srr"]][["residuals_mult"]], is_identical_to(residuals_mult))
+    # FLBiol SR bits constructor
+    out <- test_fwdBiol_FLSR_bits_constructor(flb_in, "ricker", sr_params, residuals, residuals_mult)
+    expect_that(out[["fwb"]], is_identical_to(flb_in))
+    expect_that(c(out[["srr"]][["params"]]), is_identical_to(c(sr_params)))
+    expect_that(out[["srr"]][["residuals"]], is_identical_to(residuals))
+    expect_that(out[["srr"]][["residuals_mult"]], is_identical_to(residuals_mult))
+    out <- test_fwdBiolAD_FLSR_bits_constructor(flb_in, "ricker", sr_params, residuals, residuals_mult)
+    expect_that(out[["fwb"]], is_identical_to(flb_in))
+    expect_that(c(out[["srr"]][["params"]]), is_identical_to(c(sr_params)))
+    expect_that(out[["srr"]][["residuals"]], is_identical_to(residuals))
+    expect_that(out[["srr"]][["residuals_mult"]], is_identical_to(residuals_mult))
     # Copy constructor
     flb_out <- test_fwdBiol_copy_constructor(flb_in)
     expect_that(flb_in, is_identical_to(flb_out))
@@ -53,12 +83,14 @@ test_that("fwdBiol get and set data accessors", {
     # Get const double
     flb_in <- random_FLBiol_generator()
     indices <- round(runif(6,min=1, max = dim(n(flb_in))))
+    # fwdBiol const get
     values_out <- test_fwdBiol_const_get_accessors(flb_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6])
     values_in <- c(c(n(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(m(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(wt(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(fec(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
-                c(spwn(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
+                c(spwn(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
+                c(mat(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_that(values_out, is_identical_to(values_in))
     # Get const subset
     dims_max <- dim(n(flb_in))
@@ -69,13 +101,15 @@ test_that("fwdBiol get and set data accessors", {
     expect_that(out[["wt"]], equals(wt(flb_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
     expect_that(out[["fec"]], equals(fec(flb_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
     expect_that(out[["spwn"]], equals(spwn(flb_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
+    expect_that(out[["mat"]], equals(mat(flb_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])) 
     # Get const AD
     values_out <- test_fwdBiolAD_const_get_accessors(flb_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6])
     values_in <- c(c(n(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(m(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(wt(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(fec(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
-                c(spwn(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
+                c(spwn(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
+                c(mat(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_that(values_out, is_identical_to(values_in))
     # Get double
     flb_in <- random_FLBiol_generator()
@@ -85,7 +119,8 @@ test_that("fwdBiol get and set data accessors", {
                 c(m(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(wt(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(fec(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
-                c(spwn(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
+                c(spwn(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
+                c(mat(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_that(values_out, is_identical_to(values_in))
     # Get AD
     values_out <- test_fwdBiolAD_get_accessors(flb_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6])
@@ -93,19 +128,21 @@ test_that("fwdBiol get and set data accessors", {
                 c(m(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(wt(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(fec(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
-                c(spwn(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
+                c(spwn(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
+                c(mat(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_that(values_out, is_identical_to(values_in))
     # Set double
     flb_in <- random_FLBiol_generator()
     indices <- round(runif(6,min=1, max = dim(n(flb_in))))
-    values_in <- rnorm(5)
+    values_in <- rnorm(6)
     flb_out <- test_fwdBiol_set_accessors(flb_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], values_in)
     # Check inserted values are correct
     values_out <- c(c(n(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(m(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(wt(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(fec(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
-                c(spwn(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
+                c(spwn(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
+                c(mat(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_that(values_out, is_identical_to(values_in))
     # Check other values have been left alone
     narea <- dim(n(flb_out))[5]
@@ -119,17 +156,19 @@ test_that("fwdBiol get and set data accessors", {
     expect_that(c(wt(flb_out))[-element], is_identical_to(c(wt(flb_in))[-element]))
     expect_that(c(fec(flb_out))[-element], is_identical_to(c(fec(flb_in))[-element]))
     expect_that(c(spwn(flb_out))[-element], is_identical_to(c(spwn(flb_in))[-element]))
+    expect_that(c(mat(flb_out))[-element], is_identical_to(c(mat(flb_in))[-element]))
     # Set AD 
     flb_in <- random_FLBiol_generator()
     indices <- round(runif(6,min=1, max = dim(n(flb_in))))
-    values_in <- rnorm(5)
+    values_in <- rnorm(6)
     flb_out <- test_fwdBiolAD_set_accessors(flb_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], values_in)
     # Check inserted values are correct
     values_out <- c(c(n(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(m(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(wt(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(fec(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
-                c(spwn(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
+                c(spwn(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
+                c(mat(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_that(values_out, is_identical_to(values_in))
     # Check other values have been left alone
     narea <- dim(n(flb_out))[5]
@@ -143,43 +182,15 @@ test_that("fwdBiol get and set data accessors", {
     expect_that(c(wt(flb_out))[-element], is_identical_to(c(wt(flb_in))[-element]))
     expect_that(c(fec(flb_out))[-element], is_identical_to(c(fec(flb_in))[-element]))
     expect_that(c(spwn(flb_out))[-element], is_identical_to(c(spwn(flb_in))[-element]))
-
-})
-
-test_that("fwdBiol with fwdSR", {
-    data(ple4)
-    ple4.sr.ricker <- fmle(as.FLSR(ple4,model="ricker"), control  = list(trace=0))
-    params.ricker <- as.FLQuant(params(ple4.sr.ricker))
-    residuals.ricker <- FLQuant(rnorm(100), dimnames = list(year = 1:10, iter = 1:10))
-    residuals_mult <- TRUE
-    timelag <- 0
-    flb_in <- random_FLBiol_generator()
-    out <- test_fwdBiol_fwdSR_constructor(flb_in, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult)
-    expect_that(out[["fwb"]], is_identical_to(flb_in))
-    expect_that(out[["srr"]][["params"]], is_identical_to(params.ricker))
-    expect_that(out[["srr"]][["residuals"]], is_identical_to(residuals.ricker))
-    expect_that(out[["srr"]][["residuals_mult"]], is_identical_to(residuals_mult))
-    out <- test_fwdBiolAD_fwdSRAD_constructor(flb_in, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult)
-    expect_that(out[["fwb"]], is_identical_to(flb_in))
-    expect_that(out[["srr"]][["params"]], is_identical_to(params.ricker))
-    expect_that(out[["srr"]][["residuals"]], is_identical_to(residuals.ricker))
-    expect_that(out[["srr"]][["residuals_mult"]], is_identical_to(residuals_mult))
-    out <- test_fwdBiol_FLSR_bits_constructor(flb_in, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult)
-    expect_that(out[["fwb"]], is_identical_to(flb_in))
-    expect_that(out[["srr"]][["params"]], is_identical_to(params.ricker))
-    expect_that(out[["srr"]][["residuals"]], is_identical_to(residuals.ricker))
-    expect_that(out[["srr"]][["residuals_mult"]], is_identical_to(residuals_mult))
-    out <- test_fwdBiolAD_FLSR_bits_constructor(flb_in, "ricker", params.ricker, timelag, residuals.ricker, residuals_mult)
-    expect_that(out[["fwb"]], is_identical_to(flb_in))
-    expect_that(out[["srr"]][["params"]], is_identical_to(params.ricker))
-    expect_that(out[["srr"]][["residuals"]], is_identical_to(residuals.ricker))
-    expect_that(out[["srr"]][["residuals_mult"]], is_identical_to(residuals_mult))
+    expect_that(c(mat(flb_out))[-element], is_identical_to(c(mat(flb_in))[-element]))
 })
 
 test_that("fwdBiol methods",{
+    # Biomass FLQuant
     flb_in <- random_FLBiol_generator()
     biomass <-  fwdBiolAD_biomass_FLQ(flb_in)
     expect_that(biomass@.Data, equals(quantSums(n(flb_in) * wt(flb_in))@.Data))
+    # Biomass FLQuant subset
     dims_max <- dim(n(flb_in))
     dims_min <- round(runif(6, min=1,max=dims_max))
     biomass <-  expect_that(fwdBiolAD_biomass_subset(flb_in, dims_min, dims_max), throws_error())
@@ -195,9 +206,10 @@ test_that("fwdBiols constructors",{
     biols <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5)
     flbs_in <- FLBiols(lapply(biols, function(x) return(x[["biol"]])))
 
-    # Call the list constructors (as)
+    # Call the list constructors 
     flbs_out <- test_fwdBiols_list_constructor(biols)
     expect_that(flbs_out, is_identical_to(flbs_in))
+
     flbs_ad_out <- test_fwdBiolsAD_list_constructor(biols)
     expect_that(flbs_ad_out, is_identical_to(flbs_in))
 

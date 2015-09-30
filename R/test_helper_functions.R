@@ -79,6 +79,7 @@ random_FLBiol_generator <- function(sd=100, ...){
     m(biol) <- abs(rnorm(prod(dim(flq)),sd=sd))
     wt(biol) <- abs(rnorm(prod(dim(flq)),sd=sd))
     fec(biol) <- abs(rnorm(prod(dim(flq)),sd=sd))
+    mat(biol) <- abs(rnorm(prod(dim(flq)),sd=sd))
     spwn(biol) <- abs(rnorm(prod(dim(flq)),sd=sd))
     name(biol) <- as.character(signif(rnorm(1)*1000,3))
     desc(biol) <- as.character(signif(rnorm(1)*1000,3))
@@ -86,6 +87,7 @@ random_FLBiol_generator <- function(sd=100, ...){
     units(m(biol)) <- "m"
     units(wt(biol)) <- "kg"
     units(fec(biol)) <- "prop"
+    units(mat(biol)) <- "prop"
     units(spwn(biol)) <- "prop"
     units(n(biol)) <- "10^3"
     return(biol)
@@ -250,7 +252,6 @@ random_fwdBiols_list_generator <- function(min_biols = 1, max_biols = 5, ...){
         biol_bits[["srr_model_name"]] <- "bevholt"
         biol_bits[["srr_params"]] <- FLQuant(abs(rnorm(2)), dimnames=list(params=c("a","b")))
         biol_bits[["srr_residuals"]] <- n(biol_bits[["biol"]])[1,]
-        biol_bits[["srr_timelag"]] <- dim(n(biol_bits[["biol"]]))[4]
         biol_bits[["srr_residuals_mult"]] <- TRUE
         biols[[as.character(signif(abs(runif(1,min=100,max=999)),3))]] <- biol_bits
     }

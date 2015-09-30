@@ -20,13 +20,20 @@ fwdBiol_base<T>::fwdBiol_base(){
     m_flq = FLQuant();
     spwn_flq = FLQuant();
     fec_flq = FLQuant();
+    mat_flq = FLQuant();
     srr = fwdSR_base<T>();
 }
 
-// Annoying init because you can't delegate constructors until C++11
+// Constructor from a SEXP S4 FLBiol
+// Does not set the SR - only the FLBiol bits
+// Used as intrusive 'as'
 template <typename T>
-void fwdBiol_base<T>::init(const SEXP flb_sexp, const fwdSR_base<T> srr_in){
-    //Rprintf("In fwdBiol init\n");
+fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp){
+    //Rprintf("In FLBiol constructor\n");
+    // Empty fwdSR
+    fwdSR_base<T> empty_srr;
+    srr = empty_srr;
+    // All the FLBiol bits
     Rcpp::S4 fwdb_s4 = Rcpp::as<Rcpp::S4>(flb_sexp);
     name = Rcpp::as<std::string>(fwdb_s4.slot("name"));
     desc = Rcpp::as<std::string>(fwdb_s4.slot("desc"));
@@ -36,33 +43,29 @@ void fwdBiol_base<T>::init(const SEXP flb_sexp, const fwdSR_base<T> srr_in){
     m_flq = fwdb_s4.slot("m");
     spwn_flq = fwdb_s4.slot("spwn");
     fec_flq = fwdb_s4.slot("fec");
-    srr = srr_in;
-}
-
-// Constructor from a SEXP S4 FLBiol
-// But this does not set the SRR!
-// Need another constructor for that
-// Used as intrusive 'as'
-template <typename T>
-fwdBiol_base<T>::fwdBiol_base(SEXP flb_sexp){
-    //Rprintf("In fwdBiol as\n");
-    // Empty fwdSR
-    fwdSR_base<T> srr;
-    init(flb_sexp, srr);
+    mat_flq = fwdb_s4.slot("mat");
 }
 
 // Constructor from FLBiol and fwdSR
+// Use delegated constructor - excitement!
 template <typename T>
-fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp, const fwdSR_base<T> srr_in){
-    init(flb_sexp, srr_in);
-} 
+fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp, const fwdSR_base<T> srr_in) : fwdBiol_base(flb_sexp){
+    //Rprintf("In FLBiol and fwdSR constructor\n");
+    // Check size of residuals matches that of FLBiol: dims 2-5
+    auto residuals = srr_in.get_residuals();
+    auto resid_dim = residuals.get_dim();
+    auto biol_dim = n().get_dim();
+    if ((biol_dim[1] != resid_dim[1]) || (biol_dim[2] != resid_dim[2]) || (biol_dim[3] != resid_dim[3]) || (biol_dim[4] != resid_dim[4])){
+        Rcpp::stop("Dimensions 2-5 of SR residuals should equal those of the fwdBiol\n");
+    }
+    srr = srr_in;
+}
 
 // Constructor from FLBiol and fwdSR bits
+// Use delegated constructor - excitement!
 template <typename T>
-fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp, const std::string model_name, const FLQuant params, const int timelag, const FLQuant residuals, const bool residuals_mult){
+fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult) : fwdBiol_base(flb_sexp, fwdSR_base<T>(model_name, params, residuals, residuals_mult)){
     //Rprintf("In FLBiol and FLSR bits constructor.\n");
-    fwdSR_base<T> srr(model_name, params, residuals, residuals_mult);
-    init(flb_sexp, srr);
 }
 
 // Copy constructor - else members can be pointed at by multiple instances
@@ -76,6 +79,7 @@ fwdBiol_base<T>::fwdBiol_base(const fwdBiol_base<T>& fwdBiol_source){
     m_flq = fwdBiol_source.m_flq;
     spwn_flq = fwdBiol_source.spwn_flq;
     fec_flq = fwdBiol_source.fec_flq;
+    mat_flq = fwdBiol_source.mat_flq;
     srr = fwdBiol_source.srr;
 }
 
@@ -91,6 +95,7 @@ fwdBiol_base<T>& fwdBiol_base<T>::operator = (const fwdBiol_base<T>& fwdBiol_sou
         m_flq = fwdBiol_source.m_flq;
         spwn_flq = fwdBiol_source.spwn_flq;
         fec_flq = fwdBiol_source.fec_flq;
+        mat_flq = fwdBiol_source.mat_flq;
         srr = fwdBiol_source.srr;
 	}
 	return *this;
@@ -110,6 +115,7 @@ fwdBiol_base<T>::operator SEXP() const{
     flb_s4.slot("m") = m_flq;
     flb_s4.slot("spwn") = spwn_flq;
     flb_s4.slot("fec") = fec_flq;
+    flb_s4.slot("mat") = mat_flq;
     return Rcpp::wrap(flb_s4);
 }
 
@@ -164,6 +170,16 @@ FLQuant fwdBiol_base<T>::fec(const std::vector<unsigned int> indices_min, const 
     return fec_flq(indices_min, indices_max);
 }
 
+template <typename T>
+FLQuant fwdBiol_base<T>::mat() const {
+    return mat_flq;
+}
+
+template <typename T>
+FLQuant fwdBiol_base<T>::mat(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return mat_flq(indices_min, indices_max);
+}
+
 // Get and set accessors
 template <typename T>
 FLQuant_base<T>& fwdBiol_base<T>::n() {
@@ -179,15 +195,21 @@ template <typename T>
 FLQuant& fwdBiol_base<T>::m() {
     return m_flq;
 }
+
 template <typename T>
 FLQuant& fwdBiol_base<T>::spwn() {
     return spwn_flq;
 }
+
 template <typename T>
 FLQuant& fwdBiol_base<T>::fec() {
     return fec_flq;
 }
 
+template <typename T>
+FLQuant& fwdBiol_base<T>::mat() {
+    return mat_flq;
+}
 
 template <typename T>
 fwdSR_base<T> fwdBiol_base<T>::get_srr() const{
@@ -197,7 +219,7 @@ fwdSR_base<T> fwdBiol_base<T>::get_srr() const{
 // Total biomass at the beginning of the timestep
 template <typename T>
 FLQuant_base<T> fwdBiol_base<T>::biomass() const {
-    FLQuant_base<T> biomass = quant_sum(n() * wt());
+    auto biomass = quant_sum(n() * wt());
     return biomass;
 }
 
@@ -229,27 +251,16 @@ template <typename T>
 fwdBiols_base<T>::fwdBiols_base(){
 }
 
-// Would like to speed up by not using push_back but cannot define size in advance as we don't what it is!
-// Constructor from a list: list_fwdBiol
-// Each element of list_fwdBiol is a list containing the fwdBiol components:
-// FLBiol, params, residuals, timelag, residuals_mult 
-// Used as intrusive 'as'
+// Each element of flbs_list is a list containing the fwdBiol components:
+// FLBiol, params, residuals, residuals_mult 
 template <typename T>
-fwdBiols_base<T>::fwdBiols_base(SEXP flbs_list_sexp){
-    //Rprintf("In FLBiols SEXP constructor\n");
-    Rcpp::List flbs_list = Rcpp::as<Rcpp::List>(flbs_list_sexp);
-    //fwdBiol_base<T> flb; // empty biol to fill up and put into the list
-    for (unsigned int biol_counter=0; biol_counter < flbs_list.size(); ++biol_counter){
-        Rcpp::List flb_list = Rcpp::as<Rcpp::List>(flbs_list[biol_counter]);
-        // Make a new fwdBiol by pulling out each element by name
-        fwdBiol_base<T> flb(flb_list["biol"],
-            Rcpp::as<std::string>(flb_list["srr_model_name"]),
-            Rcpp::as<FLQuant>(flb_list["srr_params"]),
-            Rcpp::as<int>(flb_list["srr_timelag"]),
-            Rcpp::as<FLQuant>(flb_list["srr_residuals"]),
-            Rcpp::as<bool>(flb_list["srr_residuals_mult"]));
+fwdBiols_base<T>::fwdBiols_base(Rcpp::List flbs_list){
+    auto no_biols = flbs_list.size();
+    biols.reserve(no_biols);
+    // Go through the biols list and make the fwdBiol elements
+    for (Rcpp::List flb_list: flbs_list){
+        fwdBiol_base<T> flb(flb_list["biol"], flb_list["srr_model_name"], flb_list["srr_params"], flb_list["srr_residuals"], flb_list["srr_residuals_mult"]);
         biols.push_back(flb);
-
     }
     names = flbs_list.names();
 }
@@ -260,8 +271,9 @@ fwdBiols_base<T>::operator SEXP() const{
     Rcpp::S4 flbs_s4("FLBiols");
     //Rprintf("Wrapping FLBiols_base<T>.\n");
     Rcpp::List list_out;
-    for (unsigned int i = 0; i < get_nbiols(); i++){
-        list_out.push_back(biols[i]);
+    // wrap of each fwdBiol is just the FLBiol part
+    for (auto biol : biols){
+        list_out.push_back(biol);
     }
     flbs_s4.slot(".Data") = list_out;
     flbs_s4.slot("names") = names;
@@ -325,7 +337,7 @@ void fwdBiols_base<T>::operator() (const fwdBiol_base<T> fwb){
 
 
 
-// Explicit instantiation of class
+// Explicit instantiation of classes
 template class fwdBiol_base<double>;
 template class fwdBiol_base<adouble>;
 template class fwdBiols_base<double>;

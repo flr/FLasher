@@ -1429,20 +1429,20 @@ test_fwdBiolAD_as_wrap <- function(fwdb) {
     .Call('FLasher_test_fwdBiolAD_as_wrap', PACKAGE = 'FLasher', fwdb)
 }
 
-test_fwdBiol_fwdSR_constructor <- function(flb_sexp, model_name, params, timelag, residuals, residuals_mult) {
-    .Call('FLasher_test_fwdBiol_fwdSR_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, timelag, residuals, residuals_mult)
+test_fwdBiol_fwdSR_constructor <- function(flb_sexp, model_name, params, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiol_fwdSR_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, residuals, residuals_mult)
 }
 
-test_fwdBiol_FLSR_bits_constructor <- function(flb_sexp, model_name, params, timelag, residuals, residuals_mult) {
-    .Call('FLasher_test_fwdBiol_FLSR_bits_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, timelag, residuals, residuals_mult)
+test_fwdBiolAD_fwdSRAD_constructor <- function(flb_sexp, model_name, params, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiolAD_fwdSRAD_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, residuals, residuals_mult)
 }
 
-test_fwdBiolAD_fwdSRAD_constructor <- function(flb_sexp, model_name, params, timelag, residuals, residuals_mult) {
-    .Call('FLasher_test_fwdBiolAD_fwdSRAD_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, timelag, residuals, residuals_mult)
+test_fwdBiol_FLSR_bits_constructor <- function(flb_sexp, model_name, params, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiol_FLSR_bits_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, residuals, residuals_mult)
 }
 
-test_fwdBiolAD_FLSR_bits_constructor <- function(flb_sexp, model_name, params, timelag, residuals, residuals_mult) {
-    .Call('FLasher_test_fwdBiolAD_FLSR_bits_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, timelag, residuals, residuals_mult)
+test_fwdBiolAD_FLSR_bits_constructor <- function(flb_sexp, model_name, params, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiolAD_FLSR_bits_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, residuals, residuals_mult)
 }
 
 test_fwdBiol_copy_constructor <- function(fwdb1) {
@@ -1513,48 +1513,8 @@ fwdBiolAD_biomass_subset <- function(fwdb, indices_min, indices_max) {
     .Call('FLasher_fwdBiolAD_biomass_subset', PACKAGE = 'FLasher', fwdb, indices_min, indices_max)
 }
 
-test_fwdBiols_list_constructor <- function(flbs_list_sexp) {
-    .Call('FLasher_test_fwdBiols_list_constructor', PACKAGE = 'FLasher', flbs_list_sexp)
-}
-
-test_fwdBiolsAD_list_constructor <- function(flbs_list_sexp) {
-    .Call('FLasher_test_fwdBiolsAD_list_constructor', PACKAGE = 'FLasher', flbs_list_sexp)
-}
-
-test_fwdBiols_fwdBiol_constructor <- function(flb_sexp, model_name, params, timelag, residuals, residuals_mult) {
-    .Call('FLasher_test_fwdBiols_fwdBiol_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, timelag, residuals, residuals_mult)
-}
-
-test_fwdBiolsAD_const_get_single_index_accessor <- function(fwbs_list_sexp, element) {
-    .Call('FLasher_test_fwdBiolsAD_const_get_single_index_accessor', PACKAGE = 'FLasher', fwbs_list_sexp, element)
-}
-
-test_fwdBiolsAD_get_single_index_accessor <- function(fwbs_list_sexp, element) {
-    .Call('FLasher_test_fwdBiolsAD_get_single_index_accessor', PACKAGE = 'FLasher', fwbs_list_sexp, element)
-}
-
-test_fwdBiolsAD_const_get_value_accessor <- function(fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter) {
-    .Call('FLasher_test_fwdBiolsAD_const_get_value_accessor', PACKAGE = 'FLasher', fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter)
-}
-
-test_fwdBiolsAD_get_value_accessor <- function(fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter) {
-    .Call('FLasher_test_fwdBiolsAD_get_value_accessor', PACKAGE = 'FLasher', fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter)
-}
-
-test_fwdBiolsAD_set_single_index_accessor <- function(fwbs_list_sexp, element, flb_sexp, model_name, params, timelag, residuals, residuals_mult) {
-    .Call('FLasher_test_fwdBiolsAD_set_single_index_accessor', PACKAGE = 'FLasher', fwbs_list_sexp, element, flb_sexp, model_name, params, timelag, residuals, residuals_mult)
-}
-
-test_fwdBiolsAD_set_value_accessor <- function(fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter, value) {
-    .Call('FLasher_test_fwdBiolsAD_set_value_accessor', PACKAGE = 'FLasher', fwbs_list_sexp, biol_no, quant, year, unit, season, area, iter, value)
-}
-
-test_fwdBiolsAD_copy_constructor <- function(fwbs_list_sexp, biol_no, dims, value) {
-    .Call('FLasher_test_fwdBiolsAD_copy_constructor', PACKAGE = 'FLasher', fwbs_list_sexp, biol_no, dims, value)
-}
-
-test_fwdBiolsAD_assignment_operator <- function(fwbs_list_sexp, biol_no, dims, value) {
-    .Call('FLasher_test_fwdBiolsAD_assignment_operator', PACKAGE = 'FLasher', fwbs_list_sexp, biol_no, dims, value)
+test_fwdBiols_list_constructor <- function(biols_in) {
+    .Call('FLasher_test_fwdBiols_list_constructor', PACKAGE = 'FLasher', biols_in)
 }
 
 test_as_wrap_fwdControl <- function(control) {
@@ -1679,165 +1639,5 @@ test_NR1 <- function(initial_value, max_iters, indep_min, indep_max, tolerance) 
 
 test_NR2 <- function(initial_value, max_iters, indep_min, indep_max, tolerance) {
     .Call('FLasher_test_NR2', PACKAGE = 'FLasher', initial_value, max_iters, indep_min, indep_max, tolerance)
-}
-
-test_year_season_to_timestep_FLQuant_double <- function(flq, year, season) {
-    .Call('FLasher_test_year_season_to_timestep_FLQuant_double', PACKAGE = 'FLasher', flq, year, season)
-}
-
-test_year_season_to_timestep_FLQuant_adouble <- function(flqad, year, season) {
-    .Call('FLasher_test_year_season_to_timestep_FLQuant_adouble', PACKAGE = 'FLasher', flqad, year, season)
-}
-
-test_year_season_to_timestep <- function(flq, year, season) {
-    .Call('FLasher_test_year_season_to_timestep', PACKAGE = 'FLasher', flq, year, season)
-}
-
-test_timestep_to_year_season_FLQuant_double <- function(flq, timestep) {
-    .Call('FLasher_test_timestep_to_year_season_FLQuant_double', PACKAGE = 'FLasher', flq, timestep)
-}
-
-test_timestep_to_year_season_FLQuant_adouble <- function(flqad, timestep) {
-    .Call('FLasher_test_timestep_to_year_season_FLQuant_adouble', PACKAGE = 'FLasher', flqad, timestep)
-}
-
-test_timestep_to_year_season <- function(flq, timestep) {
-    .Call('FLasher_test_timestep_to_year_season', PACKAGE = 'FLasher', flq, timestep)
-}
-
-test_operatingModel_empty_constructor <- function() {
-    invisible(.Call('FLasher_test_operatingModel_empty_constructor', PACKAGE = 'FLasher'))
-}
-
-test_operatingModel_full_constructor <- function(flfs, flbs_list_sexp, ctrl) {
-    .Call('FLasher_test_operatingModel_full_constructor', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl)
-}
-
-test_operatingModel_catch_q_adouble <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices) {
-    .Call('FLasher_test_operatingModel_catch_q_adouble', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices)
-}
-
-test_operatingModel_catch_q_subset <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_catch_q_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_catch_q_FLQuantAD <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no) {
-    .Call('FLasher_test_operatingModel_catch_q_FLQuantAD', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no)
-}
-
-test_operatingModel_get_f <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no) {
-    .Call('FLasher_test_operatingModel_get_f', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no)
-}
-
-test_operatingModel_get_f_subset <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_get_f_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_total_f_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_total_f_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_total_f <- function(flfs, flbs_list_sexp, ctrl, biol_no) {
-    .Call('FLasher_test_operatingModel_total_f', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no)
-}
-
-test_operatingModel_partial_f <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no) {
-    .Call('FLasher_test_operatingModel_partial_f', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no)
-}
-
-test_operatingModel_partial_f_subset <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_partial_f_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_partial_fbar_subset <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_partial_fbar_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_fbar_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_fbar_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_Z <- function(flfs, flbs_list_sexp, ctrl, biol_no) {
-    .Call('FLasher_test_operatingModel_Z', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no)
-}
-
-test_operatingModel_catches_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_catches_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_landings_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_landings_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_discards_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_discards_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_SSB_FLQ <- function(flfs, flbs_list_sexp, ctrl, biol_no) {
-    .Call('FLasher_test_operatingModel_SSB_FLQ', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no)
-}
-
-test_operatingModel_SSB_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_SSB_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_get_target_age_range_indices <- function(flfs, flbs_list_sexp, ctrl, target_no, sim_target_no, biol_no) {
-    .Call('FLasher_test_operatingModel_get_target_age_range_indices', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, target_no, sim_target_no, biol_no)
-}
-
-test_operatingModel_eval_target <- function(flfs, flbs_list_sexp, ctrl, target_no, sim_target_no, indices_min, indices_max, relative_target = FALSE) {
-    .Call('FLasher_test_operatingModel_eval_target', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, target_no, sim_target_no, indices_min, indices_max, relative_target)
-}
-
-test_operatingModel_get_target_value <- function(flfs, flbs_list_sexp, ctrl, target_no) {
-    .Call('FLasher_test_operatingModel_get_target_value', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, target_no)
-}
-
-test_operatingModel_get_target_value2 <- function(flfs, flbs_list_sexp, ctrl, target_no, sim_target_no) {
-    .Call('FLasher_test_operatingModel_get_target_value2', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, target_no, sim_target_no)
-}
-
-test_operatingModel_get_target_value_hat <- function(flfs, flbs_list_sexp, ctrl, target_no) {
-    .Call('FLasher_test_operatingModel_get_target_value_hat', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, target_no)
-}
-
-test_operatingModel_get_target_value_hat2 <- function(flfs, flbs_list_sexp, ctrl, target_no, sim_target_no) {
-    .Call('FLasher_test_operatingModel_get_target_value_hat2', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, target_no, sim_target_no)
-}
-
-test_integer_NA <- function(vec1, vec2) {
-    invisible(.Call('FLasher_test_integer_NA', PACKAGE = 'FLasher', vec1, vec2))
-}
-
-fwdBiolAD_biomass_subset_speed <- function(fwdb, year, season, rep) {
-    invisible(.Call('FLasher_fwdBiolAD_biomass_subset_speed', PACKAGE = 'FLasher', fwdb, year, season, rep))
-}
-
-catch_q_speed <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, dim_min, dim_max, rep) {
-    invisible(.Call('FLasher_catch_q_speed', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, dim_min, dim_max, rep))
-}
-
-get_f_speed <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max, rep) {
-    invisible(.Call('FLasher_get_f_speed', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max, rep))
-}
-
-test_quant_indices_speed <- function(fwdb, indices_min, indices_max, rep) {
-    invisible(.Call('FLasher_test_quant_indices_speed', PACKAGE = 'FLasher', fwdb, indices_min, indices_max, rep))
-}
-
-useAuto <- function() {
-    .Call('FLasher_useAuto', PACKAGE = 'FLasher')
-}
-
-init_list <- function() {
-    .Call('FLasher_init_list', PACKAGE = 'FLasher')
-}
-
-transformEx2 <- function(x, y) {
-    .Call('FLasher_transformEx2', PACKAGE = 'FLasher', x, y)
-}
-
-begin_test <- function(init) {
-    invisible(.Call('FLasher_begin_test', PACKAGE = 'FLasher', init))
 }
 
