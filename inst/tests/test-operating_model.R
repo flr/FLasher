@@ -1209,7 +1209,7 @@ test_that("get_target_value_hat", {
     expect_that(c(out), equals(c(landings_in)))
     out <- test_operatingModel_get_target_value_hat2(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2)
     expect_that(c(out), equals(c(discards_in)))
-}
+})
 
 # Evaluate the control object
 test_that("operatingModel get_target_value methods", {
