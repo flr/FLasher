@@ -1,4 +1,4 @@
-context("Implementation of fwdBiol - double and AD versions")
+context("Implementation of fwdBiol and fwdBiols - double and AD versions")
 
 test_that("fwdBiol as and wrap",{
     flb_in <- random_FLBiol_generator()
@@ -224,6 +224,7 @@ test_that("fwdBiols constructors",{
     expect_that(flbs_out[[1]], is_identical_to(flbs_in[[biol_no]]))
 
     # Copy constructor
+    indices <- round(runif(6, min=1, max=dim(n(biols[[biol_no]][["biol"]]))))
     value <- abs(rnorm(1))
     out <- test_fwdBiolsAD_copy_constructor(biols, biol_no, indices, value)
     # Original should have changed
