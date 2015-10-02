@@ -104,7 +104,7 @@ class fwdBiols_base {
         /* Constructors */
 		fwdBiols_base();
 		fwdBiols_base(Rcpp::List flbs_list); // takes a list of fwdBiol objects components as an SEXP (could take a Rcpp::List for more safety)
-		fwdBiols_base(fwdBiol_base<T> flb); // Constructor from an fwdBiol object
+		fwdBiols_base(fwdBiol_base<T>& flb); // Constructor from an fwdBiol object
 
 		fwdBiols_base(const fwdBiols_base& fwdBiols_base_source); // copy constructor to ensure that copy is a deep copy 
 		fwdBiols_base& operator = (const fwdBiols_base& fwdBiols_base_source); // Assignment operator for a deep copy
@@ -115,7 +115,7 @@ class fwdBiols_base {
 		fwdBiol_base<T> operator () (const unsigned int element = 1) const; // Only gets an fwdBiol so const reinforced. Default is the first element
 		fwdBiol_base<T>& operator () (const unsigned int element = 1); // Gets and sets an fwdBiol so const not reinforced
 
-        void operator() (const fwdBiol_base<T> flb); // Add another fwdBiol_base<T> to the data
+        void operator() (const fwdBiol_base<T>& flb); // Add another fwdBiol_base<T> to the data
         unsigned int get_nbiols() const;
 
     protected:

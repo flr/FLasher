@@ -279,7 +279,7 @@ fwdBiols_base<T>::operator SEXP() const{
 
 // Constructor from an fwdBiol
 template <typename T> 
-fwdBiols_base<T>::fwdBiols_base(fwdBiol_base<T> flb){
+fwdBiols_base<T>::fwdBiols_base(fwdBiol_base<T>& flb){
     biols.push_back(flb);
 }
 
@@ -327,7 +327,7 @@ fwdBiol_base<T>& fwdBiols_base<T>::operator () (const unsigned int element){
 
 // Add another fwdBiol_base<T> to the data
 template <typename T>
-void fwdBiols_base<T>::operator() (const fwdBiol_base<T> fwb){
+void fwdBiols_base<T>::operator() (const fwdBiol_base<T>& fwb){
     biols.push_back(fwb);
 }
 
