@@ -226,89 +226,84 @@ fwdBiols test_fwdBiols_list_constructor(const Rcpp::List biols_in){
     return biols;
 }
 
-//// [[Rcpp::export]]
-//fwdBiols test_fwdBiols_list_constructor(SEXP flbs_list_sexp){
-//	fwdBiols flbs(flbs_list_sexp);
-//	return flbs;
-//}
-//// [[Rcpp::export]]
-//fwdBiolsAD test_fwdBiolsAD_list_constructor(SEXP flbs_list_sexp){
-//	fwdBiolsAD flbs(flbs_list_sexp);
-//	return flbs;
-//}
-//
-//// fwdBiol constructor
-//// [[Rcpp::export]]
-//fwdBiols test_fwdBiols_fwdBiol_constructor(SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult){
-//    fwdBiol fwb(flb_sexp, model_name, params, residuals, residuals_mult);
-//    fwdBiols fwbs(fwb);
-//    return fwbs;
-//}
+// [[Rcpp::export]]
+fwdBiolsAD test_fwdBiolsAD_list_constructor(const Rcpp::List biols_in){
+    fwdBiolsAD biols(biols_in);
+    return biols;
+}
 
-//// fwdBiolAD () get operator
-//// [[Rcpp::export]]
-//fwdBiolAD test_fwdBiolsAD_const_get_single_index_accessor(SEXP fwbs_list_sexp, const int element){
-//	const fwdBiolsAD fwbs(fwbs_list_sexp);
-//    fwdBiolAD fwb = fwbs(element);
-//    return fwb;
-//}
+// fwdBiol constructor
+// [[Rcpp::export]]
+fwdBiolsAD test_fwdBiolsAD_fwdBiolAD_constructor(SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult){
+    fwdBiolAD fwb(flb_sexp, model_name, params, residuals, residuals_mult);
+    fwdBiolsAD fwbs(fwb);
+    return fwbs;
+}
 
-//// [[Rcpp::export]]
-//fwdBiolAD test_fwdBiolsAD_get_single_index_accessor(SEXP fwbs_list_sexp, const int element){
-//	fwdBiolsAD fwbs(fwbs_list_sexp);
-//    fwdBiolAD fwb = fwbs(element);
-//    return fwb;
-//}
+// fwdBiolAD () get operator
+// [[Rcpp::export]]
+fwdBiolAD test_fwdBiolsAD_const_get_single_index_accessor(const Rcpp::List fwbs_list, const int element){
+	const fwdBiolsAD fwbs(fwbs_list);
+    fwdBiolAD fwb = fwbs(element);
+    return fwb;
+}
 
-//// [[Rcpp::export]]
-//double test_fwdBiolsAD_const_get_value_accessor(SEXP fwbs_list_sexp, const int biol_no, int quant, int year, int unit, int season, int area, int iter){
-//	const fwdBiolsAD fwbs(fwbs_list_sexp);
-//    adouble ad_value_out = fwbs(biol_no).n()(quant,year,unit,season,area,iter);
-//    return Value(ad_value_out);
-//}
+// [[Rcpp::export]]
+fwdBiolAD test_fwdBiolsAD_get_single_index_accessor(const Rcpp::List fwbs_list, const int element){
+	fwdBiolsAD fwbs(fwbs_list);
+    fwdBiolAD fwb = fwbs(element);
+    return fwb;
+}
 
-//// [[Rcpp::export]]
-//double test_fwdBiolsAD_get_value_accessor(SEXP fwbs_list_sexp, const int biol_no, int quant, int year, int unit, int season, int area, int iter){
-//	fwdBiolsAD fwbs(fwbs_list_sexp);
-//    adouble ad_value_out = fwbs(biol_no).n()(quant,year,unit,season,area,iter);
-//    return Value(ad_value_out);
-//}
+// [[Rcpp::export]]
+double test_fwdBiolsAD_const_get_value_accessor(const Rcpp::List fwbs_list, const int biol_no, int quant, int year, int unit, int season, int area, int iter){
+	const fwdBiolsAD fwbs(fwbs_list);
+    adouble ad_value_out = fwbs(biol_no).n()(quant,year,unit,season,area,iter);
+    return Value(ad_value_out);
+}
 
-//// [[Rcpp::export]]
-//fwdBiolsAD test_fwdBiolsAD_set_single_index_accessor(SEXP fwbs_list_sexp, const int element, SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult){
-//    fwdBiolAD fwb(flb_sexp, model_name, params, residuals, residuals_mult);
-//	fwdBiolsAD fwbs(fwbs_list_sexp);
-//    fwbs(element) = fwb;
-//    return fwbs;
-//}
+// [[Rcpp::export]]
+double test_fwdBiolsAD_get_value_accessor(const Rcpp::List fwbs_list, const int biol_no, int quant, int year, int unit, int season, int area, int iter){
+	fwdBiolsAD fwbs(fwbs_list);
+    adouble ad_value_out = fwbs(biol_no).n()(quant,year,unit,season,area,iter);
+    return Value(ad_value_out);
+}
 
-//// [[Rcpp::export]]
-//fwdBiolsAD test_fwdBiolsAD_set_value_accessor(SEXP fwbs_list_sexp, const int biol_no, int quant, int year, int unit, int season, int area, int iter, double value){
-//	fwdBiolsAD fwbs(fwbs_list_sexp);
-//    adouble ad_value = value;
-//    fwbs(biol_no).n()(quant,year,unit,season,area,iter) = ad_value;
-//    return fwbs;
-//}
-//
-//// copy constructor
-//// [[Rcpp::export]]
-//Rcpp::List test_fwdBiolsAD_copy_constructor(SEXP fwbs_list_sexp, const int biol_no, const std::vector<int> dims, const double value){
-//    fwdBiolsAD fwbs1(fwbs_list_sexp);
-//    fwdBiolsAD fwbs2(fwbs1);
-//    fwbs1(biol_no).n()(dims[0], dims[1], dims[2], dims[3], dims[4], dims[5]) = value;
-//	return Rcpp::List::create(Rcpp::Named("fwbs1", fwbs1),
-//				Rcpp::Named("fwbs2", fwbs2));
-//}
-//
-//// assignment operator
-//// [[Rcpp::export]]
-//Rcpp::List test_fwdBiolsAD_assignment_operator(SEXP fwbs_list_sexp, const int biol_no, const std::vector<int> dims, const double value){
-//    fwdBiolsAD fwbs1(fwbs_list_sexp);
-//    fwdBiolsAD fwbs2;
-//    fwbs2 = fwbs1;
-//    fwbs1(biol_no).n()(dims[0], dims[1], dims[2], dims[3], dims[4], dims[5]) = value;
-//	return Rcpp::List::create(Rcpp::Named("fwbs1", fwbs1),
-//				Rcpp::Named("fwbs2", fwbs2));
-//}
+// [[Rcpp::export]]
+fwdBiolsAD test_fwdBiolsAD_set_single_index_accessor(const Rcpp::List fwbs_list, const int element, SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult){
+    fwdBiolAD fwb(flb_sexp, model_name, params, residuals, residuals_mult);
+	fwdBiolsAD fwbs(fwbs_list);
+    fwbs(element) = fwb;
+    return fwbs;
+}
+
+// [[Rcpp::export]]
+fwdBiolsAD test_fwdBiolsAD_set_value_accessor(const Rcpp::List fwbs_list, const int biol_no, int quant, int year, int unit, int season, int area, int iter, double value){
+	fwdBiolsAD fwbs(fwbs_list);
+    adouble ad_value = value;
+    fwbs(biol_no).n()(quant,year,unit,season,area,iter) = ad_value;
+    return fwbs;
+}
+
+// copy constructor
+// [[Rcpp::export]]
+Rcpp::List test_fwdBiolsAD_copy_constructor(const Rcpp::List fwbs_list, const int biol_no, const std::vector<int> dims, const double value){
+    fwdBiolsAD fwbs1(fwbs_list);
+    fwdBiolsAD fwbs2(fwbs1);
+    fwbs1(biol_no).n()(dims[0], dims[1], dims[2], dims[3], dims[4], dims[5]) = value;
+	return Rcpp::List::create(Rcpp::Named("fwbs1", fwbs1),
+				Rcpp::Named("fwbs2", fwbs2));
+}
+
+// assignment operator
+// [[Rcpp::export]]
+Rcpp::List test_fwdBiolsAD_assignment_operator(const Rcpp::List fwbs_list, const int biol_no, const std::vector<int> dims, const double value){
+    fwdBiolsAD fwbs1(fwbs_list);
+    fwdBiolsAD fwbs2;
+    fwbs2 = fwbs1;
+    fwbs1(biol_no).n()(dims[0], dims[1], dims[2], dims[3], dims[4], dims[5]) = value;
+	return Rcpp::List::create(Rcpp::Named("fwbs1", fwbs1),
+				Rcpp::Named("fwbs2", fwbs2));
+}
 
 

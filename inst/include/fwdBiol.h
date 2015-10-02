@@ -92,7 +92,6 @@ class fwdBiol_base {
         fwdSR_base<T> srr;
 };
 
-
 typedef fwdBiol_base<double> fwdBiol;
 typedef fwdBiol_base<adouble> fwdBiolAD;
 
@@ -104,7 +103,6 @@ class fwdBiols_base {
     public:
         /* Constructors */
 		fwdBiols_base();
-		//fwdBiols_base(SEXP flbs_list_sexp); // Used as intrusive 'as', takes a list of fwdBiol objects components as an SEXP (could take a Rcpp::List for more safety)
 		fwdBiols_base(Rcpp::List flbs_list); // takes a list of fwdBiol objects components as an SEXP (could take a Rcpp::List for more safety)
 		fwdBiols_base(fwdBiol_base<T> flb); // Constructor from an fwdBiol object
 

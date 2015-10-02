@@ -1517,6 +1517,46 @@ test_fwdBiols_list_constructor <- function(biols_in) {
     .Call('FLasher_test_fwdBiols_list_constructor', PACKAGE = 'FLasher', biols_in)
 }
 
+test_fwdBiolsAD_list_constructor <- function(biols_in) {
+    .Call('FLasher_test_fwdBiolsAD_list_constructor', PACKAGE = 'FLasher', biols_in)
+}
+
+test_fwdBiolsAD_fwdBiolAD_constructor <- function(flb_sexp, model_name, params, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiolsAD_fwdBiolAD_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, residuals, residuals_mult)
+}
+
+test_fwdBiolsAD_const_get_single_index_accessor <- function(fwbs_list, element) {
+    .Call('FLasher_test_fwdBiolsAD_const_get_single_index_accessor', PACKAGE = 'FLasher', fwbs_list, element)
+}
+
+test_fwdBiolsAD_get_single_index_accessor <- function(fwbs_list, element) {
+    .Call('FLasher_test_fwdBiolsAD_get_single_index_accessor', PACKAGE = 'FLasher', fwbs_list, element)
+}
+
+test_fwdBiolsAD_const_get_value_accessor <- function(fwbs_list, biol_no, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_fwdBiolsAD_const_get_value_accessor', PACKAGE = 'FLasher', fwbs_list, biol_no, quant, year, unit, season, area, iter)
+}
+
+test_fwdBiolsAD_get_value_accessor <- function(fwbs_list, biol_no, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_fwdBiolsAD_get_value_accessor', PACKAGE = 'FLasher', fwbs_list, biol_no, quant, year, unit, season, area, iter)
+}
+
+test_fwdBiolsAD_set_single_index_accessor <- function(fwbs_list, element, flb_sexp, model_name, params, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiolsAD_set_single_index_accessor', PACKAGE = 'FLasher', fwbs_list, element, flb_sexp, model_name, params, residuals, residuals_mult)
+}
+
+test_fwdBiolsAD_set_value_accessor <- function(fwbs_list, biol_no, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_fwdBiolsAD_set_value_accessor', PACKAGE = 'FLasher', fwbs_list, biol_no, quant, year, unit, season, area, iter, value)
+}
+
+test_fwdBiolsAD_copy_constructor <- function(fwbs_list, biol_no, dims, value) {
+    .Call('FLasher_test_fwdBiolsAD_copy_constructor', PACKAGE = 'FLasher', fwbs_list, biol_no, dims, value)
+}
+
+test_fwdBiolsAD_assignment_operator <- function(fwbs_list, biol_no, dims, value) {
+    .Call('FLasher_test_fwdBiolsAD_assignment_operator', PACKAGE = 'FLasher', fwbs_list, biol_no, dims, value)
+}
+
 test_as_wrap_fwdControl <- function(control) {
     .Call('FLasher_test_as_wrap_fwdControl', PACKAGE = 'FLasher', control)
 }

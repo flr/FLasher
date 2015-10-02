@@ -239,9 +239,6 @@ FLQuant_base<T> fwdBiol_base<T>::biomass(const std::vector<unsigned int> indices
     return biomass;
 }
 
-
-
-
 /*------------------------------------------------------------*/
 // fwdBiols class
 
@@ -304,7 +301,6 @@ fwdBiols_base<T>& fwdBiols_base<T>::operator = (const fwdBiols_base<T>& fwdBiols
 	}
 	return *this;
 }
-
 
 template<typename T>
 unsigned int fwdBiols_base<T>::get_nbiols() const {

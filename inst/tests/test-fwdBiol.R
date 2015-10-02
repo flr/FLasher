@@ -200,37 +200,56 @@ test_that("fwdBiol methods",{
 
 
 test_that("fwdBiols constructors",{
-    # Takes a list - list_fwdBiol
+    # Takes a list, list_fwdBiol
     # Each element of list_fwdBiol is a list containing the fwdBiol components:
     # FLBiol, params, residuals, timelag, residuals_mult 
     biols <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5)
+    # Scrape out the FLBiols only (to test the wrap)
     flbs_in <- FLBiols(lapply(biols, function(x) return(x[["biol"]])))
 
-    # Call the list constructors 
+    # List constructors 
     flbs_out <- test_fwdBiols_list_constructor(biols)
     expect_that(flbs_out, is_identical_to(flbs_in))
-
     flbs_ad_out <- test_fwdBiolsAD_list_constructor(biols)
     expect_that(flbs_ad_out, is_identical_to(flbs_in))
 
-    # Call the fwdBiol constructor
+    # fwdBiol constructor
     biol_no <- round(runif(1,min=1,max=length(biols)))
-    flbs_out <- test_fwdBiols_fwdBiol_constructor(biols[[biol_no]][["biol"]],
+    flbs_out <- test_fwdBiolsAD_fwdBiolAD_constructor(biols[[biol_no]][["biol"]],
                                       biols[[biol_no]][["srr_model_name"]],
                                       biols[[biol_no]][["srr_params"]],
-                                      biols[[biol_no]][["srr_timelag"]],
                                       biols[[biol_no]][["srr_residuals"]],
                                       biols[[biol_no]][["srr_residuals_mult"]])
     expect_that(length(flbs_out), is_identical_to(1L))
     expect_that(flbs_out[[1]], is_identical_to(flbs_in[[biol_no]]))
 
+    # Copy constructor
+    value <- abs(rnorm(1))
+    out <- test_fwdBiolsAD_copy_constructor(biols, biol_no, indices, value)
+    # Original should have changed
+    expect_that(c(n(out[[1]][[biol_no]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), is_identical_to(value))
+    # Copy should be same as original original
+    expect_that(c(n(out[[2]][[biol_no]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), is_identical_to(c(n(flbs_in[[biol_no]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]])))
+
+    # Assignment constructor
+    value <- abs(rnorm(1))
+    out <- test_fwdBiolsAD_assignment_operator(biols, biol_no, indices, value)
+    # Original should have changed
+    expect_that(c(n(out[[1]][[biol_no]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), is_identical_to(value))
+    # Copy should be same as original original
+    expect_that(c(n(out[[2]][[biol_no]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), is_identical_to(c(n(flbs_in[[biol_no]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]])))
+})
+
+test_that("fwdBiols methods",{
+    biols <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5)
+    biol_no <- round(runif(1,min=1,max=length(biols)))
+    flbs_in <- FLBiols(lapply(biols, function(x) return(x[["biol"]])))
     # Get (const)
     flb_out <- test_fwdBiolsAD_const_get_single_index_accessor(biols, biol_no)
     expect_that(flb_out, is_identical_to(flbs_in[[biol_no]]))
     # Get 
     flb_out <- test_fwdBiolsAD_get_single_index_accessor(biols, biol_no)
     expect_that(flb_out, is_identical_to(flbs_in[[biol_no]]))
-
     # Get value const
     indices <- round(runif(6, min=1, max=dim(n(biols[[biol_no]][["biol"]]))))
     out <- test_fwdBiolsAD_const_get_value_accessor(biols, biol_no, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6])
@@ -243,7 +262,6 @@ test_that("fwdBiols constructors",{
     flbs_out <- test_fwdBiolsAD_set_single_index_accessor(biols, biol_no, biols[[biol_no2]][["biol"]],
                                       biols[[biol_no2]][["srr_model_name"]],
                                       biols[[biol_no2]][["srr_params"]],
-                                      biols[[biol_no2]][["srr_timelag"]],
                                       biols[[biol_no2]][["srr_residuals"]],
                                       biols[[biol_no2]][["srr_residuals_mult"]])
     expect_that(flbs_out[[biol_no]], is_identical_to(flbs_in[[biol_no2]]))
@@ -252,22 +270,6 @@ test_that("fwdBiols constructors",{
     value <- abs(rnorm(1))
     flbs_out <- test_fwdBiolsAD_set_value_accessor(biols, biol_no, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
     expect_that(c(n(flbs_out[[biol_no]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), is_identical_to(value))
-
-    # Copy constructor
-    value <- abs(rnorm(1))
-    out <- test_fwdBiolsAD_copy_constructor(biols, biol_no, indices, value)
-    # Original should have changed
-    expect_that(c(n(out[[1]][[biol_no]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), is_identical_to(value))
-    # Copy should be same as original
-    expect_that(c(n(out[[2]][[biol_no]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), is_identical_to(c(n(flbs_in[[biol_no]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]])))
-
-    # Assignment constructor
-    value <- abs(rnorm(1))
-    out <- test_fwdBiolsAD_assignment_operator(biols, biol_no, indices, value)
-    # Original should have changed
-    expect_that(c(n(out[[1]][[biol_no]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), is_identical_to(value))
-    # Copy should be same as original
-    expect_that(c(n(out[[2]][[biol_no]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), is_identical_to(c(n(flbs_in[[biol_no]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]])))
-
-
 })
+
+
