@@ -3,56 +3,56 @@
 # Maintainer: Finlay Scott, JRC
 #
 
-context("Implementation of FLCatch - double and AD versions")
+context("Implementation of FLCatch and FLCatches - double and AD versions")
 
 test_that("FLCatch as and wrap",{
     flc_in <- random_FLCatch_generator()
-    expect_that(test_simple_FLCatch_sexp_constructor(flc_in), is_identical_to(as.integer(0)))
+    expect_identical(test_simple_FLCatch_sexp_constructor(flc_in), as.integer(0))
     flc_out <- test_FLCatch_as_wrap(flc_in)
-    expect_that(flc_in, is_identical_to(flc_out))
+    expect_identical(flc_in, flc_out)
     flc_out <- test_FLCatchAD_as_wrap(flc_in)
-    expect_that(flc_in, is_identical_to(flc_out))
+    expect_identical(flc_in, flc_out)
 })
 
 test_that("FLCatch constructors",{
     flc_in <- random_FLCatch_generator()
     # SEXP constructors - problem with catch.q
     flc_out <- test_FLCatch_sexp_constructor(flc_in)
-    expect_that(flc_in, is_identical_to(flc_out))
+    expect_identical(flc_in, flc_out)
     flc_out <- test_FLCatchAD_sexp_constructor(flc_in)
-    expect_that(flc_in, is_identical_to(flc_out))
+    expect_identical(flc_in, flc_out)
     # Copy constructor
     flc_out <- test_FLCatch_copy_constructor(flc_in)
-    expect_that(flc_in, is_identical_to(flc_out))
+    expect_identical(flc_in, flc_out)
     flc_out <- test_FLCatchAD_copy_constructor(flc_in)
-    expect_that(flc_in, is_identical_to(flc_out))
+    expect_identical(flc_in, flc_out)
     # Copy constructor2
     indices <- round(runif(6,min=1, max = dim(landings.n(flc_in))))
     value <- rnorm(1)
     # Makes a copy of flq_in, changes a value of flq_in, returns original and new FLQuant
     # Checks that the copy constuctor makes a 'deep' copy else changing a value in the copy FLQ will also change a value in the original FLQ
     flcs <-  test_FLCatch_copy_constructor2(flc_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
-    expect_that(flc_in, is_identical_to(flcs[["flc1"]]))
-    expect_that(c(landings.n(flcs[["flc2"]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), is_identical_to(value))
+    expect_identical(flc_in, flcs[["flc1"]])
+    expect_identical(c(landings.n(flcs[["flc2"]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
     flcs <-  test_FLCatchAD_copy_constructor2(flc_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
-    expect_that(flc_in, is_identical_to(flcs[["flc1"]]))
-    expect_that(c(landings.n(flcs[["flc2"]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), is_identical_to(value))
+    expect_identical(flc_in, flcs[["flc1"]])
+    expect_identical(c(landings.n(flcs[["flc2"]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
     # Assignment operator
     flc_out <- test_FLCatch_assignment_operator(flc_in)
-    expect_that(flc_in, is_identical_to(flc_out))
+    expect_identical(flc_in, flc_out)
     flc_out <- test_FLCatchAD_assignment_operator(flc_in)
-    expect_that(flc_in, is_identical_to(flc_out))
+    expect_identical(flc_in, flc_out)
     # Assignment operator2
     indices <- round(runif(6,min=1, max = dim(landings.n(flc_in))))
     value <- rnorm(1)
     # Makes a copy of flq_in, changes a value of flq_in, returns original and new FLQuant
     # Checks that the assignment operator makes a 'deep' copy else changing a value in the copy FLQ will also change a value in the original FLQ
     flcs <-  test_FLCatch_assignment_operator2(flc_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
-    expect_that(flc_in, is_identical_to(flcs[["flc1"]]))
-    expect_that(c(landings.n(flcs[["flc2"]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), is_identical_to(value))
+    expect_identical(flc_in, flcs[["flc1"]])
+    expect_identical(c(landings.n(flcs[["flc2"]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
     flcs <-  test_FLCatchAD_assignment_operator2(flc_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
-    expect_that(flc_in, is_identical_to(flcs[["flc1"]]))
-    expect_that(c(landings.n(flcs[["flc2"]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), is_identical_to(value))
+    expect_identical(flc_in, flcs[["flc1"]])
+    expect_identical(c(landings.n(flcs[["flc2"]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
 })
 
 test_that("FLCatch get and set data accessors", {

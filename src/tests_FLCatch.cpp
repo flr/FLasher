@@ -131,8 +131,6 @@ Rcpp::NumericVector test_FLCatchAD_const_get_accessors(const FLCatchAD flc,int q
     Rcpp::NumericVector out(6);
     adouble ad_value0 = flc.landings_n()(quant, year, unit, season, area, iter);
     adouble ad_value1 = flc.discards_n()(quant, year, unit, season, area, iter);
-    //out[0] = ad_value0.value();
-    //out[1] = ad_value1.value();
     out[0] = Value(ad_value0);
     out[1] = Value(ad_value1);
     out[2] = flc.landings_wt()(quant, year, unit, season, area, iter);
@@ -159,8 +157,6 @@ Rcpp::NumericVector test_FLCatchAD_get_accessors(FLCatchAD flc,int quant, int ye
     Rcpp::NumericVector out(6);
     adouble ad_value0 = flc.landings_n()(quant, year, unit, season, area, iter);
     adouble ad_value1 = flc.discards_n()(quant, year, unit, season, area, iter);
-    //out[0] = ad_value0.value();
-    //out[1] = ad_value1.value();
     out[0] = Value(ad_value0);
     out[1] = Value(ad_value1);
     out[2] = flc.landings_wt()(quant, year, unit, season, area, iter);
@@ -289,8 +285,6 @@ FLQuant test_FLCatchAD_catch_q_params_subset(const FLCatchAD flc, const std::vec
     auto params = flc.catch_q_params(indices_min, indices_max);
     return params;
 }
-
-
 
 /*------------------------------------------------------------------------*/
 // FLCatches - double
@@ -536,6 +530,4 @@ FLCatchesAD test_FLCatchesAD_set_single_index_default_accessor(FLCatchesAD flcs,
     flcs() = flc;
     return flcs;
 }
-
-
 

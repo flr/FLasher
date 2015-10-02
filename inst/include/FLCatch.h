@@ -18,7 +18,7 @@
  */
 
 /*-------------------------------------------------------------------*/
-// Only n slots are templated and can be ADOLC
+// Only n slots are templated and can be AD
 // The other slots are fixed because they are never dependent
 // T is double or adouble
 template <typename T>
@@ -84,7 +84,6 @@ class FLCatch_base {
         std::string name;
         std::string desc;
         Rcpp::NumericVector range;
-
         FLQuant_base<T> landings_n_flq;
         FLQuant_base<T> discards_n_flq;
         FLQuant_base<T> discards_ratio_flq;
@@ -93,7 +92,7 @@ class FLCatch_base {
         FLQuant catch_sel_flq;
         FLQuant price_flq;
         FLQuant catch_q_flq;
-        SEXP catch_q_orig; // original
+        SEXP catch_q_orig; // original - an FLPar
 };
 
 typedef FLCatch_base<double> FLCatch;
@@ -108,7 +107,7 @@ class FLCatches_base {
         /* Constructors */
 		FLCatches_base();
 		FLCatches_base(SEXP flcs_sexp); // Used as intrusive 'as', takes a list of FLCatch objects
-		FLCatches_base(FLCatch_base<T> flc); // Constructor from an FLCatch object
+		FLCatches_base(const FLCatch_base<T>& flc); // Constructor from an FLCatch object
         operator SEXP() const; // Used as intrusive 'wrap' - returns an FLCatches objects
 		FLCatches_base(const FLCatches_base& FLCatches_base_source); // copy constructor to ensure that copy is a deep copy - used when passing FLCs into functions
 		FLCatches_base& operator = (const FLCatches_base& FLCatches_base_source); // Assignment operator for a deep copy
@@ -117,9 +116,8 @@ class FLCatches_base {
 		FLCatch_base<T> operator () (const unsigned int element = 1) const; // Only gets an FLCatch so const reinforced. Default is the first element
 		FLCatch_base<T>& operator () (const unsigned int element = 1); // Gets and sets an FLCatch so const not reinforced
 
-        void operator() (const FLCatch_base<T> flc); // Add another FLCatch_base<T> to the data
+        void operator() (const FLCatch_base<T>& flc); // Add another FLCatch_base<T> to the data
         unsigned int get_ncatches() const;
-        //Rcpp::CharacterVector get_names() const;
 
     protected:
         std::vector<FLCatch_base<T> > catches;
@@ -129,5 +127,4 @@ class FLCatches_base {
 
 typedef FLCatches_base<double> FLCatches;
 typedef FLCatches_base<adouble> FLCatchesAD;
-
 

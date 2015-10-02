@@ -299,12 +299,11 @@ FLQuant& FLCatch_base<T>::catch_q_params() {
     return catch_q_flq;
 }
 
-// methods
+// Methods
 
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::landings() const {
     std::vector<unsigned int> indices_min {1,1,1,1,1};
-    //std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(landings_wt_flq.get_dim());
     std::vector<unsigned int> indices_max = landings_wt_flq.get_dim();
     indices_max.erase(indices_max.begin());
     return landings(indices_min, indices_max);
@@ -362,7 +361,6 @@ FLQuant_base<T> FLCatch_base<T>::catch_n(const std::vector<unsigned int> indices
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::catches() const {
     std::vector<unsigned int> indices_min {1,1,1,1,1};
-//    std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(discards_wt_flq.get_dim());
     std::vector<unsigned int> indices_max = discards_wt_flq.get_dim();
     indices_max.erase(indices_max.begin());
     return catches(indices_min, indices_max);
@@ -412,6 +410,9 @@ Rcpp::NumericVector FLCatch_base<T>::get_range() const {
     return range;
 }
 
+// Explicit instantiation of classes
+template class FLCatch_base<double>;
+template class FLCatch_base<adouble>;
 
 /*------------------------------------------------------------*/
 // FLCatches class
@@ -423,7 +424,6 @@ template <typename T>
 FLCatches_base<T>::FLCatches_base(){
 }
 
-// Would like to speed up by not using push_back but cannot define size in advance as we don't what it is!
 // Constructor from a list of SEXP S4 FLCatch objects
 // Used as intrusive 'as'
 template <typename T>
@@ -433,9 +433,13 @@ FLCatches_base<T>::FLCatches_base(SEXP flcs_sexp){
     desc = Rcpp::as<std::string>(flcs_s4.slot("desc"));
     names = flcs_s4.slot("names");
     Rcpp::List catch_list = Rcpp::as<Rcpp::List>(flcs_s4.slot(".Data"));
-    Rcpp::List::iterator lst_iterator;
-    for (lst_iterator = catch_list.begin(); lst_iterator != catch_list.end(); ++ lst_iterator){
-        catches.push_back(*lst_iterator);
+    auto no_catches = catch_list.size();
+    catches.reserve(no_catches);
+    //for (auto lst_iterator = catch_list.begin(); lst_iterator != catch_list.end(); ++ lst_iterator){
+    //    catches.push_back(*lst_iterator);
+    //}
+    for (auto flcatch : catch_list){
+        catches.push_back(flcatch);
     }
 }
 
@@ -457,7 +461,7 @@ FLCatches_base<T>::operator SEXP() const{
 
 // Constructor from an FLCatch
 template <typename T> 
-FLCatches_base<T>::FLCatches_base(FLCatch_base<T> flc){
+FLCatches_base<T>::FLCatches_base(const FLCatch_base<T>& flc){
     catches.push_back(flc);
 }
 
@@ -489,7 +493,7 @@ unsigned int FLCatches_base<T>::get_ncatches() const {
 
 // Add another FLCatch_base<T> to the data
 template <typename T>
-void FLCatches_base<T>::operator() (const FLCatch_base<T> flc){
+void FLCatches_base<T>::operator() (const FLCatch_base<T>& flc){
     catches.push_back(flc);
 }
 
@@ -512,10 +516,7 @@ FLCatch_base<T>& FLCatches_base<T>::operator () (const unsigned int element){
 	return catches[element-1];
 }
 
-
 // Explicit instantiation of classes
-template class FLCatch_base<double>;
-template class FLCatch_base<adouble>;
 template class FLCatches_base<double>;
 template class FLCatches_base<adouble>;
 
