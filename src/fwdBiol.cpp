@@ -257,7 +257,7 @@ fwdBiols_base<T>::fwdBiols_base(Rcpp::List flbs_list){
     // Go through the biols list and make the fwdBiol elements
     for (Rcpp::List flb_list: flbs_list){
         fwdBiol_base<T> flb(flb_list["biol"], flb_list["srr_model_name"], flb_list["srr_params"], flb_list["srr_residuals"], flb_list["srr_residuals_mult"]);
-        biols.push_back(flb);
+        biols.emplace_back(flb);
     }
     names = flbs_list.names();
 }
@@ -280,7 +280,7 @@ fwdBiols_base<T>::operator SEXP() const{
 // Constructor from an fwdBiol
 template <typename T> 
 fwdBiols_base<T>::fwdBiols_base(fwdBiol_base<T>& flb){
-    biols.push_back(flb);
+    biols.emplace_back(flb);
 }
 
 // Copy constructor - else 'data' can be pointed at by multiple instances
@@ -328,7 +328,7 @@ fwdBiol_base<T>& fwdBiols_base<T>::operator () (const unsigned int element){
 // Add another fwdBiol_base<T> to the data
 template <typename T>
 void fwdBiols_base<T>::operator() (const fwdBiol_base<T>& fwb){
-    biols.push_back(fwb);
+    biols.emplace_back(fwb);
 }
 
 
