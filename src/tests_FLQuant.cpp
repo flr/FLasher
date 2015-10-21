@@ -99,7 +99,6 @@ Rcpp::List test_FLQuant_get_dimnames2(FLQuant flq){
             Rcpp::Named("dimnames", dimnames));
 }
 
-
 // [[Rcpp::export]]
 int test_FLQuant_get_size(FLQuant flq){
 	return flq.get_size();
@@ -205,13 +204,6 @@ FLQuant test_FLQuant_get_all_iters(FLQuant flq, int quant, int year, int unit, i
     return flq(quant,year,unit,season,area);
 }
 
-//// [[Rcpp::export]]
-//FLQuant test_FLQuant_set_all_iters(FLQuant flq1, FLQuant flq2, int quant, int year, int unit, int season, int area){
-//    FLQuant flq3 = flq2(quant,year,unit,season,area);
-//    flq1(quant,year,unit,season,area) = flq3;
-//    return flq1;
-//}
-
 //------------ Set methods -------------------------
 
 // [[Rcpp::export]]
@@ -224,14 +216,12 @@ FLQuant test_FLQuant_set_data(FLQuant flq, std::vector<double> data_in){
 FLQuant test_FLQuant_set_dimnames(FLQuant flq, Rcpp::List new_dimnames){
     flq.set_dimnames(new_dimnames);
     return flq;
-
 }
 
 // [[Rcpp::export]]
 FLQuant test_FLQuant_set_units(FLQuant flq, std::string new_units){
     flq.set_units(new_units);
     return flq;
-
 }
 
 // [[Rcpp::export]]
@@ -257,20 +247,6 @@ FLQuant test_FLQuant_fill(FLQuant flq, const double value) {
     flq.fill(value);
     return flq;
 }
-
-// [[Rcpp::export]]
-FLQuantAD test_FLQuantAD_fill(FLQuantAD flq, const double value) {
-    adouble value_ad = value;
-    flq.fill(value_ad);
-    return flq;
-}
-
-// [[Rcpp::export]]
-FLQuantAD test_FLQuantAD_fill_double(FLQuantAD flq, const double value) {
-    flq.fill(value);
-    return flq;
-}
-
 
 //------------------ Others --------------------------------------
 // [[Rcpp::export]]
@@ -304,7 +280,6 @@ double test_for_range_const(FLQuant flq, double rn){
     return value;
 }
 
-
 // [[Rcpp::export]]
 FLQuant test_FLQuant_for_iterator(FLQuant flq, double rn){
     FLQuant::iterator it;
@@ -331,13 +306,4 @@ FLQuant test_FLQuant_lambda(FLQuant flq1, FLQuant flq2){
         [](double x, double y) { return sqrt(x*x + y*y); } );
     return flq3;
 }
-
-//--------- Shortcuts ----------------------
-/*
-// [[Rcpp::export]]
-FLQuant test_FLQuant_year_sum(FLQuant flq){
-    FLQuant flq_out = year_sum(flq);
-    return flq_out;
-}
-*/
 

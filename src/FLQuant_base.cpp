@@ -12,8 +12,8 @@
  */
 template <typename T>
 FLQuant_base<T>::FLQuant_base(){
-	units = std::string(); // Empty string - just ""
-    //dim = Rcpp::IntegerVector();
+    data = std::vector<T>();
+	units = std::string(); 
     dim = std::vector<unsigned int>();
     dimnames = Rcpp::List();
 }
@@ -26,18 +26,21 @@ FLQuant_base<T>::FLQuant_base(){
  */
 template<typename T>
 FLQuant_base<T>::FLQuant_base(SEXP flq_sexp){
-	Rcpp::S4 flq_s4 = Rcpp::as<Rcpp::S4>(flq_sexp);
-    Rcpp::NumericVector data_nv = flq_s4.slot(".Data");
-    // Initialise data to the correct size?
-    // Fill up data
-    // Add reserve() in here first to make data the correct size?
-    // data(nquant * nyear * nunit * nseason * narea * niter)?
-    data.insert(data.begin(), data_nv.begin(), data_nv.end());
-	units = Rcpp::as<std::string>(flq_s4.slot("units"));
-	//dim = data_nv.attr("dim");
-    Rcpp::IntegerVector dim_rcpp = data_nv.attr("dim");
-    dim = Rcpp::as<std::vector<unsigned int>>(dim_rcpp);
+	Rcpp::S4 flq_s4(flq_sexp);
+    // Pulling out the .Data slot.
+    // Takes time but cannot get round this extraction 
+    // We need it to be a NumericVector (so we can get dim and dimnames)
+    Rcpp::NumericVector data_nv = flq_s4.slot(".Data"); 
+    // Even doing it the old school way takes same time
+    // SEXP Quant = R_do_slot(flq_sexp, Rf_install(".Data"));
+    // Other FLQuant bits
+    dim = Rcpp::as<std::vector<unsigned int>>(data_nv.attr("dim"));
 	dimnames = data_nv.attr("dimnames");
+	units = Rcpp::as<std::string>(flq_s4.slot("units"));
+    // Sort out data - need to copy across as maybe AD
+    // Initialise data to the correct size
+    data.reserve(std::accumulate(dim.begin(), dim.end(), 1, std::multiplies<unsigned int>()));
+    data.insert(data.begin(), data_nv.begin(), data_nv.end());
 }
 
 /*! \brief Creates an FLQuant of a certain size filled with 0
@@ -52,9 +55,7 @@ FLQuant_base<T>::FLQuant_base(SEXP flq_sexp){
  */
 template <typename T>
 FLQuant_base<T>::FLQuant_base(const unsigned int nquant, const unsigned int nyear, const unsigned int nunit, const unsigned int nseason, const unsigned int narea, const unsigned int niter){
-    //Rprintf("Making a new FLQuant_base<T> with user defined dims\n");
 	units = std::string(); // Empty string - just ""
-    //dim = Rcpp::IntegerVector::create(nquant, nyear, nunit, nseason, narea, niter);
     dim = {nquant, nyear, nunit, nseason, narea, niter};
     data = std::vector<T>(nquant * nyear * nunit * nseason * narea * niter,0.0);
     // How to fill dimnames up appropriately?
@@ -89,13 +90,13 @@ FLQuant_base<T>::operator SEXP() const{
  */
 template<>
 FLQuant_base<double>::operator SEXP() const{
-    //Rprintf("Specialised wrapping FLQuant_base<double>\n");
     Rcpp::S4 flq_s4("FLQuant");
-    //// Make and fill the NumericVector that will be the 'data' slot 
-    Rcpp::NumericVector data_nv(data.size(),0.0);
-    for (int i = 0; i < data.size(); ++i){
-        data_nv[i] = data[i];
-    }
+    // Make and fill the NumericVector that will be the 'data' slot 
+    Rcpp::NumericVector data_nv(data.size());
+    // Filling this up takes a long time
+    // No NV.insert but can use transform and a lambda (sort of)
+    std::transform(data.begin(), data.end(), data_nv.begin(),
+        [](double x) { return x; } );
     // Apply dims and dimnames
 	data_nv.attr("dim") = dim;
 	data_nv.attr("dimnames") = dimnames;
@@ -116,10 +117,10 @@ FLQuant_base<adouble>::operator SEXP() const{
     //Rprintf("Specialised wrapping FLQuant_base<adouble>\n");
     Rcpp::S4 flq_s4("FLQuant");
     // Make and fill the NumericVector that will be the 'data' slot 
-    Rcpp::NumericVector data_nv(data.size(), 0.0);
-    for (int i = 0; i < data.size(); ++i){
-        data_nv[i] = Value(data[i]);
-    }
+    Rcpp::NumericVector data_nv(data.size());
+    // Lambda to get Value - nice
+    std::transform(data.begin(), data.end(), data_nv.begin(),
+        [](adouble x) { return Value(x); } );
     // Apply dims and dimnames
 	data_nv.attr("dim") = dim;
 	data_nv.attr("dimnames") = dimnames;
@@ -132,11 +133,9 @@ FLQuant_base<adouble>::operator SEXP() const{
 // Copy constructor - else 'data' can be pointed at by multiple instances
 template<typename T>
 FLQuant_base<T>::FLQuant_base(const FLQuant_base<T>& FLQuant_source){
-    //Rprintf("In FLQuant_base<T> copy constructor\n");
 	data  = FLQuant_source.data; // std::vector always does deep copy
 	units = FLQuant_source.units; // std::string always does deep copy
 	dim  = FLQuant_source.dim; // std::vector always does deep copy
-    //dim = Rcpp::clone<Rcpp::IntegerVector>(FLQuant_source.dim);
     dimnames = Rcpp::clone<Rcpp::List>(FLQuant_source.dimnames);
 }
 

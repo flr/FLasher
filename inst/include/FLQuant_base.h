@@ -3,7 +3,7 @@
  * Maintainer: Finlay Scott, JRC
  */
 
-#include <cppad/cppad.hpp> // the CppAD package http://www.coin-or.org/CppAD/
+#include <cppad/cppad.hpp> // CppAD package http://www.coin-or.org/CppAD/
 
 #include <Rcpp.h>
 
@@ -11,19 +11,19 @@
 /*
  * FLQuant_base<T> template class
  * FLQuant_base<double> is an FLQuant
- * I was originally thinking of having FLQuantAdolc as a new class that inherits FLQuant_base<adouble>.
- * This would mean we could additional member variables and methods that were appropriate for FLQuantAdolc.
- * This idea could be further expanded to a templated AD class, FLQuantAD_base<T> that could be used for AutoDiff classes as well as adouble
+ * I was originally thinking of having FLQuantAD as a new class that inherits FLQuant_base<adouble>.
+ * This would mean we could additional member variables and methods that were appropriate for FLQuantAD
+ * This idea could be further expanded to a templated AD class, FLQuantAD_base<T> that could be used for AutoDiff / CppAD/ Adolc classes
  * The implementation is not difficult for some methods.
  * Of course, all constructors, copy and assignement methods need to be specialised.
  * But the get_x(), set_x(), element accessor () operators could be defined in the FLQuant_base and then used by all inherited classes with different <T>
  * The problem is with a method that requires a copy to be made. If this method is 'only' declared in the base class, then slicing occurs when called by a derived class.
  * For example, the multiplication operator, *, requires a copy of the lhs to be made (it works on the lhs object, lhs.(*)).
- * If the lhs is actually FLQAdolc which as inherited FLQuant_base<adouble>, what appears in the * method is only the base FLQuant_base<adouble> object, not the full
- * FLQAdolc object. All extra methods and variables are 'sliced' off. When the copy returns, it is only a FLQuant_base<adouble> not FLQAdolc.
- * To get round this it would be possible to define lots of extra overloaded methods (e.g. FLQuantAdolc * FLQuant; FLQuantAdolc * FLQuant; FLQuant * FLQuantAdolc).
+ * If the lhs is actually FLQAD which as inherited FLQuant_base<adouble>, what appears in the * method is only the base FLQuant_base<adouble> object, not the full
+ * FLQAD object. All extra methods and variables are 'sliced' off. When the copy returns, it is only a FLQuant_base<adouble> not FLQAD.
+ * To get round this it would be possible to define lots of extra overloaded methods (e.g. FLQuantAD * FLQuant; FLQuantAD * FLQuant; FLQuant * FLQuantAD).
  * This doesn't sounds like too much of a hassle but the overhead becomes substantial when we have * / + - operators, as well as ones that only a double, or an adouble.
- * We can revisit this if necessary. For the time being, FLQuantAdolc is just FLQuant_base<adouble>.
+ * We can revisit this if necessary. For the time being, FLQuantAD is just FLQuant_base<adouble>.
  *
  * 08/09/2014
  * Now using CppAD instead of ADOL-C
@@ -31,9 +31,7 @@
  * The original code is in https://github.com/drfinlayscott/FLRcppAdolc 
  */
 
-// Renaming adouble (ADOL-C type) so can easily use original ADOL-C based code
 typedef CppAD::AD<double> adouble;
-
 
 /*! \brief The FLQuant class
  *
@@ -53,13 +51,13 @@ class FLQuant_base {
 		FLQuant_base& operator = (const FLQuant_base& FLQuant_source); // Assignment operator for a deep copy
         FLQuant_base(const unsigned int nquant, const unsigned int nyear, const unsigned int nunit, const unsigned int nseason, const unsigned int narea, const unsigned int niter); // Make an empty FLQuant
 
+        // Specialised constructor to make an FLQuantAD from an FLQuant
         template <typename T2>
-		FLQuant_base(const FLQuant_base<T2>& FLQuant_source); // Specialised to make an FLQuantAdolc / AD from an FLQuant
+		FLQuant_base(const FLQuant_base<T2>& FLQuant_source); 
 
 		/* Get accessors */
         std::vector<T> get_data() const;
 		std::string get_units() const;
-        //Rcpp::IntegerVector get_dim() const;
         std::vector<unsigned int> get_dim() const;
         Rcpp::List get_dimnames() const;
 		unsigned int get_size() const;
@@ -76,19 +74,19 @@ class FLQuant_base {
         void set_dimnames(const Rcpp::List& dimnames_in);
         void set_units(const std::string& units_in);
 
-        /* () get accessors */
-		T operator () (const unsigned int element) const; // only gets an element so const reinforced - 
-		T operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter) const; // only gets an element so const reinforced 
+        /* () get accessors - just get so const reinforced */
+		T operator () (const unsigned int element) const; 
+		T operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter) const; 
 		T operator () (const std::vector<unsigned int> indices) const; // For all the elements - must be of length 6 
 		FLQuant_base<T> operator () (const unsigned int quant_min, const unsigned int quant_max, const unsigned int year_min, const unsigned int year_max, const unsigned int unit_min, const unsigned int unit_max, const unsigned int season_min, const unsigned int season_max, const unsigned int area_min, const unsigned int area_max, const unsigned int iter_min, const unsigned int iter_max) const; // Subsetting
         FLQuant_base<T> operator () (const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; // Neater subsetting
 		FLQuant_base<T> operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area) const; // Access all iters
 
-        /* () get and set accessors */
-		T& operator () (const unsigned int element); // gets and sets an element so const not reinforced
-		T& operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter); // gets and sets an element so const not reinforced
+        /* () get and set accessors - const not reinforced */
+		T& operator () (const unsigned int element); 
+		T& operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter);
 		T& operator () (const std::vector<unsigned int> indices); // For all the elements - must be of length 6 
-		//FLQuant_base<T>& operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area); // Access all iters
+
         /* Fill methods */
         void fill(const T value);
         template <typename T2>
@@ -99,7 +97,7 @@ class FLQuant_base {
         // Multiplication
         FLQuant_base<T>& operator *= (const FLQuant_base<T>& rhs);
         FLQuant_base<T>& operator *= (const T& rhs);
-        // For the special case of FLQuant_base<adouble> *= FLQuant_base<double>
+        // Special case of FLQuant_base<adouble> *= FLQuant_base<double>
         template <typename T2>
         FLQuant_base<T>& operator *= (const FLQuant_base<T2>& rhs);
         // For the special case of FLQuant_base<adouble> *= double
@@ -112,10 +110,10 @@ class FLQuant_base {
         // Division
         FLQuant_base<T>& operator /= (const FLQuant_base<T>& rhs);
         FLQuant_base<T>& operator /= (const T& rhs);
-        // For the special case of FLQuant_base<adouble> *= FLQuant_base<double>
+        // Special case of FLQuant_base<adouble> *= FLQuant_base<double>
         template <typename T2>
         FLQuant_base<T>& operator /= (const FLQuant_base<T2>& rhs);
-        // For the special case of FLQuant_base<adouble> *= double
+        // Special case of FLQuant_base<adouble> *= double
         template <typename T2>
         FLQuant_base<T>& operator /= (const T2& rhs);
         // Return same type as itself
@@ -125,10 +123,10 @@ class FLQuant_base {
         // Subtraction
         FLQuant_base<T>& operator -= (const FLQuant_base<T>& rhs);
         FLQuant_base<T>& operator -= (const T& rhs);
-        // For the special case of FLQuant_base<adouble> *= FLQuant_base<double>
+        // Special case of FLQuant_base<adouble> *= FLQuant_base<double>
         template <typename T2>
         FLQuant_base<T>& operator -= (const FLQuant_base<T2>& rhs);
-        // For the special case of FLQuant_base<adouble> *= double
+        // Special case of FLQuant_base<adouble> *= double
         template <typename T2>
         FLQuant_base<T>& operator -= (const T2& rhs);
         // Return same type as itself
@@ -138,10 +136,10 @@ class FLQuant_base {
         // Addition
         FLQuant_base<T>& operator += (const FLQuant_base<T>& rhs);
         FLQuant_base<T>& operator += (const T& rhs);
-        // For the special case of FLQuant_base<adouble> += FLQuant_base<double>
+        // Special case of FLQuant_base<adouble> += FLQuant_base<double>
         template <typename T2>
         FLQuant_base<T>& operator += (const FLQuant_base<T2>& rhs);
-        // For the special case of FLQuant_base<adouble> *= double
+        // Special case of FLQuant_base<adouble> *= double
         template <typename T2>
         FLQuant_base<T>& operator += (const T2& rhs);
         // Return same type as itself
@@ -165,20 +163,16 @@ class FLQuant_base {
     protected:
         std::vector<T> data;
 		std::string units;	
-        //Rcpp::IntegerVector dim;
         std::vector<unsigned int> dim;
         Rcpp::List dimnames;
 };
 
 
 typedef FLQuant_base<double> FLQuant;
-// typedef FLQuant_base<adouble> FLQuantAdolc;
 typedef FLQuant_base<adouble> FLQuantAD;
 
 //---------- Other useful functions ------------------------
 
-//int dim_matcher(const Rcpp::IntegerVector a, const Rcpp::IntegerVector b);
-//int dim5_matcher(const Rcpp::IntegerVector a, const Rcpp::IntegerVector b);
 int dim_matcher(const std::vector<unsigned int> a, const std::vector<unsigned int> b);
 int dim5_matcher(const std::vector<unsigned int> a, const std::vector<unsigned int> b);
 
@@ -189,7 +183,7 @@ FLQuant FLPar_to_FLQuant(SEXP flp);
 
 /* Canonical form: Type operator*(const Type &lhs, const Type &rhs); 
 * double gets swallowed up by whatever is multiplying it.
-* This means that the operations involving a double need to be individually specified.
+* So operations involving a double need to be individually specified.
 * Need to be careful of ambiguities arise,
 * FLQuant_base<anything>  = FLQuant_base<double> * FLQuant_base<anything>
 * FLQuant = FLQuant * double
@@ -198,7 +192,7 @@ FLQuant FLPar_to_FLQuant(SEXP flp);
 * FLQuant_base<> = <> * FLQuant_base
 */
 
-// The templated functions are all instantiated at the bottom of FLQuant_base.cpp
+// Templated functions are instantiated at the bottom of FLQuant_base.cpp
 
 // Multiplication
 template <typename T>
@@ -300,7 +294,6 @@ FLQuant_base<T> quant_sum(const FLQuant_base<T>& flq);
 // Means over various dimensions
 template <typename T>
 FLQuant_base<T> quant_mean(const FLQuant_base<T>& flq);  // collapse the quant dimension
-
 
 template <typename T>
 FLQuant_base<T> max_quant(const FLQuant_base<T>& flq);

@@ -3217,6 +3217,30 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_FLQuantAD_fill
+FLQuantAD test_FLQuantAD_fill(FLQuantAD flq, const double value);
+RcppExport SEXP FLasher_test_FLQuantAD_fill(SEXP flqSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq(flqSEXP);
+    Rcpp::traits::input_parameter< const double >::type value(valueSEXP);
+    __result = Rcpp::wrap(test_FLQuantAD_fill(flq, value));
+    return __result;
+END_RCPP
+}
+// test_FLQuantAD_fill_double
+FLQuantAD test_FLQuantAD_fill_double(FLQuantAD flq, const double value);
+RcppExport SEXP FLasher_test_FLQuantAD_fill_double(SEXP flqSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq(flqSEXP);
+    Rcpp::traits::input_parameter< const double >::type value(valueSEXP);
+    __result = Rcpp::wrap(test_FLQuantAD_fill_double(flq, value));
+    return __result;
+END_RCPP
+}
 // FLPar_units
 std::string FLPar_units(SEXP flp);
 RcppExport SEXP FLasher_FLPar_units(SEXP flpSEXP) {
@@ -3717,30 +3741,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP);
     Rcpp::traits::input_parameter< const double >::type value(valueSEXP);
     __result = Rcpp::wrap(test_FLQuant_fill(flq, value));
-    return __result;
-END_RCPP
-}
-// test_FLQuantAD_fill
-FLQuantAD test_FLQuantAD_fill(FLQuantAD flq, const double value);
-RcppExport SEXP FLasher_test_FLQuantAD_fill(SEXP flqSEXP, SEXP valueSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< FLQuantAD >::type flq(flqSEXP);
-    Rcpp::traits::input_parameter< const double >::type value(valueSEXP);
-    __result = Rcpp::wrap(test_FLQuantAD_fill(flq, value));
-    return __result;
-END_RCPP
-}
-// test_FLQuantAD_fill_double
-FLQuantAD test_FLQuantAD_fill_double(FLQuantAD flq, const double value);
-RcppExport SEXP FLasher_test_FLQuantAD_fill_double(SEXP flqSEXP, SEXP valueSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< FLQuantAD >::type flq(flqSEXP);
-    Rcpp::traits::input_parameter< const double >::type value(valueSEXP);
-    __result = Rcpp::wrap(test_FLQuantAD_fill_double(flq, value));
     return __result;
 END_RCPP
 }
