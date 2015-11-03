@@ -422,17 +422,12 @@ FLCatches_base<T>::FLCatches_base(){
 // Used as intrusive 'as'
 template <typename T>
 FLCatches_base<T>::FLCatches_base(SEXP flcs_sexp){
-    //Rprintf("In FLCatches SEXP constructor\n");
     Rcpp::S4 flcs_s4 = Rcpp::as<Rcpp::S4>(flcs_sexp);
     desc = Rcpp::as<std::string>(flcs_s4.slot("desc"));
     names = flcs_s4.slot("names");
     Rcpp::List catch_list = Rcpp::as<Rcpp::List>(flcs_s4.slot(".Data"));
     auto no_catches = catch_list.size();
     catches.reserve(no_catches);
-    //for (auto lst_iterator = catch_list.begin(); lst_iterator != catch_list.end(); ++ lst_iterator){
-    //    catches.push_back(*lst_iterator);
-    //}
-    // Use emplace_back - avoid copies
     for (auto flcatch : catch_list){
         catches.push_back(flcatch);
     }
@@ -443,11 +438,9 @@ FLCatches_base<T>::FLCatches_base(SEXP flcs_sexp){
 template<typename T>
 FLCatches_base<T>::operator SEXP() const{
     Rcpp::S4 flcs_s4("FLCatches");
-    //Rprintf("Wrapping FLCatches_base<T>.\n");
     Rcpp::List list_out;
-    // Use emplace_back - avoid copies
-    for (unsigned int i = 0; i < get_ncatches(); i++){
-        list_out.push_back(catches[i]);
+    for (auto flcatch : catches){
+        list_out.push_back(flcatch);
     }
     flcs_s4.slot(".Data") = list_out;
     flcs_s4.slot("desc") = desc;
@@ -464,7 +457,6 @@ FLCatches_base<T>::FLCatches_base(const FLCatch_base<T>& flc){
 // Copy constructor - else 'data' can be pointed at by multiple instances
 template<typename T>
 FLCatches_base<T>::FLCatches_base(const FLCatches_base<T>& FLCatches_source){
-    //Rprintf("In FLCatches_base<T> copy constructor\n");
 	catches  = FLCatches_source.catches; // std::vector always does deep copy
     desc = FLCatches_source.desc;
     names = Rcpp::clone<Rcpp::CharacterVector>(FLCatches_source.names);
@@ -473,7 +465,6 @@ FLCatches_base<T>::FLCatches_base(const FLCatches_base<T>& FLCatches_source){
 // Assignment operator to ensure deep copy - else 'data' can be pointed at by multiple instances
 template<typename T>
 FLCatches_base<T>& FLCatches_base<T>::operator = (const FLCatches_base<T>& FLCatches_source){
-    //Rprintf("In FLCatches_base<T> assignment operator\n");
 	if (this != &FLCatches_source){
         catches  = FLCatches_source.catches; // std::vector always does deep copy
         desc = FLCatches_source.desc;
@@ -515,7 +506,5 @@ FLCatch_base<T>& FLCatches_base<T>::operator () (const unsigned int element){
 // Explicit instantiation of classes
 template class FLCatches_base<double>;
 template class FLCatches_base<adouble>;
-
-
 
 

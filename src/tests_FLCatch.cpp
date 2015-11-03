@@ -387,24 +387,6 @@ FLCatches test_FLCatches_set_value_accessor(FLCatches flcs, const int element, i
     return flcs;
 }
 
-// [[Rcpp::export]]
-FLCatch test_FLCatches_const_get_single_index_default_accessor(const FLCatches flcs){
-    FLCatch flc = flcs();
-    return flc;
-}
-
-// [[Rcpp::export]]
-FLCatch test_FLCatches_get_single_index_default_accessor(FLCatches flcs){
-    FLCatch flc = flcs();
-    return flc;
-}
- 
-// [[Rcpp::export]]
-FLCatches test_FLCatches_set_single_index_default_accessor(FLCatches flcs, const FLCatch flc){
-    flcs() = flc;
-    return flcs;
-}
-
 /*------------------------------------------------------------------------*/
 // FLCatches - adouble
 
@@ -509,24 +491,6 @@ FLCatchesAD test_FLCatchesAD_set_single_index_accessor(FLCatchesAD flcs, const i
 FLCatchesAD test_FLCatchesAD_set_value_accessor(FLCatchesAD flcs, const int element, int quant, int year, int unit, int season, int area, int iter, double value){
     adouble ad_value = value;
     flcs(element).landings_n()(quant,year,unit,season,area,iter) = ad_value;
-    return flcs;
-}
-
-// [[Rcpp::export]]
-FLCatchAD test_FLCatchesAD_const_get_single_index_default_accessor(const FLCatchesAD flcs){
-    FLCatchAD flc = flcs();
-    return flc;
-}
-
-// [[Rcpp::export]]
-FLCatchAD test_FLCatchesAD_get_single_index_default_accessor(FLCatchesAD flcs){
-    FLCatchAD flc = flcs();
-    return flc;
-}
- 
-// [[Rcpp::export]]
-FLCatchesAD test_FLCatchesAD_set_single_index_default_accessor(FLCatchesAD flcs, const FLCatchAD flc){
-    flcs() = flc;
     return flcs;
 }
 

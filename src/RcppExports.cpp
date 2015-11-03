@@ -1751,40 +1751,6 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// test_FLCatches_const_get_single_index_default_accessor
-FLCatch test_FLCatches_const_get_single_index_default_accessor(const FLCatches flcs);
-RcppExport SEXP FLasher_test_FLCatches_const_get_single_index_default_accessor(SEXP flcsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const FLCatches >::type flcs(flcsSEXP);
-    __result = Rcpp::wrap(test_FLCatches_const_get_single_index_default_accessor(flcs));
-    return __result;
-END_RCPP
-}
-// test_FLCatches_get_single_index_default_accessor
-FLCatch test_FLCatches_get_single_index_default_accessor(FLCatches flcs);
-RcppExport SEXP FLasher_test_FLCatches_get_single_index_default_accessor(SEXP flcsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< FLCatches >::type flcs(flcsSEXP);
-    __result = Rcpp::wrap(test_FLCatches_get_single_index_default_accessor(flcs));
-    return __result;
-END_RCPP
-}
-// test_FLCatches_set_single_index_default_accessor
-FLCatches test_FLCatches_set_single_index_default_accessor(FLCatches flcs, const FLCatch flc);
-RcppExport SEXP FLasher_test_FLCatches_set_single_index_default_accessor(SEXP flcsSEXP, SEXP flcSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< FLCatches >::type flcs(flcsSEXP);
-    Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP);
-    __result = Rcpp::wrap(test_FLCatches_set_single_index_default_accessor(flcs, flc));
-    return __result;
-END_RCPP
-}
 // test_FLCatchesAD_as_wrap
 FLCatchesAD test_FLCatchesAD_as_wrap(FLCatchesAD flcs);
 RcppExport SEXP FLasher_test_FLCatchesAD_as_wrap(SEXP flcsSEXP) {
@@ -1990,40 +1956,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
     Rcpp::traits::input_parameter< double >::type value(valueSEXP);
     __result = Rcpp::wrap(test_FLCatchesAD_set_value_accessor(flcs, element, quant, year, unit, season, area, iter, value));
-    return __result;
-END_RCPP
-}
-// test_FLCatchesAD_const_get_single_index_default_accessor
-FLCatchAD test_FLCatchesAD_const_get_single_index_default_accessor(const FLCatchesAD flcs);
-RcppExport SEXP FLasher_test_FLCatchesAD_const_get_single_index_default_accessor(SEXP flcsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const FLCatchesAD >::type flcs(flcsSEXP);
-    __result = Rcpp::wrap(test_FLCatchesAD_const_get_single_index_default_accessor(flcs));
-    return __result;
-END_RCPP
-}
-// test_FLCatchesAD_get_single_index_default_accessor
-FLCatchAD test_FLCatchesAD_get_single_index_default_accessor(FLCatchesAD flcs);
-RcppExport SEXP FLasher_test_FLCatchesAD_get_single_index_default_accessor(SEXP flcsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< FLCatchesAD >::type flcs(flcsSEXP);
-    __result = Rcpp::wrap(test_FLCatchesAD_get_single_index_default_accessor(flcs));
-    return __result;
-END_RCPP
-}
-// test_FLCatchesAD_set_single_index_default_accessor
-FLCatchesAD test_FLCatchesAD_set_single_index_default_accessor(FLCatchesAD flcs, const FLCatchAD flc);
-RcppExport SEXP FLasher_test_FLCatchesAD_set_single_index_default_accessor(SEXP flcsSEXP, SEXP flcSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< FLCatchesAD >::type flcs(flcsSEXP);
-    Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP);
-    __result = Rcpp::wrap(test_FLCatchesAD_set_single_index_default_accessor(flcs, flc));
     return __result;
 END_RCPP
 }

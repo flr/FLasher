@@ -569,18 +569,6 @@ test_FLCatches_set_value_accessor <- function(flcs, element, quant, year, unit, 
     .Call('FLasher_test_FLCatches_set_value_accessor', PACKAGE = 'FLasher', flcs, element, quant, year, unit, season, area, iter, value)
 }
 
-test_FLCatches_const_get_single_index_default_accessor <- function(flcs) {
-    .Call('FLasher_test_FLCatches_const_get_single_index_default_accessor', PACKAGE = 'FLasher', flcs)
-}
-
-test_FLCatches_get_single_index_default_accessor <- function(flcs) {
-    .Call('FLasher_test_FLCatches_get_single_index_default_accessor', PACKAGE = 'FLasher', flcs)
-}
-
-test_FLCatches_set_single_index_default_accessor <- function(flcs, flc) {
-    .Call('FLasher_test_FLCatches_set_single_index_default_accessor', PACKAGE = 'FLasher', flcs, flc)
-}
-
 test_FLCatchesAD_as_wrap <- function(flcs) {
     .Call('FLasher_test_FLCatchesAD_as_wrap', PACKAGE = 'FLasher', flcs)
 }
@@ -639,18 +627,6 @@ test_FLCatchesAD_set_single_index_accessor <- function(flcs, element, flc) {
 
 test_FLCatchesAD_set_value_accessor <- function(flcs, element, quant, year, unit, season, area, iter, value) {
     .Call('FLasher_test_FLCatchesAD_set_value_accessor', PACKAGE = 'FLasher', flcs, element, quant, year, unit, season, area, iter, value)
-}
-
-test_FLCatchesAD_const_get_single_index_default_accessor <- function(flcs) {
-    .Call('FLasher_test_FLCatchesAD_const_get_single_index_default_accessor', PACKAGE = 'FLasher', flcs)
-}
-
-test_FLCatchesAD_get_single_index_default_accessor <- function(flcs) {
-    .Call('FLasher_test_FLCatchesAD_get_single_index_default_accessor', PACKAGE = 'FLasher', flcs)
-}
-
-test_FLCatchesAD_set_single_index_default_accessor <- function(flcs, flc) {
-    .Call('FLasher_test_FLCatchesAD_set_single_index_default_accessor', PACKAGE = 'FLasher', flcs, flc)
 }
 
 test_FLFishery_empty_constructor <- function() {

@@ -111,8 +111,8 @@ class FLCatches_base {
 		FLCatches_base& operator = (const FLCatches_base& FLCatches_base_source); // Assignment operator for a deep copy
 
         // Accessors
-		FLCatch_base<T> operator () (const unsigned int element = 1) const; // Only gets an FLCatch so const reinforced. Default is the first element
-		FLCatch_base<T>& operator () (const unsigned int element = 1); // Gets and sets an FLCatch so const not reinforced
+		FLCatch_base<T> operator () (const unsigned int element) const; // Only gets an FLCatch so const reinforced. Default is the first element
+		FLCatch_base<T>& operator () (const unsigned int element); // Gets and sets an FLCatch so const not reinforced
 
         void operator() (const FLCatch_base<T>& flc); // Add another FLCatch_base<T> to the data
         unsigned int get_ncatches() const;
