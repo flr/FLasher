@@ -14,14 +14,12 @@
 
 #define _FLFishery_
 
-
-
 /*
  * FLFishery class
  * Contains catches information (including abundances and selectivity) for making projections and some economics (effort and costs)
  * It's very similar to the FLFishery class in R
  * Notes on implementation:
- * Was going to make an FLFishery class which CONTAINED and FLCatches as a member. However, in R
+ * Was going to make an FLFishery class which CONTAINED an FLCatches as a member. However, in R
  * FLFishery does not CONTAIN an FLCatches. An FLFishery IS A FLCatches, with 4 extra members (effort,
  * vcost, fcost, name). This suggests inheritance.
  * Alternatively, FLCatches is probably never used on it's own. So I could just take the current FLCatches
@@ -56,14 +54,12 @@ class FLFishery_base : public FLCatches_base<T> {
         FLQuant_base<T>& effort();
         FLQuant& vcost();
         FLQuant& fcost();
-
     private:
         std::string name;
         Rcpp::NumericVector range;
         FLQuant_base<T> effort_flq;
         FLQuant vcost_flq;
         FLQuant fcost_flq;
-
 };
 
 typedef FLFishery_base<double> FLFishery;
@@ -87,7 +83,6 @@ class FLFisheries_base {
 		FLFishery_base<T>& operator () (const unsigned int fishery); // Gets and sets an FLFishery so const not reinforced. Default is the first element
 		FLCatch_base<T> operator () (const unsigned int fishery, const unsigned int catches) const; // Only gets an FLCatch so const reinforced. 
 		FLCatch_base<T>& operator () (const unsigned int fishery, const unsigned int catches); // Gets and sets an FLCatch so const not reinforced. 
-
         unsigned int get_nfisheries() const;
 
     private:

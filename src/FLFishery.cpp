@@ -29,7 +29,6 @@ FLFishery_base<T>::FLFishery_base(SEXP flf_sexp) : FLCatches_base<T>(flf_sexp){ 
 }
 
 /* Intrusive 'wrap' */
-// Note that we have to use this manky FLCatches_base<T>::member_of_FLCatches syntax with templated inheritance
 // Returns an FLFishery
 template <typename T>
 FLFishery_base<T>::operator SEXP() const{
@@ -42,8 +41,8 @@ FLFishery_base<T>::operator SEXP() const{
     flf_s4.slot("range") = range;
     // FLCatches bits - can't call wrap on these bits
     Rcpp::List list_out;
-    for (unsigned int i = 0; i < FLCatches_base<T>::get_ncatches(); i++){
-        list_out.push_back(FLCatches_base<T>::catches[i]);
+    for (auto flcatch : FLCatches_base<T>::catches){
+        list_out.push_back(flcatch);
     }
     flf_s4.slot(".Data") = list_out;
     flf_s4.slot("desc") = FLCatches_base<T>::desc;
@@ -118,6 +117,8 @@ FLQuant& FLFishery_base<T>::fcost() {
     return fcost_flq;
 }
 
+template class FLFishery_base<double>;
+template class FLFishery_base<adouble>;
 /*-------------------------------------------------*/
 // FLFisheries
 
@@ -138,6 +139,7 @@ FLFisheries_base<T>::FLFisheries_base(SEXP flfs_sexp) {
     Rcpp::List fishery_list = Rcpp::as<Rcpp::List>(flfs_s4.slot(".Data"));
     Rcpp::List::iterator lst_iterator;
     for (lst_iterator = fishery_list.begin(); lst_iterator != fishery_list.end(); ++ lst_iterator){
+        // Use emplace_back - avoid copies
         fisheries.push_back(*lst_iterator);
     }
 }
@@ -230,8 +232,6 @@ FLCatch_base<T>& FLFisheries_base<T>::operator () (const unsigned int fishery, c
 //T landings_n(std::vector<int>) const;
 
 // Explicit instantiation of classes
-template class FLFishery_base<double>;
-template class FLFishery_base<adouble>;
 template class FLFisheries_base<double>;
 template class FLFisheries_base<adouble>;
 

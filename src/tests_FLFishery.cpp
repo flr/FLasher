@@ -107,7 +107,6 @@ FLQuant test_FLFishery_get_effort(const FLFishery flf){
     return flf.effort();
 }
 
-
 // [[Rcpp::export]]
 Rcpp::NumericVector test_FLFishery_economics_get_accessors(FLFishery flf, int quant, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(3);
@@ -193,8 +192,6 @@ FLFisheryAD test_FLFisheryAD_assignment_operator(FLFisheryAD flf1){
 Rcpp::NumericVector test_FLFisheryAD_const_catches_get_accessors(const FLFisheryAD flf, int catches, int quant, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(13);
     // members
-    //out[0] = flf(catches).landings_n()(quant, year, unit, season, area, iter).value();
-    //out[1] = flf(catches).discards_n()(quant, year, unit, season, area, iter).value();
     out[0] = Value(flf(catches).landings_n()(quant, year, unit, season, area, iter));
     out[1] = Value(flf(catches).discards_n()(quant, year, unit, season, area, iter));
     out[2] = flf(catches).landings_wt()(quant, year, unit, season, area, iter);
@@ -202,13 +199,6 @@ Rcpp::NumericVector test_FLFisheryAD_const_catches_get_accessors(const FLFishery
     out[4] = flf(catches).catch_sel()(quant, year, unit, season, area, iter);
     out[5] = flf(catches).price()(quant, year, unit, season, area, iter);
     // derived members
-    //out[6] = flf(catches).catches()(1, year, unit, season, area, iter).value();
-    //out[7] = flf(catches).catch_n()(quant, year, unit, season, area, iter).value();
-    //out[8] = flf(catches).landings()(1, year, unit, season, area, iter).value();
-    //out[9] = flf(catches).discards()(1, year, unit, season, area, iter).value();
-    //out[10] = flf(catches).landings_sel()(quant, year, unit, season, area, iter).value();
-    //out[11] = flf(catches).discards_sel()(quant, year, unit, season, area, iter).value();
-    //out[12] = flf(catches).discards_ratio()(quant, year, unit, season, area, iter).value();
     out[6] = Value(flf(catches).catches()(1, year, unit, season, area, iter));
     out[7] = Value(flf(catches).catch_n()(quant, year, unit, season, area, iter));
     out[8] = Value(flf(catches).landings()(1, year, unit, season, area, iter));
@@ -223,8 +213,6 @@ Rcpp::NumericVector test_FLFisheryAD_const_catches_get_accessors(const FLFishery
 Rcpp::NumericVector test_FLFisheryAD_catches_get_accessors(FLFisheryAD flf, int catches, int quant, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(13);
     // members
-    //out[0] = flf(catches).landings_n()(quant, year, unit, season, area, iter).value();
-    //out[1] = flf(catches).discards_n()(quant, year, unit, season, area, iter).value();
     out[0] = Value(flf(catches).landings_n()(quant, year, unit, season, area, iter));
     out[1] = Value(flf(catches).discards_n()(quant, year, unit, season, area, iter));
     out[2] = flf(catches).landings_wt()(quant, year, unit, season, area, iter);
@@ -232,13 +220,6 @@ Rcpp::NumericVector test_FLFisheryAD_catches_get_accessors(FLFisheryAD flf, int 
     out[4] = flf(catches).catch_sel()(quant, year, unit, season, area, iter);
     out[5] = flf(catches).price()(quant, year, unit, season, area, iter);
     // derived members
-    //out[6] = flf(catches).catches()(1, year, unit, season, area, iter).value();
-    //out[7] = flf(catches).catch_n()(quant, year, unit, season, area, iter).value();
-    //out[8] = flf(catches).landings()(1, year, unit, season, area, iter).value();
-    //out[9] = flf(catches).discards()(1, year, unit, season, area, iter).value();
-    //out[10] = flf(catches).landings_sel()(quant, year, unit, season, area, iter).value();
-    //out[11] = flf(catches).discards_sel()(quant, year, unit, season, area, iter).value();
-    //out[12] = flf(catches).discards_ratio()(quant, year, unit, season, area, iter).value();
     out[6] = Value(flf(catches).catches()(1, year, unit, season, area, iter));
     out[7] = Value(flf(catches).catch_n()(quant, year, unit, season, area, iter));
     out[8] = Value(flf(catches).landings()(1, year, unit, season, area, iter));
@@ -323,7 +304,6 @@ int test_FLFisheries_get_nfisheries(FLFisheries flfs){
 	return length;
 }
 
-
 // [[Rcpp::export]]
 FLFisheries test_FLFisheries_copy_constructor(FLFisheries flfs){
     FLFisheries out(flfs);
@@ -339,7 +319,6 @@ Rcpp::List test_FLFisheries_copy_constructor2(FLFisheries flfs1, const int fishe
 	return Rcpp::List::create(Rcpp::Named("flfs1", flfs1),
                             Rcpp::Named("flfs2",flfs2));
 }
-
 
 // [[Rcpp::export]]
 FLFisheries test_FLFisheries_assignment_operator(FLFisheries flfs){
@@ -448,7 +427,6 @@ int test_FLFisheriesAD_get_nfisheries(FLFisheriesAD flfs){
 	return length;
 }
 
-
 // [[Rcpp::export]]
 FLFisheriesAD test_FLFisheriesAD_copy_constructor(FLFisheriesAD flfs){
     FLFisheriesAD out(flfs);
@@ -465,7 +443,6 @@ Rcpp::List test_FLFisheriesAD_copy_constructor2(FLFisheriesAD flfs1, const int f
 	return Rcpp::List::create(Rcpp::Named("flfs1", flfs1),
                             Rcpp::Named("flfs2",flfs2));
 }
-
 
 // [[Rcpp::export]]
 FLFisheriesAD test_FLFisheriesAD_assignment_operator(FLFisheriesAD flfs){
