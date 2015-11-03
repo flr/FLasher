@@ -1543,31 +1543,6 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// test_FLCatchAD_catch_q_params
-std::vector<double> test_FLCatchAD_catch_q_params(const FLCatchAD flc, const std::vector<unsigned int> indices);
-RcppExport SEXP FLasher_test_FLCatchAD_catch_q_params(SEXP flcSEXP, SEXP indicesSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP);
-    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices(indicesSEXP);
-    __result = Rcpp::wrap(test_FLCatchAD_catch_q_params(flc, indices));
-    return __result;
-END_RCPP
-}
-// test_FLCatchAD_catch_q_params_subset
-FLQuant test_FLCatchAD_catch_q_params_subset(const FLCatchAD flc, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_FLCatchAD_catch_q_params_subset(SEXP flcSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP);
-    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
-    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
-    __result = Rcpp::wrap(test_FLCatchAD_catch_q_params_subset(flc, indices_min, indices_max));
-    return __result;
-END_RCPP
-}
 // test_FLCatches_as_wrap
 FLCatches test_FLCatches_as_wrap(FLCatches flcs);
 RcppExport SEXP FLasher_test_FLCatches_as_wrap(SEXP flcsSEXP) {

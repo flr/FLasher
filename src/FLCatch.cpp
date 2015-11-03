@@ -82,7 +82,6 @@ FLCatch_base<T>& FLCatch_base<T>::operator = (const FLCatch_base<T>& FLCatch_sou
 	return *this;
 }
 
-
 /* Intrusive 'wrap' */
 template <typename T>
 FLCatch_base<T>::operator SEXP() const{
@@ -193,7 +192,6 @@ FLQuant FLCatch_base<T>::catch_q_params(const std::vector<unsigned int> indices_
         Rcpp::stop("In FLCatch catch_q_params subsetter. Outside first dimension range. Possibly asking for too many parameters.\n");
     }
     // Indices_min must be between 1 and max for dims 2:6
-    //Rcpp::IntegerVector ndims = landings_n_flq.get_dim();
     std::vector<unsigned int> ndims = landings_n_flq.get_dim();
     for (unsigned int i = 1; i < indices_min.size(); ++i){
         if (indices_min[i] < 1 | indices_min[i] > ndims[i] | indices_max[i] > ndims[i]){
@@ -232,11 +230,8 @@ FLQuant FLCatch_base<T>::catch_q_params(const std::vector<unsigned int> indices_
     return q_params;
 }
 
-
 // catch_q_flq is a little different as it checks if unit / season / etc are > 1
 // parameters are stored in the first dimension
-
-
 template <typename T>
 std::vector<double> FLCatch_base<T>::catch_q_params(int year, int unit, int season, int area, int iter) const {
     std::vector<unsigned int> dims = catch_q_flq.get_dim();
@@ -261,7 +256,6 @@ std::vector<double> FLCatch_base<T>::catch_q_params(int year, int unit, int seas
     }
     return q_out;
 }
-
 
 // Get and Set
 template <typename T>
@@ -438,6 +432,7 @@ FLCatches_base<T>::FLCatches_base(SEXP flcs_sexp){
     //for (auto lst_iterator = catch_list.begin(); lst_iterator != catch_list.end(); ++ lst_iterator){
     //    catches.push_back(*lst_iterator);
     //}
+    // Use emplace_back - avoid copies
     for (auto flcatch : catch_list){
         catches.push_back(flcatch);
     }
@@ -450,6 +445,7 @@ FLCatches_base<T>::operator SEXP() const{
     Rcpp::S4 flcs_s4("FLCatches");
     //Rprintf("Wrapping FLCatches_base<T>.\n");
     Rcpp::List list_out;
+    // Use emplace_back - avoid copies
     for (unsigned int i = 0; i < get_ncatches(); i++){
         list_out.push_back(catches[i]);
     }

@@ -72,10 +72,8 @@ class FLCatch_base {
         FLQuant_base<T> catch_n(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant_base<T> catch_wt() const;
         FLQuant_base<T> catch_wt(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-
         FLQuant_base<T> landings_sel() const;
         FLQuant_base<T> discards_sel() const;
-
         std::string get_name() const;
         std::string get_desc() const;
         Rcpp::NumericVector get_range() const;
@@ -92,7 +90,7 @@ class FLCatch_base {
         FLQuant catch_sel_flq;
         FLQuant price_flq;
         FLQuant catch_q_flq;
-        SEXP catch_q_orig; // original - an FLPar
+        SEXP catch_q_orig; // original - an FLPar - kept for returning only
 };
 
 typedef FLCatch_base<double> FLCatch;

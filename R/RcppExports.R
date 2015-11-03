@@ -509,14 +509,6 @@ test_FLCatchAD_discards_sel <- function(flc) {
     .Call('FLasher_test_FLCatchAD_discards_sel', PACKAGE = 'FLasher', flc)
 }
 
-test_FLCatchAD_catch_q_params <- function(flc, indices) {
-    .Call('FLasher_test_FLCatchAD_catch_q_params', PACKAGE = 'FLasher', flc, indices)
-}
-
-test_FLCatchAD_catch_q_params_subset <- function(flc, indices_min, indices_max) {
-    .Call('FLasher_test_FLCatchAD_catch_q_params_subset', PACKAGE = 'FLasher', flc, indices_min, indices_max)
-}
-
 test_FLCatches_as_wrap <- function(flcs) {
     .Call('FLasher_test_FLCatches_as_wrap', PACKAGE = 'FLasher', flcs)
 }
