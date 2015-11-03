@@ -137,10 +137,8 @@ FLFisheries_base<T>::FLFisheries_base(SEXP flfs_sexp) {
     desc = Rcpp::as<std::string>(flfs_s4.slot("desc"));
     names = flfs_s4.slot("names");
     Rcpp::List fishery_list = Rcpp::as<Rcpp::List>(flfs_s4.slot(".Data"));
-    Rcpp::List::iterator lst_iterator;
-    for (lst_iterator = fishery_list.begin(); lst_iterator != fishery_list.end(); ++ lst_iterator){
-        // Use emplace_back - avoid copies
-        fisheries.push_back(*lst_iterator);
+    for (auto flfishery : fishery_list){
+        fisheries.push_back(flfishery);
     }
 }
 
@@ -151,13 +149,12 @@ FLFisheries_base<T>::operator SEXP() const{
     //Rprintf("In FLFisheries wrap\n");
     Rcpp::S4 flfs_s4("FLFisheries");
     Rcpp::List list_out;
-    for (unsigned int i = 0; i < get_nfisheries(); i++){
-        list_out.push_back(fisheries[i]);
+    for (auto flfishery : fisheries){
+        list_out.push_back(flfishery);
     }
     flfs_s4.slot(".Data") = list_out;
     flfs_s4.slot("desc") = desc;
     flfs_s4.slot("names") = names;
-    //Rprintf("Finished wrapping FLFisheries\n");
     return Rcpp::wrap(flfs_s4);
 }
 
