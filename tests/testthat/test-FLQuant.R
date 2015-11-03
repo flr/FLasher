@@ -100,7 +100,8 @@ test_that("set",{
 })
 
 test_that("FLQuant get and set data accessors", {
-    flq <- random_FLQuant_generator()
+    fixed_dims <- c(rep(NA,5),round(runif(1,min=2,max=10)))
+    flq <- random_FLQuant_generator(fixed_dims = fixed_dims)
     indices <- round(runif(6,min=1, max = dim(flq)))
     index <- round(runif(1,min=1,max = prod(dim(flq))))
     value <- rnorm(1)
