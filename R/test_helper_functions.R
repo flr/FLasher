@@ -187,6 +187,7 @@ random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 10
     effort(fishery)[] <- rnorm(prod(dim(effort(fishery))),sd=sd)
     vcost(fishery)[] <- rnorm(prod(dim(vcost(fishery))),sd=sd)
     fcost(fishery)[] <- rnorm(prod(dim(fcost(fishery))),sd=sd)
+    fishery@ftime[] <- rnorm(prod(dim(fishery@ftime)),sd=sd)
     fishery@desc <- as.character(signif(rnorm(1)*1000,3))
     fishery@name <- as.character(signif(rnorm(1)*1000,3))
     return(fishery)
@@ -588,6 +589,7 @@ test_FLFishery_equal <- function(flf1, flf2){
     expect_identical(flf1@effort, flf2@effort)
     expect_identical(flf1@vcost, flf2@vcost)
     expect_identical(flf1@fcost, flf2@fcost)
+    expect_identical(flf1@ftime, flf2@ftime)
     expect_identical(flf1@name, flf2@name)
     expect_identical(flf1@range, flf2@range)
     expect_identical(flf1@.Data, flf2@.Data)
@@ -606,4 +608,20 @@ test_FLFisheries_equal <- function(flfs1, flfs2){
     for (i in 1:length(FLFisheries)){
         test_FLFishery_equal(flfs1[[i]], flfs2[[i]])
     }
+}
+
+#' Return 1D element index of FLQuant
+#'
+#' Given an FLQuant the indices, returns the 1D element accessor.
+#'
+#' @export
+get_FLQuant_element <- function(flq, indices){
+    dim <- dim(flq)
+	element <- indices[1] +
+        (dim[1] * (indices[2]-1)) +
+        (dim[2] * dim[1] * (indices[3]-1)) +
+        (dim[3] * dim[2] * dim[1] * (indices[4]-1)) +
+        (dim[4] * dim[3] * dim[2] * dim[1] * (indices[5]-1)) +
+        (dim[5] * dim[4] * dim[3] * dim[2] * dim[1] * (indices[6]-1)) 
+    return(element)
 }
