@@ -661,8 +661,20 @@ test_FLFishery_catches_get_accessors <- function(flf, catches, quant, year, unit
     .Call('FLasher_test_FLFishery_catches_get_accessors', PACKAGE = 'FLasher', flf, catches, quant, year, unit, season, area, iter)
 }
 
-test_FLFishery_const_economics_get_accessors <- function(flf, quant, year, unit, season, area, iter) {
-    .Call('FLasher_test_FLFishery_const_economics_get_accessors', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
+test_FLFishery_const_economics_get_accessors <- function(flf, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFishery_const_economics_get_accessors', PACKAGE = 'FLasher', flf, year, unit, season, area, iter)
+}
+
+test_FLFishery_const_get_ftime <- function(flf, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFishery_const_get_ftime', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
+}
+
+test_FLFishery_get_ftime <- function(flf, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFishery_get_ftime', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
+}
+
+test_FLFishery_set_ftime <- function(flf, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLFishery_set_ftime', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter, value)
 }
 
 test_FLFishery_get_effort_subset <- function(flf, indices_min, indices_max) {
@@ -673,8 +685,8 @@ test_FLFishery_get_effort <- function(flf) {
     .Call('FLasher_test_FLFishery_get_effort', PACKAGE = 'FLasher', flf)
 }
 
-test_FLFishery_economics_get_accessors <- function(flf, quant, year, unit, season, area, iter) {
-    .Call('FLasher_test_FLFishery_economics_get_accessors', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
+test_FLFishery_economics_get_accessors <- function(flf, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFishery_economics_get_accessors', PACKAGE = 'FLasher', flf, year, unit, season, area, iter)
 }
 
 test_FLFishery_set_accessors <- function(flf, catches, quant, year, unit, season, area, iter, value) {
@@ -721,12 +733,12 @@ test_FLFisheryAD_catches_get_accessors <- function(flf, catches, quant, year, un
     .Call('FLasher_test_FLFisheryAD_catches_get_accessors', PACKAGE = 'FLasher', flf, catches, quant, year, unit, season, area, iter)
 }
 
-test_FLFisheryAD_const_economics_get_accessors <- function(flf, quant, year, unit, season, area, iter) {
-    .Call('FLasher_test_FLFisheryAD_const_economics_get_accessors', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
+test_FLFisheryAD_const_economics_get_accessors <- function(flf, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFisheryAD_const_economics_get_accessors', PACKAGE = 'FLasher', flf, year, unit, season, area, iter)
 }
 
-test_FLFisheryAD_economics_get_accessors <- function(flf, quant, year, unit, season, area, iter) {
-    .Call('FLasher_test_FLFisheryAD_economics_get_accessors', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
+test_FLFisheryAD_economics_get_accessors <- function(flf, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFisheryAD_economics_get_accessors', PACKAGE = 'FLasher', flf, year, unit, season, area, iter)
 }
 
 test_FLFisheryAD_set_accessors <- function(flf, catches, quant, year, unit, season, area, iter, value) {

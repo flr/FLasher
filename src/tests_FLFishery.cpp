@@ -89,12 +89,28 @@ Rcpp::NumericVector test_FLFishery_catches_get_accessors(FLFishery flf, int catc
 }
 
 // [[Rcpp::export]]
-Rcpp::NumericVector test_FLFishery_const_economics_get_accessors(const FLFishery flf, int quant, int year, int unit, int season, int area, int iter){
+Rcpp::NumericVector test_FLFishery_const_economics_get_accessors(const FLFishery flf, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(3);
     out[0] = flf.effort()(1, year, unit, season, area, iter);
     out[1] = flf.vcost()(1, year, unit, season, area, iter);
     out[2] = flf.fcost()(1, year, unit, season, area, iter);
     return out;
+}
+
+// [[Rcpp::export]]
+double test_FLFishery_const_get_ftime(const FLFishery flf, int quant, int year, int unit, int season, int area, int iter){
+    return flf.ftime()(quant, year, unit, season, area, iter);
+}
+
+// [[Rcpp::export]]
+double test_FLFishery_get_ftime(FLFishery flf, int quant, int year, int unit, int season, int area, int iter){
+    return flf.ftime()(quant, year, unit, season, area, iter);
+}
+
+// [[Rcpp::export]]
+FLQuant test_FLFishery_set_ftime(FLFishery flf, int quant, int year, int unit, int season, int area, int iter, double value){
+    flf.ftime()(quant, year, unit, season, area, iter) = value;
+    return flf.ftime();
 }
 
 // [[Rcpp::export]]
@@ -108,7 +124,7 @@ FLQuant test_FLFishery_get_effort(const FLFishery flf){
 }
 
 // [[Rcpp::export]]
-Rcpp::NumericVector test_FLFishery_economics_get_accessors(FLFishery flf, int quant, int year, int unit, int season, int area, int iter){
+Rcpp::NumericVector test_FLFishery_economics_get_accessors(FLFishery flf, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(3);
     out[0] = flf.effort()(1, year, unit, season, area, iter);
     out[1] = flf.vcost()(1, year, unit, season, area, iter);
@@ -131,6 +147,8 @@ FLFishery test_FLFishery_set_accessors(FLFishery flf, int catches, int quant, in
     flf.fcost()(1, year, unit, season, area, iter) = value;
     return flf;
 }
+
+
 
 // [[Rcpp::export]]
 Rcpp::List test_FLFishery_copy_constructor2(FLFishery flf1, int element, int quant, int year, int unit, int season, int area, int iter, double value){
@@ -231,7 +249,7 @@ Rcpp::NumericVector test_FLFisheryAD_catches_get_accessors(FLFisheryAD flf, int 
 }
 
 // [[Rcpp::export]]
-Rcpp::NumericVector test_FLFisheryAD_const_economics_get_accessors(const FLFisheryAD flf, int quant, int year, int unit, int season, int area, int iter){
+Rcpp::NumericVector test_FLFisheryAD_const_economics_get_accessors(const FLFisheryAD flf, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(3);
     out[0] = Value(flf.effort()(1, year, unit, season, area, iter));
     out[1] = flf.vcost()(1, year, unit, season, area, iter);
@@ -240,7 +258,7 @@ Rcpp::NumericVector test_FLFisheryAD_const_economics_get_accessors(const FLFishe
 }
 
 // [[Rcpp::export]]
-Rcpp::NumericVector test_FLFisheryAD_economics_get_accessors(FLFisheryAD flf, int quant, int year, int unit, int season, int area, int iter){
+Rcpp::NumericVector test_FLFisheryAD_economics_get_accessors(FLFisheryAD flf, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(3);
     out[0] = Value(flf.effort()(1, year, unit, season, area, iter));
     out[1] = flf.vcost()(1, year, unit, season, area, iter);

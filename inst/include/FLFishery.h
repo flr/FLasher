@@ -50,16 +50,19 @@ class FLFishery_base : public FLCatches_base<T> {
         FLQuant_base<T> effort() const;
         FLQuant vcost() const;
         FLQuant fcost() const;
+        FLQuant ftime() const;
         // Get and Set
         FLQuant_base<T>& effort();
         FLQuant& vcost();
         FLQuant& fcost();
+        FLQuant& ftime();
     private:
         std::string name;
         Rcpp::NumericVector range;
         FLQuant_base<T> effort_flq;
         FLQuant vcost_flq;
         FLQuant fcost_flq;
+        FLQuant ftime_flq;
 };
 
 typedef FLFishery_base<double> FLFishery;

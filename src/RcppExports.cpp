@@ -2060,8 +2060,24 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_FLFishery_const_economics_get_accessors
-Rcpp::NumericVector test_FLFishery_const_economics_get_accessors(const FLFishery flf, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLFishery_const_economics_get_accessors(SEXP flfSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+Rcpp::NumericVector test_FLFishery_const_economics_get_accessors(const FLFishery flf, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_FLFishery_const_economics_get_accessors(SEXP flfSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const FLFishery >::type flf(flfSEXP);
+    Rcpp::traits::input_parameter< int >::type year(yearSEXP);
+    Rcpp::traits::input_parameter< int >::type unit(unitSEXP);
+    Rcpp::traits::input_parameter< int >::type season(seasonSEXP);
+    Rcpp::traits::input_parameter< int >::type area(areaSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    __result = Rcpp::wrap(test_FLFishery_const_economics_get_accessors(flf, year, unit, season, area, iter));
+    return __result;
+END_RCPP
+}
+// test_FLFishery_const_get_ftime
+double test_FLFishery_const_get_ftime(const FLFishery flf, int quant, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_FLFishery_const_get_ftime(SEXP flfSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -2072,7 +2088,42 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type season(seasonSEXP);
     Rcpp::traits::input_parameter< int >::type area(areaSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    __result = Rcpp::wrap(test_FLFishery_const_economics_get_accessors(flf, quant, year, unit, season, area, iter));
+    __result = Rcpp::wrap(test_FLFishery_const_get_ftime(flf, quant, year, unit, season, area, iter));
+    return __result;
+END_RCPP
+}
+// test_FLFishery_get_ftime
+double test_FLFishery_get_ftime(FLFishery flf, int quant, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_FLFishery_get_ftime(SEXP flfSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFishery >::type flf(flfSEXP);
+    Rcpp::traits::input_parameter< int >::type quant(quantSEXP);
+    Rcpp::traits::input_parameter< int >::type year(yearSEXP);
+    Rcpp::traits::input_parameter< int >::type unit(unitSEXP);
+    Rcpp::traits::input_parameter< int >::type season(seasonSEXP);
+    Rcpp::traits::input_parameter< int >::type area(areaSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    __result = Rcpp::wrap(test_FLFishery_get_ftime(flf, quant, year, unit, season, area, iter));
+    return __result;
+END_RCPP
+}
+// test_FLFishery_set_ftime
+FLQuant test_FLFishery_set_ftime(FLFishery flf, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_FLFishery_set_ftime(SEXP flfSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFishery >::type flf(flfSEXP);
+    Rcpp::traits::input_parameter< int >::type quant(quantSEXP);
+    Rcpp::traits::input_parameter< int >::type year(yearSEXP);
+    Rcpp::traits::input_parameter< int >::type unit(unitSEXP);
+    Rcpp::traits::input_parameter< int >::type season(seasonSEXP);
+    Rcpp::traits::input_parameter< int >::type area(areaSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< double >::type value(valueSEXP);
+    __result = Rcpp::wrap(test_FLFishery_set_ftime(flf, quant, year, unit, season, area, iter, value));
     return __result;
 END_RCPP
 }
@@ -2101,19 +2152,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_FLFishery_economics_get_accessors
-Rcpp::NumericVector test_FLFishery_economics_get_accessors(FLFishery flf, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLFishery_economics_get_accessors(SEXP flfSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+Rcpp::NumericVector test_FLFishery_economics_get_accessors(FLFishery flf, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_FLFishery_economics_get_accessors(SEXP flfSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< FLFishery >::type flf(flfSEXP);
-    Rcpp::traits::input_parameter< int >::type quant(quantSEXP);
     Rcpp::traits::input_parameter< int >::type year(yearSEXP);
     Rcpp::traits::input_parameter< int >::type unit(unitSEXP);
     Rcpp::traits::input_parameter< int >::type season(seasonSEXP);
     Rcpp::traits::input_parameter< int >::type area(areaSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    __result = Rcpp::wrap(test_FLFishery_economics_get_accessors(flf, quant, year, unit, season, area, iter));
+    __result = Rcpp::wrap(test_FLFishery_economics_get_accessors(flf, year, unit, season, area, iter));
     return __result;
 END_RCPP
 }
@@ -2275,36 +2325,34 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_FLFisheryAD_const_economics_get_accessors
-Rcpp::NumericVector test_FLFisheryAD_const_economics_get_accessors(const FLFisheryAD flf, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLFisheryAD_const_economics_get_accessors(SEXP flfSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+Rcpp::NumericVector test_FLFisheryAD_const_economics_get_accessors(const FLFisheryAD flf, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_FLFisheryAD_const_economics_get_accessors(SEXP flfSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const FLFisheryAD >::type flf(flfSEXP);
-    Rcpp::traits::input_parameter< int >::type quant(quantSEXP);
     Rcpp::traits::input_parameter< int >::type year(yearSEXP);
     Rcpp::traits::input_parameter< int >::type unit(unitSEXP);
     Rcpp::traits::input_parameter< int >::type season(seasonSEXP);
     Rcpp::traits::input_parameter< int >::type area(areaSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    __result = Rcpp::wrap(test_FLFisheryAD_const_economics_get_accessors(flf, quant, year, unit, season, area, iter));
+    __result = Rcpp::wrap(test_FLFisheryAD_const_economics_get_accessors(flf, year, unit, season, area, iter));
     return __result;
 END_RCPP
 }
 // test_FLFisheryAD_economics_get_accessors
-Rcpp::NumericVector test_FLFisheryAD_economics_get_accessors(FLFisheryAD flf, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLFisheryAD_economics_get_accessors(SEXP flfSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+Rcpp::NumericVector test_FLFisheryAD_economics_get_accessors(FLFisheryAD flf, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_FLFisheryAD_economics_get_accessors(SEXP flfSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< FLFisheryAD >::type flf(flfSEXP);
-    Rcpp::traits::input_parameter< int >::type quant(quantSEXP);
     Rcpp::traits::input_parameter< int >::type year(yearSEXP);
     Rcpp::traits::input_parameter< int >::type unit(unitSEXP);
     Rcpp::traits::input_parameter< int >::type season(seasonSEXP);
     Rcpp::traits::input_parameter< int >::type area(areaSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    __result = Rcpp::wrap(test_FLFisheryAD_economics_get_accessors(flf, quant, year, unit, season, area, iter));
+    __result = Rcpp::wrap(test_FLFisheryAD_economics_get_accessors(flf, year, unit, season, area, iter));
     return __result;
 END_RCPP
 }

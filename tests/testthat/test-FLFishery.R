@@ -68,18 +68,22 @@ test_that("FLCatches get and set data accessors - double", {
                 c(discards.sel(flf_in[[element]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(discards.ratio(flf_in[[element]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_equal(values_out, values_in) # Not identical as some use the quant_sum method - numerical differences
-    # get const effort, vcost, fcost accessor
-    values_out <- test_FLFishery_const_economics_get_accessors(flf_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6])
+    # get const ftime, effort, vcost, fcost accessor
+    values_out <- test_FLFishery_const_economics_get_accessors(flf_in, indices[2], indices[3], indices[4], indices[5], indices[6])
     values_in <- c(c(effort(flf_in)[1, indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(vcost(flf_in)[1, indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(fcost(flf_in)[1, indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_identical(values_out, values_in)
+    value_out <- test_FLFishery_const_get_ftime(flf_in, 1, indices[2], indices[3], indices[4], indices[5], indices[6])
+    expect_identical(value_out, c(flf_in@ftime[1, indices[2], indices[3], indices[4], indices[5], indices[6]]))
     # get effort, vcost, fcost accessor
-    values_out <- test_FLFishery_economics_get_accessors(flf_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6])
+    values_out <- test_FLFishery_economics_get_accessors(flf_in, indices[2], indices[3], indices[4], indices[5], indices[6])
     values_in <- c(c(effort(flf_in)[1, indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(vcost(flf_in)[1, indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(fcost(flf_in)[1, indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_identical(values_out, values_in)
+    value_out <- test_FLFishery_get_ftime(flf_in, 1, indices[2], indices[3], indices[4], indices[5], indices[6])
+    expect_identical(value_out, c(flf_in@ftime[1, indices[2], indices[3], indices[4], indices[5], indices[6]]))
     # set catches and economics slots
     value <- rnorm(1)
     flf_out <- test_FLFishery_set_accessors(flf_in, element, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
@@ -93,6 +97,12 @@ test_that("FLCatches get and set data accessors - double", {
                 c(fcost(flf_out)[1, indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(vcost(flf_out)[1, indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_identical(rep(value, length(values_out)), values_out)
+    value <- rnorm(1)
+    out <- test_FLFishery_set_ftime(flf_in, 1, indices[2], indices[3], indices[4], indices[5], indices[6], value)
+    expect_identical(c(out[1, indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
+    element <- get_FLQuant_element(flf_in@ftime, c(1, indices[2], indices[3], indices[4], indices[5], indices[6]))
+    # Check others are untouched
+    expect_identical(c(out)[-element], c(flf_in@ftime)[-element])
 })
 
 #----------------------------------
@@ -166,13 +176,13 @@ test_that("FLCatches get and set data accessors - double", {
                 c(discards.ratio(flf_in[[element]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_equal(values_out, values_in) # Not identical as some use the quant_sum method - numerical differences
     # get const effort, vcost, fcost accessor
-    values_out <- test_FLFisheryAD_const_economics_get_accessors(flf_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6])
+    values_out <- test_FLFisheryAD_const_economics_get_accessors(flf_in, indices[2], indices[3], indices[4], indices[5], indices[6])
     values_in <- c(c(effort(flf_in)[1, indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(vcost(flf_in)[1, indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(fcost(flf_in)[1, indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_identical(values_out, values_in)
     # get effort, vcost, fcost accessor
-    values_out <- test_FLFisheryAD_economics_get_accessors(flf_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6])
+    values_out <- test_FLFisheryAD_economics_get_accessors(flf_in, indices[2], indices[3], indices[4], indices[5], indices[6])
     values_in <- c(c(effort(flf_in)[1, indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(vcost(flf_in)[1, indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(fcost(flf_in)[1, indices[2], indices[3], indices[4], indices[5], indices[6]]))
