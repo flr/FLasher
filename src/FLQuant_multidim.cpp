@@ -19,7 +19,9 @@ FLQuant7_base<T>::FLQuant7_base(SEXP lst_sexp){
     //Rprintf("In FLQuant7_base<T> SEXP constructor\n");
     Rcpp::List lst(lst_sexp);
     Rcpp::List::iterator lst_iterator;
+    // Use emplace_back - avoid copies
     for (lst_iterator = lst.begin(); lst_iterator != lst.end(); ++ lst_iterator){
+    // Use emplace_back - avoid copies
         data.push_back(*lst_iterator);
     }
 }
@@ -28,6 +30,8 @@ FLQuant7_base<T>::FLQuant7_base(SEXP lst_sexp){
 template <typename T> 
 FLQuant7_base<T>::FLQuant7_base(FLQuant_base<T> flq){
     //Rprintf("In FLQuant7_base<T> FLQuant constructor\n");
+    // Use emplace_back - avoid copies
+    // Use emplace_back - avoid copies
     data.push_back(flq);
 }
 
@@ -38,6 +42,7 @@ FLQuant7_base<T>::operator SEXP() const{
     //Rprintf("Wrapping FLQuant7_base<T>.\n");
     Rcpp::List list_out;
     for (unsigned int i = 0; i < get_ndim7(); i++){
+    // Use emplace_back - avoid copies
         list_out.push_back(data[i]);
     }
     // Or, using iterators.
@@ -79,6 +84,7 @@ unsigned int FLQuant7_base<T>::get_ndim7() const {
 // Add another FLQuant_base<T> to the data
 template <typename T>
 void FLQuant7_base<T>::operator() (const FLQuant_base<T> flq){
+    // Use emplace_back - avoid copies
     data.push_back(flq);
 }
 

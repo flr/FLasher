@@ -389,6 +389,7 @@ Rcpp::IntegerMatrix fwdControl::get_FC(const int biol_no) const{
     std::vector<int> rows;
     for (unsigned int row_counter=0; row_counter < FCB.nrow(); ++row_counter){
         if(FCB(row_counter,2) == biol_no){
+    // Use emplace_back - avoid copies
             rows.push_back(row_counter);
         }
     }
@@ -406,6 +407,7 @@ std::vector<int> fwdControl::get_B(const int fishery_no, const int catch_no) con
     for (unsigned int row_counter=0; row_counter < FCB.nrow(); ++row_counter){
         if(FCB(row_counter,0) == fishery_no){
             if(FCB(row_counter,1) == catch_no){
+    // Use emplace_back - avoid copies
                 rows.push_back(row_counter);
             }
         }
