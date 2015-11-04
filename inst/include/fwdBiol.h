@@ -118,6 +118,14 @@ class fwdBiols_base {
         void operator() (const fwdBiol_base<T>& flb); // Add another fwdBiol_base<T> to the data
         unsigned int get_nbiols() const;
 
+        /* begin and end and const versions for iterators */
+        typedef typename std::vector<fwdBiol_base<T> >::iterator iterator;
+        iterator begin();
+        iterator end();
+        typedef typename std::vector<fwdBiol_base<T> >::const_iterator const_iterator;
+        const_iterator begin() const;
+        const_iterator end() const;
+
     protected:
         std::vector<fwdBiol_base<T> > biols;
         Rcpp::CharacterVector names; // of the biols

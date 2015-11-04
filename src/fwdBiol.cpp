@@ -331,6 +331,30 @@ void fwdBiols_base<T>::operator() (const fwdBiol_base<T>& fwb){
     biols.emplace_back(fwb);
 }
 
+//------------------ begin and end ---------------------------------
+// These are used for for_range and iterators
+
+template <typename T>
+typename fwdBiols_base<T>::iterator fwdBiols_base<T>::begin(){
+    return biols.begin();
+}
+
+template <typename T>
+typename fwdBiols_base<T>::iterator fwdBiols_base<T>::end(){
+    return biols.end();
+}
+
+template <typename T>
+typename fwdBiols_base<T>::const_iterator fwdBiols_base<T>::begin() const {
+    return biols.begin();
+}
+
+template <typename T>
+typename fwdBiols_base<T>::const_iterator fwdBiols_base<T>::end() const {
+    return biols.end();
+}
+
+
 
 
 // Explicit instantiation of classes

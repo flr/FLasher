@@ -306,4 +306,23 @@ Rcpp::List test_fwdBiolsAD_assignment_operator(const Rcpp::List fwbs_list, const
 				Rcpp::Named("fwbs2", fwbs2));
 }
 
+// iterators
+// [[Rcpp::export]]
+Rcpp::List test_fwdBiolsAD_const_iterator(const Rcpp::List biols_in){
+    Rcpp::List out;
+    const fwdBiolsAD biols(biols_in);
+    for (const auto biol : biols){
+        out.push_back(biol.n());
+    }
+    return out;
+}
+
+// [[Rcpp::export]]
+fwdBiolsAD test_fwdBiolsAD_iterator(const Rcpp::List biols_in, int quant, int year, int unit, int season, int area, int iter, double value){
+    fwdBiolsAD biols(biols_in);
+    for (auto& biol : biols){
+        biol.n()(quant, year, unit, season, area, iter) = value;
+    }
+    return biols;
+}
 

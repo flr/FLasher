@@ -1537,6 +1537,14 @@ test_fwdBiolsAD_assignment_operator <- function(fwbs_list, biol_no, dims, value)
     .Call('FLasher_test_fwdBiolsAD_assignment_operator', PACKAGE = 'FLasher', fwbs_list, biol_no, dims, value)
 }
 
+test_fwdBiolsAD_const_iterator <- function(biols_in) {
+    .Call('FLasher_test_fwdBiolsAD_const_iterator', PACKAGE = 'FLasher', biols_in)
+}
+
+test_fwdBiolsAD_iterator <- function(biols_in, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_fwdBiolsAD_iterator', PACKAGE = 'FLasher', biols_in, quant, year, unit, season, area, iter, value)
+}
+
 test_as_wrap_fwdControl <- function(control) {
     .Call('FLasher_test_as_wrap_fwdControl', PACKAGE = 'FLasher', control)
 }

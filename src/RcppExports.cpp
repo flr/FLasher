@@ -5021,6 +5021,35 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_fwdBiolsAD_const_iterator
+Rcpp::List test_fwdBiolsAD_const_iterator(const Rcpp::List biols_in);
+RcppExport SEXP FLasher_test_fwdBiolsAD_const_iterator(SEXP biols_inSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type biols_in(biols_inSEXP);
+    __result = Rcpp::wrap(test_fwdBiolsAD_const_iterator(biols_in));
+    return __result;
+END_RCPP
+}
+// test_fwdBiolsAD_iterator
+fwdBiolsAD test_fwdBiolsAD_iterator(const Rcpp::List biols_in, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_fwdBiolsAD_iterator(SEXP biols_inSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type biols_in(biols_inSEXP);
+    Rcpp::traits::input_parameter< int >::type quant(quantSEXP);
+    Rcpp::traits::input_parameter< int >::type year(yearSEXP);
+    Rcpp::traits::input_parameter< int >::type unit(unitSEXP);
+    Rcpp::traits::input_parameter< int >::type season(seasonSEXP);
+    Rcpp::traits::input_parameter< int >::type area(areaSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< double >::type value(valueSEXP);
+    __result = Rcpp::wrap(test_fwdBiolsAD_iterator(biols_in, quant, year, unit, season, area, iter, value));
+    return __result;
+END_RCPP
+}
 // test_as_wrap_fwdControl
 fwdControl test_as_wrap_fwdControl(fwdControl control);
 RcppExport SEXP FLasher_test_as_wrap_fwdControl(SEXP controlSEXP) {

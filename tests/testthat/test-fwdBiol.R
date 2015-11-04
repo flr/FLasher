@@ -274,4 +274,24 @@ test_that("fwdBiols methods",{
     expect_identical(c(n(flbs_out[[biol_no]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
 })
 
+test_that("fwdBiols iterators",{
+    biols <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5)
+    flbs_in <- FLBiols(lapply(biols, function(x) return(x[["biol"]])))
+    nin <- lapply(flbs_in, function(x) return(n(x)))
+    # Const - just pulls out n
+    nout <- test_fwdBiolsAD_const_iterator(biols)
+    expect_identical(nout, nin@.Data)
+    # Not const - sets a value
+    indices <- round(runif(6, min=1, max=dim(n(flbs_in[[1]]))))
+    value <- rnorm(1)
+    biols_out <- test_fwdBiolsAD_iterator(biols, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
+    value_out <- unname(unlist(lapply(biols_out, function(x) return(n(x)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))))
+    expect_identical(rep(value,length(flbs_in)), value_out)
+    # All others are OK
+    element <- get_FLQuant_element(n(flbs_in[[1]]), indices)
+    for (i in 1:length(flbs_in)){
+        expect_identical(c(n(biols_out[[i]]))[-element], c(n(flbs_in[[i]]))[-element])
+    }
+})
+
 
