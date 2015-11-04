@@ -3,7 +3,7 @@
  * Maintainer: Finlay Scott, JRC
  */
 
-#include "../../inst/include/operating_model.h"
+#include "../../inst/include/solver.h"
 
 // [[Rcpp::export]]
 double test_euclid_norm(std::vector<double> xvec){
