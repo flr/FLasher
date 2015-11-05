@@ -163,3 +163,22 @@ test_that("FLCatchesAD get and set data accessors - double", {
     expect_error(test_FLCatchesAD_set_single_index_accessor(flcs_in, length(flcs_in)+1, flc_in))
 })
 
+test_that("FLCatchesAD iterators",{
+    catches <- random_FLCatches_generator(min_catches = 2, max_catches = 5)
+    landingsnin <- lapply(catches, function(x) return(landings.n(x)))
+    # Const - just pulls out n
+    landingsnout <- test_FLCatchesAD_const_iterator(catches)
+    expect_identical(landingsnout, landingsnin@.Data)
+    # Not const - sets a value
+    indices <- round(runif(6, min=1, max=dim(landings.n(catches[[1]]))))
+    value <- rnorm(1)
+    catches_out <- test_FLCatchesAD_iterator(catches, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
+    value_out <- unname(unlist(lapply(catches_out, function(x) return(landings.n(x)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))))
+    expect_identical(rep(value,length(catches)), value_out)
+    # All others are OK
+    element <- get_FLQuant_element(landings.n(catches[[1]]), indices)
+    for (i in 1:length(catches)){
+        expect_identical(c(landings.n(catches_out[[i]]))[-element], c(landings.n(catches[[i]]))[-element])
+    }
+})
+

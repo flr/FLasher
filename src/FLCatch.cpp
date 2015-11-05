@@ -503,6 +503,27 @@ FLCatch_base<T>& FLCatches_base<T>::operator () (const unsigned int element){
 	return catches[element-1];
 }
 
+// begin and end methods for for_range and iterators
+template <typename T>
+typename FLCatches_base<T>::iterator FLCatches_base<T>::begin(){
+    return catches.begin();
+}
+
+template <typename T>
+typename FLCatches_base<T>::iterator FLCatches_base<T>::end(){
+    return catches.end();
+}
+
+template <typename T>
+typename FLCatches_base<T>::const_iterator FLCatches_base<T>::begin() const {
+    return catches.begin();
+}
+
+template <typename T>
+typename FLCatches_base<T>::const_iterator FLCatches_base<T>::end() const {
+    return catches.end();
+}
+
 // Explicit instantiation of classes
 template class FLCatches_base<double>;
 template class FLCatches_base<adouble>;

@@ -240,8 +240,26 @@ FLCatch_base<T>& FLFisheries_base<T>::operator () (const unsigned int fishery, c
     return (*this)(fishery)(catches);
 }
 
-// FLCatch slot accessors
-//T landings_n(std::vector<int>) const;
+// begin and end methods for for_range and iterators
+template <typename T>
+typename FLFisheries_base<T>::iterator FLFisheries_base<T>::begin(){
+    return fisheries.begin();
+}
+
+template <typename T>
+typename FLFisheries_base<T>::iterator FLFisheries_base<T>::end(){
+    return fisheries.end();
+}
+
+template <typename T>
+typename FLFisheries_base<T>::const_iterator FLFisheries_base<T>::begin() const {
+    return fisheries.begin();
+}
+
+template <typename T>
+typename FLFisheries_base<T>::const_iterator FLFisheries_base<T>::end() const {
+    return fisheries.end();
+}
 
 // Explicit instantiation of classes
 template class FLFisheries_base<double>;

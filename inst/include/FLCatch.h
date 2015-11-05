@@ -117,6 +117,14 @@ class FLCatches_base {
         void operator() (const FLCatch_base<T>& flc); // Add another FLCatch_base<T> to the data
         unsigned int get_ncatches() const;
 
+        /* begin and end and const versions for iterators */
+        typedef typename std::vector<FLCatch_base<T> >::iterator iterator;
+        iterator begin();
+        iterator end();
+        typedef typename std::vector<FLCatch_base<T> >::const_iterator const_iterator;
+        const_iterator begin() const;
+        const_iterator end() const;
+
     protected:
         std::vector<FLCatch_base<T> > catches;
         Rcpp::CharacterVector names; // of the catches 

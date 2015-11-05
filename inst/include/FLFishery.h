@@ -88,6 +88,14 @@ class FLFisheries_base {
 		FLCatch_base<T>& operator () (const unsigned int fishery, const unsigned int catches); // Gets and sets an FLCatch so const not reinforced. 
         unsigned int get_nfisheries() const;
 
+        /* begin and end and const versions for iterators */
+        typedef typename std::vector<FLFishery_base<T> >::iterator iterator;
+        iterator begin();
+        iterator end();
+        typedef typename std::vector<FLFishery_base<T> >::const_iterator const_iterator;
+        const_iterator begin() const;
+        const_iterator end() const;
+
     private:
         std::vector<FLFishery_base<T> > fisheries;
         Rcpp::CharacterVector names; // of the fisheries

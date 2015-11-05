@@ -144,3 +144,20 @@ test_that("FLFisheries get and set data accessors - double", {
     expect_identical(c(landings.n(flfs_out[[fishery]][[catches]][indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]])), value)
 })
 
+test_that("FLCatchesAD iterators",{
+    fisheries <- random_FLFisheries_generator(min_fisheries = 2, max_fisheries = 5)
+    effortin <- lapply(fisheries, function(x) return(effort(x)))
+    # Const - just pulls out n
+    effortout <- test_FLFisheriesAD_const_iterator(fisheries)
+    expect_identical(effortout, effortin@.Data)
+    # Not const - sets a value in first element (fisheries can be different dims)
+    value <- rnorm(1)
+    fisheries_out <- test_FLFisheriesAD_iterator(fisheries, value)
+    value_out <- unname(unlist(lapply(fisheries_out, function(x) return(effort(x)[1, 1, 1, 1, 1, 1]))))
+    expect_identical(rep(value,length(fisheries)), value_out)
+    # All others are OK
+    for (i in 1:length(fisheries)){
+        expect_identical(c(effort(fisheries_out[[i]]))[-1], c(effort(fisheries[[i]]))[-1])
+    }
+})
+

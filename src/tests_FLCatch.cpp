@@ -494,3 +494,21 @@ FLCatchesAD test_FLCatchesAD_set_value_accessor(FLCatchesAD flcs, const int elem
     return flcs;
 }
 
+// iterators
+// [[Rcpp::export]]
+Rcpp::List test_FLCatchesAD_const_iterator(const FLCatchesAD catches){
+    Rcpp::List out;
+    for (const auto flcatch : catches){
+        out.push_back(flcatch.landings_n());
+    }
+    return out;
+}
+
+// [[Rcpp::export]]
+FLCatchesAD test_FLCatchesAD_iterator(FLCatchesAD catches, int quant, int year, int unit, int season, int area, int iter, double value){
+    for (auto& flcatch : catches){
+        flcatch.landings_n()(quant, year, unit, season, area, iter) = value;
+    }
+    return catches;
+}
+

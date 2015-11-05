@@ -1959,6 +1959,35 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_FLCatchesAD_const_iterator
+Rcpp::List test_FLCatchesAD_const_iterator(const FLCatchesAD catches);
+RcppExport SEXP FLasher_test_FLCatchesAD_const_iterator(SEXP catchesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const FLCatchesAD >::type catches(catchesSEXP);
+    __result = Rcpp::wrap(test_FLCatchesAD_const_iterator(catches));
+    return __result;
+END_RCPP
+}
+// test_FLCatchesAD_iterator
+FLCatchesAD test_FLCatchesAD_iterator(FLCatchesAD catches, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_FLCatchesAD_iterator(SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLCatchesAD >::type catches(catchesSEXP);
+    Rcpp::traits::input_parameter< int >::type quant(quantSEXP);
+    Rcpp::traits::input_parameter< int >::type year(yearSEXP);
+    Rcpp::traits::input_parameter< int >::type unit(unitSEXP);
+    Rcpp::traits::input_parameter< int >::type season(seasonSEXP);
+    Rcpp::traits::input_parameter< int >::type area(areaSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< double >::type value(valueSEXP);
+    __result = Rcpp::wrap(test_FLCatchesAD_iterator(catches, quant, year, unit, season, area, iter, value));
+    return __result;
+END_RCPP
+}
 // test_FLFishery_empty_constructor
 void test_FLFishery_empty_constructor();
 RcppExport SEXP FLasher_test_FLFishery_empty_constructor() {
@@ -2413,6 +2442,35 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_FLFisheryAD_const_iterator
+Rcpp::List test_FLFisheryAD_const_iterator(const FLFisheryAD fishery);
+RcppExport SEXP FLasher_test_FLFisheryAD_const_iterator(SEXP fisherySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const FLFisheryAD >::type fishery(fisherySEXP);
+    __result = Rcpp::wrap(test_FLFisheryAD_const_iterator(fishery));
+    return __result;
+END_RCPP
+}
+// test_FLFisheryAD_iterator
+FLFisheryAD test_FLFisheryAD_iterator(FLFisheryAD fishery, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_FLFisheryAD_iterator(SEXP fisherySEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheryAD >::type fishery(fisherySEXP);
+    Rcpp::traits::input_parameter< int >::type quant(quantSEXP);
+    Rcpp::traits::input_parameter< int >::type year(yearSEXP);
+    Rcpp::traits::input_parameter< int >::type unit(unitSEXP);
+    Rcpp::traits::input_parameter< int >::type season(seasonSEXP);
+    Rcpp::traits::input_parameter< int >::type area(areaSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< double >::type value(valueSEXP);
+    __result = Rcpp::wrap(test_FLFisheryAD_iterator(fishery, quant, year, unit, season, area, iter, value));
+    return __result;
+END_RCPP
+}
 // test_FLFisheries_sexp_constructor
 FLFisheries test_FLFisheries_sexp_constructor(SEXP flfs_sexp1);
 RcppExport SEXP FLasher_test_FLFisheries_sexp_constructor(SEXP flfs_sexp1SEXP) {
@@ -2752,6 +2810,29 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::IntegerVector >::type indices(indicesSEXP);
     Rcpp::traits::input_parameter< double >::type value(valueSEXP);
     __result = Rcpp::wrap(test_FLFisheriesAD_set_double(flfs, fishery, catches, indices, value));
+    return __result;
+END_RCPP
+}
+// test_FLFisheriesAD_const_iterator
+Rcpp::List test_FLFisheriesAD_const_iterator(const FLFisheriesAD fisheries);
+RcppExport SEXP FLasher_test_FLFisheriesAD_const_iterator(SEXP fisheriesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const FLFisheriesAD >::type fisheries(fisheriesSEXP);
+    __result = Rcpp::wrap(test_FLFisheriesAD_const_iterator(fisheries));
+    return __result;
+END_RCPP
+}
+// test_FLFisheriesAD_iterator
+FLFisheriesAD test_FLFisheriesAD_iterator(FLFisheriesAD fisheries, double value);
+RcppExport SEXP FLasher_test_FLFisheriesAD_iterator(SEXP fisheriesSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type fisheries(fisheriesSEXP);
+    Rcpp::traits::input_parameter< double >::type value(valueSEXP);
+    __result = Rcpp::wrap(test_FLFisheriesAD_iterator(fisheries, value));
     return __result;
 END_RCPP
 }

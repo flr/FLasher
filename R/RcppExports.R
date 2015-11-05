@@ -629,6 +629,14 @@ test_FLCatchesAD_set_value_accessor <- function(flcs, element, quant, year, unit
     .Call('FLasher_test_FLCatchesAD_set_value_accessor', PACKAGE = 'FLasher', flcs, element, quant, year, unit, season, area, iter, value)
 }
 
+test_FLCatchesAD_const_iterator <- function(catches) {
+    .Call('FLasher_test_FLCatchesAD_const_iterator', PACKAGE = 'FLasher', catches)
+}
+
+test_FLCatchesAD_iterator <- function(catches, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLCatchesAD_iterator', PACKAGE = 'FLasher', catches, quant, year, unit, season, area, iter, value)
+}
+
 test_FLFishery_empty_constructor <- function() {
     invisible(.Call('FLasher_test_FLFishery_empty_constructor', PACKAGE = 'FLasher'))
 }
@@ -753,6 +761,14 @@ test_FLFisheryAD_assignment_operator2 <- function(flf1, element, quant, year, un
     .Call('FLasher_test_FLFisheryAD_assignment_operator2', PACKAGE = 'FLasher', flf1, element, quant, year, unit, season, area, iter, value)
 }
 
+test_FLFisheryAD_const_iterator <- function(fishery) {
+    .Call('FLasher_test_FLFisheryAD_const_iterator', PACKAGE = 'FLasher', fishery)
+}
+
+test_FLFisheryAD_iterator <- function(fishery, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLFisheryAD_iterator', PACKAGE = 'FLasher', fishery, quant, year, unit, season, area, iter, value)
+}
+
 test_FLFisheries_sexp_constructor <- function(flfs_sexp1) {
     .Call('FLasher_test_FLFisheries_sexp_constructor', PACKAGE = 'FLasher', flfs_sexp1)
 }
@@ -855,6 +871,14 @@ test_FLFisheriesAD_set_single <- function(flfs, fishery, catches, indices, value
 
 test_FLFisheriesAD_set_double <- function(flfs, fishery, catches, indices, value) {
     .Call('FLasher_test_FLFisheriesAD_set_double', PACKAGE = 'FLasher', flfs, fishery, catches, indices, value)
+}
+
+test_FLFisheriesAD_const_iterator <- function(fisheries) {
+    .Call('FLasher_test_FLFisheriesAD_const_iterator', PACKAGE = 'FLasher', fisheries)
+}
+
+test_FLFisheriesAD_iterator <- function(fisheries, value) {
+    .Call('FLasher_test_FLFisheriesAD_iterator', PACKAGE = 'FLasher', fisheries, value)
 }
 
 test_FLQuantAD_as_wrap <- function(flq) {

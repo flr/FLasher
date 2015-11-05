@@ -302,6 +302,24 @@ Rcpp::List test_FLFisheryAD_assignment_operator2(FLFisheryAD flf1, int element, 
 				Rcpp::Named("flf2",flf2));
 }
 
+// iterators
+// [[Rcpp::export]]
+Rcpp::List test_FLFisheryAD_const_iterator(const FLFisheryAD fishery){
+    Rcpp::List out;
+    for (const auto flcatch : fishery){
+        out.push_back(flcatch.landings_n());
+    }
+    return out;
+}
+
+// [[Rcpp::export]]
+FLFisheryAD test_FLFisheryAD_iterator(FLFisheryAD fishery, int quant, int year, int unit, int season, int area, int iter, double value){
+    for (auto& flcatch : fishery){
+        flcatch.landings_n()(quant, year, unit, season, area, iter) = value;
+    }
+    return fishery;
+}
+
 //---------------------------------------------------------------------------------------
 // FLFisheries - double
 
@@ -551,5 +569,23 @@ FLFisheriesAD test_FLFisheriesAD_set_double(FLFisheriesAD flfs, const int fisher
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
     flfs(fishery, catches).landings_n()(std_indices[0],std_indices[1],std_indices[2],std_indices[3],std_indices[4],std_indices[5]) = value;
     return flfs;
+}
+
+// iterators
+// [[Rcpp::export]]
+Rcpp::List test_FLFisheriesAD_const_iterator(const FLFisheriesAD fisheries){
+    Rcpp::List out;
+    for (const auto fishery : fisheries){
+        out.push_back(fishery.effort());
+    }
+    return out;
+}
+
+// [[Rcpp::export]]
+FLFisheriesAD test_FLFisheriesAD_iterator(FLFisheriesAD fisheries, double value){
+    for (auto& fishery : fisheries){
+        fishery.effort()(1, 1, 1, 1, 1, 1) = value;
+    }
+    return fisheries;
 }
 
