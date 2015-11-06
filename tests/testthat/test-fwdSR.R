@@ -177,7 +177,7 @@ test_that("fwdSR predict_recruitment",{
     expect_equal(c(rec_out2a), c(reca))
     # Subset SSB years, all iters. All params years, all iters (either change initial indices, or subset params)
     timestep1 <- round(runif(1, min=1, max=dim(ssb_in)[2]/2))
-    timestep2 <- round(runif(1, min=timestep+1, max=dim(ssb_in)[2]))
+    timestep2 <- round(runif(1, min=timestep1+1, max=dim(ssb_in)[2]))
     timestep_subset <- timestep1:timestep2
     rec <- FLQuant(NA, dim=c(1,length(timestep_subset)), iter=niters)
     for (i in 1:niters){
@@ -240,7 +240,7 @@ test_that("fwdSR predict_recruitment",{
     expect_equal(c(rec_outa), c(reca))
     # Subset years, all iters
     timestep1 <- round(runif(1, min=1, max=dim(ssb_in)[2]/2))
-    timestep2 <- round(runif(1, min=timestep+1, max=dim(ssb_in)[2]))
+    timestep2 <- round(runif(1, min=timestep1+1, max=dim(ssb_in)[2]))
     timestep_subset <- timestep1:timestep2
     rec <- FLQuant(NA, dim=c(1,length(timestep_subset),1,dim(ssb_in)[4]), iter=niters)
     for (i in 1:niters){
