@@ -1543,6 +1543,31 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_FLCatchAD_catch_q_params
+std::vector<double> test_FLCatchAD_catch_q_params(const FLCatchAD flc, const std::vector<unsigned int> indices);
+RcppExport SEXP FLasher_test_FLCatchAD_catch_q_params(SEXP flcSEXP, SEXP indicesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices(indicesSEXP);
+    __result = Rcpp::wrap(test_FLCatchAD_catch_q_params(flc, indices));
+    return __result;
+END_RCPP
+}
+// test_FLCatchAD_catch_q_params_subset
+FLQuant test_FLCatchAD_catch_q_params_subset(const FLCatchAD flc, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_FLCatchAD_catch_q_params_subset(SEXP flcSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const FLCatchAD >::type flc(flcSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    __result = Rcpp::wrap(test_FLCatchAD_catch_q_params_subset(flc, indices_min, indices_max));
+    return __result;
+END_RCPP
+}
 // test_FLCatches_as_wrap
 FLCatches test_FLCatches_as_wrap(FLCatches flcs);
 RcppExport SEXP FLasher_test_FLCatches_as_wrap(SEXP flcsSEXP) {
@@ -5527,6 +5552,136 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type indep_max(indep_maxSEXP);
     Rcpp::traits::input_parameter< const double >::type tolerance(toleranceSEXP);
     __result = Rcpp::wrap(test_NR2(initial_value, max_iters, indep_min, indep_max, tolerance));
+    return __result;
+END_RCPP
+}
+// test_year_season_to_timestep_FLQuant_double
+unsigned int test_year_season_to_timestep_FLQuant_double(FLQuant flq, const unsigned int year, const unsigned int season);
+RcppExport SEXP FLasher_test_year_season_to_timestep_FLQuant_double(SEXP flqSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type year(yearSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type season(seasonSEXP);
+    __result = Rcpp::wrap(test_year_season_to_timestep_FLQuant_double(flq, year, season));
+    return __result;
+END_RCPP
+}
+// test_year_season_to_timestep_FLQuant_adouble
+unsigned int test_year_season_to_timestep_FLQuant_adouble(FLQuantAD flqad, const unsigned int year, const unsigned int season);
+RcppExport SEXP FLasher_test_year_season_to_timestep_FLQuant_adouble(SEXP flqadSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flqad(flqadSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type year(yearSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type season(seasonSEXP);
+    __result = Rcpp::wrap(test_year_season_to_timestep_FLQuant_adouble(flqad, year, season));
+    return __result;
+END_RCPP
+}
+// test_year_season_to_timestep
+unsigned int test_year_season_to_timestep(FLQuant flq, const int unsigned year, const int unsigned season);
+RcppExport SEXP FLasher_test_year_season_to_timestep(SEXP flqSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP);
+    Rcpp::traits::input_parameter< const int unsigned >::type year(yearSEXP);
+    Rcpp::traits::input_parameter< const int unsigned >::type season(seasonSEXP);
+    __result = Rcpp::wrap(test_year_season_to_timestep(flq, year, season));
+    return __result;
+END_RCPP
+}
+// test_timestep_to_year_season_FLQuant_double
+Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_double(FLQuant flq, const unsigned int timestep);
+RcppExport SEXP FLasher_test_timestep_to_year_season_FLQuant_double(SEXP flqSEXP, SEXP timestepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type timestep(timestepSEXP);
+    __result = Rcpp::wrap(test_timestep_to_year_season_FLQuant_double(flq, timestep));
+    return __result;
+END_RCPP
+}
+// test_timestep_to_year_season_FLQuant_adouble
+Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_adouble(FLQuantAD flqad, const unsigned int timestep);
+RcppExport SEXP FLasher_test_timestep_to_year_season_FLQuant_adouble(SEXP flqadSEXP, SEXP timestepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flqad(flqadSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type timestep(timestepSEXP);
+    __result = Rcpp::wrap(test_timestep_to_year_season_FLQuant_adouble(flqad, timestep));
+    return __result;
+END_RCPP
+}
+// test_timestep_to_year_season
+Rcpp::IntegerVector test_timestep_to_year_season(FLQuant flq, const unsigned int timestep);
+RcppExport SEXP FLasher_test_timestep_to_year_season(SEXP flqSEXP, SEXP timestepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type timestep(timestepSEXP);
+    __result = Rcpp::wrap(test_timestep_to_year_season(flq, timestep));
+    return __result;
+END_RCPP
+}
+// test_operatingModel_empty_constructor
+void test_operatingModel_empty_constructor();
+RcppExport SEXP FLasher_test_operatingModel_empty_constructor() {
+BEGIN_RCPP
+    Rcpp::RNGScope __rngScope;
+    test_operatingModel_empty_constructor();
+    return R_NilValue;
+END_RCPP
+}
+// test_operatingModel_full_constructor
+operatingModel test_operatingModel_full_constructor(FLFisheriesAD flfs, Rcpp::List flbs_list, const fwdControl ctrl);
+RcppExport SEXP FLasher_test_operatingModel_full_constructor(SEXP flfsSEXP, SEXP flbs_listSEXP, SEXP ctrlSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type flbs_list(flbs_listSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    __result = Rcpp::wrap(test_operatingModel_full_constructor(flfs, flbs_list, ctrl));
+    return __result;
+END_RCPP
+}
+// test_operatingModel_SRP_FLQ_subset
+FLQuantAD test_operatingModel_SRP_FLQ_subset(FLFisheriesAD flfs, Rcpp::List flbs_list, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_operatingModel_SRP_FLQ_subset(SEXP flfsSEXP, SEXP flbs_listSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type flbs_list(flbs_listSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    __result = Rcpp::wrap(test_operatingModel_SRP_FLQ_subset(flfs, flbs_list, ctrl, biol_no, indices_min, indices_max));
+    return __result;
+END_RCPP
+}
+// test_operatingModel_f_prop_spwn_FLQ_subset
+FLQuantAD test_operatingModel_f_prop_spwn_FLQ_subset(FLFisheriesAD flfs, Rcpp::List flbs_list, const fwdControl ctrl, const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_operatingModel_f_prop_spwn_FLQ_subset(SEXP flfsSEXP, SEXP flbs_listSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type flbs_list(flbs_listSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const int >::type fishery_no(fishery_noSEXP);
+    Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    __result = Rcpp::wrap(test_operatingModel_f_prop_spwn_FLQ_subset(flfs, flbs_list, ctrl, fishery_no, biol_no, indices_min, indices_max));
     return __result;
 END_RCPP
 }

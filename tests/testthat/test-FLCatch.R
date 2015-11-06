@@ -168,111 +168,96 @@ test_that("FLCatch get and set data accessors", {
 })
 
 
-#test_that("FLCatch catch_q accessor", {
-#    flc_in <- random_FLCatch_generator()
-#    dims <- dim(landings.n(flc_in))
-#    # Make a random FLPar with max dims of flq
-#    # Make random indices of FLPar (-1)
-#    # Call it and test
-#    catch.q.params <- FLPar(rnorm(2), dimnames = list(params = c("alpha","beta"), iter = 1))
-#    catch.q.year <- FLPar(rnorm(2 * dims[2]), dimnames = list(params = c("alpha","beta"), year = 1:dims[2], iter = 1))
-#    catch.q.iter <- FLPar(rnorm(2 * dims[6]), dimnames = list(params = c("alpha","beta"), iter = 1:dims[6]))
-#    catch.q2 <- FLPar(rnorm(2 * dims[6] * dims[2]), dimnames = list(params = c("alpha","beta"), year = 1:dims[2], iter = 1:dims[6]))
-#    catch.q4 <- FLPar(rnorm(2 * dims[6] * dims[4]), dimnames = list(params = c("alpha","beta"), season = 1:dims[4], iter = 1:dims[6]))
-#    catch.q24 <- FLPar(rnorm(2 * dims[2] * dims[6] * dims[4]), dimnames = list(params = c("alpha","beta"), year=1:dims[2], season = 1:dims[4], iter = 1:dims[6]))
-#    indices <- round(runif(6, min=1, max=dims))
-#    indices_max <- round(runif(6, min=1, max=dims))
-#    indices_max[1] <- 2
-#    indices_min <- round(runif(6, min=1, max=indices_max))
-#
-#    # Asking for too many parameters
-#    indices_max_error <- indices_max
-#    indices_max_error[1] <- 3
-#    expect_that(test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max_error), throws_error())
-#
-#    # Indices out of range
-#    indices_min_error <- indices_min
-#    indices_min_error[2] <- dims[2]+1
-#    expect_that(test_FLCatchAD_catch_q_params_subset(flc_in, indices_min_error, indices_max), throws_error())
-#
-#    # Only params - no other dims
-#    catch.q(flc_in) <- catch.q.params
-#    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
-#    expect_that(c(catch.q.params[]), is_identical_to(c(params)))
-#    # Get all params
-#    indices_min_all <- indices_min
-#    indices_min_all[1] <- 1
-#    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min_all, indices_max)
-#    expect_that(dim(params), equals(indices_max - indices_min_all + 1))
-#    expect_that(c(params[1,]), equals(rep(c(catch.q.params[1,]), prod(dim(params[-1])))))
-#    expect_that(c(params[2,]), equals(rep(c(catch.q.params[2,]), prod(dim(params[-1])))))
-#    # Subset params
-#    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
-#    expect_that(unname(params@.Data), equals(unname(FLQuant(c(catch.q.params[indices_min[1]:indices_max[1],]), dim = c(indices_max - indices_min +1))@.Data)))
-#
-#    # Params have year - all iters the same
-#    catch.q(flc_in) <- catch.q.year
-#    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
-#    expect_that(c(catch.q.year[,indices[2]]), is_identical_to(c(params)))
-#    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
-#    expect_that(dim(params), equals(indices_max - indices_min + 1))
-#    expect_that(unname(params@.Data), equals(unname(FLQuant(c(catch.q.year[indices_min[1]:indices_max[1],indices_min[2]:indices_max[2]]), dim = c(indices_max - indices_min +1))@.Data)))
-#
-#    # Only params and iter - all other dims the same
-#    catch.q(flc_in) <- catch.q.iter
-#    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
-#    expect_that(c(catch.q.iter[,indices[6]]), is_identical_to(c(params)))
-#    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
-#    expect_that(dim(params), equals(indices_max - indices_min + 1))
-#    flq_in <- FLQuant(NA, dim=indices_max - indices_min + 1)
-#    for (iter_count in 1:(indices_max[6] - indices_min[6] + 1)){
-#        iter(flq_in,iter_count)[] <- c(catch.q.iter[indices_min[1]:indices_max[1],indices_min[6] + iter_count - 1])
-#    }
-#    expect_that(unname(params@.Data), equals(unname(flq_in@.Data)))
-#
-#    # params, year and iter
-#    catch.q(flc_in) <- catch.q2
-#    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
-#    expect_that(c(catch.q2[,indices[2],indices[6]]), is_identical_to(c(params)))
-#    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
-#    expect_that(dim(params), equals(indices_max - indices_min + 1))
-#    # All units, seasons and areas the same
-#    subq <- catch.q2[indices_min[1]:indices_max[1], indices_min[2]: indices_max[2], indices_min[6]:indices_max[6]]
-#    for (qcount in 1:dim(params)[1]){
-#        for (ycount in 1:dim(params)[2]){
-#            for (icount in 1:dim(params)[6]){
-#                expect_that(c(params[qcount, ycount,,,,icount]), equals(rep(c(subq[qcount,ycount,icount]), prod(dim(params)[c(3,4,5)]))))
-#    }}}
-#
-#
-#
-#    # params, season and iter
-#    catch.q(flc_in) <- catch.q4
-#    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
-#    expect_that(c(catch.q4[,indices[4],indices[6]]), is_identical_to(c(params)))
-#    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
-#    expect_that(dim(params), equals(indices_max - indices_min + 1))
-#    subq <- catch.q4[indices_min[1]:indices_max[1], indices_min[4]: indices_max[4], indices_min[6]:indices_max[6]]
-#    for (qcount in 1:dim(params)[1]){
-#        for (scount in 1:dim(params)[4]){
-#            for (icount in 1:dim(params)[6]){
-#                expect_that(c(params[qcount,,,scount,,icount]), equals(rep(c(subq[qcount,scount,icount]), prod(dim(params)[c(2,3,5)]))))
-#    }}}
-#
-#    # params, year, season and iter
-#    catch.q(flc_in) <- catch.q24
-#    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
-#    expect_that(c(catch.q24[,indices[2],indices[4],indices[6]]), is_identical_to(c(params)))
-#    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
-#    expect_that(dim(params), equals(indices_max - indices_min + 1))
-#    subq <- catch.q24[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[4]: indices_max[4], indices_min[6]:indices_max[6]]
-#    for (qcount in 1:dim(params)[1]){
-#        for (ycount in 1:dim(params)[2]){
-#            for (scount in 1:dim(params)[4]){
-#                for (icount in 1:dim(params)[6]){
-#                    expect_that(c(params[qcount,ycount,,scount,,icount]), equals(rep(c(subq[qcount,ycount,scount,icount]), prod(dim(params)[c(3,5)]))))
-#    }}}}
-#})
+test_that("FLCatch catch_q accessor", {
+    flc_in <- random_FLCatch_generator()
+    dims <- dim(landings.n(flc_in))
+    # Make a bunch of FLPars with lengths of eiher 1 or something in the dimensions
+    catch.q.params <- FLPar(rnorm(2), dimnames = list(params = c("alpha","beta"), iter = 1))
+    catch.q.year <- FLPar(rnorm(2 * dims[2]), dimnames = list(params = c("alpha","beta"), year = 1:dims[2], iter = 1))
+    catch.q.iter <- FLPar(rnorm(2 * dims[6]), dimnames = list(params = c("alpha","beta"), iter = 1:dims[6]))
+    catch.q2 <- FLPar(rnorm(2 * dims[6] * dims[2]), dimnames = list(params = c("alpha","beta"), year = 1:dims[2], iter = 1:dims[6]))
+    catch.q4 <- FLPar(rnorm(2 * dims[6] * dims[4]), dimnames = list(params = c("alpha","beta"), season = 1:dims[4], iter = 1:dims[6]))
+    catch.q24 <- FLPar(rnorm(2 * dims[2] * dims[6] * dims[4]), dimnames = list(params = c("alpha","beta"), year=1:dims[2], season = 1:dims[4], iter = 1:dims[6]))
+    indices <- round(runif(6, min=1, max=dims))
+    indices_max <- round(runif(6, min=1, max=dims))
+    indices_max[1] <- 2
+    indices_min <- round(runif(6, min=1, max=indices_max))
+    # Indices that ask for too many parameters (in first dimension)
+    indices_max_error <- indices_max
+    indices_max_error[1] <- 3
+    expect_error(test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max_error))
+    # Indices out of range: max outside of range of FLCatch
+    indices_max_error <- indices_max
+    indices_max_error[2] <- dims[2]+1
+    expect_error(test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max_error))
+    # Only params - no other dims
+    catch.q(flc_in) <- catch.q.params
+    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
+    expect_identical(c(catch.q.params[]), c(params))
+    # Params have no dims but asking for dims - should blow up FLQ
+    indices_min_all <- indices_min
+    indices_min_all[1] <- 1
+    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min_all, indices_max)
+    expect_equal(dim(params), indices_max - indices_min_all + 1)
+    expect_equal(c(params[1,]), rep(c(catch.q.params[1,]), prod(dim(params[-1]))))
+    expect_equal(c(params[2,]), rep(c(catch.q.params[2,]), prod(dim(params[-1]))))
+    # Params have year - no iters  (should be all the same)
+    catch.q(flc_in) <- catch.q.year
+    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
+    expect_identical(c(catch.q.year[,indices[2]]), c(params))
+    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
+    expect_equal(dim(params), indices_max - indices_min + 1)
+    expect_equal(unname(params@.Data), unname(FLQuant(c(catch.q.year[indices_min[1]:indices_max[1],indices_min[2]:indices_max[2]]), dim = c(indices_max - indices_min +1))@.Data))
+    # Only params and iter - all other dims the same
+    catch.q(flc_in) <- catch.q.iter
+    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
+    expect_identical(c(catch.q.iter[,indices[6]]), c(params))
+    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
+    expect_equal(dim(params), indices_max - indices_min + 1)
+    flq_in <- FLQuant(NA, dim=indices_max - indices_min + 1)
+    for (iter_count in 1:(indices_max[6] - indices_min[6] + 1)){
+        iter(flq_in,iter_count)[] <- c(catch.q.iter[indices_min[1]:indices_max[1],indices_min[6] + iter_count - 1])
+    }
+    expect_equal(unname(params@.Data), unname(flq_in@.Data))
+    # params, year and iter
+    catch.q(flc_in) <- catch.q2
+    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
+    expect_identical(c(catch.q2[,indices[2],indices[6]]), c(params))
+    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
+    expect_equal(dim(params), indices_max - indices_min + 1)
+    # All units, seasons and areas the same
+    subq <- catch.q2[indices_min[1]:indices_max[1], indices_min[2]: indices_max[2], indices_min[6]:indices_max[6]]
+    for (qcount in 1:dim(params)[1]){
+        for (ycount in 1:dim(params)[2]){
+            for (icount in 1:dim(params)[6]){
+                expect_equal(c(params[qcount, ycount,,,,icount]), rep(c(subq[qcount,ycount,icount]), prod(dim(params)[c(3,4,5)])))
+    }}}
+    # params, season and iter
+    catch.q(flc_in) <- catch.q4
+    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
+    expect_identical(c(catch.q4[,indices[4],indices[6]]), c(params))
+    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
+    expect_equal(dim(params), indices_max - indices_min + 1)
+    subq <- catch.q4[indices_min[1]:indices_max[1], indices_min[4]: indices_max[4], indices_min[6]:indices_max[6]]
+    for (qcount in 1:dim(params)[1]){
+        for (scount in 1:dim(params)[4]){
+            for (icount in 1:dim(params)[6]){
+                expect_equal(c(params[qcount,,,scount,,icount]), rep(c(subq[qcount,scount,icount]), prod(dim(params)[c(2,3,5)])))
+    }}}
+    # params, year, season and iter
+    catch.q(flc_in) <- catch.q24
+    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
+    expect_identical(c(catch.q24[,indices[2],indices[4],indices[6]]), c(params))
+    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
+    expect_equal(dim(params), indices_max - indices_min + 1)
+    subq <- catch.q24[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[4]: indices_max[4], indices_min[6]:indices_max[6]]
+    for (qcount in 1:dim(params)[1]){
+        for (ycount in 1:dim(params)[2]){
+            for (scount in 1:dim(params)[4]){
+                for (icount in 1:dim(params)[6]){
+                    expect_equal(c(params[qcount,ycount,,scount,,icount]), rep(c(subq[qcount,ycount,scount,icount]), prod(dim(params)[c(3,5)])))
+    }}}}
+})
 
 test_that("FLCatch methods", {
     flc_in <- random_FLCatch_generator()

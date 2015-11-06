@@ -509,6 +509,14 @@ test_FLCatchAD_discards_sel <- function(flc) {
     .Call('FLasher_test_FLCatchAD_discards_sel', PACKAGE = 'FLasher', flc)
 }
 
+test_FLCatchAD_catch_q_params <- function(flc, indices) {
+    .Call('FLasher_test_FLCatchAD_catch_q_params', PACKAGE = 'FLasher', flc, indices)
+}
+
+test_FLCatchAD_catch_q_params_subset <- function(flc, indices_min, indices_max) {
+    .Call('FLasher_test_FLCatchAD_catch_q_params_subset', PACKAGE = 'FLasher', flc, indices_min, indices_max)
+}
+
 test_FLCatches_as_wrap <- function(flcs) {
     .Call('FLasher_test_FLCatches_as_wrap', PACKAGE = 'FLasher', flcs)
 }
@@ -1691,5 +1699,45 @@ test_NR1 <- function(initial_value, max_iters, indep_min, indep_max, tolerance) 
 
 test_NR2 <- function(initial_value, max_iters, indep_min, indep_max, tolerance) {
     .Call('FLasher_test_NR2', PACKAGE = 'FLasher', initial_value, max_iters, indep_min, indep_max, tolerance)
+}
+
+test_year_season_to_timestep_FLQuant_double <- function(flq, year, season) {
+    .Call('FLasher_test_year_season_to_timestep_FLQuant_double', PACKAGE = 'FLasher', flq, year, season)
+}
+
+test_year_season_to_timestep_FLQuant_adouble <- function(flqad, year, season) {
+    .Call('FLasher_test_year_season_to_timestep_FLQuant_adouble', PACKAGE = 'FLasher', flqad, year, season)
+}
+
+test_year_season_to_timestep <- function(flq, year, season) {
+    .Call('FLasher_test_year_season_to_timestep', PACKAGE = 'FLasher', flq, year, season)
+}
+
+test_timestep_to_year_season_FLQuant_double <- function(flq, timestep) {
+    .Call('FLasher_test_timestep_to_year_season_FLQuant_double', PACKAGE = 'FLasher', flq, timestep)
+}
+
+test_timestep_to_year_season_FLQuant_adouble <- function(flqad, timestep) {
+    .Call('FLasher_test_timestep_to_year_season_FLQuant_adouble', PACKAGE = 'FLasher', flqad, timestep)
+}
+
+test_timestep_to_year_season <- function(flq, timestep) {
+    .Call('FLasher_test_timestep_to_year_season', PACKAGE = 'FLasher', flq, timestep)
+}
+
+test_operatingModel_empty_constructor <- function() {
+    invisible(.Call('FLasher_test_operatingModel_empty_constructor', PACKAGE = 'FLasher'))
+}
+
+test_operatingModel_full_constructor <- function(flfs, flbs_list, ctrl) {
+    .Call('FLasher_test_operatingModel_full_constructor', PACKAGE = 'FLasher', flfs, flbs_list, ctrl)
+}
+
+test_operatingModel_SRP_FLQ_subset <- function(flfs, flbs_list, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_SRP_FLQ_subset', PACKAGE = 'FLasher', flfs, flbs_list, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_f_prop_spwn_FLQ_subset <- function(flfs, flbs_list, ctrl, fishery_no, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_f_prop_spwn_FLQ_subset', PACKAGE = 'FLasher', flfs, flbs_list, ctrl, fishery_no, biol_no, indices_min, indices_max)
 }
 

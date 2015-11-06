@@ -175,7 +175,7 @@ FLQuant FLCatch_base<T>::catch_q_params() const {
 /*! \brief Get the catchability parameters over a subset of dims
  *
  * Subset the catchability parameters over quant - iteration dimensions.
- * The parameters are stored in the first dimension
+ * The parameters are stored in the first dimension.
  * 
  * \param indices_min minimum indices for dimensions quant - iter (length 6)
  * \param indices_max maximum indices for dimensions quant - iter (length 6)
@@ -189,7 +189,7 @@ FLQuant FLCatch_base<T>::catch_q_params(const std::vector<unsigned int> indices_
     // Checking first dimension (parameter) range
     std::vector<unsigned int> qdims = catch_q_flq.get_dim();
     if (indices_min[0] < 1 | indices_max[0] > qdims[0]){
-        Rcpp::stop("In FLCatch catch_q_params subsetter. Outside first dimension range. Possibly asking for too many parameters.\n");
+        Rcpp::stop("In FLCatch catch_q_params subsetter. Outside first dimension range. Possibly asking for too many catchability parameters.\n");
     }
     // Indices_min must be between 1 and max for dims 2:6
     std::vector<unsigned int> ndims = landings_n_flq.get_dim();
@@ -202,7 +202,6 @@ FLQuant FLCatch_base<T>::catch_q_params(const std::vector<unsigned int> indices_
     std::vector<unsigned int> new_dims {indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1, indices_max[5] - indices_min[5] + 1};
     FLQuant q_params(new_dims[0], new_dims[1], new_dims[2], new_dims[3], new_dims[4], new_dims[5]);
     std::vector<unsigned int> q_params_indices{1,1,1,1,1,1};
-
     for (unsigned int quant_count = 1; quant_count <= new_dims[0]; ++quant_count){
         q_params_indices[0] = quant_count + indices_min[0] - 1;
         for (unsigned int year_count = 1; year_count <= new_dims[1]; ++year_count){
@@ -250,7 +249,9 @@ std::vector<double> FLCatch_base<T>::catch_q_params(int year, int unit, int seas
     if (area > dims[4]){
         area = 1;
     }
-    // iters already cared for in generic FLQuant_base<> accessor
+    if (iter > dims[5]){
+        iter = 1;
+    }
     for (int i = 1; i <= dims[0]; ++i){
         q_out[i-1] = catch_q_flq(i,year,unit,season,area,iter);
     }

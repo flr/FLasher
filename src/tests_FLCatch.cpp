@@ -270,20 +270,20 @@ FLQuantAD test_FLCatchAD_discards_sel(const FLCatchAD flc){
     return flc.discards_sel();
 }
 
-//// [[Rcpp::export]]
-//std::vector<double> test_FLCatchAD_catch_q_params(const FLCatchAD flc, const std::vector<unsigned int> indices)
-//{
-//    std::vector<double> params;
-//    params = flc.catch_q_params(indices[1], indices[2], indices[3], indices[4], indices[5]);
-//    return params;
-//}
-//
-//// [[Rcpp::export]]
-//FLQuant test_FLCatchAD_catch_q_params_subset(const FLCatchAD flc, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max)
-//{
-//    auto params = flc.catch_q_params(indices_min, indices_max);
-//    return params;
-//}
+// [[Rcpp::export]]
+std::vector<double> test_FLCatchAD_catch_q_params(const FLCatchAD flc, const std::vector<unsigned int> indices)
+{
+    std::vector<double> params;
+    params = flc.catch_q_params(indices[1], indices[2], indices[3], indices[4], indices[5]);
+    return params;
+}
+
+// [[Rcpp::export]]
+FLQuant test_FLCatchAD_catch_q_params_subset(const FLCatchAD flc, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max)
+{
+    auto params = flc.catch_q_params(indices_min, indices_max);
+    return params;
+}
 
 /*------------------------------------------------------------------------*/
 // FLCatches - double
