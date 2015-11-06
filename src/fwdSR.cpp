@@ -136,7 +136,9 @@ T fwdSR_base<T>::eval_model(const T srp, int year, int unit, int season, int are
     if (area > params.get_narea()){
         area = 1;
     }
-    // iters already cared for in generic FLQuant_base<> accessor
+    if (iter > params.get_niter()){
+        iter = 1;
+    }
     for (int i = 1; i <= nparams; ++i){
         model_params[i-1] = params(i,year,unit,season,area,iter);
     }
