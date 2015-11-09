@@ -10,6 +10,7 @@
 #' All dimensions have at least length 2.
 #' 
 #' @param fixed_dims A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. Default value is rep(NA,6).
+#' @param min_dims A vector of length 6 with minimum size of each of the FLQuant dimensions. Default value is c(1,1,1,1,1,1).
 #' @param max_dims A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,10,5,4,4,5).
 #' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
 #' @export
@@ -21,13 +22,13 @@
 #' flq <- random_FLQuant_generator(fixed_dims = c(NA,10,1,4,1,NA))
 #' dim(flq)
 #' summary(flq)
-random_FLQuant_generator <- function(fixed_dims = rep(NA,6), max_dims = c(5,10,5,4,4,5), sd = 100){
-    nage <- ifelse(is.na(fixed_dims[1]),round(runif(1,min=1, max=max_dims[1])),fixed_dims[1])
-    nyear <- ifelse(is.na(fixed_dims[2]),round(runif(1,min=1, max=max_dims[2])),fixed_dims[2])
-    nunit <- ifelse(is.na(fixed_dims[3]),round(runif(1,min=1, max=max_dims[3])),fixed_dims[3])
-    nseason <- ifelse(is.na(fixed_dims[4]),round(runif(1,min=1, max=max_dims[4])),fixed_dims[4])
-    narea <- ifelse(is.na(fixed_dims[5]),round(runif(1,min=1, max=max_dims[5])),fixed_dims[5])
-    niter <- ifelse(is.na(fixed_dims[6]),round(runif(1,min=1, max=max_dims[6])),fixed_dims[6])
+random_FLQuant_generator <- function(fixed_dims = rep(NA,6), min_dims = rep(1,6), max_dims = c(5,10,5,4,4,5), sd = 100){
+    nage <- ifelse(is.na(fixed_dims[1]),round(runif(1,min=min_dims[1], max=max_dims[1])),fixed_dims[1])
+    nyear <- ifelse(is.na(fixed_dims[2]),round(runif(1,min=min_dims[2], max=max_dims[2])),fixed_dims[2])
+    nunit <- ifelse(is.na(fixed_dims[3]),round(runif(1,min=min_dims[3], max=max_dims[3])),fixed_dims[3])
+    nseason <- ifelse(is.na(fixed_dims[4]),round(runif(1,min=min_dims[4], max=max_dims[4])),fixed_dims[4])
+    narea <- ifelse(is.na(fixed_dims[5]),round(runif(1,min=min_dims[5], max=max_dims[5])),fixed_dims[5])
+    niter <- ifelse(is.na(fixed_dims[6]),round(runif(1,min=min_dims[6], max=max_dims[6])),fixed_dims[6])
     values <- rnorm(nage*nyear*nunit*nseason*narea*niter, sd = sd)
     flq <- FLQuant(values, dimnames = list(age = 1:nage, year = 1:nyear, unit = 1:nunit, season = 1:nseason, area = 1:narea, iter = 1:niter))
     units(flq) <- as.character(signif(abs(rnorm(1)),3))
@@ -114,7 +115,7 @@ random_FLCatch_generator <- function(sd=100, ...){
     discards.wt(catch)[] <- abs(rnorm(prod(dim(flq)),sd=sd))
     catch.sel(catch)[] <- abs(rnorm(prod(dim(flq)),sd=sd))
     price(catch)[] <- abs(rnorm(prod(dim(flq)),sd=sd))
-    catch.q(catch) <- FLPar(rnorm(2 * dim(flq)[6]), dimnames = list(params = c("alpha","beta"), iter = 1:dim(flq)[6]))
+    catch.q(catch) <- FLPar(abs(rnorm(2 * dim(flq)[6])), dimnames = list(params = c("alpha","beta"), iter = 1:dim(flq)[6]))
     name(catch) <- as.character(signif(rnorm(1)*1000,3))
     desc(catch) <- as.character(signif(rnorm(1)*1000,3))
     # set the units to something sensible
@@ -190,6 +191,10 @@ random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 10
     fishery@ftime[] <- rnorm(prod(dim(fishery@ftime)),sd=sd)
     fishery@desc <- as.character(signif(rnorm(1)*1000,3))
     fishery@name <- as.character(signif(rnorm(1)*1000,3))
+
+
+    # Fix and set fperiod for each fishery
+
     return(fishery)
 }
 
@@ -442,8 +447,6 @@ make_test_operatingModel1 <- function(niters = 1000){
     # Sort out the FLBiols
     data(ple4)
 
-    #ple4 <- window(ple4,start=2000, end=2003)
-
     # blow up
     ple4_iters <- propagate(ple4, niters)
     seed_biol <- as(ple4_iters,"FLBiol")
@@ -501,8 +504,10 @@ make_test_operatingModel1 <- function(niters = 1000){
     fisheries <- FLFisheries(fishery1 = fishery1, fishery2 = fishery2)
     fisheries@desc <- "fisheries"
 
+    # Fix and set fperiod for each fishery
+
     # fwdControl
-    fwc <- random_fwdControl_generator()
+    fwc <- random_fwdControl_generator(niters=niters)
     # Make a temporary FCB attribute - add to class later
     FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
     colnames(FCB) <- c("F","C","B")
