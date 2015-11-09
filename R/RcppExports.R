@@ -1741,3 +1741,11 @@ test_operatingModel_f_prop_spwn_FLQ_subset <- function(flfs, flbs_list, ctrl, fi
     .Call('FLasher_test_operatingModel_f_prop_spwn_FLQ_subset', PACKAGE = 'FLasher', flfs, flbs_list, ctrl, fishery_no, biol_no, indices_min, indices_max)
 }
 
+test_operatingModel_get_f <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no) {
+    .Call('FLasher_test_operatingModel_get_f', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no)
+}
+
+test_operatingModel_get_f_subset <- function(flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_get_f_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max)
+}
+
