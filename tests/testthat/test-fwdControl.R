@@ -105,8 +105,8 @@ test_that("fwdControl get_FCB methods", {
     # Get FC
     biol_no <- sample(unique(fwc@target@FCB[,"B"]),1)
     FC_out <- test_fwdControl_get_FC(fwc, biol_no)
-    FC_in <- fwc@target@FCB[fwc@target@FCB[,"B"] == biol_no,c("F","C")]
-    expect_equal(unname(FC_in), c(FC_out))
+    FC_in <- fwc@target@FCB[fwc@target@FCB[,"B"] == biol_no,c("F","C"), drop=FALSE]
+    expect_equal(unname(FC_in), FC_out)
     # What if biol not found in FCB? - empty array - no rows
     biol_no <- max(fwc@target@FCB[,"B"])+1
     FC_out <- test_fwdControl_get_FC(fwc, biol_no)
