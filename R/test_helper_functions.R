@@ -641,3 +641,16 @@ test_fwdControl_equal <- function(fwc1, fwc2){
     expect_identical(fwc1@target@iters, fwc2@target@iters)
     expect_identical(fwc1@target@element, fwc2@target@element)
 }
+
+#' Tests if two fwdQuant objects are the same
+#'
+#' Tests each component seperately - allows flexibility
+#' Just checks dims and values
+#'
+#' @export
+test_FLQuant_equal <- function(flq1, flq2){
+    expect_identical(dim(flq1), dim(flq2))
+    expect_equal(c(flq1), c(flq2))
+}
+
+
