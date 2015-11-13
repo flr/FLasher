@@ -284,14 +284,14 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
 ////@}
 
 /*! \name get_f
- * Calculate the instantaneous fishing mortality on a single biol from a single fishery / catch
- * It is assumed that the fishery / catch actually fishes the biol (no check is made).
+ * Calculate the instantaneous fishing mortality 
  * This method is the workhorse fishing mortality method that is called by other fishing mortality methods that do make checks.
  * F = effort * selectivity * catchability.
  * F = effort * selectivity * alpha * biomass ^ -beta
  */
 //@{
-/*! \brief Calculate the instantaneous fishing mortality over a subset of dimensions. 
+/*! \brief Calculate the instantaneous fishing mortality of a single biol from a single fishery / catch over a subset of dimensions.
+ * It is assumed that the fishery / catch actually fishes the biol (no check is made).
  * \param fishery_no the position of the fishery within the fisheries (starting at 1).
  * \param catch_no the position of the catch within the fishery (starting at 1).
  * \param biol_no the position of the biol within the biols (starting at 1).
@@ -326,11 +326,12 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
     return fout;
 }
 
-/*! \brief Calculate the instantaneous fishing mortality over all dimensions (quant, year, etc. ).
+/*! \brief Calculate the instantaneous fishing mortality of a single biol from a single fishery / catch over all dimensions.
+ * It is assumed that the fishery / catch actually fishes the biol (no check is made).
  * \param fishery_no the position of the fishery within the fisheries (starting at 1).
  * \param catch_no the position of the catch within the fishery (starting at 1).
  * \param biol_no the position of the biol within the biols (starting at 1).
-*/
+ */
 FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no) const {
     // Just call the subset method with full indices
     std::vector<unsigned int> indices_max = biols(biol_no).n().get_dim();
@@ -338,9 +339,40 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
     FLQuantAD f = get_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
     return f;
 }
-//
-////@}
-//
+
+//@}
+
+/*! \brief Total instantaneous fishing mortality on a biol over a subset of dimensions
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
+ * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
+ */
+FLQuantAD operatingModel::get_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+    unsigned int fishery_no;
+    unsigned int catch_no;
+    // We need to know the Fishery / Catches that catch the biol
+    const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
+    // What happens if no-one is fishing that biol? FC.nrow() == 0 so loop never triggers
+    FLQuantAD total_f(indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1, indices_max[5] - indices_min[5] + 1); 
+    total_f.fill(0.0);
+    for (unsigned int f_counter=0; f_counter < FC.nrow(); ++f_counter){
+        total_f = total_f + get_f(FC(f_counter,0), FC(f_counter,1), biol_no, indices_min, indices_max);
+    }
+    return total_f;
+}
+
+/*! \brief Total instantaneous fishing mortality on a biol over all dimensions
+ *
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ */
+FLQuantAD operatingModel::get_f(const int biol_no) const {
+    std::vector<unsigned int> indices_max = biols(biol_no).n().get_dim();
+    std::vector<unsigned int> indices_min(6,1);
+    FLQuantAD f = get_f(biol_no, indices_min, indices_max);
+    return f;
+}
+//@}
+
 ///*! \name Calculate the partial instantaneous fishing mortality on a single biol from a single fishery / catch
 // * Checks are made to see if the fishery / catch actually catches the biol.
 // * If the fishery / catch does not actually fish that biol, then the partial fishing mortality will be 0.
@@ -392,57 +424,9 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
 //    return f;
 //}
 ////@}
-//
-//
-//
-///*! \name Calculate the total instantaneous fishing mortality on a biol
-// *
-// * The total instantaneous fishing mortality is calculated over all dimensions (quant, year, etc. ).
-// * Calculate the total instantaneous fishing mortality on a single biol from all fishery / catches that fish it, over all dimensions.
-// */
-////@{
-///*! \brief Total instantaneous fishing mortality on a biol over a subset of dimensions
-// * \param biol_no the position of the biol within the biols (starting at 1).
-// * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
-// * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
-// */
-//FLQuantAD operatingModel::total_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
-//    unsigned int fishery_no;
-//    unsigned int catch_no;
-//    // We need to know the Fishery / Catches that catch the biol
-//    const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
-//    // What happens if no-one is fishing that biol? FC.nrow() == 0
-//    FLQuantAD total_f(indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1, indices_max[5] - indices_min[5] + 1); 
-//    total_f.fill(0.0);
-//    for (unsigned int f_counter=0; f_counter < FC.nrow(); ++f_counter){
-//        total_f = total_f + get_f(FC(f_counter,0), FC(f_counter,1), biol_no, indices_min, indices_max);
-//    }
-//    return total_f;
-//}
-//
-///*! \brief Total instantaneous fishing mortality on a biol over all dimensions
-// *
-// * \param biol_no the position of the biol within the biols (starting at 1).
-// */
-//FLQuantAD operatingModel::total_f(const int biol_no) const {
-//    //Rcpp::IntegerVector raw_dims = biols(biol_no).n().get_dim();
-//    //std::vector<unsigned int> indices_max = Rcpp::as<std::vector<unsigned int>>(raw_dims);
-//    std::vector<unsigned int> indices_max = biols(biol_no).n().get_dim();
-//    std::vector<unsigned int> indices_min(6,1);
-//    FLQuantAD f = total_f(biol_no, indices_min, indices_max);
-////    unsigned int fishery_no;
-////    unsigned int catch_no;
-////    // We need to know the Fishery / Catches that catch the biol
-////    const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
-////    // What happens if no-one is fishing that biol? FC.nrow() == 0
-////    FLQuantAD total_f = biols(biol_no).n(); // Just get FLQuant of the correct dims
-////    total_f.fill(0.0);
-////    for (unsigned int f_counter=0; f_counter < FC.nrow(); ++f_counter){
-////        total_f = total_f + get_f(FC(f_counter,0), FC(f_counter,1), biol_no);
-////    }
-//    return f;
-//}
-//
+
+
+
 ////! Calculate the total mortality on a biol
 ///*!
 //    Calculate the total instantaneous mortality on a single biol.

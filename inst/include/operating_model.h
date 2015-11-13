@@ -77,11 +77,12 @@ class operatingModel {
 
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no) const; 
+        FLQuantAD get_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD get_f(const int biol_no) const;
 
         //FLQuantAD partial_f(const int fishery_no, const int catch_no, const int biol_no) const; 
         //FLQuantAD partial_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; 
-        //FLQuantAD total_f(const int biol_no) const;
-        //FLQuantAD total_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        
 
         //FLQuantAD z(const int biol_no) const;
         //FLQuantAD z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;

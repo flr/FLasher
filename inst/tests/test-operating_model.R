@@ -27,10 +27,10 @@ test_that("operatingModel constructors and updaters",{
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
     # Test as and wrap
     out <- test_operatingModel_full_constructor(flfs, flbs, fc)
-    attr(fc@target, "FCB") <- NULL # To remove FCB attribute for test
     expect_identical(out[["biols"]], flbs_in)
-    expect_identical(out[["fisheries"]], flfs)
-    expect_identical(out[["ctrl"]], fc)
+    test_FLFisheries_equal(out[["fisheries"]], flfs)
+    test_fwdControl_equal(out[["ctrl"]], fc)
+
     # biol - dimension check
     # Add tests for dimension checks
     # Residuals, fisheries, biols and who is fishing on what
@@ -119,7 +119,7 @@ test_that("operatingModel SRP methods",{
 
 # Test F method with random Biols and Fisheries
 # No check if FC catches B
-test_that("operatingModel get_f method",{
+test_that("operatingModel get_f method for FCB with random OM objects",{
     flq <- random_FLQuant_generator(min_dims = c(2,2,2,2,2,2))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
@@ -137,36 +137,65 @@ test_that("operatingModel get_f method",{
     qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
     fin <- sweep(catch.sel(flfs[[fishery_no]][[catch_no]]), 2:6, qin * effort(flfs[[fishery_no]]), "*")
     # Full FLQ
-    fout <- test_operatingModel_get_f(flfs, flbs, fc, fishery_no, catch_no, biol_no)
+    fout <- test_operatingModel_get_f_FCB(flfs, flbs, fc, fishery_no, catch_no, biol_no)
     expect_equal(dim(fout), dim(fin))
     expect_equal(c(fout), c(fin))
     # Subset FLQ
     dim_max <- dim(flq)
     dim_min <- round(runif(6, min=1, max = dim_max))
-    fout <- test_operatingModel_get_f_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dim_min, dim_max)
+    fout <- test_operatingModel_get_f_FCB_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dim_min, dim_max)
     fin_sub <- fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
     expect_equal(dim(fout), dim(fin_sub))
     expect_equal(c(fout), c(fin_sub))
     # With years in the Catch Q pars too
     flp <- FLPar(abs(rnorm(2 * dim(flq)[6] * dim(flq)[2])), dimnames = list(params = c("alpha","beta"), year=1:dim(flq)[2], iter = 1:dim(flq)[6]))
     catch.q(flfs[[fishery_no]][[catch_no]]) <- flp # desc removes! Why?
-    flfs@desc <- "argh"
     cq_flq <- as(catch.q(flfs[[fishery_no]][[catch_no]]), "FLQuant")
     biomass <- quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))
     qin <- sweep(sweep(biomass, c(2,6), -cq_flq[2,], "^"), c(2,6), cq_flq[1], "*")
     fin <- sweep(catch.sel(flfs[[fishery_no]][[catch_no]]), 2:6, qin * effort(flfs[[fishery_no]]), "*")
     # Full FLQ
-    fout <- test_operatingModel_get_f(flfs, flbs, fc, fishery_no, catch_no, biol_no)
+    fout <- test_operatingModel_get_f_FCB(flfs, flbs, fc, fishery_no, catch_no, biol_no)
     expect_equal(dim(fout), dim(fin))
     expect_equal(c(fout), c(fin))
     # Subset FLQ
     dim_max <- dim(flq)
     dim_min <- round(runif(6, min=1, max = dim_max))
-    fout <- test_operatingModel_get_f_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dim_min, dim_max)
+    fout <- test_operatingModel_get_f_FCB_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dim_min, dim_max)
     fin_sub <- fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
     expect_equal(dim(fout), dim(fin_sub))
     expect_equal(c(fout), c(fin_sub))
 })
+
+test_that("operatingModel get_f for biols",{
+    # Get the total Fs on Biols
+    # Uses the FCB attribute
+    om <- make_test_operatingModel1(20)
+    flfs <- om[["fisheries"]]
+    flbs_in <- FLBiols(lapply(om[["biols"]], function(x) return(x[["biol"]])))
+    nbiols <- length(om[["biols"]])
+    for (i in 1:nbiols){
+        dim <- dim(n(om[["biols"]][[i]][["biol"]]))
+        indices_max <- round(runif(6,1,dim))
+        indices_min <- round(runif(6,1,indices_max))
+        fout <- test_operatingModel_get_f_B_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], i, indices_min,  indices_max)
+        fout_all <- test_operatingModel_get_f_B(om[["fisheries"]], om[["biols"]], om[["fwc"]], i)
+        FC <- om[["fwc"]]@target@FCB[om[["fwc"]]@target@FCB[,"B"] == i,,drop=FALSE]
+        if (nrow(FC) > 0){
+            # Loop over each FC
+            biomass <- quantSums(n(flbs_in[[i]]) * wt(flbs_in[[i]]))
+            fin <- FLQuant(0, dim=dim)
+            for (j in 1:nrow(FC)){
+                cq_flq <- as(catch.q(flfs[[FC[j,"F"]]][[FC[j,"C"]]]), "FLQuant")
+                qin <- (c(cq_flq[1,])) * biomass ^ (-c(cq_flq[2,]))
+                fin <- fin + sweep(catch.sel(flfs[[FC[j,"F"]]][[FC[j,"C"]]]), 2:6, qin * effort(flfs[[FC[j,"F"]]]), "*")
+            }
+            test_FLQuant_equal(fin, fout_all)
+            test_FLQuant_equal(fin[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2],indices_min[3]:indices_max[3],indices_min[4]:indices_max[4],indices_min[5]:indices_max[5],indices_min[6]:indices_max[6]], fout)
+        }
+    }
+})
+
 
 #test_that("operatingModel annual project fisheries and biols",{
 #    # Project fisheries and biols seperately - otherwise need to update the R test OM with the updated biols
@@ -492,8 +521,8 @@ test_that("operatingModel get_f method",{
 #    expect_that(next_n5, equals(n(om_out_b[["biols"]][[5]])[,year,,season,,]))
 #    # Other abundances unaffected
 #    expect_that(n(om[["biols"]][[5]][["biol"]])[,-year,,,,]@.Data,equals(n(om_out_b[["biols"]][[5]])[,-year,,,,]@.Data))
-#})
-#
+})
+
 ## F, partial F, Z, SSB, C, L, D
 ## Using the annual test operating model
 ## Epic!
