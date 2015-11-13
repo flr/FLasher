@@ -630,3 +630,14 @@ get_FLQuant_element <- function(flq, indices){
         (dim[5] * dim[4] * dim[3] * dim[2] * dim[1] * (indices[6]-1)) 
     return(element)
 }
+
+#' Tests if two fwdControl objects are the same
+#'
+#' Tests each component seperately - allows flexibility
+#' Avoids problems with FCB being an attribute
+#'
+#' @export
+test_fwdControl_equal <- function(fwc1, fwc2){
+    expect_identical(fwc1@target@iters, fwc2@target@iters)
+    expect_identical(fwc1@target@element, fwc2@target@element)
+}

@@ -1,21 +1,9 @@
-// Change the name of this
-
 /* 
  * Copyright 2013 FLR Team. Distributed under the GPL 2 or later
  * Maintainer: Finlay Scott, JRC
  */
 
 #include "../../inst/include/fwdControl.h"
-
-//Rcpp::IntegerVector v =
-//Rcpp::IntegerVector::create(7,8,9);
-//std::vector<std::string> s(3);
-//s[0] = "x";
-//s[1] = "y";
-//s[2] = "z";
-//return Rcpp::DataFrame::create(Rcpp::Named("a")=v,
-//Rcpp::Named("b")=s);
-
 
 // maps the quantity type character string to the enumerated types
 void fwdControl::init_target_map(){
@@ -39,24 +27,21 @@ fwdControl::fwdControl(){
 }
 
 // Constructor used as intrinsic 'as'
-// Add FCB
 fwdControl::fwdControl(SEXP fwd_control_sexp){
 	Rcpp::S4 fwd_control_s4 = Rcpp::as<Rcpp::S4>(fwd_control_sexp);
 	Rcpp::S4 target_s4 = fwd_control_s4.slot("target");
     target_iters = target_s4.slot("iters");
     target = target_s4.slot("element");
-    FCB = Rcpp::as<Rcpp::IntegerMatrix>(target_s4.slot("FCB")); // Why does need an as?
+    FCB = Rcpp::as<Rcpp::IntegerMatrix>(target_s4.slot("FCB"));
     init_target_map();
 }
 
-// intrinsic 'wrap' 
-// Add FCB
+// intrinsic 'wrap' - does not return FCB as not part of class
 fwdControl::operator SEXP() const{
     Rcpp::S4 fwd_control_s4("fwdControl");
     Rcpp::S4 fwd_element_s4("fwdElement");
     fwd_element_s4.slot("element") = target;
     fwd_element_s4.slot("iters") = target_iters;
-    // fwd_element_s4.slot("FCB") = FCB;
     fwd_control_s4.slot("target") = fwd_element_s4;
     return Rcpp::wrap(fwd_control_s4);
 }
@@ -66,7 +51,7 @@ fwdControl::fwdControl(const fwdControl& fwdControl_source){
     target = Rcpp::clone<Rcpp::DataFrame>(fwdControl_source.target); // Need to clone for a deep copy
     target_iters = Rcpp::clone<Rcpp::NumericVector>(fwdControl_source.target_iters); // Need to clone 
     target_map = fwdControl_source.target_map;
-    FCB = fwdControl_source.FCB;
+    FCB = Rcpp::clone<Rcpp::IntegerMatrix>(fwdControl_source.FCB); // Need to clone
 }
 
 // Assignment operator to ensure deep copy - else 'data' can be pointed at by multiple instances
@@ -75,31 +60,13 @@ fwdControl& fwdControl::operator = (const fwdControl& fwdControl_source){
         target = Rcpp::clone<Rcpp::DataFrame>(fwdControl_source.target); // Need to clone for a deep copy
         target_iters = Rcpp::clone<Rcpp::NumericVector>(fwdControl_source.target_iters); // Need to clone 
         target_map = fwdControl_source.target_map;
-        FCB = fwdControl_source.FCB;
+        FCB = Rcpp::clone<Rcpp::IntegerMatrix>(fwdControl_source.FCB); // Need to clone
 	}
 	return *this;
 }
 
 Rcpp::DataFrame fwdControl::get_target() const{
     return target;
-}
-
-// How many timesteps are we dealing with here
-// Just interrogates the timestep column in the dataframe
-unsigned int fwdControl::get_ntimestep() const{
-    // Check that the timestep exists 
-    std::vector<std::string> col_names = target.attr("names");
-    if (std::find(col_names.begin(), col_names.end(), "timestep") == col_names.end()){
-        Rcpp::stop("In fwdControl::get_ntimestep - no timestep column in control dataframe\n");
-    }
-    std::vector<unsigned int> timestep = target["timestep"];
-    // Assume that they are contiguous
-    // get max, get min, then difference
-    auto max = *std::max_element(timestep.begin(), timestep.end());
-    auto min = *std::min_element(timestep.begin(), timestep.end());
-    auto ntimestep = (max - min + 1);
-    return ntimestep;
-
 }
 
 // Returns the number of targets in the control object
@@ -119,10 +86,10 @@ unsigned int fwdControl::get_ntarget() const{
 // Returns the number of iterations in the target_iters member object
 unsigned int fwdControl::get_niter() const{
     Rcpp::IntegerVector dim = target_iters.attr("dim");
-     return dim[2];
+    return dim[2];
 }
 
-// Returns the age range - literally just the values in target
+// Returns the age range - just the values in target
 // Not indices - these will be actual ages that need to be matched to the dimnames in the Biol
 std::vector<unsigned int> fwdControl::get_age_range(const unsigned int target_no, const unsigned int sim_target_no) const{
     unsigned int row = get_target_row(target_no, sim_target_no);
@@ -147,11 +114,12 @@ unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
         Rcpp::stop("In fwdControl::get_ntarget - no target column in control dataframe\n");
     }
     Rcpp::IntegerVector targets = target["target"];
-    // Do it all with STL - probably slower but looks fancy
     // Sort them
     std::sort(targets.begin(), targets.end());
     // [&] means capture variable, means we can get target_no
+    // Get the position after the last target_no
     auto it_greater = std::find_if(targets.begin(), targets.end(), [&] (const unsigned int& x) {return x > target_no;});
+    // Get the position of the first target_no
     auto it_value = std::find(targets.begin(), targets.end(), target_no);
     if (it_value == targets.end()){
         Rcpp::stop("In fwdControl::get_nsim_target. target_no not found in target column\n");
@@ -159,8 +127,7 @@ unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
     return it_greater - it_value;
 }
 
-
-/*! \name get row(s) of the control datafram given the target number
+/*! \name get row(s) of the control dataframe given the target number
  */
 //@{
 /*! \brief Given the target_no return the corresponding row numbers in the control object.
@@ -204,10 +171,6 @@ unsigned int fwdControl::get_target_row(unsigned int target_no, unsigned int sim
 }
 //@}
 
-// It's a 3D array and we want the 2nd column of the 2nd dimension
-// Indexing starts at 1
-// Get all iters
-// Could write this with some container magic
 /*! \name Get the target value from the control object
  */
 //@{
@@ -254,7 +217,6 @@ std::vector<double> fwdControl::get_target_value(const int target_no, const int 
     return out;
 }
 //@}
-
 
 /*! \name Get the value(s) of an integer column in the control dataframe
  */
@@ -389,7 +351,6 @@ Rcpp::IntegerMatrix fwdControl::get_FC(const int biol_no) const{
     std::vector<int> rows;
     for (unsigned int row_counter=0; row_counter < FCB.nrow(); ++row_counter){
         if(FCB(row_counter,2) == biol_no){
-    // Use emplace_back - avoid copies
             rows.push_back(row_counter);
         }
     }
@@ -407,7 +368,6 @@ std::vector<int> fwdControl::get_B(const int fishery_no, const int catch_no) con
     for (unsigned int row_counter=0; row_counter < FCB.nrow(); ++row_counter){
         if(FCB(row_counter,0) == fishery_no){
             if(FCB(row_counter,1) == catch_no){
-    // Use emplace_back - avoid copies
                 rows.push_back(row_counter);
             }
         }

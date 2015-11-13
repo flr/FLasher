@@ -1589,10 +1589,6 @@ test_fwdControl_assignment_operator <- function(fc) {
     .Call('FLasher_test_fwdControl_assignment_operator', PACKAGE = 'FLasher', fc)
 }
 
-test_fwdControl_get_ntimestep <- function(control) {
-    .Call('FLasher_test_fwdControl_get_ntimestep', PACKAGE = 'FLasher', control)
-}
-
 test_fwdControl_get_target <- function(control) {
     .Call('FLasher_test_fwdControl_get_target', PACKAGE = 'FLasher', control)
 }
