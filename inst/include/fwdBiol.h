@@ -103,7 +103,7 @@ class fwdBiols_base {
     public:
         /* Constructors */
 		fwdBiols_base();
-		fwdBiols_base(Rcpp::List flbs_list); // takes a list of fwdBiol objects components as an SEXP (could take a Rcpp::List for more safety)
+		fwdBiols_base(SEXP flbs_sexp); // takes a list of fwdBiol objects components as an SEXP - used as as
 		fwdBiols_base(fwdBiol_base<T>& flb); // Constructor from an fwdBiol object
 
 		fwdBiols_base(const fwdBiols_base& fwdBiols_base_source); // copy constructor to ensure that copy is a deep copy 

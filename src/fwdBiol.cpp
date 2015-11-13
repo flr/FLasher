@@ -248,10 +248,11 @@ template <typename T>
 fwdBiols_base<T>::fwdBiols_base(){
 }
 
-// Each element of flbs_list is a list containing the fwdBiol components:
-// FLBiol, params, residuals, residuals_mult 
+// Takes SEXP List of fwdBiol objects to make fwdBiols
+// Used as intrinsic as
 template <typename T>
-fwdBiols_base<T>::fwdBiols_base(Rcpp::List flbs_list){
+fwdBiols_base<T>::fwdBiols_base(SEXP flbs_sexp){
+    Rcpp::List flbs_list = Rcpp::as<Rcpp::List>(flbs_sexp);
     auto no_biols = flbs_list.size();
     biols.reserve(no_biols);
     // Go through the biols list and make the fwdBiol elements
@@ -266,7 +267,6 @@ fwdBiols_base<T>::fwdBiols_base(Rcpp::List flbs_list){
 template<typename T>
 fwdBiols_base<T>::operator SEXP() const{
     Rcpp::S4 flbs_s4("FLBiols");
-    //Rprintf("Wrapping FLBiols_base<T>.\n");
     Rcpp::List list_out;
     // wrap of each fwdBiol is just the FLBiol part
     for (auto biol : biols){

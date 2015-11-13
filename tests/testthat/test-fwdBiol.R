@@ -206,11 +206,10 @@ test_that("fwdBiols constructors",{
     biols <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5)
     # Scrape out the FLBiols only (to test the wrap)
     flbs_in <- FLBiols(lapply(biols, function(x) return(x[["biol"]])))
-
-    # List constructors 
-    flbs_out <- test_fwdBiols_list_constructor(biols)
+    # as constructor
+    flbs_out <- test_fwdBiols_as_wrap(biols)
     expect_identical(flbs_out, flbs_in)
-    flbs_ad_out <- test_fwdBiolsAD_list_constructor(biols)
+    flbs_ad_out <- test_fwdBiolsAD_as_wrap(biols)
     expect_identical(flbs_ad_out, flbs_in)
 
     # fwdBiols constructor
