@@ -49,7 +49,8 @@ class FLQuant_base {
         operator SEXP() const; // Used as intrusive 'wrap'
 		FLQuant_base(const FLQuant_base& FLQuant_base_source); // copy constructor to ensure that copies (i.e. when passing to functions) are deep
 		FLQuant_base& operator = (const FLQuant_base& FLQuant_source); // Assignment operator for a deep copy
-        FLQuant_base(const unsigned int nquant, const unsigned int nyear, const unsigned int nunit, const unsigned int nseason, const unsigned int narea, const unsigned int niter); // Make an empty FLQuant
+        FLQuant_base(const unsigned int nquant, const unsigned int nyear, const unsigned int nunit, const unsigned int nseason, const unsigned int narea, const unsigned int niter, const T value=0.0); // Make an empty FLQuant
+        FLQuant_base(const std::vector<unsigned int> dims, const T value=0.0);
 
         // Specialised constructor to make an FLQuantAD from an FLQuant
         template <typename T2>

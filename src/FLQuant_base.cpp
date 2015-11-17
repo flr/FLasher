@@ -52,12 +52,13 @@ FLQuant_base<T>::FLQuant_base(SEXP flq_sexp){
  * \param nseason The number of seasons.
  * \param narea The number of areas.
  * \param niter The number of iterations.
+ * \param value Value to fill the new FLQuant with.
  */
 template <typename T>
-FLQuant_base<T>::FLQuant_base(const unsigned int nquant, const unsigned int nyear, const unsigned int nunit, const unsigned int nseason, const unsigned int narea, const unsigned int niter){
+FLQuant_base<T>::FLQuant_base(const unsigned int nquant, const unsigned int nyear, const unsigned int nunit, const unsigned int nseason, const unsigned int narea, const unsigned int niter, const T value){
 	units = std::string(); // Empty string - just ""
     dim = {nquant, nyear, nunit, nseason, narea, niter};
-    data = std::vector<T>(nquant * nyear * nunit * nseason * narea * niter,0.0);
+    data = std::vector<T>(nquant * nyear * nunit * nseason * narea * niter, value);
     // How to fill dimnames up appropriately?
     // Just of the right size at the moment.
     // Could use ::create to pass in actual characters, but then do we want just 1:nage, 1:nyear etc?
@@ -68,6 +69,17 @@ FLQuant_base<T>::FLQuant_base(const unsigned int nquant, const unsigned int nyea
             Rcpp::Named("season", Rcpp::CharacterVector(nseason)),
             Rcpp::Named("area", Rcpp::CharacterVector(narea)),
             Rcpp::Named("iter", Rcpp::CharacterVector(niter)));
+}
+
+/*! \brief Creates an FLQuant of a certain size filled with 0
+ *
+ * Note that units and dimnames have not been set.
+ * \param nquant The size of the first dimension.
+ * \param value Value to fill the new FLQuant with.
+ */
+template <typename T>
+FLQuant_base<T>::FLQuant_base(const std::vector<unsigned int> dims, const T value) : FLQuant_base<T>(dims[0], dims[1], dims[2], dims[3], dims[4], dims[5]) { // Call other constructor
+    // Nada!
 }
 
 /*! \brief Used as generic intrusive wrap to return FLQuant to R

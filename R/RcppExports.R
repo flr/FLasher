@@ -1049,6 +1049,10 @@ test_FLQuant_dim_constructor <- function(nquant, nyear, nunit, nseason, narea, n
     .Call('FLasher_test_FLQuant_dim_constructor', PACKAGE = 'FLasher', nquant, nyear, nunit, nseason, narea, niter)
 }
 
+test_FLQuant_intvec_dim_constructor <- function(dims) {
+    .Call('FLasher_test_FLQuant_intvec_dim_constructor', PACKAGE = 'FLasher', dims)
+}
+
 test_FLQuant_copy_constructor <- function(flq) {
     .Call('FLasher_test_FLQuant_copy_constructor', PACKAGE = 'FLasher', flq)
 }
@@ -1211,6 +1215,10 @@ test_FLQuant_for_iterator_const <- function(flq, rn) {
 
 test_FLQuant_lambda <- function(flq1, flq2) {
     .Call('FLasher_test_FLQuant_lambda', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweepMult <- function(flq1, flq2) {
+    .Call('FLasher_test_sweepMult', PACKAGE = 'FLasher', flq1, flq2)
 }
 
 test_FLQuant7_as_wrap <- function(flq7) {

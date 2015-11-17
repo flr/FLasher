@@ -3360,6 +3360,17 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_FLQuant_intvec_dim_constructor
+FLQuant test_FLQuant_intvec_dim_constructor(std::vector<unsigned int> dims);
+RcppExport SEXP FLasher_test_FLQuant_intvec_dim_constructor(SEXP dimsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector<unsigned int> >::type dims(dimsSEXP);
+    __result = Rcpp::wrap(test_FLQuant_intvec_dim_constructor(dims));
+    return __result;
+END_RCPP
+}
 // test_FLQuant_copy_constructor
 FLQuant test_FLQuant_copy_constructor(FLQuant flq);
 RcppExport SEXP FLasher_test_FLQuant_copy_constructor(SEXP flqSEXP) {
@@ -3885,6 +3896,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP);
     Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP);
     __result = Rcpp::wrap(test_FLQuant_lambda(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweepMult
+FLQuant test_sweepMult(FLQuant flq1, FLQuant flq2);
+RcppExport SEXP FLasher_test_sweepMult(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweepMult(flq1, flq2));
     return __result;
 END_RCPP
 }

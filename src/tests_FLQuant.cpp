@@ -39,6 +39,13 @@ FLQuant test_FLQuant_dim_constructor(int nquant, int nyear, int nunit, int nseas
 }
 
 // [[Rcpp::export]]
+FLQuant test_FLQuant_intvec_dim_constructor(std::vector<unsigned int> dims){
+    FLQuant flq(dims);
+    return flq;
+}
+
+
+// [[Rcpp::export]]
 FLQuant test_FLQuant_copy_constructor(FLQuant flq){
     FLQuant out(flq);
     return out;
@@ -306,4 +313,16 @@ FLQuant test_FLQuant_lambda(FLQuant flq1, FLQuant flq2){
         [](double x, double y) { return sqrt(x*x + y*y); } );
     return flq3;
 }
+
+
+// [[Rcpp::export]]
+FLQuant test_sweepMult(FLQuant flq1, FLQuant flq2){
+    // Dim of any of the Quants must be 1 or n
+    auto dim1 = flq1.get_dim();
+    auto dim2 = flq2.get_dim();
+
+    FLQuant out;
+    return out;
+}
+
 
