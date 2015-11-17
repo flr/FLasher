@@ -78,7 +78,10 @@ FLQuant_base<T>::FLQuant_base(const unsigned int nquant, const unsigned int nyea
  * \param value Value to fill the new FLQuant with.
  */
 template <typename T>
-FLQuant_base<T>::FLQuant_base(const std::vector<unsigned int> dims, const T value) : FLQuant_base<T>(dims[0], dims[1], dims[2], dims[3], dims[4], dims[5]) { // Call other constructor
+FLQuant_base<T>::FLQuant_base(const std::vector<unsigned int> dims, const T value) : FLQuant_base<T>(dims[0], dims[1], dims[2], dims[3], dims[4], dims[5], value) { // Call other constructor
+    if (dims.size() != 6){
+        Rcpp::stop("In FLQuant integer vector constructor. Vector not of length 6.");
+    }
     // Nada!
 }
 

@@ -18,10 +18,20 @@ test_that("FLQuant constructors",{
     flq_out <- test_FLQuant_dim_constructor(dims[1], dims[2], dims[3], dims[4], dims[5], dims[6])
     expect_true(all(flq_out == 0)) 
     expect_equal(dim(flq_out), dims)
+    value <- rnorm(1)
+    flq_out <- test_FLQuant_dim_value_constructor(dims[1], dims[2], dims[3], dims[4], dims[5], dims[6], value)
+    expect_true(all(flq_out == value)) 
+    expect_equal(dim(flq_out), dims)
     # integer vector constructor
     flq_out <- test_FLQuant_intvec_dim_constructor(dims)
     expect_true(all(flq_out == 0)) 
     expect_equal(dim(flq_out), dims)
+    flq_out <- test_FLQuant_intvec_dim_value_constructor(dims, value)
+    expect_true(all(flq_out == value)) 
+    expect_equal(dim(flq_out), dims)
+    # Too short or too long a vector
+    expect_error(test_FLQuant_intvec_dim_value_constructor(dims[-1], value))
+    expect_error(test_FLQuant_intvec_dim_value_constructor(c(1,dims), value))
     # Copy constructor
     flq_out <- test_FLQuant_copy_constructor(flq_in)
     expect_identical(flq_in, flq_out)

@@ -39,11 +39,22 @@ FLQuant test_FLQuant_dim_constructor(int nquant, int nyear, int nunit, int nseas
 }
 
 // [[Rcpp::export]]
+FLQuant test_FLQuant_dim_value_constructor(int nquant, int nyear, int nunit, int nseason, int narea, int niter, double value){
+    FLQuant flq(nquant, nyear, nunit, nseason, narea, niter, value);
+    return flq;
+}
+
+// [[Rcpp::export]]
 FLQuant test_FLQuant_intvec_dim_constructor(std::vector<unsigned int> dims){
     FLQuant flq(dims);
     return flq;
 }
 
+// [[Rcpp::export]]
+FLQuant test_FLQuant_intvec_dim_value_constructor(std::vector<unsigned int> dims, double value){
+    FLQuant flq(dims, value);
+    return flq;
+}
 
 // [[Rcpp::export]]
 FLQuant test_FLQuant_copy_constructor(FLQuant flq){
@@ -320,6 +331,10 @@ FLQuant test_sweepMult(FLQuant flq1, FLQuant flq2){
     // Dim of any of the Quants must be 1 or n
     auto dim1 = flq1.get_dim();
     auto dim2 = flq2.get_dim();
+    std::vector<unsigned int> dim_out(6);
+    // Go over each dim vector, check if 1 or n, make dim of output Q
+    //for (i in 1:
+
 
     FLQuant out;
     return out;

@@ -1049,8 +1049,16 @@ test_FLQuant_dim_constructor <- function(nquant, nyear, nunit, nseason, narea, n
     .Call('FLasher_test_FLQuant_dim_constructor', PACKAGE = 'FLasher', nquant, nyear, nunit, nseason, narea, niter)
 }
 
+test_FLQuant_dim_value_constructor <- function(nquant, nyear, nunit, nseason, narea, niter, value) {
+    .Call('FLasher_test_FLQuant_dim_value_constructor', PACKAGE = 'FLasher', nquant, nyear, nunit, nseason, narea, niter, value)
+}
+
 test_FLQuant_intvec_dim_constructor <- function(dims) {
     .Call('FLasher_test_FLQuant_intvec_dim_constructor', PACKAGE = 'FLasher', dims)
+}
+
+test_FLQuant_intvec_dim_value_constructor <- function(dims, value) {
+    .Call('FLasher_test_FLQuant_intvec_dim_value_constructor', PACKAGE = 'FLasher', dims, value)
 }
 
 test_FLQuant_copy_constructor <- function(flq) {

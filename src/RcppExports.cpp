@@ -3360,6 +3360,23 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_FLQuant_dim_value_constructor
+FLQuant test_FLQuant_dim_value_constructor(int nquant, int nyear, int nunit, int nseason, int narea, int niter, double value);
+RcppExport SEXP FLasher_test_FLQuant_dim_value_constructor(SEXP nquantSEXP, SEXP nyearSEXP, SEXP nunitSEXP, SEXP nseasonSEXP, SEXP nareaSEXP, SEXP niterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int >::type nquant(nquantSEXP);
+    Rcpp::traits::input_parameter< int >::type nyear(nyearSEXP);
+    Rcpp::traits::input_parameter< int >::type nunit(nunitSEXP);
+    Rcpp::traits::input_parameter< int >::type nseason(nseasonSEXP);
+    Rcpp::traits::input_parameter< int >::type narea(nareaSEXP);
+    Rcpp::traits::input_parameter< int >::type niter(niterSEXP);
+    Rcpp::traits::input_parameter< double >::type value(valueSEXP);
+    __result = Rcpp::wrap(test_FLQuant_dim_value_constructor(nquant, nyear, nunit, nseason, narea, niter, value));
+    return __result;
+END_RCPP
+}
 // test_FLQuant_intvec_dim_constructor
 FLQuant test_FLQuant_intvec_dim_constructor(std::vector<unsigned int> dims);
 RcppExport SEXP FLasher_test_FLQuant_intvec_dim_constructor(SEXP dimsSEXP) {
@@ -3368,6 +3385,18 @@ BEGIN_RCPP
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< std::vector<unsigned int> >::type dims(dimsSEXP);
     __result = Rcpp::wrap(test_FLQuant_intvec_dim_constructor(dims));
+    return __result;
+END_RCPP
+}
+// test_FLQuant_intvec_dim_value_constructor
+FLQuant test_FLQuant_intvec_dim_value_constructor(std::vector<unsigned int> dims, double value);
+RcppExport SEXP FLasher_test_FLQuant_intvec_dim_value_constructor(SEXP dimsSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector<unsigned int> >::type dims(dimsSEXP);
+    Rcpp::traits::input_parameter< double >::type value(valueSEXP);
+    __result = Rcpp::wrap(test_FLQuant_intvec_dim_value_constructor(dims, value));
     return __result;
 END_RCPP
 }
