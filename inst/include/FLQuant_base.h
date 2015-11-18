@@ -285,6 +285,31 @@ FLQuant_base<T> log(const FLQuant_base<T>& flq);
 template <typename T>
 FLQuant_base<T> exp(const FLQuant_base<T>& flq);
 
+// Sweep methods (for applying mathematical operations on 2 different sized FLQuants)
+// T1 is the type of the function func
+// typename T1::result_type is the return type of the function func (i.e. either double or adouble)
+// T2 and T3 are double or adouble
+template <typename T1, typename T2, typename T3>
+FLQuant_base<typename T1::result_type> sweep_flq(FLQuant_base<T2>& flq1, FLQuant_base<T3>& flq2, T1 func);
+// Three methods for each operator to cover: AD * AD = AD, D * D = D, AD * D = AD, D * AD = AD
+template <typename T>
+FLQuant_base<T> sweep_mult(FLQuant_base<T>& flq1, FLQuant_base<T>& flq2);
+FLQuant_base<adouble> sweep_mult(FLQuant_base<adouble>& flq1, FLQuant_base<double>& flq2);
+FLQuant_base<adouble> sweep_mult(FLQuant_base<double>& flq1, FLQuant_base<adouble>& flq2);
+template <typename T>
+FLQuant_base<T> sweep_div(FLQuant_base<T>& flq1, FLQuant_base<T>& flq2);
+FLQuant_base<adouble> sweep_div(FLQuant_base<adouble>& flq1, FLQuant_base<double>& flq2);
+FLQuant_base<adouble> sweep_div(FLQuant_base<double>& flq1, FLQuant_base<adouble>& flq2);
+template <typename T>
+FLQuant_base<T> sweep_plus(FLQuant_base<T>& flq1, FLQuant_base<T>& flq2);
+FLQuant_base<adouble> sweep_plus(FLQuant_base<adouble>& flq1, FLQuant_base<double>& flq2);
+FLQuant_base<adouble> sweep_plus(FLQuant_base<double>& flq1, FLQuant_base<adouble>& flq2);
+template <typename T>
+FLQuant_base<T> sweep_minus(FLQuant_base<T>& flq1, FLQuant_base<T>& flq2);
+FLQuant_base<adouble> sweep_minus(FLQuant_base<adouble>& flq1, FLQuant_base<double>& flq2);
+FLQuant_base<adouble> sweep_minus(FLQuant_base<double>& flq1, FLQuant_base<adouble>& flq2);
+
+
 // Shortcut methods
 template <typename T>
 FLQuant_base<T> year_sum(const FLQuant_base<T>& flq);

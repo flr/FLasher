@@ -232,23 +232,6 @@ test_that("log and exp",{
     expect_that(flq_out@.Data, is_identical_to(exp(flq)@.Data))
 })
 
-
-#flq1 <- random_FLQuant_generator()
-#qs1 <- quantSums(flq1)
-#qs2 <- apply(flq1, 2:6, sum)
-#expect_that(qs1, is_identical_to(qs2))
-#sum <- 0
-#for (i in 1:dim(flq1)[1]){
-#    sum <- sum + flq1[i,1,1,1,1,1]
-#}
-#expect_that(c(sum), is_identical_to(c(qs1[1,1,1,1,1,1])))
-#expect_that(c(sum), equals(c(qs1[1,1,1,1,1,1])))
-#c(sum) - c(qs1[1,1,1,1,1,1])
-## Which is more accurate - apply or +
-#sum2 <- sum(flq1[,1,1,1,1,1])
-#expect_that(c(sum2), is_identical_to(c(qs1[1,1,1,1,1,1])))
-## sum different to +
-
 test_that("FLQuant and FLQuantAD summary functions", {
     # Test quant_sum
     flq_in <- random_FLQuant_generator()
@@ -526,5 +509,54 @@ test_that("Addition: iter = 1 or n", {
     expect_that(test_FLQuant_FLQuantAD_addition_operator(flq1, flq2), throws_error())
 })
 
-
+test_that("sweep operations",{
+    # Get dims of the FLQs to be operated on
+    dim_base <- round(runif(6, min=2, max=10))
+    dim1 <- rep(1,6)
+    # Which dims to set to 1
+    set1 <- round(runif(round(runif(1,min=1,max=4)),min=1, max=6))
+    dim1[set1] <- dim_base[set1]
+    # The other FLQ
+    dim2 <- rep(1,6)
+    set2 <- (1:6)[!(1:6 %in% set1)]
+    dim2[set2] <- dim_base[set2]
+    flq1 <- random_FLQuant_generator(fixed_dims=dim1)
+    flq2 <- random_FLQuant_generator(fixed_dims=dim2)
+    # Assume that the operations work as the %*% etc. for FLQuant
+    # 4 tests for each operator
+    # Multiplication
+    flqout <- flq1 %*% flq2
+    test_FLQuant_equal(test_sweep_multADAD(flq1, flq2), flqout)
+    test_FLQuant_equal(test_sweep_multDD(flq1, flq2), flqout)
+    test_FLQuant_equal(test_sweep_multADD(flq1, flq2), flqout)
+    test_FLQuant_equal(test_sweep_multDAD(flq1, flq2), flqout)
+    # Division
+    flqout <- flq1 %/% flq2
+    test_FLQuant_equal(test_sweep_divADAD(flq1, flq2), flqout)
+    test_FLQuant_equal(test_sweep_divDD(flq1, flq2), flqout)
+    test_FLQuant_equal(test_sweep_divADD(flq1, flq2), flqout)
+    test_FLQuant_equal(test_sweep_divDAD(flq1, flq2), flqout)
+    # Plus
+    flqout <- flq1 %+% flq2
+    test_FLQuant_equal(test_sweep_plusADAD(flq1, flq2), flqout)
+    test_FLQuant_equal(test_sweep_plusDD(flq1, flq2), flqout)
+    test_FLQuant_equal(test_sweep_plusADD(flq1, flq2), flqout)
+    test_FLQuant_equal(test_sweep_plusDAD(flq1, flq2), flqout)
+    # Minus
+    flqout <- flq1 %-% flq2
+    test_FLQuant_equal(test_sweep_minusADAD(flq1, flq2), flqout)
+    test_FLQuant_equal(test_sweep_minusDD(flq1, flq2), flqout)
+    test_FLQuant_equal(test_sweep_minusADD(flq1, flq2), flqout)
+    test_FLQuant_equal(test_sweep_minusDAD(flq1, flq2), flqout)
+    # Dimension match - OK
+    flqout <- flq1 %*% flq1
+    test_FLQuant_equal(test_sweep_multADAD(flq1, flq1), flqout)
+    # Dimension mismatch - fails
+    index <- round(runif(1,min=1,max=6))
+    dim1[index] <- round(runif(1,min=3,max=5))
+    dim2[index] <- dim1[index] - 1
+    flq1 <- random_FLQuant_generator(fixed_dims=dim1)
+    flq2 <- random_FLQuant_generator(fixed_dims=dim2)
+    expect_error(test_sweep_multADAD(flq1, flq2))
+}
 

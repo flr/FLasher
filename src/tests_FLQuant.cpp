@@ -333,11 +333,121 @@ FLQuant test_sweepMult(FLQuant flq1, FLQuant flq2){
     auto dim2 = flq2.get_dim();
     std::vector<unsigned int> dim_out(6);
     // Go over each dim vector, check if 1 or n, make dim of output Q
-    //for (i in 1:
-
-
-    FLQuant out;
+    for (int i = 0; i <= 5; ++i){
+                // Condition for passing
+        if((dim1[i] == dim2[i]) | (dim1[i] == 1) | (dim2[i] == 1)){
+            dim_out[i] = std::max(dim1[i], dim2[i]);
+        }
+        else {
+            Rcpp::stop("In FLQuant Sweep. Size of each dim must be 1 or n.\n");
+        }
+    }
+    FLQuant out(dim_out);
+    // Need to do this element by element - nasty
+    for (unsigned int qcount=1; qcount <= dim_out[0]; ++qcount){
+        for (unsigned int ycount=1; ycount <= dim_out[1]; ++ycount){
+            for (unsigned int ucount=1; ucount <= dim_out[2]; ++ucount){
+                for (unsigned int scount=1; scount <= dim_out[3]; ++scount){
+                    for (unsigned int acount=1; acount <= dim_out[4]; ++acount){
+                        for (unsigned int icount=1; icount <= dim_out[5]; ++icount){
+                            // Get indices or vector index of flq1, flq2 element
+                            // Perform func on values and dump into
+                            out(qcount, ycount, ucount, scount, acount, icount) = 
+                            flq1(std::min(qcount, dim1[0]), std::min(ycount, dim1[1]),
+                                    std::min(ucount, dim1[2]), std::min(scount, dim1[3]),
+                                    std::min(acount, dim1[4]), std::min(icount, dim1[5]))
+                            // operator
+                                *
+                            flq2(std::min(qcount, dim2[0]), std::min(ycount, dim2[1]),
+                                    std::min(ucount, dim2[2]), std::min(scount, dim2[3]),
+                                    std::min(acount, dim2[4]), std::min(icount, dim2[5]));
+    }}}}}}
     return out;
 }
 
+//----------------------
+// Sweep
+// Mult
+// [[Rcpp::export]]
+FLQuantAD test_sweep_multADAD(FLQuantAD flq1, FLQuantAD flq2){
+    return sweep_mult(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuant test_sweep_multDD(FLQuant flq1, FLQuant flq2){
+    return sweep_mult(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_multADD(FLQuantAD flq1, FLQuant flq2){
+    return sweep_mult(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_multDAD(FLQuant flq1, FLQuantAD flq2){
+    return sweep_mult(flq1, flq2);
+}
+
+// Div
+// [[Rcpp::export]]
+FLQuantAD test_sweep_divADAD(FLQuantAD flq1, FLQuantAD flq2){
+    return sweep_div(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuant test_sweep_divDD(FLQuant flq1, FLQuant flq2){
+    return sweep_div(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_divADD(FLQuantAD flq1, FLQuant flq2){
+    return sweep_div(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_divDAD(FLQuant flq1, FLQuantAD flq2){
+    return sweep_div(flq1, flq2);
+}
+
+// Plus
+// [[Rcpp::export]]
+FLQuantAD test_sweep_plusADAD(FLQuantAD flq1, FLQuantAD flq2){
+    return sweep_plus(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuant test_sweep_plusDD(FLQuant flq1, FLQuant flq2){
+    return sweep_plus(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_plusADD(FLQuantAD flq1, FLQuant flq2){
+    return sweep_plus(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_plusDAD(FLQuant flq1, FLQuantAD flq2){
+    return sweep_plus(flq1, flq2);
+}
+
+// Minus
+// [[Rcpp::export]]
+FLQuantAD test_sweep_minusADAD(FLQuantAD flq1, FLQuantAD flq2){
+    return sweep_minus(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuant test_sweep_minusDD(FLQuant flq1, FLQuant flq2){
+    return sweep_minus(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_minusADD(FLQuantAD flq1, FLQuant flq2){
+    return sweep_minus(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_minusDAD(FLQuant flq1, FLQuantAD flq2){
+    return sweep_minus(flq1, flq2);
+}
 

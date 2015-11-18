@@ -3940,6 +3940,198 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_sweep_multADAD
+FLQuantAD test_sweep_multADAD(FLQuantAD flq1, FLQuantAD flq2);
+RcppExport SEXP FLasher_test_sweep_multADAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_multADAD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_multDD
+FLQuant test_sweep_multDD(FLQuant flq1, FLQuant flq2);
+RcppExport SEXP FLasher_test_sweep_multDD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_multDD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_multADD
+FLQuantAD test_sweep_multADD(FLQuantAD flq1, FLQuant flq2);
+RcppExport SEXP FLasher_test_sweep_multADD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_multADD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_multDAD
+FLQuantAD test_sweep_multDAD(FLQuant flq1, FLQuantAD flq2);
+RcppExport SEXP FLasher_test_sweep_multDAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_multDAD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_divADAD
+FLQuantAD test_sweep_divADAD(FLQuantAD flq1, FLQuantAD flq2);
+RcppExport SEXP FLasher_test_sweep_divADAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_divADAD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_divDD
+FLQuant test_sweep_divDD(FLQuant flq1, FLQuant flq2);
+RcppExport SEXP FLasher_test_sweep_divDD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_divDD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_divADD
+FLQuantAD test_sweep_divADD(FLQuantAD flq1, FLQuant flq2);
+RcppExport SEXP FLasher_test_sweep_divADD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_divADD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_divDAD
+FLQuantAD test_sweep_divDAD(FLQuant flq1, FLQuantAD flq2);
+RcppExport SEXP FLasher_test_sweep_divDAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_divDAD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_plusADAD
+FLQuantAD test_sweep_plusADAD(FLQuantAD flq1, FLQuantAD flq2);
+RcppExport SEXP FLasher_test_sweep_plusADAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_plusADAD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_plusDD
+FLQuant test_sweep_plusDD(FLQuant flq1, FLQuant flq2);
+RcppExport SEXP FLasher_test_sweep_plusDD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_plusDD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_plusADD
+FLQuantAD test_sweep_plusADD(FLQuantAD flq1, FLQuant flq2);
+RcppExport SEXP FLasher_test_sweep_plusADD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_plusADD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_plusDAD
+FLQuantAD test_sweep_plusDAD(FLQuant flq1, FLQuantAD flq2);
+RcppExport SEXP FLasher_test_sweep_plusDAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_plusDAD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_minusADAD
+FLQuantAD test_sweep_minusADAD(FLQuantAD flq1, FLQuantAD flq2);
+RcppExport SEXP FLasher_test_sweep_minusADAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_minusADAD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_minusDD
+FLQuant test_sweep_minusDD(FLQuant flq1, FLQuant flq2);
+RcppExport SEXP FLasher_test_sweep_minusDD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_minusDD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_minusADD
+FLQuantAD test_sweep_minusADD(FLQuantAD flq1, FLQuant flq2);
+RcppExport SEXP FLasher_test_sweep_minusADD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_minusADD(flq1, flq2));
+    return __result;
+END_RCPP
+}
+// test_sweep_minusDAD
+FLQuantAD test_sweep_minusDAD(FLQuant flq1, FLQuantAD flq2);
+RcppExport SEXP FLasher_test_sweep_minusDAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq2(flq2SEXP);
+    __result = Rcpp::wrap(test_sweep_minusDAD(flq1, flq2));
+    return __result;
+END_RCPP
+}
 // test_FLQuant7_as_wrap
 FLQuant7 test_FLQuant7_as_wrap(FLQuant7 flq7);
 RcppExport SEXP FLasher_test_FLQuant7_as_wrap(SEXP flq7SEXP) {
