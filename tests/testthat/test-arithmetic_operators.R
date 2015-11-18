@@ -554,5 +554,5 @@ test_that("sweep operations",{
     flq1 <- random_FLQuant_generator(fixed_dims=dim1)
     flq2 <- random_FLQuant_generator(fixed_dims=dim2)
     expect_error(test_sweep_multADAD(flq1, flq2))
-}
+})
 
