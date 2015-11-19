@@ -286,7 +286,7 @@ template <typename T>
 FLQuant_base<T> exp(const FLQuant_base<T>& flq);
 
 // Sweep methods (for applying mathematical operations on 2 different sized FLQuants)
-// T1 is the type of the function func
+// T1 is the type of the function func (should be std::whatever<>)
 // typename T1::result_type is the return type of the function func (i.e. either double or adouble)
 // T2 and T3 are double or adouble
 template <typename T1, typename T2, typename T3>
@@ -308,7 +308,6 @@ template <typename T>
 FLQuant_base<T> sweep_minus(FLQuant_base<T>& flq1, FLQuant_base<T>& flq2);
 FLQuant_base<adouble> sweep_minus(FLQuant_base<adouble>& flq1, FLQuant_base<double>& flq2);
 FLQuant_base<adouble> sweep_minus(FLQuant_base<double>& flq1, FLQuant_base<adouble>& flq2);
-
 
 // Shortcut methods
 template <typename T>

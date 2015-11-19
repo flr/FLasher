@@ -365,6 +365,70 @@ test_FLQuantAD_scale_by_max_quant <- function(flq) {
     .Call('FLasher_test_FLQuantAD_scale_by_max_quant', PACKAGE = 'FLasher', flq)
 }
 
+test_sweep_multADAD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_multADAD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_multDD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_multDD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_multADD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_multADD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_multDAD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_multDAD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_divADAD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_divADAD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_divDD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_divDD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_divADD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_divADD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_divDAD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_divDAD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_plusADAD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_plusADAD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_plusDD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_plusDD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_plusADD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_plusADD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_plusDAD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_plusDAD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_minusADAD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_minusADAD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_minusDD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_minusDD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_minusADD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_minusADD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
+test_sweep_minusDAD <- function(flq1, flq2) {
+    .Call('FLasher_test_sweep_minusDAD', PACKAGE = 'FLasher', flq1, flq2)
+}
+
 test_simple_FLCatch_sexp_constructor <- function(flc_sexp) {
     .Call('FLasher_test_simple_FLCatch_sexp_constructor', PACKAGE = 'FLasher', flc_sexp)
 }
@@ -1227,70 +1291,6 @@ test_FLQuant_lambda <- function(flq1, flq2) {
 
 test_sweepMult <- function(flq1, flq2) {
     .Call('FLasher_test_sweepMult', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_multADAD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_multADAD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_multDD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_multDD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_multADD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_multADD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_multDAD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_multDAD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_divADAD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_divADAD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_divDD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_divDD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_divADD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_divADD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_divDAD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_divDAD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_plusADAD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_plusADAD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_plusDD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_plusDD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_plusADD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_plusADD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_plusDAD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_plusDAD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_minusADAD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_minusADAD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_minusDD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_minusDD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_minusADD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_minusADD', PACKAGE = 'FLasher', flq1, flq2)
-}
-
-test_sweep_minusDAD <- function(flq1, flq2) {
-    .Call('FLasher_test_sweep_minusDAD', PACKAGE = 'FLasher', flq1, flq2)
 }
 
 test_FLQuant7_as_wrap <- function(flq7) {
