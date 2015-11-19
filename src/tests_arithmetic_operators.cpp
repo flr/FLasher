@@ -636,4 +636,89 @@ FLQuantAD test_FLQuantAD_scale_by_max_quant(FLQuantAD flq){
 }
 
 
+//-------------------------------
+// Sweep
+// Mult
+// [[Rcpp::export]]
+FLQuantAD test_sweep_multADAD(FLQuantAD flq1, FLQuantAD flq2){
+    return sweep_mult(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuant test_sweep_multDD(FLQuant flq1, FLQuant flq2){
+    return sweep_mult(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_multADD(FLQuantAD flq1, FLQuant flq2){
+    return sweep_mult(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_multDAD(FLQuant flq1, FLQuantAD flq2){
+    return sweep_mult(flq1, flq2);
+}
+
+// Div
+// [[Rcpp::export]]
+FLQuantAD test_sweep_divADAD(FLQuantAD flq1, FLQuantAD flq2){
+    return sweep_div(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuant test_sweep_divDD(FLQuant flq1, FLQuant flq2){
+    return sweep_div(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_divADD(FLQuantAD flq1, FLQuant flq2){
+    return sweep_div(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_divDAD(FLQuant flq1, FLQuantAD flq2){
+    return sweep_div(flq1, flq2);
+}
+
+// Plus
+// [[Rcpp::export]]
+FLQuantAD test_sweep_plusADAD(FLQuantAD flq1, FLQuantAD flq2){
+    return sweep_plus(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuant test_sweep_plusDD(FLQuant flq1, FLQuant flq2){
+    return sweep_plus(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_plusADD(FLQuantAD flq1, FLQuant flq2){
+    return sweep_plus(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_plusDAD(FLQuant flq1, FLQuantAD flq2){
+    return sweep_plus(flq1, flq2);
+}
+
+// Minus
+// [[Rcpp::export]]
+FLQuantAD test_sweep_minusADAD(FLQuantAD flq1, FLQuantAD flq2){
+    return sweep_minus(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuant test_sweep_minusDD(FLQuant flq1, FLQuant flq2){
+    return sweep_minus(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_minusADD(FLQuantAD flq1, FLQuant flq2){
+    return sweep_minus(flq1, flq2);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_sweep_minusDAD(FLQuant flq1, FLQuantAD flq2){
+    return sweep_minus(flq1, flq2);
+}
 
