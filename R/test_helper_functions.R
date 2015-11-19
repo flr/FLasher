@@ -188,7 +188,7 @@ random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 10
     effort(fishery)[] <- rnorm(prod(dim(effort(fishery))),sd=sd)
     vcost(fishery)[] <- rnorm(prod(dim(vcost(fishery))),sd=sd)
     fcost(fishery)[] <- rnorm(prod(dim(fcost(fishery))),sd=sd)
-    fishery@ftime[] <- rnorm(prod(dim(fishery@ftime)),sd=sd)
+    fishery@hperiod[] <- rnorm(prod(dim(fishery@hperiod)),sd=sd)
     fishery@desc <- as.character(signif(rnorm(1)*1000,3))
     fishery@name <- as.character(signif(rnorm(1)*1000,3))
 
@@ -494,10 +494,12 @@ make_test_operatingModel1 <- function(niters = 1000){
         catch.q(catch) <- FLPar(c(1,0.5), dimnames=list(params=c("alpha","beta"), iter = 1))
         catch_list[[i]] <- catch
     }
+
     # Make fishery bits
     fishery1 <- FLFishery(catch1=catch_list[[1]], catch2 = catch_list[[2]])
     desc(fishery1) <- "fishery1"
     effort(fishery1)[] <- 1
+
     fishery2 <- FLFishery(catch1=catch_list[[3]], catch2 = catch_list[[4]])
     desc(fishery2) <- "fishery2"
     effort(fishery2)[] <- 1
@@ -590,11 +592,10 @@ make_test_operatingModel2 <- function(niters = 1000){
 #'
 #' @export
 test_FLFishery_equal <- function(flf1, flf2){
-    # ftime slot not checked yet
     expect_identical(flf1@effort, flf2@effort)
     expect_identical(flf1@vcost, flf2@vcost)
     expect_identical(flf1@fcost, flf2@fcost)
-    expect_identical(flf1@ftime, flf2@ftime)
+    expect_identical(flf1@hperiod, flf2@hperiod)
     expect_identical(flf1@name, flf2@name)
     expect_identical(flf1@range, flf2@range)
     expect_identical(flf1@.Data, flf2@.Data)
