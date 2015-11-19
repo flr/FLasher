@@ -14,7 +14,7 @@ FLFishery_base<T>::FLFishery_base(){
     effort_flq = FLQuant_base<T>();
     vcost_flq = FLQuant();
     fcost_flq = FLQuant();
-    ftime_flq = FLQuant();
+    hperiod_flq = FLQuant();
 }
 
 // Constructor from a SEXP S4 FLFishery
@@ -26,7 +26,7 @@ FLFishery_base<T>::FLFishery_base(SEXP flf_sexp) : FLCatches_base<T>(flf_sexp){ 
     effort_flq = flf_s4.slot("effort");
     vcost_flq = flf_s4.slot("vcost");
     fcost_flq = flf_s4.slot("fcost");
-    ftime_flq = flf_s4.slot("ftime");
+    hperiod_flq = flf_s4.slot("hperiod");
     range = flf_s4.slot("range");
 }
 
@@ -40,7 +40,7 @@ FLFishery_base<T>::operator SEXP() const{
     flf_s4.slot("effort") = effort_flq;
     flf_s4.slot("vcost") = vcost_flq;
     flf_s4.slot("fcost") = fcost_flq;
-    flf_s4.slot("ftime") = ftime_flq;
+    flf_s4.slot("hperiod") = hperiod_flq;
     flf_s4.slot("range") = range;
     // FLCatches bits - can't call wrap on these bits
     Rcpp::List list_out;
@@ -61,7 +61,7 @@ FLFishery_base<T>::FLFishery_base(const FLFishery_base<T>& FLFishery_source) : F
     effort_flq = FLFishery_source.effort_flq;
     vcost_flq = FLFishery_source.vcost_flq;
     fcost_flq = FLFishery_source.fcost_flq;
-    ftime_flq = FLFishery_source.ftime_flq;
+    hperiod_flq = FLFishery_source.hperiod_flq;
     range = Rcpp::clone<Rcpp::NumericVector>(FLFishery_source.range);
 }
 
@@ -76,7 +76,7 @@ FLFishery_base<T>& FLFishery_base<T>::operator = (const FLFishery_base<T>& FLFis
         effort_flq = FLFishery_source.effort_flq;
         vcost_flq = FLFishery_source.vcost_flq;
         fcost_flq = FLFishery_source.fcost_flq;
-        ftime_flq = FLFishery_source.ftime_flq;
+        hperiod_flq = FLFishery_source.hperiod_flq;
         range = Rcpp::clone<Rcpp::NumericVector>(FLFishery_source.range);
 	}
 	return *this;
@@ -108,8 +108,8 @@ FLQuant FLFishery_base<T>::fcost() const {
 }
 
 template <typename T>
-FLQuant FLFishery_base<T>::ftime() const {
-    return ftime_flq;
+FLQuant FLFishery_base<T>::hperiod() const {
+    return hperiod_flq;
 }
 
 template <typename T>
@@ -128,8 +128,8 @@ FLQuant& FLFishery_base<T>::fcost() {
 }
 
 template <typename T>
-FLQuant& FLFishery_base<T>::ftime() {
-    return ftime_flq;
+FLQuant& FLFishery_base<T>::hperiod() {
+    return hperiod_flq;
 }
 
 template class FLFishery_base<double>;

@@ -745,16 +745,16 @@ test_FLFishery_const_economics_get_accessors <- function(flf, year, unit, season
     .Call('FLasher_test_FLFishery_const_economics_get_accessors', PACKAGE = 'FLasher', flf, year, unit, season, area, iter)
 }
 
-test_FLFishery_const_get_ftime <- function(flf, quant, year, unit, season, area, iter) {
-    .Call('FLasher_test_FLFishery_const_get_ftime', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
+test_FLFishery_const_get_hperiod <- function(flf, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFishery_const_get_hperiod', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
 }
 
-test_FLFishery_get_ftime <- function(flf, quant, year, unit, season, area, iter) {
-    .Call('FLasher_test_FLFishery_get_ftime', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
+test_FLFishery_get_hperiod <- function(flf, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_FLFishery_get_hperiod', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter)
 }
 
-test_FLFishery_set_ftime <- function(flf, quant, year, unit, season, area, iter, value) {
-    .Call('FLasher_test_FLFishery_set_ftime', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter, value)
+test_FLFishery_set_hperiod <- function(flf, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_FLFishery_set_hperiod', PACKAGE = 'FLasher', flf, quant, year, unit, season, area, iter, value)
 }
 
 test_FLFishery_get_effort_subset <- function(flf, indices_min, indices_max) {

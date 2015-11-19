@@ -98,19 +98,19 @@ Rcpp::NumericVector test_FLFishery_const_economics_get_accessors(const FLFishery
 }
 
 // [[Rcpp::export]]
-double test_FLFishery_const_get_ftime(const FLFishery flf, int quant, int year, int unit, int season, int area, int iter){
-    return flf.ftime()(quant, year, unit, season, area, iter);
+double test_FLFishery_const_get_hperiod(const FLFishery flf, int quant, int year, int unit, int season, int area, int iter){
+    return flf.hperiod()(quant, year, unit, season, area, iter);
 }
 
 // [[Rcpp::export]]
-double test_FLFishery_get_ftime(FLFishery flf, int quant, int year, int unit, int season, int area, int iter){
-    return flf.ftime()(quant, year, unit, season, area, iter);
+double test_FLFishery_get_hperiod(FLFishery flf, int quant, int year, int unit, int season, int area, int iter){
+    return flf.hperiod()(quant, year, unit, season, area, iter);
 }
 
 // [[Rcpp::export]]
-FLQuant test_FLFishery_set_ftime(FLFishery flf, int quant, int year, int unit, int season, int area, int iter, double value){
-    flf.ftime()(quant, year, unit, season, area, iter) = value;
-    return flf.ftime();
+FLQuant test_FLFishery_set_hperiod(FLFishery flf, int quant, int year, int unit, int season, int area, int iter, double value){
+    flf.hperiod()(quant, year, unit, season, area, iter) = value;
+    return flf.hperiod();
 }
 
 // [[Rcpp::export]]
