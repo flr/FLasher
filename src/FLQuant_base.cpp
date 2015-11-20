@@ -523,6 +523,7 @@ void FLQuant_base<adouble>::fill(const double value){
 // It implicitly calls the constructors from FLQuantD to FLQuantAD and vice versa
 /*! \brief Insert a smaller FLQuant into a bigger one
  *
+ * It implicitly calls the constructors from FLQuantD to FLQuantAD and vice versa so can pass AD into D and vice versa
  * \param flq The FLQuant to be inserted.
  * \param indices_min Vector of length 6 determining where to start inserting.
  * \param indices_max Vector of length 6 determining where to finish inserting.

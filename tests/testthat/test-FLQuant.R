@@ -318,13 +318,36 @@ test_that("insert", {
     indices_max <- round(runif(6, min=1, max=dim(flq1)))
     indices_min <- round(runif(6, min=1, max=indices_max))
     flq2 <- random_FLQuant_generator(fixed_dims=indices_max - indices_min + 1)
-
-
-flq_out <- test_input_subsetter_ADAD(flq1, flq2, indices_min, indices_max)
-flq_out <- test_input_subsetter_DD(flq1, flq2, indices_min, indices_max)
-flq_out <- test_input_subsetter_ADD(flq1, flq2, indices_min, indices_max)
-flq_out <- test_input_subsetter_DAD(flq1, flq2, indices_min, indices_max)
-flq_out <- test_input_subsetter_DAD2(flq1, flq2, indices_min, indices_max)
-
-
+    # AD into AD
+    flq_out <- test_input_subsetter_ADAD(flq1, flq2, indices_min, indices_max)
+    # Do new values match the input?
+    test_FLQuant_equal(flq_out[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], (flq2))
+    # Do other values match the orig
+    elements <- get_FLQuant_elements(flq1, indices_min, indices_max)
+    expect_identical(c(flq1)[!((1:prod(dim(flq1))) %in% elements)], c(flq_out)[!((1:prod(dim(flq1))) %in% elements)])
+    # D into D
+    flq_out <- test_input_subsetter_DD(flq1, flq2, indices_min, indices_max)
+    test_FLQuant_equal(flq_out[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], (flq2))
+    elements <- get_FLQuant_elements(flq1, indices_min, indices_max)
+    expect_identical(c(flq1)[!((1:prod(dim(flq1))) %in% elements)], c(flq_out)[!((1:prod(dim(flq1))) %in% elements)])
+    # AD into D
+    flq_out <- test_input_subsetter_ADD(flq1, flq2, indices_min, indices_max)
+    test_FLQuant_equal(flq_out[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], (flq2))
+    elements <- get_FLQuant_elements(flq1, indices_min, indices_max)
+    expect_identical(c(flq1)[!((1:prod(dim(flq1))) %in% elements)], c(flq_out)[!((1:prod(dim(flq1))) %in% elements)])
+    # D into AD
+    flq_out <- test_input_subsetter_DAD(flq1, flq2, indices_min, indices_max)
+    test_FLQuant_equal(flq_out[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], (flq2))
+    elements <- get_FLQuant_elements(flq1, indices_min, indices_max)
+    expect_identical(c(flq1)[!((1:prod(dim(flq1))) %in% elements)], c(flq_out)[!((1:prod(dim(flq1))) %in% elements)])
+    # Too big FLQ to go in (but with matching indices_min and max)
+    big_dims <- dim(flq1)
+    rindex <- round(runif(1,min=1,max=6))
+    big_dims[rindex] <- dim(flq1)[rindex]+1
+    big_indices_min <- rep(1,6)
+    big_indices_max <- big_dims
+    big_flq <- random_FLQuant_generator(fixed_dims = big_dims)
+    expect_error(test_input_subsetter_ADAD(flq1, big_flq, big_indices_min, big_indices_max))
+    # Indices not match the input
+    expect_error(test_input_subsetter_ADAD(flq1, flq2, big_indices_min, big_indices_max))
 })

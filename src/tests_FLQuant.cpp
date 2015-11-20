@@ -355,13 +355,3 @@ FLQuant test_input_subsetter_DAD(FLQuant flq1, FLQuantAD flq2, std::vector<unsig
     return flq1;
 }
 
-// [[Rcpp::export]]
-FLQuant test_input_subsetter_DAD2(FLQuant flq1, FLQuant flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max){
-    Rprintf("Making the AD\n");
-    FLQuantAD flq3(flq2);
-    Rprintf("Passing it in\n");
-    flq1.insert(flq3, indices_min, indices_max);
-    return flq1;
-}
-
-

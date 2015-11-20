@@ -1309,10 +1309,6 @@ test_input_subsetter_DAD <- function(flq1, flq2, indices_min, indices_max) {
     .Call('FLasher_test_input_subsetter_DAD', PACKAGE = 'FLasher', flq1, flq2, indices_min, indices_max)
 }
 
-test_input_subsetter_DAD2 <- function(flq1, flq2, indices_min, indices_max) {
-    .Call('FLasher_test_input_subsetter_DAD2', PACKAGE = 'FLasher', flq1, flq2, indices_min, indices_max)
-}
-
 test_FLQuant7_as_wrap <- function(flq7) {
     .Call('FLasher_test_FLQuant7_as_wrap', PACKAGE = 'FLasher', flq7)
 }
