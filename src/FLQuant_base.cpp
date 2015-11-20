@@ -199,7 +199,7 @@ FLQuant_base<double>::FLQuant_base(const FLQuant_base<adouble>& FLQuant_source){
     dimnames = FLQuant_source.get_dimnames(); 
     std::vector<adouble> source_data = FLQuant_source.get_data();
     std::vector<double> new_data(FLQuant_source.get_size());
-    std::transform(begin(), end(), new_data.begin(), // Using FLQ iterators!
+    std::transform(FLQuant_source.begin(), FLQuant_source.end(), new_data.begin(), 
             [] (adouble x) {return Value(x);});
     data = new_data;
 }
@@ -444,8 +444,6 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const std::vector<unsigned int> in
     return (*this)(indices_min[0], indices_max[0], indices_min[1], indices_max[1], indices_min[2], indices_max[2], indices_min[3], indices_max[3], indices_min[4], indices_max[4], indices_min[5], indices_max[5]);
 }
 
-
-
 template <typename T>
 FLQuant_base<T> FLQuant_base<T>::operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area) const {
     FLQuant_base<T> out = (*this)(quant, quant, year, year, unit, unit, season, season, area, area, 1, get_niter());
@@ -514,16 +512,12 @@ void FLQuant_base<T>::fill(const T value){
     return;
 }
 
-
-// Specialise the FLQuant_base<T>(FLQuant_base<T2>) constructor 
-// Make an FLQuantAdolc / CppAD from an FLQuant
 template <>
 template <>
 void FLQuant_base<adouble>::fill(const double value){
     adouble value_ad = value;
     fill(value_ad);
 }
-
 
 // Can pass an AD into a D and vice versa even though the Ts are different
 // It implicitly calls the constructors from FLQuantD to FLQuantAD and vice versa
@@ -535,10 +529,31 @@ void FLQuant_base<adouble>::fill(const double value){
  */
 template<typename T>
 void FLQuant_base<T>::insert(const FLQuant_base<T> flq, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-    Rprintf("In inserter\n");
-
+    if (indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In neat FLQuant subsetter. Size of indices_min or max not equal to 6\n");
+    }
+    auto dim = get_dim();
+    auto flq_dim = flq.get_dim();
+    std::vector<unsigned int> dim_in(6);
+    std::transform(indices_max.begin(), indices_max.end(), indices_min.begin(), dim_in.begin(), [] (unsigned int x, unsigned int y) {return x - y + 1;});
+    for (int i=0; i<6; ++i){
+        if (dim[i] < flq_dim[i]){
+            Rcpp::stop("In FLQuant insert(). Inserted FLQuant is larger than destination FLQuant\n");
+        }
+        if (flq_dim[i] != dim_in[i]){
+            Rcpp::stop("In FLQuant insert(). Dim of inserted FLQuant does not match indices_min and indices_max arguments\n");
+        }
+    }
+    // Insert
+    for (unsigned int qcount=indices_min[0]; qcount <= indices_max[0]; ++qcount){
+        for (unsigned int ycount=indices_min[1]; ycount <= indices_max[1]; ++ycount){
+            for (unsigned int ucount=indices_min[2]; ucount <= indices_max[2]; ++ucount){
+                for (unsigned int scount=indices_min[3]; scount <= indices_max[3]; ++scount){
+                    for (unsigned int acount=indices_min[4]; acount <= indices_max[4]; ++acount){
+                        for (unsigned int icount=indices_min[5]; icount <= indices_max[5]; ++icount){
+                            (*this)(qcount, ycount, ucount, scount, acount, icount) = flq(qcount-indices_min[0]+1, ycount-indices_min[1]+1, ucount-indices_min[2]+1, scount-indices_min[3]+1, acount-indices_min[4]+1, icount-indices_min[5]+1);
+    }}}}}}
 }
-
 
 //------------------ Multiplication operators -------------------
 /*  * Need to consider what happens with the combinations FLQuant<T1> * / + - FLQuant<T2>, i.e. what is the output type?
