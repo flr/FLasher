@@ -81,7 +81,7 @@ random_FLBiol_generator <- function(sd=100, ...){
     wt(biol) <- abs(rnorm(prod(dim(flq)),sd=sd))
     fec(biol) <- abs(rnorm(prod(dim(flq)),sd=sd))
     mat(biol) <- abs(rnorm(prod(dim(flq)),sd=sd))
-    spwn(biol) <- abs(rnorm(prod(dim(flq)),sd=sd))
+    spwn(biol) <- runif(prod(dim(flq)), min=0, max=1)
     name(biol) <- as.character(signif(rnorm(1)*1000,3))
     desc(biol) <- as.character(signif(rnorm(1)*1000,3))
     # set the units to something sensible
@@ -188,7 +188,10 @@ random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 10
     effort(fishery)[] <- rnorm(prod(dim(effort(fishery))),sd=sd)
     vcost(fishery)[] <- rnorm(prod(dim(vcost(fishery))),sd=sd)
     fcost(fishery)[] <- rnorm(prod(dim(fcost(fishery))),sd=sd)
+
     fishery@hperiod[] <- rnorm(prod(dim(fishery@hperiod)),sd=sd)
+    # hperiod 1 must be <= 2
+
     fishery@desc <- as.character(signif(rnorm(1)*1000,3))
     fishery@name <- as.character(signif(rnorm(1)*1000,3))
 
@@ -506,7 +509,8 @@ make_test_operatingModel1 <- function(niters = 1000){
     fisheries <- FLFisheries(fishery1 = fishery1, fishery2 = fishery2)
     fisheries@desc <- "fisheries"
 
-    # Fix and set fperiod for each fishery
+    # Fix and set hperiod for each fishery
+    # hperiod 1 < hperiod 2
 
     # fwdControl
     fwc <- random_fwdControl_generator(niters=niters)
@@ -575,6 +579,7 @@ make_test_operatingModel2 <- function(niters = 1000){
     effort(fishery2)[] <- 1
     fisheries <- FLFisheries(fishery1 = fishery1, fishery2 = fishery2)
     fisheries@desc <- "fisheries"
+    # hperiod 1 < hperiod 2
 
     # fwdControl
     fwc <- random_fwdControl_generator()
@@ -630,6 +635,27 @@ get_FLQuant_element <- function(flq, indices){
         (dim[4] * dim[3] * dim[2] * dim[1] * (indices[5]-1)) +
         (dim[5] * dim[4] * dim[3] * dim[2] * dim[1] * (indices[6]-1)) 
     return(element)
+}
+
+#' Return 1D element index of FLQuant
+#'
+#' Given an FLQuant the and the indices range, returns the vector of indices
+#'
+#' @export
+get_FLQuant_elements <- function(flq, indices_min, indices_max){
+    length_out <- prod(indices_max - indices_min + 1)
+    elements <- rep(NA, length_out)
+    element_count <- 0
+    for (icount in indices_min[6]:indices_max[6]){
+        for (acount in indices_min[5]:indices_max[5]){
+            for (scount in indices_min[4]:indices_max[4]){
+                for (ucount in indices_min[3]:indices_max[3]){
+                    for (ycount in indices_min[2]:indices_max[2]){
+                        for (qcount in indices_min[1]:indices_max[1]){
+                            element_count = element_count + 1
+                            elements[element_count] = get_FLQuant_element(flq, c(qcount, ycount, ucount, scount, acount, icount))
+    }}}}}}
+    return(elements)
 }
 
 #' Tests if two fwdControl objects are the same
