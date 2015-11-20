@@ -88,6 +88,12 @@ Rcpp::List test_FLQuant_assignment_operator2(FLQuant flq1, int quant, int year, 
 				Rcpp::Named("flq2",flq2));
 }
 
+// [[Rcpp::export]]
+FLQuant test_FLQuant_from_FLQuantAD_constructor(FLQuantAD flqad){
+    FLQuant flq(flqad);
+    return flq;
+}
+
 //------------------ Accessors ----------------------
 // [[Rcpp::export]]
 std::vector<double> test_FLQuant_get_data(FLQuant flq){
@@ -244,13 +250,13 @@ FLQuant test_FLQuant_set_units(FLQuant flq, std::string new_units){
 
 // [[Rcpp::export]]
 FLQuant test_FLQuant_subset(FLQuant flq, const int quant_min, const int quant_max, const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max){
-  return flq(quant_min, quant_max, year_min, year_max, unit_min, unit_max, season_min, season_max, area_min, area_max, iter_min, iter_max);
+    return flq(quant_min, quant_max, year_min, year_max, unit_min, unit_max, season_min, season_max, area_min, area_max, iter_min, iter_max);
 }
-
 
 // [[Rcpp::export]]
 FLQuant test_FLQuant_neat_subset(FLQuant flq, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-    return flq(indices_min, indices_max);
+    FLQuant out = flq(indices_min, indices_max);
+    return out;
 }
 
 // [[Rcpp::export]]
@@ -324,4 +330,38 @@ FLQuant test_FLQuant_lambda(FLQuant flq1, FLQuant flq2){
         [](double x, double y) { return sqrt(x*x + y*y); } );
     return flq3;
 }
+
+// [[Rcpp::export]]
+FLQuantAD test_input_subsetter_ADAD(FLQuantAD flq1, FLQuantAD flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max){
+    flq1.insert(flq2, indices_min, indices_max);
+    return flq1;
+}
+
+// [[Rcpp::export]]
+FLQuant test_input_subsetter_DD(FLQuant flq1, FLQuant flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max){
+    flq1.insert(flq2, indices_min, indices_max);
+    return flq1;
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_input_subsetter_ADD(FLQuantAD flq1, FLQuant flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max){
+    flq1.insert(flq2, indices_min, indices_max);
+    return flq1;
+}
+
+// [[Rcpp::export]]
+FLQuant test_input_subsetter_DAD(FLQuant flq1, FLQuantAD flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max){
+    flq1.insert(flq2, indices_min, indices_max);
+    return flq1;
+}
+
+// [[Rcpp::export]]
+FLQuant test_input_subsetter_DAD2(FLQuant flq1, FLQuant flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max){
+    Rprintf("Making the AD\n");
+    FLQuantAD flq3(flq2);
+    Rprintf("Passing it in\n");
+    flq1.insert(flq3, indices_min, indices_max);
+    return flq1;
+}
+
 

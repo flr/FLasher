@@ -50,6 +50,9 @@ test_that("FLQuant constructors",{
     flqs <-  test_FLQuant_assignment_operator2(flq_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
     expect_identical(flq_in, flqs[["flq1"]])
     expect_identical(c(flqs[["flq2"]][indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
+    # Make an FLQuantAD from an FLQuant
+    flq_out <- test_FLQuant_from_FLQuantAD_constructor(flq_in)
+    expect_identical(flq_in, flq_out)
 })
 
 test_that("get accessors",{
@@ -308,4 +311,20 @@ test_that("iterators", {
     flq2 <- random_FLQuant_generator(fixed_dims = dim(flq1))
     flq_out <- test_FLQuant_lambda(flq1, flq2)
     expect_equal(flq_out@.Data, sqrt(flq1^2 + (flq2^2))@.Data)
+})
+
+test_that("insert", {
+    flq1 <- random_FLQuant_generator()
+    indices_max <- round(runif(6, min=1, max=dim(flq1)))
+    indices_min <- round(runif(6, min=1, max=indices_max))
+    flq2 <- random_FLQuant_generator(fixed_dims=indices_max - indices_min + 1)
+
+
+flq_out <- test_input_subsetter_ADAD(flq1, flq2, indices_min, indices_max)
+flq_out <- test_input_subsetter_DD(flq1, flq2, indices_min, indices_max)
+flq_out <- test_input_subsetter_ADD(flq1, flq2, indices_min, indices_max)
+flq_out <- test_input_subsetter_DAD(flq1, flq2, indices_min, indices_max)
+flq_out <- test_input_subsetter_DAD2(flq1, flq2, indices_min, indices_max)
+
+
 })

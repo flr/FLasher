@@ -3650,6 +3650,17 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_FLQuant_from_FLQuantAD_constructor
+FLQuant test_FLQuant_from_FLQuantAD_constructor(FLQuantAD flqad);
+RcppExport SEXP FLasher_test_FLQuant_from_FLQuantAD_constructor(SEXP flqadSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flqad(flqadSEXP);
+    __result = Rcpp::wrap(test_FLQuant_from_FLQuantAD_constructor(flqad));
+    return __result;
+END_RCPP
+}
 // test_FLQuant_get_data
 std::vector<double> test_FLQuant_get_data(FLQuant flq);
 RcppExport SEXP FLasher_test_FLQuant_get_data(SEXP flqSEXP) {
@@ -4120,15 +4131,73 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// test_sweepMult
-FLQuant test_sweepMult(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_sweepMult(SEXP flq1SEXP, SEXP flq2SEXP) {
+// test_input_subsetter_ADAD
+FLQuantAD test_input_subsetter_ADAD(FLQuantAD flq1, FLQuantAD flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_input_subsetter_ADAD(SEXP flq1SEXP, SEXP flq2SEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq2(flq2SEXP);
+    Rcpp::traits::input_parameter< std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    __result = Rcpp::wrap(test_input_subsetter_ADAD(flq1, flq2, indices_min, indices_max));
+    return __result;
+END_RCPP
+}
+// test_input_subsetter_DD
+FLQuant test_input_subsetter_DD(FLQuant flq1, FLQuant flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_input_subsetter_DD(SEXP flq1SEXP, SEXP flq2SEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP);
     Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP);
-    __result = Rcpp::wrap(test_sweepMult(flq1, flq2));
+    Rcpp::traits::input_parameter< std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    __result = Rcpp::wrap(test_input_subsetter_DD(flq1, flq2, indices_min, indices_max));
+    return __result;
+END_RCPP
+}
+// test_input_subsetter_ADD
+FLQuantAD test_input_subsetter_ADD(FLQuantAD flq1, FLQuant flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_input_subsetter_ADD(SEXP flq1SEXP, SEXP flq2SEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP);
+    Rcpp::traits::input_parameter< std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    __result = Rcpp::wrap(test_input_subsetter_ADD(flq1, flq2, indices_min, indices_max));
+    return __result;
+END_RCPP
+}
+// test_input_subsetter_DAD
+FLQuant test_input_subsetter_DAD(FLQuant flq1, FLQuantAD flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_input_subsetter_DAD(SEXP flq1SEXP, SEXP flq2SEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq2(flq2SEXP);
+    Rcpp::traits::input_parameter< std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    __result = Rcpp::wrap(test_input_subsetter_DAD(flq1, flq2, indices_min, indices_max));
+    return __result;
+END_RCPP
+}
+// test_input_subsetter_DAD2
+FLQuant test_input_subsetter_DAD2(FLQuant flq1, FLQuant flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_input_subsetter_DAD2(SEXP flq1SEXP, SEXP flq2SEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuant >::type flq1(flq1SEXP);
+    Rcpp::traits::input_parameter< FLQuant >::type flq2(flq2SEXP);
+    Rcpp::traits::input_parameter< std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    __result = Rcpp::wrap(test_input_subsetter_DAD2(flq1, flq2, indices_min, indices_max));
     return __result;
 END_RCPP
 }

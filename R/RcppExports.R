@@ -1141,6 +1141,10 @@ test_FLQuant_assignment_operator2 <- function(flq1, quant, year, unit, season, a
     .Call('FLasher_test_FLQuant_assignment_operator2', PACKAGE = 'FLasher', flq1, quant, year, unit, season, area, iter, value)
 }
 
+test_FLQuant_from_FLQuantAD_constructor <- function(flqad) {
+    .Call('FLasher_test_FLQuant_from_FLQuantAD_constructor', PACKAGE = 'FLasher', flqad)
+}
+
 test_FLQuant_get_data <- function(flq) {
     .Call('FLasher_test_FLQuant_get_data', PACKAGE = 'FLasher', flq)
 }
@@ -1289,8 +1293,24 @@ test_FLQuant_lambda <- function(flq1, flq2) {
     .Call('FLasher_test_FLQuant_lambda', PACKAGE = 'FLasher', flq1, flq2)
 }
 
-test_sweepMult <- function(flq1, flq2) {
-    .Call('FLasher_test_sweepMult', PACKAGE = 'FLasher', flq1, flq2)
+test_input_subsetter_ADAD <- function(flq1, flq2, indices_min, indices_max) {
+    .Call('FLasher_test_input_subsetter_ADAD', PACKAGE = 'FLasher', flq1, flq2, indices_min, indices_max)
+}
+
+test_input_subsetter_DD <- function(flq1, flq2, indices_min, indices_max) {
+    .Call('FLasher_test_input_subsetter_DD', PACKAGE = 'FLasher', flq1, flq2, indices_min, indices_max)
+}
+
+test_input_subsetter_ADD <- function(flq1, flq2, indices_min, indices_max) {
+    .Call('FLasher_test_input_subsetter_ADD', PACKAGE = 'FLasher', flq1, flq2, indices_min, indices_max)
+}
+
+test_input_subsetter_DAD <- function(flq1, flq2, indices_min, indices_max) {
+    .Call('FLasher_test_input_subsetter_DAD', PACKAGE = 'FLasher', flq1, flq2, indices_min, indices_max)
+}
+
+test_input_subsetter_DAD2 <- function(flq1, flq2, indices_min, indices_max) {
+    .Call('FLasher_test_input_subsetter_DAD2', PACKAGE = 'FLasher', flq1, flq2, indices_min, indices_max)
 }
 
 test_FLQuant7_as_wrap <- function(flq7) {

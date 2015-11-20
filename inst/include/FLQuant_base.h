@@ -93,6 +93,8 @@ class FLQuant_base {
         template <typename T2>
         void fill(const T2 value); // specialisation to fill FLQuantAD with double
 
+        void insert(const FLQuant_base<T> flq, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+
         /* Mathematical operators */
 
         // Multiplication

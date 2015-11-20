@@ -182,12 +182,26 @@ FLQuant_base<T>::FLQuant_base(const FLQuant_base<T2>& FLQuant_source){
 template <>
 template <>
 FLQuant_base<adouble>::FLQuant_base(const FLQuant_base<double>& FLQuant_source){
-    //Rprintf("Making an FLQuantAdolc / CppAD from an FLQuant\n");
     units = FLQuant_source.get_units(); // std::string always does deep copy
     dim = FLQuant_source.get_dim();
     dimnames = FLQuant_source.get_dimnames(); 
     std::vector<double> source_data = FLQuant_source.get_data();
     data.insert(data.begin(), source_data.begin(), source_data.end());
+}
+
+// Specialise the FLQuant_base<T>(FLQuant_base<T2>) constructor 
+// Make an FLQuant from an FLQuantAD
+template <>
+template <>
+FLQuant_base<double>::FLQuant_base(const FLQuant_base<adouble>& FLQuant_source){
+    units = FLQuant_source.get_units(); // std::string always does deep copy
+    dim = FLQuant_source.get_dim();
+    dimnames = FLQuant_source.get_dimnames(); 
+    std::vector<adouble> source_data = FLQuant_source.get_data();
+    std::vector<double> new_data(FLQuant_source.get_size());
+    std::transform(begin(), end(), new_data.begin(), // Using FLQ iterators!
+            [] (adouble x) {return Value(x);});
+    data = new_data;
 }
 
 //------------------ begin and end ---------------------------------
@@ -438,13 +452,6 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const unsigned int quant, const un
     return out;
 }
 
-
-//template <typename T>
-//FLQuant_base<T>& FLQuant_base<T>::operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area) {
-//    FLQuant_base<T> out = (*this)(quant, quant, year, year, unit, unit, season, season, area, area, 1, get_niter());
-//    return out;
-//}
-
 //------------- Setting methods ----------------
 
 template <typename T>
@@ -518,7 +525,20 @@ void FLQuant_base<adouble>::fill(const double value){
 }
 
 
-// specialise fill so that it works with FLQuantAD and double
+// Can pass an AD into a D and vice versa even though the Ts are different
+// It implicitly calls the constructors from FLQuantD to FLQuantAD and vice versa
+/*! \brief Insert a smaller FLQuant into a bigger one
+ *
+ * \param flq The FLQuant to be inserted.
+ * \param indices_min Vector of length 6 determining where to start inserting.
+ * \param indices_max Vector of length 6 determining where to finish inserting.
+ */
+template<typename T>
+void FLQuant_base<T>::insert(const FLQuant_base<T> flq, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    Rprintf("In inserter\n");
+
+}
+
 
 //------------------ Multiplication operators -------------------
 /*  * Need to consider what happens with the combinations FLQuant<T1> * / + - FLQuant<T2>, i.e. what is the output type?
