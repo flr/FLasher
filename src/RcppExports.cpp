@@ -5265,6 +5265,41 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_fwdBiolAD_n_direct_set_accessor
+fwdBiolAD test_fwdBiolAD_n_direct_set_accessor(fwdBiolAD fwdb, int quant, int year, int unit, int season, int area, int iter, double value);
+RcppExport SEXP FLasher_test_fwdBiolAD_n_direct_set_accessor(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< fwdBiolAD >::type fwdb(fwdbSEXP);
+    Rcpp::traits::input_parameter< int >::type quant(quantSEXP);
+    Rcpp::traits::input_parameter< int >::type year(yearSEXP);
+    Rcpp::traits::input_parameter< int >::type unit(unitSEXP);
+    Rcpp::traits::input_parameter< int >::type season(seasonSEXP);
+    Rcpp::traits::input_parameter< int >::type area(areaSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    Rcpp::traits::input_parameter< double >::type value(valueSEXP);
+    __result = Rcpp::wrap(test_fwdBiolAD_n_direct_set_accessor(fwdb, quant, year, unit, season, area, iter, value));
+    return __result;
+END_RCPP
+}
+// test_fwdBiolAD_n_direct_get_accessor
+double test_fwdBiolAD_n_direct_get_accessor(fwdBiolAD fwdb, int quant, int year, int unit, int season, int area, int iter);
+RcppExport SEXP FLasher_test_fwdBiolAD_n_direct_get_accessor(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< fwdBiolAD >::type fwdb(fwdbSEXP);
+    Rcpp::traits::input_parameter< int >::type quant(quantSEXP);
+    Rcpp::traits::input_parameter< int >::type year(yearSEXP);
+    Rcpp::traits::input_parameter< int >::type unit(unitSEXP);
+    Rcpp::traits::input_parameter< int >::type season(seasonSEXP);
+    Rcpp::traits::input_parameter< int >::type area(areaSEXP);
+    Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
+    __result = Rcpp::wrap(test_fwdBiolAD_n_direct_get_accessor(fwdb, quant, year, unit, season, area, iter));
+    return __result;
+END_RCPP
+}
 // test_fwdBiols_as_wrap
 fwdBiols test_fwdBiols_as_wrap(const fwdBiols biols_in);
 RcppExport SEXP FLasher_test_fwdBiols_as_wrap(SEXP biols_inSEXP) {

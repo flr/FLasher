@@ -1621,6 +1621,14 @@ fwdBiolAD_biomass_subset <- function(fwdb, indices_min, indices_max) {
     .Call('FLasher_fwdBiolAD_biomass_subset', PACKAGE = 'FLasher', fwdb, indices_min, indices_max)
 }
 
+test_fwdBiolAD_n_direct_set_accessor <- function(fwdb, quant, year, unit, season, area, iter, value) {
+    .Call('FLasher_test_fwdBiolAD_n_direct_set_accessor', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter, value)
+}
+
+test_fwdBiolAD_n_direct_get_accessor <- function(fwdb, quant, year, unit, season, area, iter) {
+    .Call('FLasher_test_fwdBiolAD_n_direct_get_accessor', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter)
+}
+
 test_fwdBiols_as_wrap <- function(biols_in) {
     .Call('FLasher_test_fwdBiols_as_wrap', PACKAGE = 'FLasher', biols_in)
 }

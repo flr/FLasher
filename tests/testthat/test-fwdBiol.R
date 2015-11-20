@@ -185,6 +185,18 @@ test_that("fwdBiol get and set data accessors", {
     expect_identical(c(mat(flb_out))[-element], c(mat(flb_in))[-element])
 })
 
+test_that("fwdBiol get and set direct data accessors", {
+    flb_in <- random_FLBiol_generator()
+    indices <- round(runif(6,min=1, max = dim(n(flb_in))))
+    value <- rnorm(1)
+    # Get
+    out <- test_fwdBiolAD_n_direct_get_accessor(flb_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6])
+    expect_identical(c(n(flb_in)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), out)
+    # Set
+    flb_out <- test_fwdBiolAD_n_direct_set_accessor(flb_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
+    expect_identical(c(n(flb_out)[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
+})
+
 test_that("fwdBiol methods",{
     # Biomass FLQuant
     flb_in <- random_FLBiol_generator()

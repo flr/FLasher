@@ -67,6 +67,9 @@ class fwdBiol_base {
         FLQuant& fec();
         FLQuant& mat();
 
+        // Set individual elements (faster than going through FLQuant get and set)
+		T& n(const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter);
+
         fwdSR_base<T> get_srr() const;
         std::string get_name() const;
         std::string get_desc() const;

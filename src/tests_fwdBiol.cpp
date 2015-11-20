@@ -213,7 +213,18 @@ FLQuantAD fwdBiolAD_biomass_subset(fwdBiolAD fwdb, const std::vector<unsigned in
     return fwdb.biomass(indices_min, indices_max);
 }
 
+// [[Rcpp::export]]
+fwdBiolAD test_fwdBiolAD_n_direct_set_accessor(fwdBiolAD fwdb, int quant, int year, int unit, int season, int area, int iter, double value){
+    fwdb.n(quant, year, unit, season, area, iter) = value;
+    return fwdb;
+}
 
+// [[Rcpp::export]]
+double test_fwdBiolAD_n_direct_get_accessor(fwdBiolAD fwdb, int quant, int year, int unit, int season, int area, int iter){
+    adouble ad_out = fwdb.n(quant, year, unit, season, area, iter);
+    double out = Value(ad_out);
+    return out;
+}
 
 /*-------------------------------------------------------*/
 

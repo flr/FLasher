@@ -239,6 +239,12 @@ FLQuant_base<T> fwdBiol_base<T>::biomass(const std::vector<unsigned int> indices
     return biomass;
 }
 
+template <typename T>
+T& fwdBiol_base<T>::n(const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter){
+	unsigned int element = n_flq.get_data_element(quant, year, unit, season, area, iter);
+    return n_flq(element+1); // Horrible change in referencing from 0 to 1 (element is from 0, accessor is from 1)
+}
+
 /*------------------------------------------------------------*/
 // fwdBiols class
 
