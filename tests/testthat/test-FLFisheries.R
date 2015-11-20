@@ -146,7 +146,7 @@ test_that("FLFisheries get and set data accessors - double", {
 
 test_that("FLCatchesAD iterators",{
     fisheries <- random_FLFisheries_generator(min_fisheries = 2, max_fisheries = 5)
-    effortin <- lapply(fisheries, function(x) return(effort(x)))
+    effortin <- lapply(fisheries, function(x) return(x@effort))
     # Const - just pulls out n
     effortout <- test_FLFisheriesAD_const_iterator(fisheries)
     expect_identical(effortout, effortin@.Data)
@@ -157,7 +157,7 @@ test_that("FLCatchesAD iterators",{
     expect_identical(rep(value,length(fisheries)), value_out)
     # All others are OK
     for (i in 1:length(fisheries)){
-        expect_identical(c(effort(fisheries_out[[i]]))[-1], c(effort(fisheries[[i]]))[-1])
+        expect_identical(c(fisheries_out[[i]]@effort)[-1], c(fisheries[[i]]@effort)[-1])
     }
 })
 
