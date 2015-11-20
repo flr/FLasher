@@ -130,9 +130,9 @@ operatingModel::operator SEXP() const{
                             Rcpp::Named("ctrl", ctrl));
 }
 
-/*! \brief Calculates the spawning recruitment potential of a biol
+/*! \brief Calculates the spawning recruitment potential of a biol at the time of spawning
  *
- * Calculated as SSB: N*mat*wt*exp(-Fprespwn - m*spwn) 
+ * Calculated as SSB: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
  * where the natural mortality m is assumed to be constant over the timestep
  * and Fprespwn is how much fishing mortality happened before spawning
  * \param biol_no The position of the biol in the biols list (starting at 1)
@@ -144,53 +144,62 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
     if (indices_min.size() != 5 | indices_max.size() != 5){
         Rcpp::stop("In operatingModel srp subsetter. Indices not of length 5\n");
     }
-    // Add age range to indices
+    // Add age range to input indices
+    std::vector<unsigned int> qindices_min = indices_min;
+    std::vector<unsigned int> qindices_max = indices_max;
+    qindices_min.insert(qindices_min.begin(), 1);
     std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
-    std::vector<unsigned int> new_indices_min = indices_min;
-    std::vector<unsigned int> new_indices_max = indices_max;
-    new_indices_min.insert(new_indices_min.begin(), 1);
-    new_indices_max.insert(new_indices_max.begin(), dim[0]);
-
+    qindices_max.insert(qindices_max.begin(), dim[0]);
+    // Make dim of the F object: max - min + 1
+    std::vector<unsigned int> qdim(6,0.0);
+    std::transform(qindices_max.begin(), qindices_max.end(), qindices_min.begin(), qdim.begin(), [](unsigned int x, unsigned int y){return x-y+1;});
+    FLQuantAD f_pre_spwn(qdim);
     // Get Fprespawn = F * Fpropspawn for each F fishing the biol
-    // 1. ID which F are fishing that B (timing is determined by ftime and spwn)
+    // 1. ID which F are fishing that B (timing is determined by hperiod and spwn)
     // 2. Get F(F,C,B)
     // 3. Get Fpropspawn(F,C,B)
     // 4. sum (F * Fpropspawn)
-    
-
-    FLQuantAD f_pre_spwn;
-
-    // Can we get a pointer / iterator to the biol and dereference it instead of typing biols(biol_no) all the time? Why? Faster?
-    FLQuantAD srp = quant_sum(biols(biol_no).n(new_indices_min, new_indices_max) *
-        biols(biol_no).wt(new_indices_min, new_indices_max) *
-        biols(biol_no).mat(new_indices_min, new_indices_max) *
-        // Add in f_pre_spwn here
-        exp(-1.0 * biols(biol_no).m(new_indices_min, new_indices_max) * biols(biol_no).spwn(new_indices_min, new_indices_max)));
-
+    const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
+    for (unsigned int f_counter=0; f_counter < FC.nrow(); ++f_counter){
+        FLQuantAD tempf = get_f(FC(f_counter,0), FC(f_counter,1), biol_no, qindices_min, qindices_max); 
+        FLQuant temp_prop_spwn = f_prop_spwn(FC(f_counter,0), biol_no, qindices_min, qindices_max);
+        FLQuantAD temp_propf = sweep_mult(tempf, temp_prop_spwn);
+        f_pre_spwn = f_pre_spwn + temp_propf;
+    }
+    // Get srp: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
+    FLQuantAD srp = quant_sum(
+        biols(biol_no).n(qindices_min, qindices_max) *
+        biols(biol_no).wt(qindices_min, qindices_max) *
+        biols(biol_no).mat(qindices_min, qindices_max) *
+        exp((-1.0 * f_pre_spwn) -
+            (biols(biol_no).m(qindices_min, qindices_max) * biols(biol_no).spwn(qindices_min, qindices_max))
+        ));
     return srp;
 }
 
 /*! \brief Calculates the proportion of fishing mortality that occurs before the stock spwns
  *
- * Given by the start and stop time of fishing (ftime member of FLFishery) and time of spawning (spwn member of fwdBiol)
+ * Given by the start and stop time of fishing (hperiod member of FLFishery) and time of spawning (spwn member of fwdBiol)
  * \param fishery_no The position of the fishery in the fisheries list (starting at 1)
  * \param biol_no The position of the biol in the biols list (starting at 1)
  * \param indices_min The minimum indices: year, unit etc (length 5)
  * \param indices_max The maximum indices: year, unit etc (length 5)
  */
 FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+    Rprintf("In f_prop_spwn\n");
     // Make an object to dump the result into
     FLQuant propf_out(1, indices_max[0]-indices_min[0]+1, indices_max[1]-indices_min[1]+1, indices_max[2]-indices_min[2]+1, indices_max[3]-indices_min[3]+1, indices_max[4]-indices_min[4]+1);
     // Need to calculate element by element as timing can change over years etc.
     double propf = 0.0;
+    Rprintf("Going into for loop\n");
     for (unsigned int year_count=indices_min[0]; year_count <= indices_max[0]; ++year_count){
         for (unsigned int unit_count=indices_min[1]; unit_count <= indices_max[1]; ++unit_count){
             for (unsigned int season_count=indices_min[2]; season_count <= indices_max[2]; ++season_count){
                 for (unsigned int area_count=indices_min[3]; area_count <= indices_max[3]; ++area_count){
                     for (unsigned int iter_count=indices_min[4]; iter_count <= indices_max[4]; ++iter_count){
                         // Fix this depending on representation of fperiod
-                        double fstart = fisheries(fishery_no).ftime()(1,year_count, unit_count, season_count, area_count, iter_count);
-                        double fend = fisheries(fishery_no).ftime()(2,year_count, unit_count, season_count, area_count, iter_count);
+                        double fstart = fisheries(fishery_no).hperiod()(1,year_count, unit_count, season_count, area_count, iter_count);
+                        double fend = fisheries(fishery_no).hperiod()(2,year_count, unit_count, season_count, area_count, iter_count);
                         double spwn = biols(biol_no).spwn()(1,year_count, unit_count, season_count, area_count, iter_count);
                         if (fend < spwn){
                             propf = 1.0;
@@ -204,11 +213,226 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
                         // Dump it in the right place - ugliness abounds
                         propf_out(1, year_count - indices_min[0], unit_count - indices_min[1], season_count - indices_min[2], area_count - indices_min[3], iter_count - indices_min[4]); 
     }}}}}
+    Rprintf("Leaving f_prop_spwn\n");
     return propf_out;
 }
 
 
+/*! \brief Calculates the recruitment for each iteration for a particular fwdBiol
+ *
+ * \param biol_no The position of the biol in the biols list (starting at 1).
+ * \param timestep The timestep of the recruitment (not the SSB that yields the recruitment).
+ */
+std::vector<adouble> operatingModel::calc_rec(const int biol_no, const int timestep) const{
 
+
+        // Get SSB
+        // Need to sort out timelag
+        // Get the year and season of the SSB that will result in recruitment in the timestep
+//        unsigned int ssb_timestep = timestep - biols(biol_counter).srr.get_timelag();
+//        if (ssb_timestep < 1){
+//            Rcpp::stop("project_timestep: ssb timestep outside of range");
+//        }
+//        timestep_to_year_season(ssb_timestep, biol_dim[3], ssb_year, ssb_season);
+//        // Update min and max_indices for ssb and get it
+//        std::vector<unsigned int> ssb_indices_min = {ssb_year, unit, ssb_season, area, 1};
+//        std::vector<unsigned int> ssb_indices_max = {ssb_year, unit, ssb_season, area, niter};
+//        FLQuantAD ssb_flq = srp(biol_counter, ssb_indices_min, ssb_indices_max);
+
+
+//            // Recruitment
+//            // rec is calculated in a scalar way - i.e. not passing it a vector of SSBs, so have to do one iter at a time
+//            adouble ssb_temp = ssb_flq(1,1,1,1,1,iter_count);
+//            //Rprintf("year: %i, season: %i, ssb_year: %i, ssb_season: %i, ssb_temp: %f\n", year, season, ssb_year, ssb_season, Value(ssb_temp));
+//            adouble rec_temp = biols(biol_counter).srr.eval_model(ssb_temp, year, 1, season, 1, iter_count);
+//            //Rprintf("iter_count %i; ssb_temp %f; rec_temp %f\n", iter_count, Value(ssb_temp), Value(rec_temp));
+//            // Apply the residuals to rec_temp
+//            // Use of if statement is OK because for each taping it will only branch the same way (depending on residuals_mult)
+//            if (biols(biol_counter).srr.get_residuals_mult()){
+//                //rec_temp = rec_temp * exp(biols(biol_counter).srr.get_residuals()(1,year,1,season,1,iter_count));
+//                rec_temp = rec_temp * biols(biol_counter).srr.get_residuals()(1,year,1,season,1,iter_count);
+//            }
+//            else{
+//                rec_temp = rec_temp + biols(biol_counter).srr.get_residuals()(1,year,1,season,1,iter_count);
+//            }
+//
+
+
+    std::vector<unsigned int> biol_dim = biols(biol_no).n().get_dim(); // All biols have same year and season range, so pick first one
+    unsigned int niter = biol_dim[5];
+    std::vector<adouble> rec(0.0, niter);
+    return rec;
+}
+
+/*! \name get_f
+ * Calculate the instantaneous fishing mortality 
+ * This method is the workhorse fishing mortality method that is called by other fishing mortality methods that do make checks.
+ * F = effort * selectivity * catchability.
+ * F = effort * selectivity * alpha * biomass ^ -beta
+ */
+//@{
+/*! \brief Calculate the instantaneous fishing mortality of a single biol from a single fishery / catch over a subset of dimensions.
+ * It is assumed that the fishery / catch actually fishes the biol (no check is made).
+ * \param fishery_no the position of the fishery within the fisheries (starting at 1).
+ * \param catch_no the position of the catch within the fishery (starting at 1).
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ * \param indices_min The minimum indices quant, year, unit etc (length 6)
+ * \param indices_max The maximum indices quant, year, unit etc (length 6)
+*/
+FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if (indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel get_f subsetter. Indices not of length 6\n");
+    }
+    // Lop off the first value from the indices to get indices without quant - needed for effort and catch_q
+    std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
+    std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
+    FLQuantAD effort = fisheries(fishery_no).effort(indices_min5, indices_max5);
+    FLQuantAD sel = fisheries(fishery_no, catch_no).catch_sel()(indices_min, indices_max);
+    FLQuantAD biomass = biols(biol_no).biomass(indices_min5, indices_max5);
+    FLQuantAD fout(indices_max[0]-indices_min[0]+1, indices_max[1]-indices_min[1]+1, indices_max[2]-indices_min[2]+1, indices_max[3]-indices_min[3]+1, indices_max[4]-indices_min[4]+1, indices_max[5] - indices_min[5]+1);
+    // Ugly code - q_params, effort and sel are all different dims
+    std::vector<unsigned int> dim = fout.get_dim();
+    for (int iter_count = 1; iter_count <= dim[5]; ++iter_count){
+        for (int area_count = 1; area_count <= dim[4]; ++area_count){
+            for (int season_count = 1; season_count <= dim[3]; ++season_count){
+                for (int unit_count = 1; unit_count <= dim[2]; ++unit_count){
+                    for (int year_count = 1; year_count <= dim[1]; ++year_count){
+                        // Get alpha * biomass ^ -beta * effort (not age structured)
+                        std::vector<double> q_params = fisheries(fishery_no, catch_no).catch_q_params(year_count + indices_min[1] - 1, unit_count + indices_min[2] - 1, season_count + indices_min[3] - 1, area_count + indices_min[4] - 1, iter_count + indices_min[5] - 1);
+                        adouble temp_qe = q_params[0] * pow(biomass(1, year_count, unit_count, season_count, area_count, iter_count), -1.0 * q_params[1]) * effort(1, year_count, unit_count, season_count, area_count, iter_count);
+                        for (int quant_count = 1; quant_count <= dim[0]; ++quant_count){
+                            // * sel (which is age structured)
+                            fout(quant_count, year_count, unit_count, season_count, area_count, iter_count) =  temp_qe * sel(quant_count, year_count, unit_count, season_count, area_count, iter_count);
+    }}}}}}
+    return fout;
+}
+/*! \brief Calculate the instantaneous fishing mortality of a single biol from a single fishery / catch over all dimensions.
+ * It is assumed that the fishery / catch actually fishes the biol (no check is made).
+ * \param fishery_no the position of the fishery within the fisheries (starting at 1).
+ * \param catch_no the position of the catch within the fishery (starting at 1).
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ */
+FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no) const {
+    // Just call the subset method with full indices
+    std::vector<unsigned int> indices_max = biols(biol_no).n().get_dim();
+    std::vector<unsigned int> indices_min(6,1);
+    FLQuantAD f = get_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
+    return f;
+}
+/*! \brief Total instantaneous fishing mortality on a biol over a subset of dimensions
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
+ * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
+ */
+FLQuantAD operatingModel::get_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+    unsigned int fishery_no;
+    unsigned int catch_no;
+    // We need to know the Fishery / Catches that catch the biol
+    const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
+    // What happens if no-one is fishing that biol? FC.nrow() == 0 so loop never triggers
+    FLQuantAD total_f(indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1, indices_max[5] - indices_min[5] + 1); 
+    total_f.fill(0.0);
+    for (unsigned int f_counter=0; f_counter < FC.nrow(); ++f_counter){
+        total_f = total_f + get_f(FC(f_counter,0), FC(f_counter,1), biol_no, indices_min, indices_max);
+    }
+    return total_f;
+}
+/*! \brief Total instantaneous fishing mortality on a biol over all dimensions
+ *
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ */
+FLQuantAD operatingModel::get_f(const int biol_no) const {
+    std::vector<unsigned int> indices_max = biols(biol_no).n().get_dim();
+    std::vector<unsigned int> indices_min(6,1);
+    FLQuantAD f = get_f(biol_no, indices_min, indices_max);
+    return f;
+}
+//@}
+
+/*! \brief Project the Biols in the operatingModel by a single timestep
+ *   Projects the Biols in the operatingModel by a single timestep.
+ *   All abundances in the Biols are updated in the timestep based on the effort in the previous timestep.
+ *   This assumes that the instantaneous rate of fishing and natural mortalities are constant over time and age and occur simultaneously.
+ *   If a Biol is caught by multiple Catches, the fishing mortalities happen at the same time (and at the same time as the natural mortality) in the timestep.
+ *   \param timestep The time step for the projection.
+ */
+void operatingModel::project_biols(const int timestep){
+    // N2 = N1 * (exp -Z)
+    // Add recruitment
+    Rprintf("In operatingModel::project_biols\n");
+    if (timestep < 2){
+        Rcpp::stop("In operatingModel::project_biols. Uses effort in previous timesteo so timestep must be at least 2.");
+    }
+
+    unsigned int year = 0;
+    unsigned int season = 0;
+    unsigned int prev_year = 0;
+    unsigned int prev_season = 0;
+    std::vector<unsigned int> biol_dim = biols(1).n().get_dim(); // All biols have same year and season range, so pick first one
+    timestep_to_year_season(timestep, biol_dim[3], year, season);
+    timestep_to_year_season(timestep-1, biol_dim[3], prev_year, prev_season);
+    // timestep checks
+    if ((year > biol_dim[1]) | (season > biol_dim[3])){
+        Rcpp::stop("In operatingModel::project_biols. Timestep outside of range");
+    }
+    // CAREFUL WITH NUMBER OF ITERS - do we allow different iterations across objects?
+    // No, each FLCatch etc will have 1 or n
+    // All driven by effort (as each iteration needs to the find the effort_mult that hits it), so the iterations of effort are the iterations of the OM
+    // The iterations of effort are the same for all FLFishery objects in an FLFisheries
+    // The n(biol) and catch_n(catch) are updated in projection loop by effort, so these members also have iterations of the OM
+    unsigned int niter = biol_dim[5];
+    // Not yet set up for units and areas
+    unsigned int unit = 1;
+    unsigned int area = 1;
+
+    // Update biol in timestep based on effort in previous timestep
+    //unsigned int ssb_year = 0;
+    //unsigned int ssb_season = 0;
+
+    // In what age do we put next timestep abundance? If beginning of year, everything is one year older
+    unsigned int age_shift = 0;
+    if (season == 1){
+        age_shift = 1;
+    }
+
+    // Loop over each biol
+    for (unsigned int biol_counter=1; biol_counter <= biols.get_nbiols(); ++biol_counter){
+        // Indices for subsetting the previous timestep
+        std::vector<unsigned int> biol_dim = biols(biol_counter).n().get_dim();
+        std::vector<unsigned int> prev_indices_min{1, prev_year, unit, prev_season, area, 1};
+        std::vector<unsigned int> prev_indices_max{biol_dim[0], prev_year, unit, prev_season, area, niter};
+
+        std::vector<adouble> rec = calc_rec(biol_counter, timestep);
+
+        // Get survivors from last timestep 
+        FLQuantAD z_temp = get_f(biol_counter, prev_indices_min, prev_indices_max) + biols(biol_counter).m(prev_indices_min, prev_indices_max);
+        FLQuantAD survivors = biols(biol_counter).n(prev_indices_min, prev_indices_max) * exp(-1.0 * z_temp);
+
+        // Update biol in timestep
+        // Less the final survivor age (careful with age shift)
+        for (unsigned int icount = 1; icount <= niter; ++icount){
+            for (unsigned int qcount = 1; qcount <= (biol_dim[0] - 1); ++qcount){
+                biols(biol_counter).n(qcount + age_shift, year, unit, season, area, icount) = survivors(qcount, 1, 1, 1, 1, icount);
+            }
+            // If at start of year add on plus group
+            if (season == 1){
+                biols(biol_counter).n(biol_dim[0], year, unit, season, area, icount) = biols(biol_counter).n(biol_dim[0], year, unit, season, area, icount) + survivors(biol_dim[0], 1, 1, 1, 1, icount);
+                // Put recruitment into first age
+                //biols(biol_counter).n(1, year, unit, season, area, icount) = rec;
+            }
+            // Else the final survivor age gets put in final age
+            else {
+                biols(biol_counter).n(biol_dim[0], year, unit, season, area, icount) = survivors(biol_dim[0], 1, 1, 1, 1, icount);
+                // Add recruitment into first age (so total = survivors + rec)
+                //biols(biol_counter).n(1, year, unit, season, area, icount) = biols(biol_counter).n(1, year, unit, season, area, icount) + rec;
+            }
+        }
+    }
+    return;
+}
+
+// Currently not using catch_q method - instead it is embedded in get_f()
+// It could be useful if we wanted to use different catch_q methods rather than fixing it in get_f
 ///*!
 // * \name Catchability
 // * Calculate the catchability of a fishery / catch fishing a biol. 
@@ -282,97 +506,6 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
 //    return q;
 //}
 ////@}
-
-/*! \name get_f
- * Calculate the instantaneous fishing mortality 
- * This method is the workhorse fishing mortality method that is called by other fishing mortality methods that do make checks.
- * F = effort * selectivity * catchability.
- * F = effort * selectivity * alpha * biomass ^ -beta
- */
-//@{
-/*! \brief Calculate the instantaneous fishing mortality of a single biol from a single fishery / catch over a subset of dimensions.
- * It is assumed that the fishery / catch actually fishes the biol (no check is made).
- * \param fishery_no the position of the fishery within the fisheries (starting at 1).
- * \param catch_no the position of the catch within the fishery (starting at 1).
- * \param biol_no the position of the biol within the biols (starting at 1).
- * \param indices_min The minimum indices quant, year, unit etc (length 6)
- * \param indices_max The maximum indices quant, year, unit etc (length 6)
-*/
-FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if (indices_min.size() != 6 | indices_max.size() != 6){
-        Rcpp::stop("In operatingModel get_f subsetter. Indices not of length 6\n");
-    }
-    // Lop off the first value from the indices to get indices without quant - needed for effort and catch_q
-    std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
-    std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
-    FLQuantAD effort = fisheries(fishery_no).effort(indices_min5, indices_max5);
-    FLQuantAD sel = fisheries(fishery_no, catch_no).catch_sel()(indices_min, indices_max);
-    FLQuantAD biomass = biols(biol_no).biomass(indices_min5, indices_max5);
-    FLQuantAD fout(indices_max[0]-indices_min[0]+1, indices_max[1]-indices_min[1]+1, indices_max[2]-indices_min[2]+1, indices_max[3]-indices_min[3]+1, indices_max[4]-indices_min[4]+1, indices_max[5] - indices_min[5]+1);
-    // Ugly code - q_params, effort and sel are all different dims
-    std::vector<unsigned int> dim = fout.get_dim();
-    for (int iter_count = 1; iter_count <= dim[5]; ++iter_count){
-        for (int area_count = 1; area_count <= dim[4]; ++area_count){
-            for (int season_count = 1; season_count <= dim[3]; ++season_count){
-                for (int unit_count = 1; unit_count <= dim[2]; ++unit_count){
-                    for (int year_count = 1; year_count <= dim[1]; ++year_count){
-                        // Get alpha * biomass ^ -beta * effort (not age structured)
-                        std::vector<double> q_params = fisheries(fishery_no, catch_no).catch_q_params(year_count + indices_min[1] - 1, unit_count + indices_min[2] - 1, season_count + indices_min[3] - 1, area_count + indices_min[4] - 1, iter_count + indices_min[5] - 1);
-                        adouble temp_qe = q_params[0] * pow(biomass(1, year_count, unit_count, season_count, area_count, iter_count), -1.0 * q_params[1]) * effort(1, year_count, unit_count, season_count, area_count, iter_count);
-                        for (int quant_count = 1; quant_count <= dim[0]; ++quant_count){
-                            // * sel (which is age structured)
-                            fout(quant_count, year_count, unit_count, season_count, area_count, iter_count) =  temp_qe * sel(quant_count, year_count, unit_count, season_count, area_count, iter_count);
-    }}}}}}
-    return fout;
-}
-
-/*! \brief Calculate the instantaneous fishing mortality of a single biol from a single fishery / catch over all dimensions.
- * It is assumed that the fishery / catch actually fishes the biol (no check is made).
- * \param fishery_no the position of the fishery within the fisheries (starting at 1).
- * \param catch_no the position of the catch within the fishery (starting at 1).
- * \param biol_no the position of the biol within the biols (starting at 1).
- */
-FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no) const {
-    // Just call the subset method with full indices
-    std::vector<unsigned int> indices_max = biols(biol_no).n().get_dim();
-    std::vector<unsigned int> indices_min(6,1);
-    FLQuantAD f = get_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
-    return f;
-}
-
-//@}
-
-/*! \brief Total instantaneous fishing mortality on a biol over a subset of dimensions
- * \param biol_no the position of the biol within the biols (starting at 1).
- * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
- * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
- */
-FLQuantAD operatingModel::get_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
-    unsigned int fishery_no;
-    unsigned int catch_no;
-    // We need to know the Fishery / Catches that catch the biol
-    const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
-    // What happens if no-one is fishing that biol? FC.nrow() == 0 so loop never triggers
-    FLQuantAD total_f(indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1, indices_max[5] - indices_min[5] + 1); 
-    total_f.fill(0.0);
-    for (unsigned int f_counter=0; f_counter < FC.nrow(); ++f_counter){
-        total_f = total_f + get_f(FC(f_counter,0), FC(f_counter,1), biol_no, indices_min, indices_max);
-    }
-    return total_f;
-}
-
-/*! \brief Total instantaneous fishing mortality on a biol over all dimensions
- *
- * \param biol_no the position of the biol within the biols (starting at 1).
- */
-FLQuantAD operatingModel::get_f(const int biol_no) const {
-    std::vector<unsigned int> indices_max = biols(biol_no).n().get_dim();
-    std::vector<unsigned int> indices_min(6,1);
-    FLQuantAD f = get_f(biol_no, indices_min, indices_max);
-    return f;
-}
-//@}
-
 ///*! \name Calculate the partial instantaneous fishing mortality on a single biol from a single fishery / catch
 // * Checks are made to see if the fishery / catch actually catches the biol.
 // * If the fishery / catch does not actually fish that biol, then the partial fishing mortality will be 0.
@@ -552,111 +685,6 @@ FLQuantAD operatingModel::get_f(const int biol_no) const {
 //    return;
 //}
 //
-////! Project the Biols in the operatingModel by a single timestep
-///*!
-//    Projects the Biols in the operatingModel by a single timestep.
-//    All abundances in the Biols are updated in the timestep based on the effort in the previous timestep.
-//    This assumes that the instantaneous rate of fishing and natural mortalities are constant over time and age and occur simultaneously.
-//    If a Biol is caught by multiple Catches, the fishing mortalities happen at the same time (and at the same time as the natural mortality) in the timestep.
-//    \param timestep The time step for the projection.
-// */
-///*
-//void operatingModel::project_biols(const int timestep){
-//    // N2 = N1 * (exp -Z)
-//    Rprintf("In operatingModel::project_biols\n");
-//    if (timestep < 2){
-//        Rcpp::stop("In operatingModel::project_biols. timestep must be at least 2.");
-//    }
-//
-//    unsigned int year = 0;
-//    unsigned int season = 0;
-//    unsigned int prev_year = 0;
-//    unsigned int prev_season = 0;
-//    std::vector<unsigned int> biol_dim = biols(1).n().get_dim(); // All biols have same year and season range, so pick first one
-//    timestep_to_year_season(timestep, biol_dim[3], year, season);
-//    timestep_to_year_season(timestep-1, biol_dim[3], prev_year, prev_season);
-//    // timestep checks
-//    if ((year > biol_dim[1]) | (season > biol_dim[3])){
-//        Rcpp::stop("In operatingModel::project_biols. Timestep outside of range");
-//    }
-//    // CAREFUL WITH NUMBER OF ITERS - do we allow different iterations across objects? - No
-//    // In which case we will need to store niter at an operatingModel level
-//    unsigned int niter = biol_dim[5];
-//    // Not yet set up for units and areas
-//    unsigned int unit = 1;
-//    unsigned int area = 1;
-//
-//    // Update biol in timestep based on effort in previous timestep
-//    unsigned int ssb_year = 0;
-//    unsigned int ssb_season = 0;
-//    // In what age do we put next timestep abundance? If beginning of year, everything is one year older
-//    int age_shift = 0;
-//    if (season == 1){
-//        age_shift = 1;
-//    }
-//
-//    for (unsigned int biol_counter=1; biol_counter <= biols.get_nbiols(); ++biol_counter){
-//        // Indices for subsetting the previous timestep
-//        std::vector<unsigned int> biol_dim = biols(biol_counter).n().get_dim();
-//        std::vector<unsigned int> indices_min{1, prev_year, unit, prev_season, area, 1};
-//        std::vector<unsigned int> indices_max{biol_dim[0], prev_year, unit, prev_season, area, niter};
-//
-//        // SSB and Recruitment
-//        // Get the year and season of the SSB that will result in recruitment in the timestep
-//        unsigned int ssb_timestep = timestep - biols(biol_counter).srr.get_timelag();
-//        if (ssb_timestep < 1){
-//            Rcpp::stop("project_timestep: ssb timestep outside of range");
-//        }
-//        timestep_to_year_season(ssb_timestep, biol_dim[3], ssb_year, ssb_season);
-//        // Update min and max_indices for ssb and get it
-//        std::vector<unsigned int> ssb_indices_min = {ssb_year, unit, ssb_season, area, 1};
-//        std::vector<unsigned int> ssb_indices_max = {ssb_year, unit, ssb_season, area, niter};
-//        FLQuantAD ssb_flq = ssb(biol_counter, ssb_indices_min, ssb_indices_max);
-//
-//        // Get abundances in next timestep from rec+1 to pg
-//        FLQuantAD z_temp = z(biol_counter, indices_min, indices_max);
-//        FLQuantAD next_n = biols(biol_counter).n(indices_min, indices_max) * exp(-1.0 * z_temp);
-//
-//        // Update biol in next timestep using next n = current n * exp(-z) taking care of age shifts and plus groups
-//        for (int iter_count = 1; iter_count <= niter; ++iter_count){
-//            // Recruitment
-//            // rec is calculated in a scalar way - i.e. not passing it a vector of SSBs, so have to do one iter at a time
-//            adouble ssb_temp = ssb_flq(1,1,1,1,1,iter_count);
-//            //Rprintf("year: %i, season: %i, ssb_year: %i, ssb_season: %i, ssb_temp: %f\n", year, season, ssb_year, ssb_season, Value(ssb_temp));
-//            adouble rec_temp = biols(biol_counter).srr.eval_model(ssb_temp, year, 1, season, 1, iter_count);
-//            //Rprintf("iter_count %i; ssb_temp %f; rec_temp %f\n", iter_count, Value(ssb_temp), Value(rec_temp));
-//            // Apply the residuals to rec_temp
-//            // Use of if statement is OK because for each taping it will only branch the same way (depending on residuals_mult)
-//            if (biols(biol_counter).srr.get_residuals_mult()){
-//                //rec_temp = rec_temp * exp(biols(biol_counter).srr.get_residuals()(1,year,1,season,1,iter_count));
-//                rec_temp = rec_temp * biols(biol_counter).srr.get_residuals()(1,year,1,season,1,iter_count);
-//            }
-//            else{
-//                rec_temp = rec_temp + biols(biol_counter).srr.get_residuals()(1,year,1,season,1,iter_count);
-//            }
-//
-//            // Update ages rec+1 upto final age 
-//            for (int quant_count = 2; quant_count <= biol_dim[0]; ++quant_count){
-//                biols(biol_counter).n()(quant_count, year, 1, season, 1, iter_count) = next_n(quant_count - age_shift, 1,unit,1,area,iter_count);
-//            }
-//            // Fix Plus Group and add in recruitment
-//            // If next_season is start of the year assume last age is a plusgroup and abundance in first age group is ONLY recruitment
-//            if (season == 1){
-//                biols(biol_counter).n()(biol_dim[0], year, 1, season, 1, iter_count) = biols(biol_counter).n()(biol_dim[0], year, 1, season, 1, iter_count) + next_n(biol_dim[0],1,unit,1,area,iter_count);
-//                // Rec in first age is only the calculated recruitment
-//                biols(biol_counter).n()(1,year,1,season,1,iter_count) = rec_temp;
-//            }
-//            // Otherwise add in recruitment to first age group
-//            else {
-//                // Add rec to the existing age 1
-//                biols(biol_counter).n()(1, year, 1, season, 1, iter_count) = next_n(1, 1, unit, 1, area, iter_count) + rec_temp;
-//            }
-//        }
-//    }
-//
-//
-//    return;
-//}
 //*/
 //
 //

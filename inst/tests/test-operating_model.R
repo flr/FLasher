@@ -36,87 +36,6 @@ test_that("operatingModel constructors and updaters",{
     # Residuals, fisheries, biols and who is fishing on what
 })
 
-test_that("operatingModel SRP methods",{
-          # Test f_prop_spwn when FLFishery is decided
-    #om_bits <- make_test_operatingModel1(niters = 10)
-    #ftime <- lapply(om_bits[["fisheries"]], function(x) x@ftime)
-    #FLQuantAD test_operatingModel_f_prop_spwn_FLQ_subset(FLFisheriesAD flfs, Rcpp::List flbs_list, const fwdControl ctrl, const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-
-
-
-    for (biol_no in 1:length(om_bits[["biols"]])){
-        biol <- om_bits[["biols"]][[biol_no]][["biol"]]
-        dims <- dim(n(biol))
-        indices_min <- round(runif(5, min=1, max=ceiling(dims[-1] / 2)))
-        indices_max <- round(runif(5, min=indices_min, max=dims[-1]))
-        srp_out <- test_operatingModel_SRP_FLQ_subset(om_bits[["fisheries"]], om_bits[["biols"]], om_bits[["fwc"]], biol_no, indices_min, indices_max)
-        # Without fishing atm
-        srp_in <- quantSums(n(biol) * mat(biol) * wt(biol) * exp(-m(biol)*spwn(biol)))[, indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5]] 
-        expect_equal(srp_in@.Data, srp_out@.Data)
-    }
-
-
-})
-
-#test_that("operatingModel Q methods",{
-#    flq <- random_FLQuant_generator()
-#    flq <- random_FLQuant_generator(fixed_dims = c(10,52,1,1,1,20))
-#    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
-#    # Pull out just FLBiols for testing
-#    flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
-#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
-#    fc <- dummy_fwdControl_generator(years = 1, niters = dim(flq)[6])
-#    fishery_no <- round(runif(1,min=1, max=length(flfs)))
-#    catch_no <- round(runif(1,min=1, max=length(flfs[[fishery_no]])))
-#    biol_no <- round(runif(1,min=1, max=length(flbs)))
-#    cq_flq <- as(catch.q(flfs[[fishery_no]][[catch_no]]), "FLQuant")
-#    biomass <- quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))
-#    qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
-#    # FLQuantAD subset
-#    dims_max <- dim(n(flbs[[1]][["biol"]]))
-#    dims_min <- round(runif(6, min=1,max=dims_max))
-#    expect_that(test_operatingModel_catch_q_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dims_min, dims_max), throws_error()) # indices too long
-#    qout <- test_operatingModel_catch_q_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dims_min[-1], dims_max[-1])
-#    qin_subset <- qin[, dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]]
-#    # Dimnames not fixed so check contents and dim
-#    expect_that(c(qout), equals(c(qin_subset)))
-#    expect_that(dim(qout), equals(dim(qin_subset)))
-#    # FLQuantAD
-#    qout <- test_operatingModel_catch_q_FLQuantAD(flfs, flbs, fc, fishery_no, catch_no, biol_no)
-#    expect_that(c(qout), equals(c(qin)))
-#    expect_that(dim(qout), equals(dim(qin)))
-#    # Single value
-#    indices <- round(runif(5, min = 1, max = dim(flq)[-1]))
-#    qout <- test_operatingModel_catch_q_adouble(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices)
-#    expect_that(qout, equals(c(qin[1, indices[1],indices[2],indices[3],indices[4],indices[5]])))
-#})
-#
-#test_that("age_range_indices", {
-#    # Ages 1 to 10
-#    flq <- random_FLQuant_generator(fixed_dims = 10)
-#    dimnames(flq)$age = as.character(1:10)
-#    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
-#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
-#    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
-#    fc@target@element[1,c("minAge", "maxAge", "target")] <- c(1, 10, 1)
-#    range <- test_operatingModel_get_target_age_range_indices(flfs, flbs, fc, 1, 1, 1)
-#    expect_that(range, equals(c(0,9)))
-#    # Start ages 3 
-#    dimnames(flq)$age = as.character(3:12)
-#    flb <- FLBiol(n = flq, desc = "something", name = "something")
-#    flbs[[1]][["biol"]] <- flb
-#    fc@target@element[1,c("minAge", "maxAge", "target")] <- c(5, 10, 1)
-#    range <- test_operatingModel_get_target_age_range_indices(flfs, flbs, fc, 1, 1, 1)
-#    expect_that(range, equals(c(2,7)))
-#    # Outside min age
-#    fc@target@element[1,c("minAge", "maxAge", "target")] <- c(2, 10, 1)
-#    expect_that(test_operatingModel_get_target_age_range_indices(flfs, flbs, fc, 1, 1, 1), throws_error())
-#    # Outside max
-#    fc@target@element[1,c("minAge", "maxAge", "target")] <- c(3, 15, 1)
-#    expect_that(test_operatingModel_get_target_age_range_indices(flfs, flbs, fc, 1, 1, 1), throws_error())
-#})
-#
-
 # Test F method with random Biols and Fisheries
 # No check if FC catches B
 test_that("operatingModel get_f method for FCB with random OM objects",{
@@ -195,6 +114,192 @@ test_that("operatingModel get_f for biols",{
         }
     }
 })
+
+test_that("operatingModel SRP methods",{
+    # test f_prop_spwn
+    # Random OM
+    flq <- random_FLQuant_generator()
+    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
+    # Pull out just FLBiols for testing
+    flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
+    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
+    # Random fishery and biol
+    biol_no <- round(runif(1, min=1, max=length(flbs)))
+    fishery_no <- round(runif(1, min=1, max=length(flfs)))
+    # Get full FLQ
+    indices_min <- rep(1,6)
+    indices_max <- dim(n(flbs_in[[biol_no]]))
+
+    #hperiod <- flfs[[fishery_no]]@hperiod
+    #spwn(flbs_in[[biol_no]]) # should just be dim 1
+    #fprop <- flq[1,]
+
+    #fprop[hperiod[1,] > spwn(flbs_in[[biol_no]])[1,]] <- 0 # Set fprop to 0, all fishing after
+    #fprop[hperiod[2,] < spwn(flbs_in[[biol_no]])[1,]] <- 1 # Set fprop to 1, all fishing before
+    ## Others that are mixed
+    ##straddle <- (hperiod[1,] < spwn(flbs_in[[biol_no]])[1,] & hperiod[2,] > spwn(flbs_in[[biol_no]])[1,])
+    #straddle <- hperiod[1,] < spwn(flbs_in[[biol_no]])[1,] 
+
+    #fprop_straddle <- (c(spwn(flbs_in[[biol_no]])[1,])[c(straddle)] - c(hperiod[1,])[c(straddle)]) / (c(hperiod[2,])[c(straddle)] - c(hperiod[1,])[c(straddle)])
+    #fprop[hperiod[1,] < spwn(flbs_in[[biol_no]])[1,] & hperiod[2,] > spwn(flbs_in[[biol_no]])[1,]] <- fprop_straddle
+
+
+
+    ## Cannot test as no hperiod[2,] in C++
+    #prop_out <- test_operatingModel_f_prop_spwn_FLQ_subset(flfs, flbs, fc, fishery_no, biol_no, indices_min[-1], indices_max[-1])
+
+
+
+
+
+
+
+    #om_bits <- make_test_operatingModel1(niters = 10)
+
+    #hperiod <- lapply(om_bits[["fisheries"]], function(x) x@hperiod)
+
+    #FLQuantAD test_operatingModel_f_prop_spwn_FLQ_subset(FLFisheriesAD flfs, Rcpp::List flbs_list, const fwdControl ctrl, const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+
+
+
+    #for (biol_no in 1:length(om_bits[["biols"]])){
+    #    biol <- om_bits[["biols"]][[biol_no]][["biol"]]
+    #    dims <- dim(n(biol))
+    #    indices_min <- round(runif(5, min=1, max=ceiling(dims[-1] / 2)))
+    #    indices_max <- round(runif(5, min=indices_min, max=dims[-1]))
+    #    # F prop spwn
+    #    fcb <- om_bits[["fwc"]]@target@FCB
+    #    fc <- fcb[fcb[,"B"] == biol_no,,drop=FALSE]
+
+    #    for (fc_count in 1:nrow(fc)){
+    #        #hperiod <- 
+
+    #    }
+
+    #    }
+
+
+
+
+    #    srp_out <- test_operatingModel_SRP_FLQ_subset(om_bits[["fisheries"]], om_bits[["biols"]], om_bits[["fwc"]], biol_no, indices_min, indices_max)
+    #    # Without fishing atm
+
+    #    # Get Fprop
+    #    # Get F prop: F * Fprop
+
+    #    srp_in <- quantSums(n(biol) * mat(biol) * wt(biol) * exp(-m(biol)*spwn(biol)))[, indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5]] 
+    #    expect_equal(srp_in@.Data, srp_out@.Data)
+    #}
+
+
+})
+
+test_that("operatingModel project_biol", {
+    # Without Rec for the time being
+    # Seasonal FLQ
+    # Assume get_f method works (it does...)
+    flq <- random_FLQuant_generator(fixed_dims = c(5,6,1,4,1,10))
+    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
+    # Pull out just FLBiols for testing
+    flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
+    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
+    # Fix FCB
+    FCB <- array(NA, dim=c(3,3))
+    FCB[1,] <- c(1,1,1)
+    FCB[2,] <- c(1,2,2)
+    FCB[3,] <- c(2,1,2)
+    attr(fc@target, "FCB") <- FCB
+    # Mid year 
+    season <- round(runif(1,min=2,max=4))
+    year <- round(runif(1,min=1,dim(flq)[2]))
+    timestep <- test_year_season_to_timestep(flq, year, season)
+    om_out <- test_operatingModel_project_biols(flfs, flbs, fc, timestep)
+    for (biol_count in 1:2){
+        fout <- test_operatingModel_get_f_B(flfs, flbs, fc, biol_count)[,year,1,season-1,1,]
+        old_n <- n(flbs_in[[biol_count]])[,year,1,season-1,1,]
+        new_n_in <- n(om_out[["biols"]][[biol_count]])[,year,1,season,1,]
+        survivors <- old_n * exp(- (fout + m(flbs_in[[biol_count]])[,year,1,season-1,1,]))
+        # Ignore recruitment for now
+        test_FLQuant_equal(survivors[-1,], new_n_in[-1,])
+    }
+    # Start of year - plusgroup
+    season <- 1
+    year <- round(runif(1,min=2,dim(flq)[2]))
+    timestep <- test_year_season_to_timestep(flq, year, season)
+    om_out <- test_operatingModel_project_biols(flfs, flbs, fc, timestep)
+    for (biol_count in 1:2){
+        fout <- test_operatingModel_get_f_B(flfs, flbs, fc, biol_count)[,year-1,1,4,1,]
+        old_n <- n(flbs_in[[biol_count]])[,year-1,1,4,1,]
+        survivors <- old_n * exp(- (fout + m(flbs_in[[biol_count]])[,year-1,1,4,1,]))
+        new_n_in <- n(om_out[["biols"]][[biol_count]])[,year,1,season,1,]
+        # Ignore recruitment for now
+        # Not plusgroup
+        test_FLQuant_equal(survivors[1:(dim(flq)[1]-2),], new_n_in[2:(dim(flq)[1]-1),])
+        # plusgroup
+        test_FLQuant_equal(survivors[dim(flq)[1],] + survivors[dim(flq)[1]-1,], new_n_in[dim(flq)[1],])
+    }
+})
+
+#test_that("operatingModel Q methods",{
+#    flq <- random_FLQuant_generator()
+#    flq <- random_FLQuant_generator(fixed_dims = c(10,52,1,1,1,20))
+#    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
+#    # Pull out just FLBiols for testing
+#    flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
+#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
+#    fc <- dummy_fwdControl_generator(years = 1, niters = dim(flq)[6])
+#    fishery_no <- round(runif(1,min=1, max=length(flfs)))
+#    catch_no <- round(runif(1,min=1, max=length(flfs[[fishery_no]])))
+#    biol_no <- round(runif(1,min=1, max=length(flbs)))
+#    cq_flq <- as(catch.q(flfs[[fishery_no]][[catch_no]]), "FLQuant")
+#    biomass <- quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))
+#    qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
+#    # FLQuantAD subset
+#    dims_max <- dim(n(flbs[[1]][["biol"]]))
+#    dims_min <- round(runif(6, min=1,max=dims_max))
+#    expect_that(test_operatingModel_catch_q_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dims_min, dims_max), throws_error()) # indices too long
+#    qout <- test_operatingModel_catch_q_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, dims_min[-1], dims_max[-1])
+#    qin_subset <- qin[, dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]]
+#    # Dimnames not fixed so check contents and dim
+#    expect_that(c(qout), equals(c(qin_subset)))
+#    expect_that(dim(qout), equals(dim(qin_subset)))
+#    # FLQuantAD
+#    qout <- test_operatingModel_catch_q_FLQuantAD(flfs, flbs, fc, fishery_no, catch_no, biol_no)
+#    expect_that(c(qout), equals(c(qin)))
+#    expect_that(dim(qout), equals(dim(qin)))
+#    # Single value
+#    indices <- round(runif(5, min = 1, max = dim(flq)[-1]))
+#    qout <- test_operatingModel_catch_q_adouble(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices)
+#    expect_that(qout, equals(c(qin[1, indices[1],indices[2],indices[3],indices[4],indices[5]])))
+#})
+#
+#test_that("age_range_indices", {
+#    # Ages 1 to 10
+#    flq <- random_FLQuant_generator(fixed_dims = 10)
+#    dimnames(flq)$age = as.character(1:10)
+#    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
+#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
+#    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
+#    fc@target@element[1,c("minAge", "maxAge", "target")] <- c(1, 10, 1)
+#    range <- test_operatingModel_get_target_age_range_indices(flfs, flbs, fc, 1, 1, 1)
+#    expect_that(range, equals(c(0,9)))
+#    # Start ages 3 
+#    dimnames(flq)$age = as.character(3:12)
+#    flb <- FLBiol(n = flq, desc = "something", name = "something")
+#    flbs[[1]][["biol"]] <- flb
+#    fc@target@element[1,c("minAge", "maxAge", "target")] <- c(5, 10, 1)
+#    range <- test_operatingModel_get_target_age_range_indices(flfs, flbs, fc, 1, 1, 1)
+#    expect_that(range, equals(c(2,7)))
+#    # Outside min age
+#    fc@target@element[1,c("minAge", "maxAge", "target")] <- c(2, 10, 1)
+#    expect_that(test_operatingModel_get_target_age_range_indices(flfs, flbs, fc, 1, 1, 1), throws_error())
+#    # Outside max
+#    fc@target@element[1,c("minAge", "maxAge", "target")] <- c(3, 15, 1)
+#    expect_that(test_operatingModel_get_target_age_range_indices(flfs, flbs, fc, 1, 1, 1), throws_error())
+#})
+#
 
 
 #test_that("operatingModel annual project fisheries and biols",{

@@ -185,9 +185,9 @@ random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 10
     catches <- random_FLCatches_generator(min_catches, max_catches, ...)
     fishery <- FLFishery(catches)
     # fill up effort, vcost and fcost
-    effort(fishery)[] <- rnorm(prod(dim(effort(fishery))),sd=sd)
-    vcost(fishery)[] <- rnorm(prod(dim(vcost(fishery))),sd=sd)
-    fcost(fishery)[] <- rnorm(prod(dim(fcost(fishery))),sd=sd)
+    effort(fishery)[] <- abs(rnorm(prod(dim(effort(fishery))),sd=sd))
+    vcost(fishery)[] <- abs(rnorm(prod(dim(vcost(fishery))),sd=sd))
+    fcost(fishery)[] <- abs(rnorm(prod(dim(fcost(fishery))),sd=sd))
 
     fishery@hperiod[] <- rnorm(prod(dim(fishery@hperiod)),sd=sd)
     # hperiod 1 must be <= 2

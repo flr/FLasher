@@ -68,17 +68,21 @@ class operatingModel {
         // Methods
         FLQuantAD srp(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant f_prop_spwn(const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        std::vector<adouble> calc_rec(const int biol_no, const int timestep) const;
 
         /* Accessors */
-
-        //FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        //FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no) const;
-        //adouble catch_q(const int fishery_no, const int catch_no, const int biol_no, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter) const;
-
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no) const; 
         FLQuantAD get_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD get_f(const int biol_no) const;
+
+        void project_biols(const int timestep); // Uses effort in previous timestep
+
+        // Currently not using catch_q method - instead it is embedded in get_f()
+        // It could be useful if we wanted to use different catch_q methods rather than fixing it in get_f
+        //FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        //FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no) const;
+        //adouble catch_q(const int fishery_no, const int catch_no, const int biol_no, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter) const;
 
         //FLQuantAD partial_f(const int fishery_no, const int catch_no, const int biol_no) const; 
         //FLQuantAD partial_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; 
@@ -100,7 +104,6 @@ class operatingModel {
             @param timestep the timestep to project for
         */
         //void project_timestep(const int timestep);
-        //void project_biols(const int timestep); // Uses effort in previous timestep
         //void project_fisheries(const int timestep); // Uses effort in that timestep
 
         // Timestep of effort which drives the target value

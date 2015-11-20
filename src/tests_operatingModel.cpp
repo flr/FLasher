@@ -91,7 +91,6 @@ FLQuantAD test_operatingModel_f_prop_spwn_FLQ_subset(FLFisheriesAD flfs, fwdBiol
     return om.f_prop_spwn(fishery_no, biol_no, indices_min, indices_max);
 }
 
-
 /*----------- catch.q, F and Z methods --------------*/
 
 //// catch_q()
@@ -154,6 +153,13 @@ FLQuantAD test_operatingModel_get_f_B(FLFisheriesAD flfs, fwdBiolsAD biols, cons
     return total_f;
 }
 
+// [[Rcpp::export]]
+operatingModel test_operatingModel_project_biols(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int timestep){
+    operatingModel om(flfs, biols, ctrl);
+    om.project_biols(timestep);
+    return om;
+}
+
 //// [[Rcpp::export]]
 //FLQuantAD test_operatingModel_partial_f(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no){
 //    fwdBiolsAD biols(flbs_list_sexp);
@@ -193,14 +199,6 @@ FLQuantAD test_operatingModel_get_f_B(FLFisheriesAD flfs, fwdBiolsAD biols, cons
 //    fwdBiolsAD biols(flbs_list_sexp);
 //    operatingModel om(flfs, biols, ctrl);
 //    om.project_timestep(timestep);
-//    return om;
-//}
-//
-//// [[Rcpp::export]]
-//operatingModel test_operatingModel_project_biols(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int timestep){
-//    fwdBiolsAD biols(flbs_list_sexp);
-//    operatingModel om(flfs, biols, ctrl);
-//    om.project_biols(timestep);
 //    return om;
 //}
 //

@@ -1857,3 +1857,7 @@ test_operatingModel_get_f_B <- function(flfs, biols, ctrl, biol_no) {
     .Call('FLasher_test_operatingModel_get_f_B', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no)
 }
 
+test_operatingModel_project_biols <- function(flfs, biols, ctrl, timestep) {
+    .Call('FLasher_test_operatingModel_project_biols', PACKAGE = 'FLasher', flfs, biols, ctrl, timestep)
+}
+
