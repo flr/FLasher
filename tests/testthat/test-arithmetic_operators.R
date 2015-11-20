@@ -267,9 +267,9 @@ test_that("FLQuant and FLQuantAD summary functions", {
     flq_in <- random_FLQuant_generator()
     max_flq_in <- apply(flq_in,2:6, max)
     max_flq_out <- test_FLQuant_max_quant(flq_in)
-    expect_identical(max_flq_in, max_flq_out)
+    test_FLQuant_equal(max_flq_in, max_flq_out)
     max_flq_out <- test_FLQuantAD_max_quant(flq_in)
-    expect_identical(max_flq_in, max_flq_out)
+    test_FLQuant_equal(max_flq_in, max_flq_out)
     # scale_by_max_quant
     flq_in <- abs(random_FLQuant_generator())
     scaled_in <- flq_in %/% apply(flq_in, 2:6, max)
@@ -324,7 +324,7 @@ test_that("Multiplication: iter = 1 or n", {
     flq_out <- test_FLQuant_FLQuantAD_multiplier_operator(flq2, flq1)
     test_FLQuant_equal(flq1 * flq2, flq_out)
     # n * m iters - non-conformable
-    flq1 <- random_FLQuant_generator()
+    flq1 <- random_FLQuant_generator(fixed_dims = c(NA, NA, NA, NA, NA, round(runif(1,min=2,max=10))))
     fixed_dims <- dim(flq1)
     fixed_dims[6] <- fixed_dims[6]+5 
     flq2 <- random_FLQuant_generator(fixed_dim=fixed_dims)
@@ -380,7 +380,7 @@ test_that("Division: iter = 1 or n", {
     flq_out <- test_FLQuant_FLQuantAD_division_operator(flq2, flq1)
     test_FLQuant_equal(flq2 / flq1, flq_out)
     # n / m iters - non-conformable
-    flq1 <- random_FLQuant_generator()
+    flq1 <- random_FLQuant_generator(fixed_dims = c(NA, NA, NA, NA, NA, round(runif(1,min=2,max=10))))
     fixed_dims <- dim(flq1)
     fixed_dims[6] <- fixed_dims[6]+5 
     flq2 <- random_FLQuant_generator(fixed_dim=fixed_dims)
@@ -436,11 +436,11 @@ test_that("Subtraction: iter = 1 or n", {
     flq_out <- test_FLQuant_FLQuantAD_subtraction_operator(flq2, flq1)
     test_FLQuant_equal(flq2 - flq1, flq_out)
     # n - m iters - non-conformable
-    flq1 <- random_FLQuant_generator()
+    flq1 <- random_FLQuant_generator(fixed_dims = c(NA, NA, NA, NA, NA, round(runif(1,min=2,max=10))))
     fixed_dims <- dim(flq1)
     fixed_dims[6] <- fixed_dims[6]+5 
     flq2 <- random_FLQuant_generator(fixed_dim=fixed_dims)
-    expect_error(test_FLQuant_FLQuant_subtraction_assignment_operator(flq1, flq2))
+    expect_error( test_FLQuant_FLQuant_subtraction_assignment_operator(flq1, flq2))
     expect_error(test_FLQuantAD_FLQuantAD_subtraction_assignment_operator(flq1, flq2))
     expect_error(test_FLQuantAD_FLQuant_subtraction_assignment_operator(flq1, flq2))
     expect_error(test_FLQuant_FLQuant_subtraction_operator(flq1, flq2))
@@ -492,7 +492,7 @@ test_that("Addition: iter = 1 or n", {
     flq_out <- test_FLQuant_FLQuantAD_addition_operator(flq2, flq1)
     test_FLQuant_equal(flq1 + flq2, flq_out)
     # n + m iters + non-conformable
-    flq1 <- random_FLQuant_generator()
+    flq1 <- random_FLQuant_generator(fixed_dims = c(NA, NA, NA, NA, NA, round(runif(1,min=2,max=10))))
     fixed_dims <- dim(flq1)
     fixed_dims[6] <- fixed_dims[6]+5 
     flq2 <- random_FLQuant_generator(fixed_dim=fixed_dims)

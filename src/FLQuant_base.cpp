@@ -1184,7 +1184,7 @@ int dim5_matcher(const std::vector<unsigned int> dims_a, const std::vector<unsig
  * \param flq2 FLQuant of type double or adouble
  */
 template <typename T1, typename T2, typename T3>
-FLQuant_base<typename T1::result_type> sweep_flq(FLQuant_base<T2>& flq1, FLQuant_base<T3>& flq2, T1 func){
+FLQuant_base<typename T1::result_type> sweep_flq(const FLQuant_base<T2>& flq1, const FLQuant_base<T3>& flq2, T1 func){
     auto dim1 = flq1.get_dim();
     auto dim2 = flq2.get_dim();
     std::vector<unsigned int> dim_out(6);
@@ -1221,57 +1221,57 @@ FLQuant_base<typename T1::result_type> sweep_flq(FLQuant_base<T2>& flq1, FLQuant
 // Multiplication
 // Templated for D * D, AD * AD
 template <typename T>
-FLQuant_base<T> sweep_mult(FLQuant_base<T>& flq1, FLQuant_base<T>& flq2){
+FLQuant_base<T> sweep_mult(const FLQuant_base<T>& flq1,const FLQuant_base<T>& flq2){
     return sweep_flq(flq1, flq2, std::multiplies<T>());
 }
 
-FLQuant_base<adouble> sweep_mult(FLQuant_base<adouble>& flq1, FLQuant_base<double>& flq2){
+FLQuant_base<adouble> sweep_mult(const FLQuant_base<adouble>& flq1,const FLQuant_base<double>& flq2){
     return sweep_flq(flq1, flq2, std::multiplies<adouble>());
 }
 
-FLQuant_base<adouble> sweep_mult(FLQuant_base<double>& flq1, FLQuant_base<adouble>& flq2){
+FLQuant_base<adouble> sweep_mult(const FLQuant_base<double>& flq1,const FLQuant_base<adouble>& flq2){
     return sweep_flq(flq1, flq2, std::multiplies<adouble>());
 }
 
 // Division
 template <typename T>
-FLQuant_base<T> sweep_div(FLQuant_base<T>& flq1, FLQuant_base<T>& flq2){
+FLQuant_base<T> sweep_div(const FLQuant_base<T>& flq1, const FLQuant_base<T>& flq2){
     return sweep_flq(flq1, flq2, std::divides<T>());
 }
 
-FLQuant_base<adouble> sweep_div(FLQuant_base<adouble>& flq1, FLQuant_base<double>& flq2){
+FLQuant_base<adouble> sweep_div(const FLQuant_base<adouble>& flq1, const FLQuant_base<double>& flq2){
     return sweep_flq(flq1, flq2, std::divides<adouble>());
 }
 
-FLQuant_base<adouble> sweep_div(FLQuant_base<double>& flq1, FLQuant_base<adouble>& flq2){
+FLQuant_base<adouble> sweep_div(const FLQuant_base<double>& flq1, const FLQuant_base<adouble>& flq2){
     return sweep_flq(flq1, flq2, std::divides<adouble>());
 }
 
 // Addition
 template <typename T>
-FLQuant_base<T> sweep_plus(FLQuant_base<T>& flq1, FLQuant_base<T>& flq2){
+FLQuant_base<T> sweep_plus(const FLQuant_base<T>& flq1, const FLQuant_base<T>& flq2){
     return sweep_flq(flq1, flq2, std::plus<T>());
 }
 
-FLQuant_base<adouble> sweep_plus(FLQuant_base<adouble>& flq1, FLQuant_base<double>& flq2){
+FLQuant_base<adouble> sweep_plus(const FLQuant_base<adouble>& flq1, const FLQuant_base<double>& flq2){
     return sweep_flq(flq1, flq2, std::plus<adouble>());
 }
 
-FLQuant_base<adouble> sweep_plus(FLQuant_base<double>& flq1, FLQuant_base<adouble>& flq2){
+FLQuant_base<adouble> sweep_plus(const FLQuant_base<double>& flq1, const FLQuant_base<adouble>& flq2){
     return sweep_flq(flq1, flq2, std::plus<adouble>());
 }
 
 // Subtraction
 template <typename T>
-FLQuant_base<T> sweep_minus(FLQuant_base<T>& flq1, FLQuant_base<T>& flq2){
+FLQuant_base<T> sweep_minus(const FLQuant_base<T>& flq1, const FLQuant_base<T>& flq2){
     return sweep_flq(flq1, flq2, std::minus<T>());
 }
 
-FLQuant_base<adouble> sweep_minus(FLQuant_base<adouble>& flq1, FLQuant_base<double>& flq2){
+FLQuant_base<adouble> sweep_minus(const FLQuant_base<adouble>& flq1, const FLQuant_base<double>& flq2){
     return sweep_flq(flq1, flq2, std::minus<adouble>());
 }
 
-FLQuant_base<adouble> sweep_minus(FLQuant_base<double>& flq1, FLQuant_base<adouble>& flq2){
+FLQuant_base<adouble> sweep_minus(const FLQuant_base<double>& flq1, const FLQuant_base<adouble>& flq2){
     return sweep_flq(flq1, flq2, std::minus<adouble>());
 }
 
@@ -1506,14 +1506,14 @@ template FLQuant_base<adouble> operator + (const FLQuant_base<double>& lhs, cons
 template FLQuant_base<adouble> operator + (const adouble& lhs, const FLQuant_base<double>& rhs);
 
 // Sweep operations
-template FLQuant_base<adouble> sweep_mult(FLQuant_base<adouble>& flq1, FLQuant_base<adouble>& flq2);
-template FLQuant_base<double> sweep_mult(FLQuant_base<double>& flq1, FLQuant_base<double>& flq2);
-template FLQuant_base<adouble> sweep_div(FLQuant_base<adouble>& flq1, FLQuant_base<adouble>& flq2);
-template FLQuant_base<double> sweep_div(FLQuant_base<double>& flq1, FLQuant_base<double>& flq2);
-template FLQuant_base<adouble> sweep_plus(FLQuant_base<adouble>& flq1, FLQuant_base<adouble>& flq2);
-template FLQuant_base<double> sweep_plus(FLQuant_base<double>& flq1, FLQuant_base<double>& flq2);
-template FLQuant_base<adouble> sweep_minus(FLQuant_base<adouble>& flq1, FLQuant_base<adouble>& flq2);
-template FLQuant_base<double> sweep_minus(FLQuant_base<double>& flq1, FLQuant_base<double>& flq2);
+template FLQuant_base<adouble> sweep_mult(const FLQuant_base<adouble>& flq1, const FLQuant_base<adouble>& flq2);
+template FLQuant_base<double> sweep_mult(const FLQuant_base<double>& flq1, const FLQuant_base<double>& flq2);
+template FLQuant_base<adouble> sweep_div(const FLQuant_base<adouble>& flq1, const FLQuant_base<adouble>& flq2);
+template FLQuant_base<double> sweep_div(const FLQuant_base<double>& flq1, const FLQuant_base<double>& flq2);
+template FLQuant_base<adouble> sweep_plus(const FLQuant_base<adouble>& flq1, const FLQuant_base<adouble>& flq2);
+template FLQuant_base<double> sweep_plus(const FLQuant_base<double>& flq1, const FLQuant_base<double>& flq2);
+template FLQuant_base<adouble> sweep_minus(const FLQuant_base<adouble>& flq1, const FLQuant_base<adouble>& flq2);
+template FLQuant_base<double> sweep_minus(const FLQuant_base<double>& flq1, const FLQuant_base<double>& flq2);
 
 // Explicit instantiation of other functions
 template FLQuant_base<double> log(const FLQuant_base<double>& flq);
