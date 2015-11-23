@@ -5738,6 +5738,20 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_fwdControl_get_FCB_row_no
+unsigned int test_fwdControl_get_FCB_row_no(const fwdControl control, const unsigned int fishery_no, const unsigned int catch_no, const unsigned int biol_no);
+RcppExport SEXP FLasher_test_fwdControl_get_FCB_row_no(SEXP controlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type fishery_no(fishery_noSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type catch_no(catch_noSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type biol_no(biol_noSEXP);
+    __result = Rcpp::wrap(test_fwdControl_get_FCB_row_no(control, fishery_no, catch_no, biol_no));
+    return __result;
+END_RCPP
+}
 // test_fwdSR_empty_constructor
 void test_fwdSR_empty_constructor();
 RcppExport SEXP FLasher_test_fwdSR_empty_constructor() {

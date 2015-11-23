@@ -117,4 +117,20 @@ test_that("fwdControl get_FCB methods", {
     B_out <- test_fwdControl_get_B(fwc, fwc@target@FCB[row_no,"F"], fwc@target@FCB[row_no,"C"])
     B_in <- fwc@target@FCB[(fwc@target@FCB[,"F"] == FC["F"]) & (fwc@target@FCB[,"C"] == FC["C"]),"B"]
     expect_equal(unname(B_in), unname(B_out))
+    # Get row no
+    fcb <- fwc@target@FCB
+    # Pick a row
+    row_in <- round(runif(1, min=1, max=nrow(fcb)))
+    row_out <- test_fwdControl_get_FCB_row_no(fwc, fcb[row_in,"F"], fcb[row_in,"C"], fcb[row_in,"B"])
+    expect_equal(row_in, row_out + 1)
+    # first row
+    row_in <- 1
+    row_out <- test_fwdControl_get_FCB_row_no(fwc, fcb[row_in,"F"], fcb[row_in,"C"], fcb[row_in,"B"])
+    expect_equal(row_in, row_out + 1)
+    # last row
+    row_in <- nrow(fcb)
+    row_out <- test_fwdControl_get_FCB_row_no(fwc, fcb[row_in,"F"], fcb[row_in,"C"], fcb[row_in,"B"])
+    expect_equal(row_in, row_out + 1)
+    # Not found
+    expect_error(test_fwdControl_get_FCB_row_no(fwc, 10, fcb[row_in,"C"], fcb[row_in,"B"]))
 })

@@ -60,6 +60,7 @@ class fwdControl {
         // FCB accessors
         Rcpp::IntegerMatrix get_FC(const int biol_no) const;
         std::vector<int> get_B(const int fishery_no, const int catch_no) const;
+        unsigned int get_FCB_row_no(const unsigned int fishery_no, const unsigned int catch_no, const unsigned int biol_no) const;
 
     private:
         Rcpp::DataFrame target;

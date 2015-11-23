@@ -379,6 +379,30 @@ std::vector<int> fwdControl::get_B(const int fishery_no, const int catch_no) con
     return B;
 }
 
+/*! \brief Get the row number of the FCB matrix
+ *
+ * Row number starts at 0.
+ *
+ * \param fishery_no The position of the fishery in the fishery list.
+ * \param catch_no The position of the catch in the catches list.
+ * \param biol_no The position of the biol in the biols list.
+ */
+unsigned int fwdControl::get_FCB_row_no(const unsigned int fishery_no, const unsigned int catch_no, const unsigned int biol_no) const{
+    unsigned int nrow = FCB.nrow();
+    unsigned int row_counter = 0;
+    bool success = false;
+    while ((row_counter <= nrow) & (success == false)){
+        if((FCB(row_counter,0) == fishery_no) & (FCB(row_counter,1) == catch_no) & (FCB(row_counter,2) == biol_no)){
+            success = true;
+        }
+        ++row_counter;
+    }
+    if (success == false){
+        Rcpp::stop("In fwdControl::get_FCB_row_no. Row not found.\n");
+    }
+    return row_counter - 1;
+}
+
 /*------------------------------------------------------------------*/
 
 /* Just some tests to operate on data.frames */
