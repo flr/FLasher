@@ -121,6 +121,11 @@ std::vector<int> test_fwdControl_get_B(const fwdControl control, const int fishe
 }
 
 // [[Rcpp::export]]
+unsigned int test_fwdControl_get_FCB_nrow(const fwdControl control){
+    return control.get_FCB_nrow();
+}
+
+// [[Rcpp::export]]
 unsigned int test_fwdControl_get_FCB_row_no(const fwdControl control, const unsigned int fishery_no, const unsigned int catch_no, const unsigned int biol_no){
     return control.get_FCB_row_no(fishery_no, catch_no, biol_no);
 }

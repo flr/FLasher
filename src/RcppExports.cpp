@@ -5738,6 +5738,17 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_fwdControl_get_FCB_nrow
+unsigned int test_fwdControl_get_FCB_nrow(const fwdControl control);
+RcppExport SEXP FLasher_test_fwdControl_get_FCB_nrow(SEXP controlSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
+    __result = Rcpp::wrap(test_fwdControl_get_FCB_nrow(control));
+    return __result;
+END_RCPP
+}
 // test_fwdControl_get_FCB_row_no
 unsigned int test_fwdControl_get_FCB_row_no(const fwdControl control, const unsigned int fishery_no, const unsigned int catch_no, const unsigned int biol_no);
 RcppExport SEXP FLasher_test_fwdControl_get_FCB_row_no(SEXP controlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP) {

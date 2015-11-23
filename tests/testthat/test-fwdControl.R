@@ -117,6 +117,9 @@ test_that("fwdControl get_FCB methods", {
     B_out <- test_fwdControl_get_B(fwc, fwc@target@FCB[row_no,"F"], fwc@target@FCB[row_no,"C"])
     B_in <- fwc@target@FCB[(fwc@target@FCB[,"F"] == FC["F"]) & (fwc@target@FCB[,"C"] == FC["C"]),"B"]
     expect_equal(unname(B_in), unname(B_out))
+    # Get nrow
+    nrow_out <- test_fwdControl_get_FCB_nrow(fwc)
+    expect_equal(nrow_out, dim(fwc@target@FCB)[1])
     # Get row no
     fcb <- fwc@target@FCB
     # Pick a row

@@ -379,6 +379,14 @@ std::vector<int> fwdControl::get_B(const int fishery_no, const int catch_no) con
     return B;
 }
 
+/*! \brief Get the number of rows in the FCB matrix
+ *
+ * Just the length of the first dimension.
+ */
+unsigned int fwdControl::get_FCB_nrow() const{
+    return FCB.nrow();
+}
+
 /*! \brief Get the row number of the FCB matrix
  *
  * Row number starts at 0.
