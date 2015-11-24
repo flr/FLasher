@@ -1869,3 +1869,7 @@ test_operatingModel_project_biols <- function(flfs, biols, ctrl, timestep) {
     .Call('FLasher_test_operatingModel_project_biols', PACKAGE = 'FLasher', flfs, biols, ctrl, timestep)
 }
 
+test_operatingModel_project_fisheries <- function(flfs, biols, ctrl, timestep) {
+    .Call('FLasher_test_operatingModel_project_fisheries', PACKAGE = 'FLasher', flfs, biols, ctrl, timestep)
+}
+

@@ -6111,3 +6111,17 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_operatingModel_project_fisheries
+operatingModel test_operatingModel_project_fisheries(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int timestep);
+RcppExport SEXP FLasher_test_operatingModel_project_fisheries(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP timestepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< fwdBiolsAD >::type biols(biolsSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const int >::type timestep(timestepSEXP);
+    __result = Rcpp::wrap(test_operatingModel_project_fisheries(flfs, biols, ctrl, timestep));
+    return __result;
+END_RCPP
+}
