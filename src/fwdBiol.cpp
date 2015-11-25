@@ -245,6 +245,16 @@ T& fwdBiol_base<T>::n(const unsigned int quant, const unsigned int year, const u
     return n_flq(element+1); // Horrible change in referencing from 0 to 1 (element is from 0, accessor is from 1)
 }
 
+/*! \brief The timelag between recruitment being added to the biol and the calculation of the SRP that results in that recruitment
+ *
+ */
+template <typename T>
+unsigned int fwdBiol_base<T>::srp_timelag() const{
+    // Default return number of seasons
+    auto dim = n_flq.get_dim();
+    return dim[3];
+}
+
 /*------------------------------------------------------------*/
 // fwdBiols class
 

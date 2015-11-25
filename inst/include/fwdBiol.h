@@ -58,26 +58,25 @@ class fwdBiol_base {
         FLQuant fec(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant mat() const;
         FLQuant mat(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        std::string get_name() const;
+        std::string get_desc() const;
+        Rcpp::NumericVector get_range() const;
+        fwdSR_base<T> get_srr() const;
 
         // Accessor methods (get and set) for the slots
         FLQuant_base<T>& n();
+        // Set individual elements (faster than going through FLQuant get and set)
+		T& n(const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter);
         FLQuant& wt();
         FLQuant& m();
         FLQuant& spwn();
         FLQuant& fec();
         FLQuant& mat();
 
-        // Set individual elements (faster than going through FLQuant get and set)
-		T& n(const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter);
-
-        fwdSR_base<T> get_srr() const;
-        std::string get_name() const;
-        std::string get_desc() const;
-        Rcpp::NumericVector get_range() const;
-
-        // Summary methods
+        // Summary and other methods
         FLQuant_base<T> biomass() const;
         FLQuant_base<T> biomass(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; // subsetting
+        unsigned int srp_timelag() const;
 
         // Added a friend so that operating model can access the SRR
         friend class operatingModel;
