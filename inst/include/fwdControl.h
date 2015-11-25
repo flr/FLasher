@@ -55,9 +55,11 @@ class fwdControl {
         std::vector<double> get_target_value(const int target_no, const int sim_target_no, const int col) const; // gets all iters for one simultaneous target. col: 1 = min, 2 = value, 3 = max
         std::string get_target_quantity(const int target_no, const int sim_target_no) const;
         fwdControlTargetType get_target_type(const int target_no, const int sim_target_no) const;
+        fwdControlTargetType get_target_type(const std::string quantity) const;
         unsigned int get_target_effort_timestep(unsigned int target_no, unsigned int sim_target_no) const;
         std::vector<unsigned int> get_age_range(const unsigned int target_no, const unsigned int sim_target_no) const; // Returns the age range - just the values in target no calculation
         // FCB accessors
+        Rcpp::IntegerMatrix get_FCB() const;
         Rcpp::IntegerMatrix get_FC(const int biol_no) const;
         std::vector<int> get_B(const int fishery_no, const int catch_no) const;
         unsigned int get_FCB_nrow() const;

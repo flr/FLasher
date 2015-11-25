@@ -337,6 +337,10 @@ std::string fwdControl::get_target_quantity(const int target_no, const int sim_t
 
 fwdControlTargetType fwdControl::get_target_type(const int target_no, const int sim_target_no) const{
     std::string quantity = get_target_quantity(target_no, sim_target_no);
+    return get_target_type(quantity);
+}
+
+fwdControlTargetType fwdControl::get_target_type(const std::string quantity) const{
     target_map_type::const_iterator type_pair_found = target_map.find(quantity);
     if (type_pair_found == target_map.end()){
         Rcpp::stop("Unable to find target quantity in fwdControl target_map\n");
@@ -345,6 +349,14 @@ fwdControlTargetType fwdControl::get_target_type(const int target_no, const int 
 }
 
 /*--------------------- FCB accessors ------------------------------*/
+
+/*! \brief Returns the FCB table
+ *
+ * Returns the FCB table
+ */
+Rcpp::IntegerMatrix fwdControl::get_FCB() const{
+    return FCB;
+}
 
 // Given the Biol no, what fishery / catch fish it?
 Rcpp::IntegerMatrix fwdControl::get_FC(const int biol_no) const{
