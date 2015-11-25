@@ -273,6 +273,15 @@ FLQuantAD test_operatingModel_discards_subset(FLFisheriesAD flfs, SEXP flbs_list
     return om.discards(biol_no, indices_min, indices_max);
 }
 
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_eval_om(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const std::string strquantity, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    fwdControlTargetType quantity = ctrl.get_target_type(strquantity);
+    FLQuantAD out = om.eval_om(quantity, fishery_no, catch_no, biol_no, indices_min, indices_max);
+    return out;
+}
+
+
 ///*----------- SSB calculations--------------*/
 //
 //// [[Rcpp::export]]
@@ -326,16 +335,8 @@ FLQuantAD test_operatingModel_discards_subset(FLFisheriesAD flfs, SEXP flbs_list
 //    std::vector<unsigned int> age_range_indices = om.get_target_age_range_indices(target_no, sim_target_no, biol_no);
 //    return age_range_indices;
 //}
-//
-//// [[Rcpp::export]]
-//FLQuantAD test_operatingModel_eval_target(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const bool relative_target = false){
-//    fwdBiolsAD biols(flbs_list_sexp);
-//    operatingModel om(flfs, biols, ctrl);
-//    FLQuantAD out = om.eval_target(target_no, sim_target_no, indices_min, indices_max, relative_target);
-//    return out;
-//}
-//
-//
+
+
 //// [[Rcpp::export]]
 //std::vector<double> test_operatingModel_get_target_value(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int target_no){
 //    fwdBiolsAD biols(flbs_list_sexp);

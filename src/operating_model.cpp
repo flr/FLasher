@@ -711,34 +711,34 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             }
             break;
         }
-////        case target_landings: {
-////            Rprintf("target_landings\n");
-////            if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
-////                out = fisheries(fishery_no, catch_no).landings(indices_min, indices_max);
-////            }
-////            else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
-////                Rprintf("landings are total landings from biol %i\n", biol_no);
-////                out = landings(biol_no, indices_min, indices_max);
-////            }
-////            else {
-////                Rcpp::stop("In operatingModel::eval_target. Asking for landings from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total landings from just the biol instead?\n");
-////            }
-////            break;
-////        }
-////        case target_discards: {
-////            Rprintf("target_discards\n");
-////            if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
-////                out = fisheries(fishery_no, catch_no).discards(indices_min, indices_max);
-////            }
-////            else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
-////                Rprintf("discards are total discards from biol %i\n", biol_no);
-////                out = discards(biol_no, indices_min, indices_max);
-////            }
-////            else {
-////                Rcpp::stop("In operatingModel::eval_target. Asking for discards from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total discards from just the biol instead?\n");
-////            }
-////            break;
-////        }
+        case target_landings: {
+            Rprintf("target_landings\n");
+            if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
+                out = fisheries(fishery_no, catch_no).landings(indices_min, indices_max);
+            }
+            else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
+                Rprintf("landings are total landings from biol %i\n", biol_no);
+                out = landings(biol_no, indices_min, indices_max);
+            }
+            else {
+                Rcpp::stop("In operatingModel::eval_target. Asking for landings from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total landings from just the biol instead?\n");
+            }
+            break;
+        }
+        case target_discards: {
+            Rprintf("target_discards\n");
+            if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
+                out = fisheries(fishery_no, catch_no).discards(indices_min, indices_max);
+            }
+            else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
+                Rprintf("discards are total discards from biol %i\n", biol_no);
+                out = discards(biol_no, indices_min, indices_max);
+            }
+            else {
+                Rcpp::stop("In operatingModel::eval_target. Asking for discards from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total discards from just the biol instead?\n");
+            }
+            break;
+        }
 ////        case target_srp: {
 ////            // Spawning reproductive potential
 ////            Rprintf("target_srp\n");

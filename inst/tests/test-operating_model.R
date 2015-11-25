@@ -1240,11 +1240,61 @@ test_that("operatingModel landings, catch and discards methods",{
 
 })
 
+test_that("operatingModel eval_om", {
+    niters <- 10 
+    om <- make_test_operatingModel1(niters)
+    dim_max <- dim(n(om[["biols"]][[1]][["biol"]]))
+    dim_min <- round(runif(6, min=1, max=dim_max))
+
+    # Catch
+    # 1, 1, 1 Cannot ask for biol and a catch
+    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", 1, 1, 1, dim_min[-1], dim_max[-1]))
+    # 1, 2, NA
+    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", 1, 2, as.integer(NA), dim_min[-1], dim_max[-1])
+    cin <- catch(om[["fisheries"]][[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]] 
+    test_FLQuant_equal(cout, cin)
+    # NA, NA, 2
+    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", as.integer(NA), as.integer(NA), 2, dim_min[-1], dim_max[-1])
+    cin <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, dim_min[-1], dim_max[-1])
+    test_FLQuant_equal(cout, cin)
+    # NA, NA, 3 error
+    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", as.integer(NA), as.integer(NA), 3, dim_min[-1], dim_max[-1]))
+
+    # Landings
+    # 1, 1, 1 Cannot ask for biol and a catch
+    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", 1, 1, 1, dim_min[-1], dim_max[-1]))
+    # 1, 2, NA
+    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", 1, 2, as.integer(NA), dim_min[-1], dim_max[-1])
+    cin <- landings(om[["fisheries"]][[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]] 
+    test_FLQuant_equal(cout, cin)
+    # NA, NA, 2
+    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", as.integer(NA), as.integer(NA), 2, dim_min[-1], dim_max[-1])
+    cin <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, dim_min[-1], dim_max[-1])
+    test_FLQuant_equal(cout, cin)
+    # NA, NA, 3 error
+    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", as.integer(NA), as.integer(NA), 3, dim_min[-1], dim_max[-1]))
+
+    # Discards
+    # 1, 1, 1 Cannot ask for biol and a catch
+    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", 1, 1, 1, dim_min[-1], dim_max[-1]))
+    # 1, 2, NA
+    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", 1, 2, as.integer(NA), dim_min[-1], dim_max[-1])
+    cin <- discards(om[["fisheries"]][[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]] 
+    test_FLQuant_equal(cout, cin)
+    # NA, NA, 2
+    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", as.integer(NA), as.integer(NA), 2, dim_min[-1], dim_max[-1])
+    cin <- test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, dim_min[-1], dim_max[-1])
+    test_FLQuant_equal(cout, cin)
+    # NA, NA, 3 error
+    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", as.integer(NA), as.integer(NA), 3, dim_min[-1], dim_max[-1]))
+
+})
+
+
+
+# OLD. DELETE
 #test_that("operatingModel eval_target", {
-#    niters <- 10 
-#    om <- make_test_operatingModel2(niters)
-#
-#    # catch targets
+    # catch targets
 #    target <- data.frame(year = 4,
 #                     season = 1,
 #                     value = 1000,
