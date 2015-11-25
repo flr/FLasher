@@ -167,6 +167,13 @@ operatingModel test_operatingModel_project_fisheries(FLFisheriesAD flfs, fwdBiol
     return om;
 }
 
+// [[Rcpp::export]]
+operatingModel test_operatingModel_run(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double indep_min, const double indep_max){
+    operatingModel om(flfs, biols, ctrl);
+    om.run(indep_min, indep_max);
+    return om;
+}
+
 
 //// [[Rcpp::export]]
 //FLQuantAD test_operatingModel_partial_f(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no){
@@ -243,29 +250,29 @@ operatingModel test_operatingModel_project_fisheries(FLFisheriesAD flfs, fwdBiol
 //}
 //*/
 //
-///*----------- target calculations--------------*/
-//
-//// [[Rcpp::export]]
-//FLQuantAD test_operatingModel_catches_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-//    fwdBiolsAD biols(flbs_list_sexp);
-//    operatingModel om(flfs, biols, ctrl);
-//    return om.catches(biol_no, indices_min, indices_max);
-//}
-//
-//// [[Rcpp::export]]
-//FLQuantAD test_operatingModel_landings_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-//    fwdBiolsAD biols(flbs_list_sexp);
-//    operatingModel om(flfs, biols, ctrl);
-//    return om.landings(biol_no, indices_min, indices_max);
-//}
-//
-//// [[Rcpp::export]]
-//FLQuantAD test_operatingModel_discards_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-//    fwdBiolsAD biols(flbs_list_sexp);
-//    operatingModel om(flfs, biols, ctrl);
-//    return om.discards(biol_no, indices_min, indices_max);
-//}
-//
+/*----------- target calculations--------------*/
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_catches_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    return om.catches(biol_no, indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_landings_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    return om.landings(biol_no, indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_discards_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    fwdBiolsAD biols(flbs_list_sexp);
+    operatingModel om(flfs, biols, ctrl);
+    return om.discards(biol_no, indices_min, indices_max);
+}
+
 ///*----------- SSB calculations--------------*/
 //
 //// [[Rcpp::export]]
@@ -366,12 +373,5 @@ operatingModel test_operatingModel_project_fisheries(FLFisheriesAD flfs, fwdBiol
 //}
 //
 ///*
-//// [[Rcpp::export]]
-//operatingModel test_operatingModel_run(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const double indep_min, const double indep_max){
-//    fwdBiolsAD biols(flbs_list_sexp);
-//    operatingModel om(flfs, biols, ctrl);
-//    om.run(indep_min, indep_max);
-//    return om;
-//}
 //
 //*/

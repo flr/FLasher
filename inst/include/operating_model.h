@@ -27,8 +27,8 @@
 #include "FLQuant_multidim.h"
 #endif
 
-// Need to fix control object
 #include "fwdControl.h"
+#include "solver.h"
 
 // Converting timestep to year and season and vice versa
 // Several options
@@ -75,7 +75,20 @@ class operatingModel {
         FLQuantAD get_f(const int biol_no) const;
         void project_biols(const int timestep); // Uses effort in previous timestep
         void project_fisheries(const int timestep); // Uses effort in that timestep
+        void run(const double effort_mult_initial, const double indep_min = 0, const double indep_max = 1e9); 
 
+        FLQuantAD eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+
+        // The target value we are trying to hit - either directly from the control object or a min / max calculation using the current OM
+        // ADD MIN MAX BACK IN
+        //std::vector<double> get_target_value(const int target_no) const; // All iters for all sim targets
+        //std::vector<double> get_target_value(const int target_no, const int sim_target_no) const; // All iters for a sim target
+        // Given the target no, evaluate the current value in the operatingModel
+        //FLQuantAD eval_target(const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const bool relative_target = false) const;
+        // The actual current target values in the OM - to be compared to the desired values
+        //std::vector<adouble> get_target_value_hat(const int target_no) const; 
+        //std::vector<adouble> get_target_value_hat(const int target_no, const int sim_target_no) const; 
+        
         // Redundant methods?
         // Currently not using catch_q method - instead it is embedded in get_f()
         // It could be useful if we wanted to use different catch_q methods rather than fixing it in get_f
@@ -87,7 +100,6 @@ class operatingModel {
         //FLQuantAD z(const int biol_no) const;
         //FLQuantAD z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
-        //void run(const double indep_min = 0, const double indep_max = 1e9); 
         //void run_all_iters(); 
         
         //! Project the operating model by a single timestep
@@ -107,15 +119,7 @@ class operatingModel {
         // Returns the indices of the age range, starts at 0
         //std::vector<unsigned int> get_target_age_range_indices(const unsigned int target_no, const unsigned int sim_target_no, const unsigned int biol_no) const; 
 
-        // Given the target no, evaluate the current value in the operatingModel
-        //FLQuantAD eval_target(const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const bool relative_target = false) const;
 
-        // The target value we are trying to hit - either directly from the control object or a min / max / rel value calculation
-        //std::vector<double> get_target_value(const int target_no) const; 
-        //std::vector<double> get_target_value(const int target_no, const int sim_target_no) const; 
-        // The actual current target values in the OM - to be compared to the desired values
-        //std::vector<adouble> get_target_value_hat(const int target_no) const; 
-        //std::vector<adouble> get_target_value_hat(const int target_no, const int sim_target_no) const; 
 
         // The target value calculations
         // Partial fbar of a single catch on a single biol
@@ -126,9 +130,9 @@ class operatingModel {
         // catches from an FLCatch and fishery on a stock 
         //FLQuantAD catches(const int fishery_no, const int catch_no) const;
         // Total catches / landings / discards from a biol
-        //FLQuantAD catches(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        //FLQuantAD landings(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        //FLQuantAD discards(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD landings(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD discards(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD catches(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
         // Total biomass from a biol
         //FLQuantAD biomass(const int biol_no) const;

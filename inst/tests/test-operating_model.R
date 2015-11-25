@@ -1189,93 +1189,57 @@ test_that("operatingModel project_fisheries", {
 #    expect_that(fout_sub@.Data, equals(fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data))
 #    expect_that(fout@.Data, equals(fin@.Data))
 #})
-#
-#test_that("operatingModel landings, catch and discards targets",{
-#    om <- make_test_operatingModel1(10)
-#    dim_max <- dim(n(om[["biols"]][[1]][["biol"]]))
-#    dim_min <- round(runif(6, min=1, max=dim_max))
-#    # Project a timestep and check landings / catches and discards against it 
-#    # Ensures catches / landings and discards are consistent with the effort etc in the object at that timestep
-#    year <- round(runif(1,min=dim_min[2],max=dim_max[2]))
-#    season <- round(runif(1,min=dim_min[4],max=dim_max[4]))
-#    timestep <- (year-1) * dim(n(om[["biols"]][[1]][["biol"]]))[4] + season
-#    om_out <- test_operatingModel_project_timestep(om[["fisheries"]], om[["biols"]], om[["fwc"]], timestep)
-#    # Copy fisheries and biols back into the original om
-#    om[["fisheries"]] <- om_out[["fisheries"]]
-#    for (i in 1:length(om[["biols"]])){
-#        om[["biols"]][[i]][["biol"]] <- om_out[["biols"]][[i]]
-#    }
-#
-#    # 1 biol -> 1 catch
-#    biol_no <- 1
-#    landings1_out <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
-#    landings1_in <- landings(om[["fisheries"]][[1]][[1]])
-#    expect_that(unname(landings1_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(landings1_out@.Data)))
-#    discards1_out <- test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
-#    discards1_in <- discards(om[["fisheries"]][[1]][[1]])
-#    expect_that(unname(discards1_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(discards1_out@.Data)))
-#    catch1_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
-#    catch1_in <- catch(om[["fisheries"]][[1]][[1]])
-#    expect_that(unname(catch1_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catch1_out@.Data)))
-#
-#    # 1 biol -> 2 catch
-#    biol_no <- 2
-#    landings2_out <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
-#    landings2_in <- landings(om[["fisheries"]][[1]][[2]]) + landings(om[["fisheries"]][[2]][[1]])
-#    expect_that(unname(landings2_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(landings2_out@.Data)))
-#    discards2_out <- test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
-#    discards2_in <- discards(om[["fisheries"]][[1]][[2]]) + discards(om[["fisheries"]][[2]][[1]])
-#    expect_that(unname(discards2_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(discards2_out@.Data)))
-#    catch2_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
-#    catch2_in <- catch(om[["fisheries"]][[1]][[2]]) + catch(om[["fisheries"]][[2]][[1]])
-#    expect_that(unname(catch2_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catch2_out@.Data)))
-#
-#    # 2 biol -> 1 catch
-#    # Need to calc Baranov
-#    cq_flq <- as(catch.q(om[["fisheries"]][[2]][[2]]), "FLQuant")
-#    # Biol 3 (fished by FC22 which also fishes biol 4)
-#    catch3_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, dim_min[-1], dim_max[-1])
-#    landings3_out <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, dim_min[-1], dim_max[-1])
-#    discards3_out <- test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 3, dim_min[-1], dim_max[-1])
-#    biomass3 <- quantSums(n(om[["biols"]][[3]][["biol"]]) * wt(om[["biols"]][[3]][["biol"]]))
-#    qin3 <- sweep(sweep(biomass3, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
-#    fin223 <- sweep(catch.sel(om[["fisheries"]][[2]][[2]]), 2:6, qin3 * effort(om[["fisheries"]][[2]]), "*")
-#    z3 <- fin223 + m(om[["biols"]][[3]][["biol"]])
-#    cn3 <- (fin223 / z3) * (1 - exp(-z3)) * n(om[["biols"]][[3]][["biol"]])
-#    ln3 <- cn3 * (1.0 - discards.ratio(om[["fisheries"]][[2]][[2]]))
-#    dn3 <- cn3 * (discards.ratio(om[["fisheries"]][[2]][[2]]))
-#    landings3_in <- quantSums(ln3 * landings.wt(om[["fisheries"]][[2]][[2]]))
-#    discards3_in <- quantSums(dn3 * discards.wt(om[["fisheries"]][[2]][[2]]))
-#    catch3_in <- landings3_in + discards3_in
-#    # Just check the time step we projected over 
-#    expect_that(unname(discards3_in[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(discards3_out[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data)))
-#    expect_that(unname(landings3_in[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(landings3_out[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data)))
-#    expect_that(unname(catch3_in[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catch3_out[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data)))
-#    # Biol 4 (fished by FC22 which also fishes biol 3)
-#    catch4_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, dim_min[-1], dim_max[-1])
-#    landings4_out <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, dim_min[-1], dim_max[-1])
-#    discards4_out <- test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 4, dim_min[-1], dim_max[-1])
-#    biomass4 <- quantSums(n(om[["biols"]][[4]][["biol"]]) * wt(om[["biols"]][[4]][["biol"]]))
-#    qin4 <- sweep(sweep(biomass4, c(1,3,4,5), -cq_flq[2,], "^"), c(1,3,4,5), cq_flq[1], "*")
-#    fin224 <- sweep(catch.sel(om[["fisheries"]][[2]][[2]]), 2:6, qin4 * effort(om[["fisheries"]][[2]]), "*")
-#    z4 <- fin224 + m(om[["biols"]][[4]][["biol"]])
-#    cn4 <- (fin224 / z4) * (1 - exp(-z4)) * n(om[["biols"]][[4]][["biol"]])
-#    ln4 <- cn4 * (1.0 - discards.ratio(om[["fisheries"]][[2]][[2]]))
-#    dn4 <- cn4 * (discards.ratio(om[["fisheries"]][[2]][[2]]))
-#    landings4_in <- quantSums(ln4 * landings.wt(om[["fisheries"]][[2]][[2]]))
-#    discards4_in <- quantSums(dn4 * discards.wt(om[["fisheries"]][[2]][[2]]))
-#    catch4_in <- landings4_in + discards4_in
-#    # Just check the time step we projected over 
-#    expect_that(unname(discards4_in[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(discards4_out[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data)))
-#    expect_that(unname(landings4_in[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(landings4_out[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data)))
-#    expect_that(unname(catch4_in[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data), equals(unname(catch4_out[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data)))
-#    # Check sums (landings from biols 3 and 4 should equal landings in FC 22)
-#    expect_that(unname((landings3_out + landings4_out)[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data), equals(unname(landings(om[["fisheries"]][[2]][[2]])[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
-#    expect_that(unname((discards3_out + discards4_out)[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data), equals(unname(discards(om[["fisheries"]][[2]][[2]])[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
-#    expect_that(unname((catch3_out + catch4_out)[,year - dim_min[2] + 1,, season - dim_min[4] + 1]@.Data), equals(unname(catch(om[["fisheries"]][[2]][[2]])[,year,dim_min[3]:dim_max[3],season, dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]@.Data)))
-#
-#})
-#
+
+test_that("operatingModel landings, catch and discards methods",{
+    # These methods evaluate the current state of the OM
+    # i.e. just pull values out, no calculation
+    om <- make_test_operatingModel1(10)
+    dim_max <- dim(n(om[["biols"]][[1]][["biol"]]))
+    dim_min <- round(runif(6, min=1, max=dim_max))
+    year <- round(runif(1,min=dim_min[2],max=dim_max[2]))
+    season <- round(runif(1,min=dim_min[4],max=dim_max[4]))
+    timestep <- (year-1) * dim(n(om[["biols"]][[1]][["biol"]]))[4] + season
+
+    # 1 biol -> 1 catch
+    biol_no <- 1
+    landings1_out <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    landings1_in <- landings(om[["fisheries"]][[1]][[1]])
+    test_FLQuant_equal(landings1_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], landings1_out)
+    discards1_out <- test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    discards1_in <- discards(om[["fisheries"]][[1]][[1]])
+    test_FLQuant_equal(discards1_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], discards1_out)
+    catch1_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    catch1_in <- catch(om[["fisheries"]][[1]][[1]])
+    test_FLQuant_equal(catch1_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], catch1_out)
+
+    # 1 biol -> 2 catch
+    biol_no <- 2
+    landings2_out <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    landings12_in <- landings(om[["fisheries"]][[1]][[2]])
+    landings21_in <- landings(om[["fisheries"]][[2]][[1]])
+    test_FLQuant_equal((landings12_in+landings21_in)[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], landings2_out)
+    discards2_out <- test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    discards12_in <- discards(om[["fisheries"]][[1]][[2]])
+    discards21_in <- discards(om[["fisheries"]][[2]][[1]])
+    test_FLQuant_equal((discards12_in+discards21_in)[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], discards2_out)
+    catch2_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
+    catch12_in <- catch(om[["fisheries"]][[1]][[2]])
+    catch21_in <- catch(om[["fisheries"]][[2]][[1]])
+    test_FLQuant_equal((catch12_in+catch21_in)[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], catch2_out)
+
+    # 2 biol -> 1 catch
+    # Not yet implemented for a single catch so fails
+    biol_no <- 3
+    expect_error(test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
+    expect_error(test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
+    expect_error(test_operatingModel_catch_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
+    biol_no <- 4
+    expect_error(test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
+    expect_error(test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
+    expect_error(test_operatingModel_catch_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
+
+})
+
 #test_that("operatingModel eval_target", {
 #    niters <- 10 
 #    om <- make_test_operatingModel2(niters)

@@ -429,6 +429,14 @@ test_sweep_minusDAD <- function(flq1, flq2) {
     .Call('FLasher_test_sweep_minusDAD', PACKAGE = 'FLasher', flq1, flq2)
 }
 
+test_int_is_na <- function(val) {
+    .Call('FLasher_test_int_is_na', PACKAGE = 'FLasher', val)
+}
+
+test_double_is_na <- function(val) {
+    .Call('FLasher_test_double_is_na', PACKAGE = 'FLasher', val)
+}
+
 test_simple_FLCatch_sexp_constructor <- function(flc_sexp) {
     .Call('FLasher_test_simple_FLCatch_sexp_constructor', PACKAGE = 'FLasher', flc_sexp)
 }
@@ -1871,5 +1879,21 @@ test_operatingModel_project_biols <- function(flfs, biols, ctrl, timestep) {
 
 test_operatingModel_project_fisheries <- function(flfs, biols, ctrl, timestep) {
     .Call('FLasher_test_operatingModel_project_fisheries', PACKAGE = 'FLasher', flfs, biols, ctrl, timestep)
+}
+
+test_operatingModel_run <- function(flfs, biols, ctrl, indep_min, indep_max) {
+    .Call('FLasher_test_operatingModel_run', PACKAGE = 'FLasher', flfs, biols, ctrl, indep_min, indep_max)
+}
+
+test_operatingModel_catches_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_catches_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_landings_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_landings_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_discards_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_discards_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
 }
 

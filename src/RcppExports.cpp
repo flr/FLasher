@@ -1271,6 +1271,28 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_int_is_na
+bool test_int_is_na(int val);
+RcppExport SEXP FLasher_test_int_is_na(SEXP valSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< int >::type val(valSEXP);
+    __result = Rcpp::wrap(test_int_is_na(val));
+    return __result;
+END_RCPP
+}
+// test_double_is_na
+bool test_double_is_na(double val);
+RcppExport SEXP FLasher_test_double_is_na(SEXP valSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double >::type val(valSEXP);
+    __result = Rcpp::wrap(test_double_is_na(val));
+    return __result;
+END_RCPP
+}
 // test_simple_FLCatch_sexp_constructor
 int test_simple_FLCatch_sexp_constructor(SEXP flc_sexp);
 RcppExport SEXP FLasher_test_simple_FLCatch_sexp_constructor(SEXP flc_sexpSEXP) {
@@ -6122,6 +6144,69 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
     Rcpp::traits::input_parameter< const int >::type timestep(timestepSEXP);
     __result = Rcpp::wrap(test_operatingModel_project_fisheries(flfs, biols, ctrl, timestep));
+    return __result;
+END_RCPP
+}
+// test_operatingModel_run
+operatingModel test_operatingModel_run(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double indep_min, const double indep_max);
+RcppExport SEXP FLasher_test_operatingModel_run(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< fwdBiolsAD >::type biols(biolsSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const double >::type indep_min(indep_minSEXP);
+    Rcpp::traits::input_parameter< const double >::type indep_max(indep_maxSEXP);
+    __result = Rcpp::wrap(test_operatingModel_run(flfs, biols, ctrl, indep_min, indep_max));
+    return __result;
+END_RCPP
+}
+// test_operatingModel_catches_subset
+FLQuantAD test_operatingModel_catches_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_operatingModel_catches_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type flbs_list_sexp(flbs_list_sexpSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    __result = Rcpp::wrap(test_operatingModel_catches_subset(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max));
+    return __result;
+END_RCPP
+}
+// test_operatingModel_landings_subset
+FLQuantAD test_operatingModel_landings_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_operatingModel_landings_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type flbs_list_sexp(flbs_list_sexpSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    __result = Rcpp::wrap(test_operatingModel_landings_subset(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max));
+    return __result;
+END_RCPP
+}
+// test_operatingModel_discards_subset
+FLQuantAD test_operatingModel_discards_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_operatingModel_discards_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type flbs_list_sexp(flbs_list_sexpSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    __result = Rcpp::wrap(test_operatingModel_discards_subset(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max));
     return __result;
 END_RCPP
 }
