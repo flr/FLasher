@@ -10,6 +10,5 @@
 #include "FLCatch.h"
 #include "FLFishery.h"
 #include "operating_model.h"
-#include "solver.h"
 
 
