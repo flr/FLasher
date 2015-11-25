@@ -582,7 +582,7 @@ make_test_operatingModel2 <- function(niters = 1000){
     # hperiod 1 < hperiod 2
 
     # fwdControl
-    fwc <- random_fwdControl_generator()
+    fwc <- random_fwdControl_generator(niters=niters)
     # Make a temporary FCB attribute - add to class later
     FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
     colnames(FCB) <- c("F","C","B")
