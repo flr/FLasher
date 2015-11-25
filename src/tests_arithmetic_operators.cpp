@@ -722,3 +722,12 @@ FLQuantAD test_sweep_minusDAD(FLQuant flq1, FLQuantAD flq2){
     return sweep_minus(flq1, flq2);
 }
 
+// [[Rcpp::export]]
+bool test_int_is_na(int val){
+    return Rcpp::IntegerVector::is_na(val);
+}
+
+// [[Rcpp::export]]
+bool test_double_is_na(double val){
+    return Rcpp::NumericVector::is_na(val);
+}
