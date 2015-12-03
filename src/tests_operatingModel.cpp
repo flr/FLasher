@@ -299,6 +299,22 @@ FLQuantAD test_operatingModel_discards_subset(FLFisheriesAD flfs, SEXP flbs_list
     return om.discards(biol_no, indices_min, indices_max);
 }
 
+// [[Rcpp::export]]
+std::vector<double> test_operatingModel_get_target_value(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int target_no, const int sim_target_no){
+    operatingModel om(flfs, biols, ctrl);
+    std::vector<double> out = om.get_target_value(target_no, sim_target_no);
+    return out;
+}
+
+// [[Rcpp::export]]
+std::vector<double> test_operatingModel_get_target_value2(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int target_no){
+    operatingModel om(flfs, biols, ctrl);
+    std::vector<double> out = om.get_target_value(target_no);
+    return out;
+}
+
+
+
 ///*----------- SSB calculations--------------*/
 //
 //// [[Rcpp::export]]
@@ -354,22 +370,6 @@ FLQuantAD test_operatingModel_discards_subset(FLFisheriesAD flfs, SEXP flbs_list
 //}
 
 
-//// [[Rcpp::export]]
-//std::vector<double> test_operatingModel_get_target_value(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int target_no){
-//    fwdBiolsAD biols(flbs_list_sexp);
-//    operatingModel om(flfs, biols, ctrl);
-//    std::vector<double> out = om.get_target_value(target_no);
-//    return out;
-//}
-//
-//// [[Rcpp::export]]
-//std::vector<double> test_operatingModel_get_target_value2(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int target_no, const int sim_target_no){
-//    fwdBiolsAD biols(flbs_list_sexp);
-//    operatingModel om(flfs, biols, ctrl);
-//    std::vector<double> out = om.get_target_value(target_no, sim_target_no);
-//    return out;
-//}
-//
 //
 ///*
 //

@@ -1909,3 +1909,11 @@ test_operatingModel_discards_subset <- function(flfs, flbs_list_sexp, ctrl, biol
     .Call('FLasher_test_operatingModel_discards_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
 }
 
+test_operatingModel_get_target_value <- function(flfs, biols, ctrl, target_no, sim_target_no) {
+    .Call('FLasher_test_operatingModel_get_target_value', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no, sim_target_no)
+}
+
+test_operatingModel_get_target_value2 <- function(flfs, biols, ctrl, target_no) {
+    .Call('FLasher_test_operatingModel_get_target_value2', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no)
+}
+

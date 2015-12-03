@@ -6258,3 +6258,32 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_operatingModel_get_target_value
+std::vector<double> test_operatingModel_get_target_value(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int target_no, const int sim_target_no);
+RcppExport SEXP FLasher_test_operatingModel_get_target_value(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< fwdBiolsAD >::type biols(biolsSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const int >::type target_no(target_noSEXP);
+    Rcpp::traits::input_parameter< const int >::type sim_target_no(sim_target_noSEXP);
+    __result = Rcpp::wrap(test_operatingModel_get_target_value(flfs, biols, ctrl, target_no, sim_target_no));
+    return __result;
+END_RCPP
+}
+// test_operatingModel_get_target_value2
+std::vector<double> test_operatingModel_get_target_value2(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int target_no);
+RcppExport SEXP FLasher_test_operatingModel_get_target_value2(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< fwdBiolsAD >::type biols(biolsSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const int >::type target_no(target_noSEXP);
+    __result = Rcpp::wrap(test_operatingModel_get_target_value2(flfs, biols, ctrl, target_no));
+    return __result;
+END_RCPP
+}
