@@ -96,7 +96,10 @@ setMethod('fwdElement', signature(element='data.frame', iters='numeric'),
 		# FIND val names in element
 		vns <- c('min', 'value', 'max')
 		nms <- vns %in% colnames(element)
-		ite[, vns[nms],] <- element[,vns[nms]]
+
+        # ASSIGN values if 'value', 'min' or 'max' in df colnames
+        if(any(nms))
+    		ite[, vns[nms],] <- element[,vns[nms]]
 
 		return(fwdElement(element=element, iters=ite))
 	}
