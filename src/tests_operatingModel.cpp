@@ -253,6 +253,32 @@ operatingModel test_operatingModel_run(FLFisheriesAD flfs, fwdBiolsAD biols, con
 /*----------- target calculations--------------*/
 
 // [[Rcpp::export]]
+FLQuantAD test_operatingModel_eval_om(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const std::string strquantity, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    fwdControlTargetType quantity = ctrl.get_target_type(strquantity);
+    FLQuantAD out = om.eval_om(quantity, fishery_no, catch_no, biol_no, indices_min, indices_max);
+    return out;
+}
+
+// [[Rcpp::export]]
+std::vector<double> test_operatingModel_get_target_value_hat(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int target_no, const int sim_target_no){
+    operatingModel om(flfs, biols, ctrl);
+    std::vector<adouble> out_ad = om.get_target_value_hat(target_no, sim_target_no);
+    std::vector<double> out(out_ad.size());
+    std::transform(out_ad.begin(), out_ad.end(), out.begin(), [](adouble x) {return Value(x);});
+    return out;
+}
+
+// [[Rcpp::export]]
+std::vector<double> test_operatingModel_get_target_value_hat2(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int target_no){
+    operatingModel om(flfs, biols, ctrl);
+    std::vector<adouble> out_ad = om.get_target_value_hat(target_no);
+    std::vector<double> out(out_ad.size());
+    std::transform(out_ad.begin(), out_ad.end(), out.begin(), [](adouble x) {return Value(x);});
+    return out;
+}
+
+// [[Rcpp::export]]
 FLQuantAD test_operatingModel_catches_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
     fwdBiolsAD biols(flbs_list_sexp);
     operatingModel om(flfs, biols, ctrl);
@@ -272,15 +298,6 @@ FLQuantAD test_operatingModel_discards_subset(FLFisheriesAD flfs, SEXP flbs_list
     operatingModel om(flfs, biols, ctrl);
     return om.discards(biol_no, indices_min, indices_max);
 }
-
-// [[Rcpp::export]]
-FLQuantAD test_operatingModel_eval_om(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const std::string strquantity, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-    operatingModel om(flfs, biols, ctrl);
-    fwdControlTargetType quantity = ctrl.get_target_type(strquantity);
-    FLQuantAD out = om.eval_om(quantity, fishery_no, catch_no, biol_no, indices_min, indices_max);
-    return out;
-}
-
 
 ///*----------- SSB calculations--------------*/
 //
@@ -353,25 +370,6 @@ FLQuantAD test_operatingModel_eval_om(FLFisheriesAD flfs, fwdBiolsAD biols, cons
 //    return out;
 //}
 //
-//// [[Rcpp::export]]
-//std::vector<double> test_operatingModel_get_target_value_hat(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int target_no){
-//    fwdBiolsAD biols(flbs_list_sexp);
-//    operatingModel om(flfs, biols, ctrl);
-//    std::vector<adouble> out_ad = om.get_target_value_hat(target_no);
-//    std::vector<double> out(out_ad.size());
-//    std::transform(out_ad.begin(), out_ad.end(), out.begin(), [](adouble x) {return Value(x);});
-//    return out;
-//}
-//
-//// [[Rcpp::export]]
-//std::vector<double> test_operatingModel_get_target_value_hat2(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int target_no, const int sim_target_no){
-//    fwdBiolsAD biols(flbs_list_sexp);
-//    operatingModel om(flfs, biols, ctrl);
-//    std::vector<adouble> out_ad = om.get_target_value_hat(target_no, sim_target_no);
-//    std::vector<double> out(out_ad.size());
-//    std::transform(out_ad.begin(), out_ad.end(), out.begin(), [](adouble x) {return Value(x);});
-//    return out;
-//}
 //
 ///*
 //

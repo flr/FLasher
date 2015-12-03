@@ -91,9 +91,9 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsA
     // Again add iteration check here
     // Iters in ctrl need to match those in biols and effort
     // Shouldn't it recycle?
-    if (ctrl.get_niter() != biols(1).n().get_niter()){
-        Rcpp::stop("In operatingModel constructor. Iters in biol must equal those in fwdControl.\n");
-    }
+    //if (ctrl.get_niter() != biols(1).n().get_niter()){
+    //    Rcpp::stop("In operatingModel constructor. Iters in biol must equal those in fwdControl.\n");
+    //}
 }
 
 /*! \brief The copy constructor
@@ -639,7 +639,6 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
     Rprintf("Leaving run\n");
 }
 
-
 /*! \brief Evaluate the current state of the operating model. 
  *
  * It is necessary to provide the fishery, catch and biol numbers because the state being evaluated depends on them.
@@ -652,14 +651,14 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
  * \param indices_max The maximum range of the returned FLQuant
  */
 FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
-
     // Check length of indices_min and max - should be of length 5 (no age structured quantities returned)
-
+    if (indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel srp subsetter. Indices not of length 5\n");
+    }
     // If we have a catch_no, we must also have a fishery_no: XOR! 
     if(Rcpp::IntegerVector::is_na(catch_no) ^ Rcpp::IntegerVector::is_na(fishery_no)){
         Rcpp::stop("In operatingModel::eval_om. If you specify a catch_no, you must also specify a fishery_no (relative or not)\n");
     }
-
     FLQuantAD out;
     switch(target_type){
         //case target_effort:
@@ -766,6 +765,82 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
     }
     return out;
 }
+
+/*! \name Get the current target values in the operating model
+ */
+//@{
+/*! \brief Get the current target values in the operating model for all simultaneous targets.
+ *
+ * Returns a vector of the current simultaneous target values.
+ * The vector is made up of vectors for each simultaneous target (each being of length niter)
+ * If the target is relative, the method calculates the current relative state.
+ * The values can be compared to the desired target values from get_target_value(). 
+ * \param target_no References the target column in the control dataframe. Starts at 1.
+ */
+std::vector<adouble> operatingModel::get_target_value_hat(const int target_no) const{
+    Rprintf("In get_target_value_hat target_no\n");
+    auto nsim_target = ctrl.get_nsim_target(target_no);
+    std::vector<adouble> value;
+    for (auto sim_target_count = 1; sim_target_count <= nsim_target; ++sim_target_count){
+        auto sim_target_value = get_target_value_hat(target_no, sim_target_count);
+        value.insert(value.end(), sim_target_value.begin(), sim_target_value.end());
+    }
+    return value;
+} 
+
+/*! \brief Get the current target values in the operating model for all simultaneous targets.
+ *
+ * Returns a vector of the current simultaneous target values.
+ * If the target is relative, the method calculates the current relative state.
+ * The values can be compared to the desired target values from get_target_value(). 
+ * \param target_no References the target column in the control dataframe. Starts at 1.
+ * \param sim_target_no References the simultaneous target in the target set. Starts at 1.
+ */
+std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, const int sim_target_no) const{
+    Rprintf("In get_target_value_hat sim_target_no\n");
+    Rprintf("sim_target_no: %i\n", sim_target_no);
+    // Target information: type, fishery, catch, biol, etc
+    auto niter = fisheries(1).effort().get_niter();
+    unsigned int year = ctrl.get_target_int_col(target_no, sim_target_no, "year");
+    unsigned int season = ctrl.get_target_int_col(target_no, sim_target_no, "season");
+    fwdControlTargetType target_type = ctrl.get_target_type(target_no, sim_target_no);
+    unsigned int fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
+    unsigned int catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
+    unsigned int biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "biol");
+    Rprintf("fishery no: %i, catch no: %i, biol no: %i\n", fishery_no, catch_no, biol_no);
+    // Indices for subsetting the target values
+    std::vector<unsigned int> indices_min = {year,1,season,1,1};
+    std::vector<unsigned int> indices_max = {year,1,season,1,niter};
+    // Get the current absolute values, i.e. not relative, as FLQuant
+    FLQuantAD target_value = eval_om(target_type, fishery_no, catch_no, biol_no, indices_min, indices_max);
+    // Are we dealing with absolute or relative values?
+    // Has to be relative in time (can be same timestep, but must still be notified) and relative in fishery
+    unsigned int rel_year = ctrl.get_target_int_col(target_no, sim_target_no, "relYear"); 
+    unsigned int rel_season = ctrl.get_target_int_col(target_no, sim_target_no, "relSeason");
+    unsigned int rel_fishery = ctrl.get_target_int_col(target_no, sim_target_no, "relFishery");
+    unsigned int rel_catch = ctrl.get_target_int_col(target_no, sim_target_no, "relCatch");
+    unsigned int rel_biol = ctrl.get_target_int_col(target_no, sim_target_no, "relBiol");
+    Rprintf("rel_fishery no: %i, rel_catch no: %i, rel_biol no: %i, rel_year: %i, rel_season: %i\n", rel_fishery, rel_catch, rel_biol, rel_year, rel_season);
+    bool target_rel_year_na = Rcpp::IntegerVector::is_na(rel_year);
+    bool target_rel_season_na = Rcpp::IntegerVector::is_na(rel_season);
+    bool target_rel_fishery_na = Rcpp::IntegerVector::is_na(rel_fishery);
+    bool target_rel_catch_na = Rcpp::IntegerVector::is_na(rel_catch);
+    bool target_rel_biol_na = Rcpp::IntegerVector::is_na(rel_biol);
+    // If one of them is relative, then we have a relative target
+    // Add check if relative NA makes sense
+    if (!target_rel_year_na){
+        Rprintf("Relative target target\n");
+        std::vector<unsigned int> rel_indices_min = {rel_year,1,rel_season,1,1};
+        std::vector<unsigned int> rel_indices_max = {rel_year,1,rel_season,1,niter};
+        FLQuantAD rel_target_value = eval_om(target_type, rel_fishery, rel_catch, rel_biol, rel_indices_min, rel_indices_max);
+        target_value = target_value / rel_target_value;
+    }
+    std::vector<adouble> value = target_value.get_data();
+    Rprintf("Leaving get_target_value_hat sim_target\n");
+    return value;
+} 
+//@}
+
 
 
 ///*! \name Get the desired target values in the operating model
@@ -982,82 +1057,6 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
 ////    return out;
 ////}
 //
-///*! \name Get the current target values in the operating model
-// */
-////@{
-///*! \brief Get the current target values in the operating model for all simultaneous targets.
-// *
-// * Returns a vector of the current simultaneous target values.
-// * If the target is relative, the method calculates the current relative state.
-// * The values can be compared to the desired target values from get_target_value(). 
-// * \param target_no References the target column in the control dataframe. Starts at 1.
-// */
-//std::vector<adouble> operatingModel::get_target_value_hat(const int target_no) const{
-//    Rprintf("In get_target_value_hat target_no\n");
-//    auto nsim_target = ctrl.get_nsim_target(target_no);
-//    std::vector<adouble> value;
-//    for (auto sim_target_count = 1; sim_target_count <= nsim_target; ++sim_target_count){
-//        auto sim_target_value = get_target_value_hat(target_no, sim_target_count);
-//        value.insert(value.end(), sim_target_value.begin(), sim_target_value.end());
-//    }
-//    return value;
-//} 
-//
-///*! \brief Get the current target values in the operating model for all simultaneous targets.
-// *
-// * Returns a vector of the current simultaneous target values.
-// * If the target is relative, the method calculates the current relative state.
-// * The values can be compared to the desired target values from get_target_value(). 
-// * \param target_no References the target column in the control dataframe. Starts at 1.
-// * \param sim_target_no References the simultaneous target in the target set. Starts at 1.
-// */
-//std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, const int sim_target_no) const{
-//    Rprintf("In get_target_value_hat sim_target_no\n");
-//    auto niter = ctrl.get_niter();
-//    //Rprintf("sim_target_no: %i\n", sim_target_no);
-//    unsigned int year = ctrl.get_target_int_col(target_no, sim_target_no, "year");
-//    unsigned int season = ctrl.get_target_int_col(target_no, sim_target_no, "season");
-//    // Indices for subsetting the target values
-//    std::vector<unsigned int> indices_min = {year,1,season,1,1};
-//    std::vector<unsigned int> indices_max = {year,1,season,1,niter};
-//    // Get the current absolute values, i.e. not relative
-//    //FLQuantAD sim_target_value = eval_target(target_no, sim_target_no, indices_min, indices_max);
-//    // RELATIVE STUFF
-//    // Are we dealing with absolute or relative values?
-//    // ADD RELATIVE CATCHES TOO? I.E. 1 CATCH IS RELATIVE TO ANOTHER CATCH?
-//    // Each target set can have a mix
-//    //Rprintf("sim_target_value: %f\n", Value(sim_target_value(1,1,1,1,1,1)));
-//    // Test for a relative target value - is the relative year or season NA?
-////    Rcpp::IntegerVector target_rel_year = ctrl.get_target_int_col(target_no, "relYear"); // WHY GETTING ALL SIM TARGETS HERE. JUST GET ONE
-////    Rcpp::IntegerVector target_rel_season = ctrl.get_target_int_col(target_no, "relSeason");
-////    unsigned int rel_year = target_rel_year[sim_target_no-1];
-////    unsigned int rel_season = target_rel_season[sim_target_no-1];
-////    bool target_rel_year_na = Rcpp::IntegerVector::is_na(rel_year);
-////    bool target_rel_season_na = Rcpp::IntegerVector::is_na(rel_season);
-////    // Both are either NA, or neither are, if one or other is NA then something has gone wrong (XOR!)
-////    if ((target_rel_year_na ^ target_rel_season_na)){
-////        Rcpp::stop("in operatingModel::get_target_value_hat sim_target_no. Only one of rel_year or rel_season is NA. Must be neither or both.\n");
-////    }
-////    // If target is relative we have to get the current actual value (done above) and the actual value it is relative to
-////    // Then calculate the relative difference (to be compared to the target)
-////    if (!target_rel_year_na){
-////        Rprintf("Relative target\n");
-////        // Get the value we are relative to
-////        std::vector<unsigned int> rel_indices_min = {rel_year,1,rel_season,1,1};
-////        std::vector<unsigned int> rel_indices_max = {rel_year,1,rel_season,1,niter};
-////        FLQuantAD sim_target_rel_value = eval_target(target_no, sim_target_no, rel_indices_min, rel_indices_max, true);
-////        // current proportion: value = value / rel_value
-////        std::transform(sim_target_rel_value.begin(), sim_target_rel_value.end(), sim_target_value.begin(), sim_target_value.begin(),
-////                    [](adouble x, adouble y){return y / x;});
-////    }
-////    // Clumsy - if relative we already copied the result back into sim_target_value - could copy direct into value and else{} the next line
-//    std::vector<adouble> value;
-//    //value.insert(value.end(), sim_target_value.begin(), sim_target_value.end());
-//    Rprintf("Leaving get_target_value_hat sim_target\n");
-//    return value;
-//} 
-////@}
-
 
 
 

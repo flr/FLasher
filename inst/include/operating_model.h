@@ -78,6 +78,9 @@ class operatingModel {
         void run(const double effort_mult_initial, const double indep_min = 0, const double indep_max = 1e9); 
 
         FLQuantAD eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        // The actual current target values in the OM - to be compared to the desired values
+        std::vector<adouble> get_target_value_hat(const int target_no) const; 
+        std::vector<adouble> get_target_value_hat(const int target_no, const int sim_target_no) const; 
 
         // The target value we are trying to hit - either directly from the control object or a min / max calculation using the current OM
         // ADD MIN MAX BACK IN
@@ -85,9 +88,6 @@ class operatingModel {
         //std::vector<double> get_target_value(const int target_no, const int sim_target_no) const; // All iters for a sim target
         // Given the target no, evaluate the current value in the operatingModel
         //FLQuantAD eval_target(const unsigned int target_no, const unsigned int sim_target_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const bool relative_target = false) const;
-        // The actual current target values in the OM - to be compared to the desired values
-        //std::vector<adouble> get_target_value_hat(const int target_no) const; 
-        //std::vector<adouble> get_target_value_hat(const int target_no, const int sim_target_no) const; 
         
         // Redundant methods?
         // Currently not using catch_q method - instead it is embedded in get_f()

@@ -1885,6 +1885,18 @@ test_operatingModel_run <- function(flfs, biols, ctrl, indep_min, indep_max) {
     .Call('FLasher_test_operatingModel_run', PACKAGE = 'FLasher', flfs, biols, ctrl, indep_min, indep_max)
 }
 
+test_operatingModel_eval_om <- function(flfs, biols, ctrl, strquantity, fishery_no, catch_no, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_eval_om', PACKAGE = 'FLasher', flfs, biols, ctrl, strquantity, fishery_no, catch_no, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_get_target_value_hat <- function(flfs, biols, ctrl, target_no, sim_target_no) {
+    .Call('FLasher_test_operatingModel_get_target_value_hat', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no, sim_target_no)
+}
+
+test_operatingModel_get_target_value_hat2 <- function(flfs, biols, ctrl, target_no) {
+    .Call('FLasher_test_operatingModel_get_target_value_hat2', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no)
+}
+
 test_operatingModel_catches_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
     .Call('FLasher_test_operatingModel_catches_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
 }
@@ -1895,9 +1907,5 @@ test_operatingModel_landings_subset <- function(flfs, flbs_list_sexp, ctrl, biol
 
 test_operatingModel_discards_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
     .Call('FLasher_test_operatingModel_discards_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_eval_om <- function(flfs, biols, ctrl, strquantity, fishery_no, catch_no, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_eval_om', PACKAGE = 'FLasher', flfs, biols, ctrl, strquantity, fishery_no, catch_no, biol_no, indices_min, indices_max)
 }
 
