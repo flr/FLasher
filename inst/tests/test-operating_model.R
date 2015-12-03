@@ -453,8 +453,8 @@ test_that("operatingModel eval_om", {
 })
 
 test_that("get_target_value_hat", {
-    niters <- 1000 
-    flq <- random_FLQuant_generator(fixed_dims = c(5,6,1,4,1,niters))
+    niters <- 10 
+    flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
@@ -534,6 +534,22 @@ test_that("get_target_value_hat", {
     # Both sim targets
     val_hat <- test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 4)
     expect_equal(val_hat, c(val_in1,val_in2))
+    # Relative fails due to not being set properly
+    rel_trgt3 <- data.frame(year = 1:8, season = 1, timestep = 1:8,
+                        quantity = "catch", target = 1:8,
+                        fishery = 1, catch = 1, biol = NA,
+                        relFishery = c(NA,1,1,1,1,NA,NA,NA), relCatch = c(1,NA,1,1,1,NA,NA,NA), relBiol = c(NA,NA,NA,NA,NA,1,1,NA),
+                        relYear = c(1,1,NA,NA,1,1,NA,1), relSeason = c(1,1,NA,1,NA,NA,1,1))
+    fwc <- fwdControl(rel_trgt3)
+    attr(fwc@target, "FCB") <- FCB
+    expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 1))
+    expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 2)) 
+    expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 3))
+    expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 4))
+    expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 5))
+    expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 6))
+    expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 7))
+    expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 8))
 })
 
 #test_that("operatingModel Q methods",{

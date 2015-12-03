@@ -828,6 +828,15 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     bool target_rel_biol_na = Rcpp::IntegerVector::is_na(rel_biol);
     // If one of them is relative, then we have a relative target
     // Add check if relative NA makes sense
+    // If relFishery we must have relCatch
+    if (target_rel_fishery_na ^ target_rel_catch_na){
+        Rcpp::stop("In operatingModel::get_target_value_hat. If relFishery specified, relCatch must also be specified (and vice versa)\n.");
+    }
+    // If relFishery OR relBiol, we must have relYear AND relSeason
+    if (((!target_rel_fishery_na | !target_rel_biol_na) ^ (!target_rel_year_na & !target_rel_season_na))){
+        Rcpp::stop("In operatingModel::get_target_value_hat. If relFishery and relCatch or relBiol specified, relYear and relSeason must also be specified. \n.");
+    }
+
     if (!target_rel_year_na){
         Rprintf("Relative target target\n");
         std::vector<unsigned int> rel_indices_min = {rel_year,1,rel_season,1,1};
