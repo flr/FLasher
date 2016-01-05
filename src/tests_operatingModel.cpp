@@ -77,6 +77,14 @@ operatingModel test_operatingModel_full_constructor(FLFisheriesAD flfs, fwdBiols
     return om;
 }
 
+/*----------- House keeping methods */
+
+// [[Rcpp::export]]
+unsigned int test_operatingModel_get_niter(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl){
+    operatingModel om(flfs, biols, ctrl);
+    return om.get_niter();
+}
+
 /*----------- SRP calculations--------------*/
 
 // [[Rcpp::export]]

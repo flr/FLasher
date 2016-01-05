@@ -66,6 +66,7 @@ class operatingModel {
         operator SEXP() const; // Used as intrusive 'wrap' - returns a list of stuff
 
         // Methods
+        unsigned int get_niter() const;
         FLQuantAD srp(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant f_prop_spwn(const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         std::vector<adouble> calc_rec(const int biol_no, const int timestep) const;

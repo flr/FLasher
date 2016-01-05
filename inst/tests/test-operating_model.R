@@ -36,6 +36,15 @@ test_that("operatingModel constructors and updaters",{
     # Residuals, fisheries, biols and who is fishing on what
 })
 
+test_that("operatingModel housekeeping",{
+    flq <- random_FLQuant_generator()
+    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
+    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
+    out <- test_operatingModel_get_niter(flfs, flbs, fc)
+    expect_equal(out, dim(flq)[6])
+})
+
 # Test F method with random Biols and Fisheries
 # No check if FC catches B
 test_that("operatingModel get_f method for FCB with random OM objects",{

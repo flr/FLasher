@@ -134,6 +134,15 @@ operatingModel::operator SEXP() const{
                             Rcpp::Named("ctrl", ctrl));
 }
 
+/*! \brief Returns the number of iterations
+ * 
+ * Number of iterations is equal to the number of iterations in the effort of the first fleet 
+ * (must be the same for all fleets and for all *_n members).
+ */
+unsigned int operatingModel::get_niter() const{
+    return fisheries(1).effort().get_niter();
+}
+
 /*! \brief Calculates the spawning recruitment potential of a biol at the time of spawning
  *
  * Calculated as SSB: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
@@ -364,7 +373,6 @@ void operatingModel::project_biols(const int timestep){
     if ((year > biol_dim[1]) | (season > biol_dim[3])){
         Rcpp::stop("In operatingModel::project_biols. Timestep outside of range");
     }
-    // CAREFUL WITH NUMBER OF ITERS
     // All driven by effort (as each iteration needs to the find the effort_mult that hits it), so the iterations of effort are the iterations of the OM
     // The iterations of effort are the same for all FLFishery objects in an FLFisheries
     // The n(biol) and catch_n(catch) are updated in projection loop by effort, so these members also have iterations of the OM

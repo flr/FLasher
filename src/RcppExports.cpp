@@ -6022,6 +6022,19 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_operatingModel_get_niter
+unsigned int test_operatingModel_get_niter(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl);
+RcppExport SEXP FLasher_test_operatingModel_get_niter(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< fwdBiolsAD >::type biols(biolsSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    __result = Rcpp::wrap(test_operatingModel_get_niter(flfs, biols, ctrl));
+    return __result;
+END_RCPP
+}
 // test_operatingModel_SRP_FLQ_subset
 FLQuantAD test_operatingModel_SRP_FLQ_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
 RcppExport SEXP FLasher_test_operatingModel_SRP_FLQ_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {

@@ -1849,6 +1849,10 @@ test_operatingModel_full_constructor <- function(flfs, biols, ctrl) {
     .Call('FLasher_test_operatingModel_full_constructor', PACKAGE = 'FLasher', flfs, biols, ctrl)
 }
 
+test_operatingModel_get_niter <- function(flfs, biols, ctrl) {
+    .Call('FLasher_test_operatingModel_get_niter', PACKAGE = 'FLasher', flfs, biols, ctrl)
+}
+
 test_operatingModel_SRP_FLQ_subset <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
     .Call('FLasher_test_operatingModel_SRP_FLQ_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
 }
