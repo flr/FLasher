@@ -240,9 +240,7 @@ std::string FLQuant_base<T>::get_units() const{
 }
 
 template <typename T>
-//Rcpp::IntegerVector FLQuant_base<T>::get_dim() const{
 std::vector<unsigned int> FLQuant_base<T>::get_dim() const{
-	//return Rcpp::clone<Rcpp::IntegerVector>(dim);
     return dim;
 }
 
@@ -258,45 +256,41 @@ unsigned int FLQuant_base<T>::get_size() const{
 
 template <typename T>
 unsigned int FLQuant_base<T>::get_nquant() const{
-	//Rcpp::IntegerVector dim = get_dim();
 	return dim[0];
 }
 
 template <typename T>
 unsigned int FLQuant_base<T>::get_nyear() const{
-	//Rcpp::IntegerVector dim = get_dim();
 	return dim[1];
 }
 
 template <typename T>
 unsigned int FLQuant_base<T>::get_nunit() const{
-	//Rcpp::IntegerVector dim = get_dim();
 	return dim[2];
 }
 
 template <typename T>
 unsigned int FLQuant_base<T>::get_nseason() const{
-	//Rcpp::IntegerVector dim = get_dim();
 	return dim[3];
 }
 
 template <typename T>
 unsigned int FLQuant_base<T>::get_narea() const{
-	//Rcpp::IntegerVector dim = get_dim();
 	return dim[4];
 }
 
 template <typename T>
 unsigned int FLQuant_base<T>::get_niter() const{
-	//Rcpp::IntegerVector dim = get_dim();
 	return dim[5];
 }
 
 // Note that elements start at 1 NOT 0!
-// Remove all the calls to get_nxxxx() to speed up
 template <typename T>
 int FLQuant_base<T>::get_data_element(const int quant, const int year, const int unit, const int season, const int area, int iter) const{
-    //Rcpp::IntegerVector dim = get_dim();
+    // Check that quant etc > 0
+    if ((quant <= 0) || (year <= 0) || (unit <= 0) || (season <= 0) || (area <= 0) || (iter <= 0)){
+            Rcpp::stop("In FLQuant accessor. quant etc must be > 0\n");
+    }
     std::vector<unsigned int> dim = get_dim();
     if ((quant > dim[0]) || (year > dim[1]) || (unit > dim[2]) || (season > dim[3]) || (area > dim[4])){
             Rcpp::stop("Trying to access element outside of quant, year, unit, season or area dim range.");
