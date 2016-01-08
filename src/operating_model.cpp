@@ -156,15 +156,15 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
     Rprintf("Getting SRP\n");
     // Check indices_min and indices_max are of length 5
     if (indices_min.size() != 5 | indices_max.size() != 5){
-        Rcpp::stop("In operatingModel srp subsetter. Indices not of length 5\n");
+        Rcpp::stop("In operatingModel::srp subsetter. Indices not of length 5\n");
     }
     // Add age range to input indices
     std::vector<unsigned int> qindices_min = indices_min;
-    std::vector<unsigned int> qindices_max = indices_max;
     qindices_min.insert(qindices_min.begin(), 1);
     std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
+    std::vector<unsigned int> qindices_max = indices_max;
     qindices_max.insert(qindices_max.begin(), dim[0]);
-    // Make dim of the F object: max - min + 1
+    // Make dim of the Fprespwn object: max - min + 1
     std::vector<unsigned int> qdim(6,0.0);
     std::transform(qindices_max.begin(), qindices_max.end(), qindices_min.begin(), qdim.begin(), [](unsigned int x, unsigned int y){return x-y+1;});
     FLQuantAD f_pre_spwn(qdim);
@@ -194,7 +194,7 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
     return srp;
 }
 
-/*! \brief Calculates the proportion of fishing mortality that occurs before the stock spwns
+/*! \brief Calculates the proportion of fishing mortality that occurs before the stock spawns
  *
  * Given by the start and stop time of fishing (hperiod member of FLFishery) and time of spawning (spwn member of fwdBiol)
  * \param fishery_no The position of the fishery in the fisheries list (starting at 1)
@@ -208,17 +208,14 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
     FLQuant propf_out(1, indices_max[0]-indices_min[0]+1, indices_max[1]-indices_min[1]+1, indices_max[2]-indices_min[2]+1, indices_max[3]-indices_min[3]+1, indices_max[4]-indices_min[4]+1);
     // Need to calculate element by element as timing can change over years etc.
     double propf = 0.0;
-    Rprintf("Going into for loop\n");
     for (unsigned int year_count=indices_min[0]; year_count <= indices_max[0]; ++year_count){
         for (unsigned int unit_count=indices_min[1]; unit_count <= indices_max[1]; ++unit_count){
             for (unsigned int season_count=indices_min[2]; season_count <= indices_max[2]; ++season_count){
                 for (unsigned int area_count=indices_min[3]; area_count <= indices_max[3]; ++area_count){
                     for (unsigned int iter_count=indices_min[4]; iter_count <= indices_max[4]; ++iter_count){
                         // Fix this depending on representation of fperiod
-                        //double fstart = fisheries(fishery_no).hperiod()(1,year_count, unit_count, season_count, area_count, iter_count);
-                        //double fend = fisheries(fishery_no).hperiod()(2,year_count, unit_count, season_count, area_count, iter_count);
-                        double fstart = 0;
-                        double fend = 1;
+                        double fstart = fisheries(fishery_no).hperiod()(1,year_count, unit_count, season_count, area_count, iter_count);
+                        double fend = fisheries(fishery_no).hperiod()(2,year_count, unit_count, season_count, area_count, iter_count);
                         double spwn = biols(biol_no).spwn()(1,year_count, unit_count, season_count, area_count, iter_count);
                         if (fend < spwn){
                             propf = 1.0;
@@ -230,14 +227,14 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
                             propf = (spwn - fstart) / (fend - fstart);
                         }
                         // Dump it in the right place - ugliness abounds
-                        propf_out(1, year_count - indices_min[0], unit_count - indices_min[1], season_count - indices_min[2], area_count - indices_min[3], iter_count - indices_min[4]); 
+                        propf_out(1, year_count - indices_min[0] +1, unit_count - indices_min[1] +1, season_count - indices_min[2] +1, area_count - indices_min[3] +1, iter_count - indices_min[4] +1) = propf; 
     }}}}}
     Rprintf("Leaving f_prop_spwn\n");
     return propf_out;
 }
 
 
-/*! \brief Calculates the recruitment for each iteration for a particular fwdBiol at one timestep
+/*! \brief Calculates the recruitment for each iteration for a particular fwdBiol at a particular timestep
  *
  * The length of the returned vector is the number of iterations in the biol.
  * \param biol_no The position of the biol in the biols list (starting at 1).
@@ -245,17 +242,17 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
  */
 std::vector<adouble> operatingModel::calc_rec(const int biol_no, const int timestep) const{
     unsigned int ssb_timestep = timestep - biols(biol_no).srp_timelag();
-        if (ssb_timestep < 1){
-            Rcpp::stop("project_timestep: ssb timestep outside of range");
-        }
+    if (ssb_timestep < 1){
+        Rcpp::stop("In operatingModel::calc_rec. ssb timestep outside of range");
+    }
     unsigned int ssb_year = 0;
     unsigned int ssb_season = 0;
     std::vector<unsigned int> biol_dim = biols(biol_no).n().get_dim(); 
-    auto niter = biol_dim[5];
     timestep_to_year_season(ssb_timestep, biol_dim[3], ssb_year, ssb_season);
     // Unit and area not dealt with yet - set to 1
     unsigned int area = 1;
     unsigned int unit = 1;
+    unsigned int niter = get_niter();
     std::vector<unsigned int> indices_min{ssb_year, unit, ssb_season, area, 1};
     std::vector<unsigned int> indices_max{ssb_year, unit, ssb_season, area, niter};
     FLQuantAD srpq = srp(biol_no, indices_min, indices_max);
@@ -357,10 +354,9 @@ FLQuantAD operatingModel::get_f(const int biol_no) const {
  *   \param timestep The time step for the projection.
  */
 void operatingModel::project_biols(const int timestep){
-    // Add recruitment
     Rprintf("In operatingModel::project_biols\n");
     if (timestep < 2){
-        Rcpp::stop("In operatingModel::project_biols. Uses effort in previous timesteo so timestep must be at least 2.");
+        Rcpp::stop("In operatingModel::project_biols. Uses effort in previous timestep so timestep must be at least 2.");
     }
     unsigned int year = 0;
     unsigned int season = 0;
@@ -373,11 +369,8 @@ void operatingModel::project_biols(const int timestep){
     if ((year > biol_dim[1]) | (season > biol_dim[3])){
         Rcpp::stop("In operatingModel::project_biols. Timestep outside of range");
     }
-    // All driven by effort (as each iteration needs to the find the effort_mult that hits it), so the iterations of effort are the iterations of the OM
-    // The iterations of effort are the same for all FLFishery objects in an FLFisheries
-    // The n(biol) and catch_n(catch) are updated in projection loop by effort, so these members also have iterations of the OM
-    unsigned int niter = biol_dim[5];
-    // Not yet set up for units and areas
+    unsigned int niter = get_niter();
+    // Not yet set up for units and areas so just set to 1 for now
     unsigned int unit = 1;
     unsigned int area = 1;
     // In what age do we put next timestep abundance? If beginning of year, everything is one year older
@@ -391,14 +384,15 @@ void operatingModel::project_biols(const int timestep){
         std::vector<unsigned int> biol_dim = biols(biol_counter).n().get_dim();
         std::vector<unsigned int> prev_indices_min{1, prev_year, unit, prev_season, area, 1};
         std::vector<unsigned int> prev_indices_max{biol_dim[0], prev_year, unit, prev_season, area, niter};
+
         //std::vector<adouble> rec = calc_rec(biol_counter, timestep);
         std::vector<adouble> rec(niter, 0.0);
+        
         // Get survivors from last timestep 
         FLQuantAD z_temp = get_f(biol_counter, prev_indices_min, prev_indices_max) + biols(biol_counter).m(prev_indices_min, prev_indices_max);
         FLQuantAD survivors = biols(biol_counter).n(prev_indices_min, prev_indices_max) * exp(-1.0 * z_temp);
-
         // Update biol in timestep
-        // Less the final survivor age (careful with age shift)
+        // Without the final survivor age (careful with age shift)
         for (unsigned int icount = 1; icount <= niter; ++icount){
             for (unsigned int qcount = 1; qcount <= (biol_dim[0] - 1); ++qcount){
                 biols(biol_counter).n(qcount + age_shift, year, unit, season, area, icount) = survivors(qcount, 1, 1, 1, 1, icount);

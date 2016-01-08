@@ -139,54 +139,29 @@ test_that("operatingModel SRP methods",{
     # Get full FLQ
     indices_min <- rep(1,6)
     indices_max <- dim(n(flbs_in[[biol_no]]))
-
-    #hperiod <- flfs[[fishery_no]]@hperiod
-    #spwn(flbs_in[[biol_no]]) # should just be dim 1
-    #fprop <- flq[1,]
-
-    #fprop[hperiod[1,] > spwn(flbs_in[[biol_no]])[1,]] <- 0 # Set fprop to 0, all fishing after
-    #fprop[hperiod[2,] < spwn(flbs_in[[biol_no]])[1,]] <- 1 # Set fprop to 1, all fishing before
-    ## Others that are mixed
-    ##straddle <- (hperiod[1,] < spwn(flbs_in[[biol_no]])[1,] & hperiod[2,] > spwn(flbs_in[[biol_no]])[1,])
-    #straddle <- hperiod[1,] < spwn(flbs_in[[biol_no]])[1,] 
-
-    #fprop_straddle <- (c(spwn(flbs_in[[biol_no]])[1,])[c(straddle)] - c(hperiod[1,])[c(straddle)]) / (c(hperiod[2,])[c(straddle)] - c(hperiod[1,])[c(straddle)])
-    #fprop[hperiod[1,] < spwn(flbs_in[[biol_no]])[1,] & hperiod[2,] > spwn(flbs_in[[biol_no]])[1,]] <- fprop_straddle
-
-
-
-    ## Cannot test as no hperiod[2,] in C++
-    #prop_out <- test_operatingModel_f_prop_spwn_FLQ_subset(flfs, flbs, fc, fishery_no, biol_no, indices_min[-1], indices_max[-1])
+    prop_in <- (spwn(flbs_in[[biol_no]])[1,] - flfs[[fishery_no]]@hperiod[1,]) / (flfs[[fishery_no]]@hperiod[2,] - flfs[[fishery_no]]@hperiod[1,])
+    # If hperiod1 > spwn, prop = 1
+    # If hperiod2 < spwn, prop = 0
+    prop_in[flfs[[fishery_no]]@hperiod[1,] >= spwn(flbs_in[[biol_no]])[1,]] <- 0
+    prop_in[flfs[[fishery_no]]@hperiod[2,] <= spwn(flbs_in[[biol_no]])[1,]] <- 1
+    prop_out <- test_operatingModel_f_prop_spwn_FLQ_subset(flfs, flbs, fc, fishery_no, biol_no, indices_min[-1], indices_max[-1])
+    test_FLQuant_equal(prop_in, prop_out) 
+    # Subset of f
+    indices_max <- round(runif(6,1,dim(prop_in)))
+    indices_min <- round(runif(6,1,indices_max))
+    prop_out <- test_operatingModel_f_prop_spwn_FLQ_subset(flfs, flbs, fc, fishery_no, biol_no, indices_min[-1], indices_max[-1])
+    test_FLQuant_equal(prop_in[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], prop_out)
+    
 
 
 
 
 
-
-
-    #om_bits <- make_test_operatingModel1(niters = 10)
-
-    #hperiod <- lapply(om_bits[["fisheries"]], function(x) x@hperiod)
-
-    #FLQuantAD test_operatingModel_f_prop_spwn_FLQ_subset(FLFisheriesAD flfs, Rcpp::List flbs_list, const fwdControl ctrl, const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    
 
 
 
-    #for (biol_no in 1:length(om_bits[["biols"]])){
-    #    biol <- om_bits[["biols"]][[biol_no]][["biol"]]
-    #    dims <- dim(n(biol))
-    #    indices_min <- round(runif(5, min=1, max=ceiling(dims[-1] / 2)))
-    #    indices_max <- round(runif(5, min=indices_min, max=dims[-1]))
-    #    # F prop spwn
-    #    fcb <- om_bits[["fwc"]]@target@FCB
-    #    fc <- fcb[fcb[,"B"] == biol_no,,drop=FALSE]
 
-    #    for (fc_count in 1:nrow(fc)){
-    #        #hperiod <- 
-
-    #    }
-
-    #    }
 
 
 
