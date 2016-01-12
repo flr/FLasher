@@ -88,15 +88,15 @@ unsigned int test_operatingModel_get_niter(FLFisheriesAD flfs, fwdBiolsAD biols,
 /*----------- SRP calculations--------------*/
 
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_SRP_FLQ_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-    operatingModel om(flfs, biols, ctrl);
-    return om.srp(biol_no, indices_min, indices_max);
-}
-
-// [[Rcpp::export]]
 FLQuantAD test_operatingModel_f_prop_spwn_FLQ_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
     operatingModel om(flfs, biols, ctrl);
     return om.f_prop_spwn(fishery_no, biol_no, indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_SRP_FLQ_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    return om.srp(biol_no, indices_min, indices_max);
 }
 
 /*----------- catch.q, F and Z methods --------------*/

@@ -177,19 +177,20 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
     Rprintf("Getting f_pre_spwn\n");
     for (unsigned int f_counter=0; f_counter < FC.nrow(); ++f_counter){
         FLQuantAD tempf = get_f(FC(f_counter,0), FC(f_counter,1), biol_no, qindices_min, qindices_max); 
-        FLQuant temp_prop_spwn = f_prop_spwn(FC(f_counter,0), biol_no, qindices_min, qindices_max);
+        FLQuant temp_prop_spwn = f_prop_spwn(FC(f_counter,0), biol_no, indices_min, indices_max);
         FLQuantAD temp_propf = sweep_mult(tempf, temp_prop_spwn);
         f_pre_spwn = f_pre_spwn + temp_propf;
     }
     Rprintf("Got f_pre_spwn\n");
+    // Get m pre spwn - need to adjust subsetter for the first dimension
+    std::vector<unsigned int> spwn_indices_max = qindices_max;
+    spwn_indices_max[0] = 1;
+    FLQuant m_pre_spwn = sweep_mult(biols(biol_no).m(qindices_min, qindices_max), biols(biol_no).spwn(qindices_min, spwn_indices_max));
     // Get srp: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
     FLQuantAD srp = quant_sum(
         biols(biol_no).n(qindices_min, qindices_max) *
         biols(biol_no).wt(qindices_min, qindices_max) *
-        biols(biol_no).mat(qindices_min, qindices_max) *
-        exp((-1.0 * f_pre_spwn) -
-            (biols(biol_no).m(qindices_min, qindices_max) * biols(biol_no).spwn(qindices_min, qindices_max))
-        ));
+        biols(biol_no).mat(qindices_min, qindices_max) * exp((-1.0 * f_pre_spwn) - m_pre_spwn));
     Rprintf("Got SRP\n");
     return srp;
 }
@@ -204,6 +205,10 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
  */
 FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
     Rprintf("In f_prop_spwn\n");
+    // Check indices_min and indices_max are of length 5
+    if (indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel::f_prop_spwn subsetter. Indices not of length 5\n");
+    }
     // Make an object to dump the result into
     FLQuant propf_out(1, indices_max[0]-indices_min[0]+1, indices_max[1]-indices_min[1]+1, indices_max[2]-indices_min[2]+1, indices_max[3]-indices_min[3]+1, indices_max[4]-indices_min[4]+1);
     // Need to calculate element by element as timing can change over years etc.
@@ -214,6 +219,7 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
                 for (unsigned int area_count=indices_min[3]; area_count <= indices_max[3]; ++area_count){
                     for (unsigned int iter_count=indices_min[4]; iter_count <= indices_max[4]; ++iter_count){
                         // Fix this depending on representation of fperiod
+                        //Rprintf("year_count: %i, unit_count: %i, season_count: %i, area_count: %i, iter_count: %i\n", year_count, unit_count, season_count, area_count, iter_count);
                         double fstart = fisheries(fishery_no).hperiod()(1,year_count, unit_count, season_count, area_count, iter_count);
                         double fend = fisheries(fishery_no).hperiod()(2,year_count, unit_count, season_count, area_count, iter_count);
                         double spwn = biols(biol_no).spwn()(1,year_count, unit_count, season_count, area_count, iter_count);

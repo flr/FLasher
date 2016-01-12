@@ -1853,12 +1853,12 @@ test_operatingModel_get_niter <- function(flfs, biols, ctrl) {
     .Call('FLasher_test_operatingModel_get_niter', PACKAGE = 'FLasher', flfs, biols, ctrl)
 }
 
-test_operatingModel_SRP_FLQ_subset <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_SRP_FLQ_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
-}
-
 test_operatingModel_f_prop_spwn_FLQ_subset <- function(flfs, biols, ctrl, fishery_no, biol_no, indices_min, indices_max) {
     .Call('FLasher_test_operatingModel_f_prop_spwn_FLQ_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, fishery_no, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_SRP_FLQ_subset <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_SRP_FLQ_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
 }
 
 test_operatingModel_get_f_FCB <- function(flfs, biols, ctrl, fishery_no, catch_no, biol_no) {
