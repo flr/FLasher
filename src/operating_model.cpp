@@ -213,6 +213,9 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
     FLQuant propf_out(1, indices_max[0]-indices_min[0]+1, indices_max[1]-indices_min[1]+1, indices_max[2]-indices_min[2]+1, indices_max[3]-indices_min[3]+1, indices_max[4]-indices_min[4]+1);
     // Need to calculate element by element as timing can change over years etc.
     double propf = 0.0;
+    // To speed up and not get whole FLQuant each time - indicates problem with way we are accessing FLQuant members
+    FLQuant hperiod = fisheries(fishery_no).hperiod();
+    FLQuant spwn_all = biols(biol_no).spwn();
     for (unsigned int year_count=indices_min[0]; year_count <= indices_max[0]; ++year_count){
         for (unsigned int unit_count=indices_min[1]; unit_count <= indices_max[1]; ++unit_count){
             for (unsigned int season_count=indices_min[2]; season_count <= indices_max[2]; ++season_count){
@@ -220,9 +223,9 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
                     for (unsigned int iter_count=indices_min[4]; iter_count <= indices_max[4]; ++iter_count){
                         // Fix this depending on representation of fperiod
                         //Rprintf("year_count: %i, unit_count: %i, season_count: %i, area_count: %i, iter_count: %i\n", year_count, unit_count, season_count, area_count, iter_count);
-                        double fstart = fisheries(fishery_no).hperiod()(1,year_count, unit_count, season_count, area_count, iter_count);
-                        double fend = fisheries(fishery_no).hperiod()(2,year_count, unit_count, season_count, area_count, iter_count);
-                        double spwn = biols(biol_no).spwn()(1,year_count, unit_count, season_count, area_count, iter_count);
+                        double fstart = hperiod(1,year_count, unit_count, season_count, area_count, iter_count);
+                        double fend = hperiod(2,year_count, unit_count, season_count, area_count, iter_count);
+                        double spwn = spwn_all(1,year_count, unit_count, season_count, area_count, iter_count);
                         if (fend < spwn){
                             propf = 1.0;
                         }
@@ -232,8 +235,8 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
                         else {
                             propf = (spwn - fstart) / (fend - fstart);
                         }
-                        // Dump it in the right place - ugliness abounds
-                        propf_out(1, year_count - indices_min[0] +1, unit_count - indices_min[1] +1, season_count - indices_min[2] +1, area_count - indices_min[3] +1, iter_count - indices_min[4] +1) = propf; 
+            // Dump it in the right place - ugliness abounds
+            propf_out(1, year_count - indices_min[0] +1, unit_count - indices_min[1] +1, season_count - indices_min[2] +1, area_count - indices_min[3] +1, iter_count - indices_min[4] +1) = propf; 
     }}}}}
     Rprintf("Leaving f_prop_spwn\n");
     return propf_out;
