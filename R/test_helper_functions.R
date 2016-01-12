@@ -184,20 +184,18 @@ random_FLCatches_generator <- function(min_catches = 2, max_catches = 5, ...){
 random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 100,  ...){
     catches <- random_FLCatches_generator(min_catches, max_catches, ...)
     fishery <- FLFishery(catches)
+    # Fix hperiod which gets messed up in constructor
+    hperiod_dim <- dim(fishery@hperiod)
+    hperiod_dim[1] <- 2
+    fishery@hperiod <- FLQuant(0, dim=hperiod_dim)
+    fishery@hperiod[1,] <- runif(prod(dim(fishery@hperiod)[2:6]),min=0, max=1)
+    fishery@hperiod[2,] <- runif(prod(dim(fishery@hperiod)[2:6]),min=fishery@hperiod[1,], max=1)
     # fill up effort, vcost and fcost
     effort(fishery)[] <- abs(rnorm(prod(dim(effort(fishery))),sd=sd))
     vcost(fishery)[] <- abs(rnorm(prod(dim(vcost(fishery))),sd=sd))
     fcost(fishery)[] <- abs(rnorm(prod(dim(fcost(fishery))),sd=sd))
-
-    fishery@hperiod[] <- rnorm(prod(dim(fishery@hperiod)),sd=sd)
-    # hperiod 1 must be <= 2
-
     fishery@desc <- as.character(signif(rnorm(1)*1000,3))
     fishery@name <- as.character(signif(rnorm(1)*1000,3))
-
-
-    # Fix and set fperiod for each fishery
-
     return(fishery)
 }
 
@@ -458,6 +456,7 @@ make_test_operatingModel1 <- function(niters = 1000){
         biol <- seed_biol
         n(biol) <- n(biol) * abs(rnorm(prod(dim(n(biol))), mean = 1, sd = 0.1))
         m(biol) <- m(biol) * abs(rnorm(prod(dim(m(biol))), mean = 1, sd = 0.1))
+        spwn(biol) <- runif(prod(dim(spwn(biol))), min=0,max=1)
         desc(biol) <- "biol"
         name(biol) <- "biol"
         flbiols[[i]] <- biol
@@ -502,15 +501,25 @@ make_test_operatingModel1 <- function(niters = 1000){
     fishery1 <- FLFishery(catch1=catch_list[[1]], catch2 = catch_list[[2]])
     desc(fishery1) <- "fishery1"
     effort(fishery1)[] <- 1
+    # Fix hperiod
+    hperiod_dim <- dim(fishery1@hperiod)
+    hperiod_dim[1] <- 2
+    fishery1@hperiod <- FLQuant(0, dim=hperiod_dim)
+    fishery1@hperiod[1,] <- runif(prod(dim(fishery1@hperiod)[2:6]),min=0, max=1)
+    fishery1@hperiod[2,] <- runif(prod(dim(fishery1@hperiod)[2:6]),min=fishery1@hperiod[1,], max=1)
 
     fishery2 <- FLFishery(catch1=catch_list[[3]], catch2 = catch_list[[4]])
     desc(fishery2) <- "fishery2"
     effort(fishery2)[] <- 1
+    # Fix hperiod
+    hperiod_dim <- dim(fishery2@hperiod)
+    hperiod_dim[1] <- 2
+    fishery2@hperiod <- FLQuant(0, dim=hperiod_dim)
+    fishery2@hperiod[1,] <- runif(prod(dim(fishery2@hperiod)[2:6]),min=0, max=1)
+    fishery2@hperiod[2,] <- runif(prod(dim(fishery2@hperiod)[2:6]),min=fishery2@hperiod[1,], max=1)
+    
     fisheries <- FLFisheries(fishery1 = fishery1, fishery2 = fishery2)
     fisheries@desc <- "fisheries"
-
-    # Fix and set hperiod for each fishery
-    # hperiod 1 < hperiod 2
 
     # fwdControl
     fwc <- random_fwdControl_generator(niters=niters)
@@ -574,9 +583,23 @@ make_test_operatingModel2 <- function(niters = 1000){
     fishery1 <- FLFishery(catch1=catch_list[[1]])
     desc(fishery1) <- "fishery1"
     effort(fishery1)[] <- 1
+    # Fix hperiod
+    hperiod_dim <- dim(fishery1@hperiod)
+    hperiod_dim[1] <- 2
+    fishery1@hperiod <- FLQuant(0, dim=hperiod_dim)
+    fishery1@hperiod[1,] <- runif(prod(dim(fishery1@hperiod)[2:6]),min=0, max=1)
+    fishery1@hperiod[2,] <- runif(prod(dim(fishery1@hperiod)[2:6]),min=fishery1@hperiod[1,], max=1)
+    
     fishery2 <- FLFishery(catch1=catch_list[[2]])
     desc(fishery2) <- "fishery2"
     effort(fishery2)[] <- 1
+    # Fix hperiod
+    hperiod_dim <- dim(fishery2@hperiod)
+    hperiod_dim[1] <- 2
+    fishery2@hperiod <- FLQuant(0, dim=hperiod_dim)
+    fishery2@hperiod[1,] <- runif(prod(dim(fishery2@hperiod)[2:6]),min=0, max=1)
+    fishery2@hperiod[2,] <- runif(prod(dim(fishery2@hperiod)[2:6]),min=fishery2@hperiod[1,], max=1)
+    
     fisheries <- FLFisheries(fishery1 = fishery1, fishery2 = fishery2)
     fisheries@desc <- "fisheries"
     # hperiod 1 < hperiod 2
