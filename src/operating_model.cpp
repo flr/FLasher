@@ -294,21 +294,24 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
     FLQuantAD effort = fisheries(fishery_no).effort(indices_min5, indices_max5);
     FLQuantAD sel = fisheries(fishery_no, catch_no).catch_sel()(indices_min, indices_max);
     FLQuantAD biomass = biols(biol_no).biomass(indices_min5, indices_max5);
-    FLQuantAD fout(indices_max[0]-indices_min[0]+1, indices_max[1]-indices_min[1]+1, indices_max[2]-indices_min[2]+1, indices_max[3]-indices_min[3]+1, indices_max[4]-indices_min[4]+1, indices_max[5] - indices_min[5]+1);
-    // Ugly code - q_params, effort and sel are all different dims
-    std::vector<unsigned int> dim = fout.get_dim();
-    for (int iter_count = 1; iter_count <= dim[5]; ++iter_count){
-        for (int area_count = 1; area_count <= dim[4]; ++area_count){
-            for (int season_count = 1; season_count <= dim[3]; ++season_count){
-                for (int unit_count = 1; unit_count <= dim[2]; ++unit_count){
-                    for (int year_count = 1; year_count <= dim[1]; ++year_count){
-                        // Get alpha * biomass ^ -beta * effort (not age structured)
-                        std::vector<double> q_params = fisheries(fishery_no, catch_no).catch_q_params(year_count + indices_min[1] - 1, unit_count + indices_min[2] - 1, season_count + indices_min[3] - 1, area_count + indices_min[4] - 1, iter_count + indices_min[5] - 1);
-                        adouble temp_qe = q_params[0] * pow(biomass(1, year_count, unit_count, season_count, area_count, iter_count), -1.0 * q_params[1]) * effort(1, year_count, unit_count, season_count, area_count, iter_count);
-                        for (int quant_count = 1; quant_count <= dim[0]; ++quant_count){
-                            // * sel (which is age structured)
-                            fout(quant_count, year_count, unit_count, season_count, area_count, iter_count) =  temp_qe * sel(quant_count, year_count, unit_count, season_count, area_count, iter_count);
-    }}}}}}
+    // Get q params as a whole FLQuant - just first 2 'ages' (params)
+    std::vector<unsigned int> qparams_indices_min = indices_min5;
+    qparams_indices_min.insert(qparams_indices_min.begin(), 1); 
+    std::vector<unsigned int> qparams_indices_max = indices_max5;
+    qparams_indices_max.insert(qparams_indices_max.begin(), 2); 
+    FLQuant qparams = fisheries(fishery_no, catch_no).catch_q_params(qparams_indices_min, qparams_indices_max);
+    // Subset qparams to get FLQ of the indiv params - really faffy
+    qparams_indices_min = {1,1,1,1,1,1};
+    qparams_indices_max = qparams.get_dim();
+    qparams_indices_max[0] = 1;
+    FLQuant qparams1 = qparams(qparams_indices_min, qparams_indices_max);
+    qparams_indices_min[0] = 2;
+    qparams_indices_max[0] = 2;
+    FLQuant qparams2 = qparams(qparams_indices_min, qparams_indices_max);
+    std::transform(biomass.begin(), biomass.end(), qparams2.begin(), biomass.begin(),
+        [](adouble x, double y) { return pow(x, -1.0 * y); } );
+    biomass = biomass * qparams1 * effort;
+    FLQuantAD fout = sweep_mult(biomass, sel);
     return fout;
 }
 /*! \brief Calculate the instantaneous fishing mortality of a single biol from a single fishery / catch over all dimensions.

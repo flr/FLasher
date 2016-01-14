@@ -63,7 +63,7 @@ test_that("operatingModel get_f method for FCB with random OM objects",{
     cq_flq <- as(catch.q(flfs[[fishery_no]][[catch_no]]), "FLQuant")
     biomass <- quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))
     qin <- sweep(sweep(biomass, 6, -cq_flq[2,], "^"), 6, cq_flq[1], "*")
-    fin <- sweep(catch.sel(flfs[[fishery_no]][[catch_no]]), 2:6, qin * effort(flfs[[fishery_no]]), "*")
+    fin <- sweep(catch.sel(flfs[[fishery_no]][[catch_no]]), 2:6, qin * flfs[[fishery_no]]@effort, "*")
     # Full FLQ
     fout <- test_operatingModel_get_f_FCB(flfs, flbs, fc, fishery_no, catch_no, biol_no)
     expect_equal(dim(fout), dim(fin))
@@ -81,7 +81,7 @@ test_that("operatingModel get_f method for FCB with random OM objects",{
     cq_flq <- as(catch.q(flfs[[fishery_no]][[catch_no]]), "FLQuant")
     biomass <- quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))
     qin <- sweep(sweep(biomass, c(2,6), -cq_flq[2,], "^"), c(2,6), cq_flq[1], "*")
-    fin <- sweep(catch.sel(flfs[[fishery_no]][[catch_no]]), 2:6, qin * effort(flfs[[fishery_no]]), "*")
+    fin <- sweep(catch.sel(flfs[[fishery_no]][[catch_no]]), 2:6, qin * flfs[[fishery_no]]@effort, "*")
     # Full FLQ
     fout <- test_operatingModel_get_f_FCB(flfs, flbs, fc, fishery_no, catch_no, biol_no)
     expect_equal(dim(fout), dim(fin))
@@ -116,7 +116,7 @@ test_that("get_f for biols with example operatingModel1",{
             for (j in 1:nrow(FC)){
                 cq_flq <- as(catch.q(flfs[[FC[j,"F"]]][[FC[j,"C"]]]), "FLQuant")
                 qin <- (c(cq_flq[1,])) * biomass ^ (-c(cq_flq[2,]))
-                fin <- fin + sweep(catch.sel(flfs[[FC[j,"F"]]][[FC[j,"C"]]]), 2:6, qin * effort(flfs[[FC[j,"F"]]]), "*")
+                fin <- fin + sweep(catch.sel(flfs[[FC[j,"F"]]][[FC[j,"C"]]]), 2:6, qin * flfs[[FC[j,"F"]]]@effort, "*")
             }
             test_FLQuant_equal(fin, fout_all)
             test_FLQuant_equal(fin[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2],indices_min[3]:indices_max[3],indices_min[4]:indices_max[4],indices_min[5]:indices_max[5],indices_min[6]:indices_max[6]], fout)
