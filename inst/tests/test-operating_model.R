@@ -4,14 +4,14 @@ test_that("timestep_to_year_season_conversion",{
     flq_in <- random_FLQuant_generator()
     year <- round(runif(1,min=1,max=dim(flq_in)[2]))
     season <- round(runif(1,min=1,max=dim(flq_in)[4]))
-    expect_that(test_year_season_to_timestep_FLQuant_double(flq_in, year, season), equals((year-1)*dim(flq_in)[4] + season))
-    expect_that(test_year_season_to_timestep_FLQuant_adouble(flq_in, year, season), equals((year-1)*dim(flq_in)[4] + season))
-    expect_that(test_year_season_to_timestep(flq_in, year, season), equals((year-1)*dim(flq_in)[4] + season))
+    expect_equal(test_year_season_to_timestep_FLQuant_double(flq_in, year, season), (year-1)*dim(flq_in)[4] + season)
+    expect_equal(test_year_season_to_timestep_FLQuant_adouble(flq_in, year, season), (year-1)*dim(flq_in)[4] + season)
+    expect_equal(test_year_season_to_timestep(flq_in, year, season), (year-1)*dim(flq_in)[4] + season)
     # And the other way
     timestep <- test_year_season_to_timestep(flq_in, year, season)
-    expect_that(test_timestep_to_year_season_FLQuant_double(flq_in, timestep), equals(c(year,season)))
-    expect_that(test_timestep_to_year_season_FLQuant_adouble(flq_in, timestep), equals(c(year,season)))
-    expect_that(test_timestep_to_year_season(flq_in, timestep), equals(c(year,season)))
+    expect_equal(test_timestep_to_year_season_FLQuant_double(flq_in, timestep), c(year,season))
+    expect_equal(test_timestep_to_year_season_FLQuant_adouble(flq_in, timestep),c(year,season))
+    expect_equal(test_timestep_to_year_season(flq_in, timestep), c(year,season))
 })
 
 test_that("operatingModel constructors and updaters",{
@@ -22,7 +22,7 @@ test_that("operatingModel constructors and updaters",{
     flq <- random_FLQuant_generator()
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
-    flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
+    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
     # Test as and wrap
@@ -51,7 +51,7 @@ test_that("operatingModel get_f method for FCB with random OM objects",{
     flq <- random_FLQuant_generator(min_dims = c(2,2,2,2,2,2))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
-    flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
+    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
     # fwdControl and FCB needed for constructor but not actually used to test F
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
@@ -78,6 +78,7 @@ test_that("operatingModel get_f method for FCB with random OM objects",{
     # With years in the Catch Q pars too
     flp <- FLPar(abs(rnorm(2 * dim(flq)[6] * dim(flq)[2])), dimnames = list(params = c("alpha","beta"), year=1:dim(flq)[2], iter = 1:dim(flq)[6]))
     catch.q(flfs[[fishery_no]][[catch_no]]) <- flp # desc removes! Why?
+    flfs@desc <- "mwng"
     cq_flq <- as(catch.q(flfs[[fishery_no]][[catch_no]]), "FLQuant")
     biomass <- quantSums(n(flbs[[biol_no]][["biol"]]) * wt(flbs[[biol_no]][["biol"]]))
     qin <- sweep(sweep(biomass, c(2,6), -cq_flq[2,], "^"), c(2,6), cq_flq[1], "*")
@@ -95,12 +96,12 @@ test_that("operatingModel get_f method for FCB with random OM objects",{
     expect_equal(c(fout), c(fin_sub))
 })
 
-test_that("get_f for biols with example operatingModel1",{
+test_that("get_f for biols with example operatingModel1 - total fs",{
     # Get the total Fs on Biols
     # Uses the FCB attribute
     om <- make_test_operatingModel1(20)
     flfs <- om[["fisheries"]]
-    flbs_in <- FLBiols(lapply(om[["biols"]], function(x) return(x[["biol"]])))
+    flbs_in <- lapply(om[["biols"]], function(x) return(x[["biol"]]))
     nbiols <- length(om[["biols"]])
     for (i in 1:nbiols){
         dim <- dim(n(om[["biols"]][[i]][["biol"]]))
@@ -129,7 +130,7 @@ test_that("operatingModel f_prop_spwn methods",{
     flq <- random_FLQuant_generator()
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
-    flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
+    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
     # Random fishery and biol
@@ -156,8 +157,7 @@ test_that("operatingModel srp methods",{
     # Assumes that f_prop_spwn and f is working correctly
     # Calculated as SSB: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
     om <- make_test_operatingModel1(niters = 100)
-    flbs_in <- FLBiols(lapply(om$biols, function(x) return(x[["biol"]])))
-
+    flbs_in <- lapply(om$biols, function(x) return(x[["biol"]]))
     # Biol 1
     biol_no <- 1
     fishery_no <- 1
@@ -166,7 +166,7 @@ test_that("operatingModel srp methods",{
     dim[1] <- 1
     indices_max <- round(runif(6,1,dim))
     indices_min <- round(runif(6,1,indices_max))
-    # Full range
+    # Get full range
     f_indices_min <- rep(1,6)
     f_indices_max <- dim(om[["biols"]][[biol_no]][["biol"]]@n)
     prop_in <- test_operatingModel_f_prop_spwn_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, biol_no, f_indices_min[-1], f_indices_max[-1])
@@ -177,7 +177,7 @@ test_that("operatingModel srp methods",{
     srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-sweep(f_in, 2:6, prop_in, "*") -sweep(flbs_in[[biol_no]]@m, 2:6, flbs_in[[biol_no]]@spwn[1,], "*")))
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
     test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
-                        
+    test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
     # Biol 2
     biol_no <- 2
     fishery_no <- 1
@@ -202,7 +202,6 @@ test_that("operatingModel srp methods",{
     srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-f_prop -sweep(flbs_in[[biol_no]]@m, 2:6, flbs_in[[biol_no]]@spwn[1,], "*")))
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
     test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
-
     # Biol 3
     biol_no <- 3
     fishery_no <- 2
@@ -222,7 +221,6 @@ test_that("operatingModel srp methods",{
     srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-sweep(f_in, 2:6, prop_in, "*") -sweep(flbs_in[[biol_no]]@m, 2:6, flbs_in[[biol_no]]@spwn[1,], "*")))
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
     test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
-
     # Biol 4
     biol_no <- 4
     fishery_no <- 2
@@ -242,7 +240,6 @@ test_that("operatingModel srp methods",{
     srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-sweep(f_in, 2:6, prop_in, "*") -sweep(flbs_in[[biol_no]]@m, 2:6, flbs_in[[biol_no]]@spwn[1,], "*")))
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
     test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
-
     # Biol 5 - no fishing
     biol_no <- 5
     dim <- dim(om[["biols"]][[biol_no]][["biol"]]@n)
@@ -264,7 +261,7 @@ test_that("operatingModel project_biol", {
     flq <- random_FLQuant_generator(fixed_dims = c(5,6,1,4,1,10))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
-    flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
+    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
     # Fix FCB
@@ -310,7 +307,7 @@ test_that("operatingModel project_fisheries", {
     flq <- random_FLQuant_generator(fixed_dims = c(5,6,1,4,1,10))
     flbs <- random_fwdBiols_list_generator(min_biols = 4, max_biols = 4, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
-    flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
+    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
     # Fix FCB
@@ -461,15 +458,14 @@ test_that("operatingModel landings, catch and discards methods",{
     expect_error(test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
     expect_error(test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
     expect_error(test_operatingModel_catch_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
-
 })
 
 test_that("operatingModel eval_om", {
+    # Add more as target types added
     niters <- 10 
     om <- make_test_operatingModel1(niters)
     dim_max <- dim(n(om[["biols"]][[1]][["biol"]]))
     dim_min <- round(runif(6, min=1, max=dim_max))
-
     # Catch
     # 1, 1, 1 Cannot ask for biol and a catch
     expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", 1, 1, 1, dim_min[-1], dim_max[-1]))
@@ -483,7 +479,6 @@ test_that("operatingModel eval_om", {
     test_FLQuant_equal(cout, cin)
     # NA, NA, 3 error
     expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", as.integer(NA), as.integer(NA), 3, dim_min[-1], dim_max[-1]))
-
     # Landings
     # 1, 1, 1 Cannot ask for biol and a catch
     expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", 1, 1, 1, dim_min[-1], dim_max[-1]))
@@ -497,7 +492,6 @@ test_that("operatingModel eval_om", {
     test_FLQuant_equal(cout, cin)
     # NA, NA, 3 error
     expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", as.integer(NA), as.integer(NA), 3, dim_min[-1], dim_max[-1]))
-
     # Discards
     # 1, 1, 1 Cannot ask for biol and a catch
     expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", 1, 1, 1, dim_min[-1], dim_max[-1]))
@@ -511,15 +505,15 @@ test_that("operatingModel eval_om", {
     test_FLQuant_equal(cout, cin)
     # NA, NA, 3 error
     expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", as.integer(NA), as.integer(NA), 3, dim_min[-1], dim_max[-1]))
-
 })
 
+# Current values in operating model (asked for by values in control)
 test_that("get_target_value_hat", {
     niters <- 10 
     flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
-    flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
+    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
     # Fix FCB
     FCB <- array(NA, dim=c(3,3))
@@ -614,12 +608,13 @@ test_that("get_target_value_hat", {
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 8))
 })
 
+# Values in control object (adjusted for min / max values)
 test_that("get_target_value", {
     niters <- 10 
     flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
-    flbs_in <- FLBiols(lapply(flbs, function(x) return(x[["biol"]])))
+    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
     # Fix FCB
     FCB <- array(NA, dim=c(3,3))
@@ -642,7 +637,7 @@ test_that("get_target_value", {
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
-    # 1 iter - should blow up
+    # 1 iter in control, many in OM - should blow up control iters
     fwc <- fwdControl(rbind(trgt1, trgt2))
     attr(fwc@target, "FCB") <- FCB
     val_hat1 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1)
@@ -670,7 +665,7 @@ test_that("get_target_value", {
     expect_equal(val_hat1, unname(val_in1))
     val_hat2 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 2)
     val_in2 <- fwc@target@iters[2,"value",]
-    expect_equal(val_hat2, unname(val_in2)
+    expect_equal(val_hat2, unname(val_in2))
     val_hat <- test_operatingModel_get_target_value2(flfs, flbs, fwc, 1)
     expect_equal(val_hat, unname(c(val_in1, val_in2)))
     val_hat1 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 2, 1)
@@ -738,7 +733,7 @@ test_that("get_target_value", {
     val_hat <- test_operatingModel_get_target_value2(flfs, flbs, fwc, 1)
     expect_equal(val_hat, c(val_hat1, val_hat2))
 
-    # Min and Max
+    # Min and Max - check this
     min_limit_iters <- sample(1:niters, 3)
     max_limit_iters <- sample((1:niters)[!((1:niters) %in% min_limit_iters)], 3)
     not_min_limit_iters <- (1:niters)[!((1:niters) %in% min_limit_iters)]
