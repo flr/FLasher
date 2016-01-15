@@ -150,9 +150,7 @@ random_FLCatches_generator <- function(min_catches = 2, max_catches = 5, ...){
     ncatches <- round(runif(1,min=min_catches, max=max_catches))
     op_list <- list()
     flq <- random_FLQuant_generator(...)
-    # cat("dim flq: ", dim(flq), "\n")
     fixed_dims <- dim(flq)
-    #fixed_dims[1] <- NA
     args[["fixed_dims"]] <- fixed_dims
     for (i in 1:ncatches){
         op_list[[i]] <- do.call(random_FLCatch_generator,args)    
@@ -162,7 +160,6 @@ random_FLCatches_generator <- function(min_catches = 2, max_catches = 5, ...){
     op@desc <- as.character(signif(rnorm(1)*1000,3))
     return(op)
 }
-
 
 #' Generate a randomly filled and sized FLFishery object
 #'
@@ -185,10 +182,6 @@ random_FLCatches_generator <- function(min_catches = 2, max_catches = 5, ...){
 random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 100,  ...){
     catches <- random_FLCatches_generator(min_catches, max_catches, ...)
     fishery <- FLFishery(catches)
-    # Fix hperiod which gets messed up in constructor
-    hperiod_dim <- dim(fishery@hperiod)
-    hperiod_dim[1] <- 2
-    fishery@hperiod <- FLQuant(0, dim=hperiod_dim)
     fishery@hperiod[1,] <- runif(prod(dim(fishery@hperiod)[2:6]),min=0, max=1)
     fishery@hperiod[2,] <- runif(prod(dim(fishery@hperiod)[2:6]),min=fishery@hperiod[1,], max=1)
     # fill up effort, vcost and fcost
@@ -199,7 +192,6 @@ random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 10
     fishery@name <- as.character(signif(rnorm(1)*1000,3))
     return(fishery)
 }
-
 
 #' Generate a randomly filled and sized FLFisheries object
 #'
@@ -225,12 +217,9 @@ random_FLFisheries_generator <- function(min_fisheries = 2, max_fisheries = 5, .
     fisheries_list <- list()
     nfisheries <- round(runif(1,min=min_fisheries, max=max_fisheries))
     for (i in 1:nfisheries){
-#        fisheries_list[[i]] <- random_FLFishery_generator(...)
-        fisheries_list[[i]] <- random_FLFishery_generator()
-        #fisheries_list[[i]] <- FLFishery(FLCatch(FLQuant(NA, dim=c(4,5,1,1,1,1))))
+        fisheries_list[[i]] <- random_FLFishery_generator(...)
     }
     names(fisheries_list) <- paste("Fishery ",as.character(1:nfisheries),sep="")
-
     fisheries <- FLFisheries(fisheries_list)
     fisheries@desc <- as.character(signif(rnorm(1)*1000,3))
     return(fisheries)
@@ -451,10 +440,10 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
 make_test_operatingModel1 <- function(niters = 1000){
     # Sort out the FLBiolcpps
     data(ple4)
-
     # blow up
     ple4_iters <- propagate(ple4, niters)
-    seed_biol <- as(ple4_iters,"FLBiolcpp")
+    seed_biol <- as(ple4_iters,"FLBiol")
+    seed_biol <- as(seed_biol,"FLBiolcpp")
     flbiols <- list()
     for (i in 1:5){
         biol <- seed_biol
@@ -465,7 +454,6 @@ make_test_operatingModel1 <- function(niters = 1000){
         name(biol) <- "biol"
         flbiols[[i]] <- biol
     }
-
     # Make SRRs
     srr1 <- fmle(as.FLSR(ple4, model="bevholt"),control = list(trace=0))
     srr2 <- fmle(as.FLSR(ple4, model="ricker"),control = list(trace=0))
@@ -477,7 +465,6 @@ make_test_operatingModel1 <- function(niters = 1000){
     res2[,"1957"] <- res2[,"1958"]
     res2 <- propagate(res2, niters)
     res2 <- res2 * abs(rnorm(prod(dim(res2)), mean = 1, sd = 0.1))
-
     # Make the lists of FLBiolcpp bits
     biol_bits1 <- list(biol = flbiols[[1]], srr_model_name = "bevholt", srr_params = as(params(srr1), "FLQuant"), srr_residuals = res1, srr_timelag = 1, srr_residuals_mult = TRUE)
     biol_bits2 <- list(biol = flbiols[[2]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_timelag = 1, srr_residuals_mult = TRUE)
@@ -485,7 +472,6 @@ make_test_operatingModel1 <- function(niters = 1000){
     biol_bits4 <- list(biol = flbiols[[4]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_timelag = 1, srr_residuals_mult = TRUE)
     biol_bits5 <- list(biol = flbiols[[5]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_timelag = 1, srr_residuals_mult = TRUE)
     biols <- list(biol1 = biol_bits1, biol2 = biol_bits2, biol3 = biol_bits3, biol4 = biol_bits4, biol5 = biol_bits5)
-
     # Make the Catches
     catch_seed <- as(ple4_iters, "FLCatch")
     catch_list <- list()
@@ -500,38 +486,25 @@ make_test_operatingModel1 <- function(niters = 1000){
         catch.q(catch) <- FLPar(c(1,0.5), dimnames=list(params=c("alpha","beta"), iter = 1))
         catch_list[[i]] <- catch
     }
-
     # Make fishery bits
     fishery1 <- FLFishery(catch1=catch_list[[1]], catch2 = catch_list[[2]])
     desc(fishery1) <- "fishery1"
     effort(fishery1)[] <- 1
-    # Fix hperiod
-    hperiod_dim <- dim(fishery1@hperiod)
-    hperiod_dim[1] <- 2
-    fishery1@hperiod <- FLQuant(0, dim=hperiod_dim)
     fishery1@hperiod[1,] <- runif(prod(dim(fishery1@hperiod)[2:6]),min=0, max=1)
     fishery1@hperiod[2,] <- runif(prod(dim(fishery1@hperiod)[2:6]),min=fishery1@hperiod[1,], max=1)
-
     fishery2 <- FLFishery(catch1=catch_list[[3]], catch2 = catch_list[[4]])
     desc(fishery2) <- "fishery2"
     effort(fishery2)[] <- 1
-    # Fix hperiod
-    hperiod_dim <- dim(fishery2@hperiod)
-    hperiod_dim[1] <- 2
-    fishery2@hperiod <- FLQuant(0, dim=hperiod_dim)
     fishery2@hperiod[1,] <- runif(prod(dim(fishery2@hperiod)[2:6]),min=0, max=1)
     fishery2@hperiod[2,] <- runif(prod(dim(fishery2@hperiod)[2:6]),min=fishery2@hperiod[1,], max=1)
-    
     fisheries <- FLFisheries(fishery1 = fishery1, fishery2 = fishery2)
     fisheries@desc <- "fisheries"
-
     # fwdControl
     fwc <- random_fwdControl_generator(niters=niters)
     # Make a temporary FCB attribute - add to class later
     FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
     colnames(FCB) <- c("F","C","B")
     attr(fwc@target, "FCB") <- FCB
-
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))
 }
 
@@ -549,7 +522,8 @@ make_test_operatingModel2 <- function(niters = 1000){
 
     # blow up niters and make FLBiolcpp
     ple4_iters <- propagate(ple4, niters)
-    seed_biol <- as(ple4_iters,"FLBiolcpp")
+    seed_biol <- as(ple4_iters,"FLBiol")
+    seed_biol <- as(seed_biol,"FLBiolcpp")
     flbiols <- list()
     biol <- seed_biol
     n(biol) <- n(biol) * abs(rnorm(prod(dim(n(biol))), mean = 1, sd = 0.1))
@@ -587,34 +561,21 @@ make_test_operatingModel2 <- function(niters = 1000){
     fishery1 <- FLFishery(catch1=catch_list[[1]])
     desc(fishery1) <- "fishery1"
     effort(fishery1)[] <- 1
-    # Fix hperiod
-    hperiod_dim <- dim(fishery1@hperiod)
-    hperiod_dim[1] <- 2
-    fishery1@hperiod <- FLQuant(0, dim=hperiod_dim)
     fishery1@hperiod[1,] <- runif(prod(dim(fishery1@hperiod)[2:6]),min=0, max=1)
     fishery1@hperiod[2,] <- runif(prod(dim(fishery1@hperiod)[2:6]),min=fishery1@hperiod[1,], max=1)
-    
     fishery2 <- FLFishery(catch1=catch_list[[2]])
     desc(fishery2) <- "fishery2"
     effort(fishery2)[] <- 1
-    # Fix hperiod
-    hperiod_dim <- dim(fishery2@hperiod)
-    hperiod_dim[1] <- 2
-    fishery2@hperiod <- FLQuant(0, dim=hperiod_dim)
     fishery2@hperiod[1,] <- runif(prod(dim(fishery2@hperiod)[2:6]),min=0, max=1)
     fishery2@hperiod[2,] <- runif(prod(dim(fishery2@hperiod)[2:6]),min=fishery2@hperiod[1,], max=1)
-    
     fisheries <- FLFisheries(fishery1 = fishery1, fishery2 = fishery2)
     fisheries@desc <- "fisheries"
-    # hperiod 1 < hperiod 2
-
     # fwdControl
     fwc <- random_fwdControl_generator(niters=niters)
     # Make a temporary FCB attribute - add to class later
     FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
     colnames(FCB) <- c("F","C","B")
     attr(fwc@target, "FCB") <- FCB
-
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))
 }
 
