@@ -86,28 +86,6 @@ class operatingModel {
         std::vector<double> get_target_value(const int target_no) const; // All iters for all sim targets
         std::vector<double> get_target_value(const int target_no, const int sim_target_no) const; // All iters for a sim target
         
-        // Redundant methods?
-        // Currently not using catch_q method - instead it is embedded in get_f()
-        // It could be useful if we wanted to use different catch_q methods rather than fixing it in get_f
-        //FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        //FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no) const;
-        //adouble catch_q(const int fishery_no, const int catch_no, const int biol_no, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter) const;
-        //FLQuantAD partial_f(const int fishery_no, const int catch_no, const int biol_no) const; 
-        //FLQuantAD partial_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; 
-        //FLQuantAD z(const int biol_no) const;
-        //FLQuantAD z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-
-        //void run_all_iters(); 
-        
-        //! Project the operating model by a single timestep
-        /*!
-            Project the operating model by a single timestep and update the abundances using the Baranov equation.
-            Fishing and natural mortality are assumed to be constant over age through the timestep.
-            Catches, landings and discards in the fisheries are calculated.
-            Population abundances in the biols in the following time step are calculated including recruitment.
-            @param timestep the timestep to project for
-        */
-        //void project_timestep(const int timestep);
 
         // Timestep of effort which drives the target value
         // int get_target_effort_timestep(const int target_no);
@@ -115,8 +93,6 @@ class operatingModel {
         // age range indices for the f based targets
         // Returns the indices of the age range, starts at 0
         //std::vector<unsigned int> get_target_age_range_indices(const unsigned int target_no, const unsigned int sim_target_no, const unsigned int biol_no) const; 
-
-
 
         // The target value calculations
         // Partial fbar of a single catch on a single biol
@@ -134,12 +110,6 @@ class operatingModel {
         // Total biomass from a biol
         //FLQuantAD biomass(const int biol_no) const;
 
-        // Various ways of calculating reproductive potential
-        //FLQuantAD ssb(const int biol_no) const;
-        //FLQuantAD ssb(const int biol_no, &FLQuantAD total_f, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        //FLQuantAD ssb(const int timestep, const int unit, const int area, const int biol_no) const; // all iters in a timestep, unit and area
-        //adouble ssb(const int timestep, const int unit, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
-        //adouble ssb(const int year, const int unit, const int season, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
 
     private:
         FLFisheriesAD fisheries;
