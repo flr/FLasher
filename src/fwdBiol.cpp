@@ -24,7 +24,7 @@ fwdBiol_base<T>::fwdBiol_base(){
     srr = fwdSR_base<T>();
 }
 
-// Constructor from a SEXP S4 FLBiol
+// Constructor from a SEXP S4 FLBiolcpp
 // Does not set the SR - only the FLBiol bits
 // Used as intrusive 'as'
 template <typename T>
@@ -106,7 +106,7 @@ fwdBiol_base<T>& fwdBiol_base<T>::operator = (const fwdBiol_base<T>& fwdBiol_sou
 template <typename T>
 fwdBiol_base<T>::operator SEXP() const{
     //Rprintf("Wrapping fwdBiol_base<T>.\n");
-    Rcpp::S4 flb_s4("FLBiol");
+    Rcpp::S4 flb_s4("FLBiolcpp");
     flb_s4.slot("name") = name;
     flb_s4.slot("desc") = desc;
     flb_s4.slot("range") = range;
@@ -282,15 +282,18 @@ fwdBiols_base<T>::fwdBiols_base(SEXP flbs_sexp){
 // Intrusive wrap - Just the FLBiol bits - no SRR bits
 template<typename T>
 fwdBiols_base<T>::operator SEXP() const{
-    Rcpp::S4 flbs_s4("FLBiols");
+    // Need an FLBiolcpps class - just return a list for now
+    //Rcpp::S4 flbs_s4("FLBiols");
     Rcpp::List list_out;
     // wrap of each fwdBiol is just the FLBiol part
     for (auto biol : biols){
         list_out.push_back(biol);
     }
-    flbs_s4.slot(".Data") = list_out;
-    flbs_s4.slot("names") = names;
-    return flbs_s4;
+    //flbs_s4.slot(".Data") = list_out;
+    //flbs_s4.slot("names") = names;
+    //return flbs_s4;
+    list_out.attr("names") = names;
+    return list_out;
 }
 
 // Constructor from an fwdBiol

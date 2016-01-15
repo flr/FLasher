@@ -22,7 +22,7 @@
 #' flq <- random_FLQuant_generator(fixed_dims = c(NA,10,1,4,1,NA))
 #' dim(flq)
 #' summary(flq)
-random_FLQuant_generator <- function(fixed_dims = rep(NA,6), min_dims = rep(1,6), max_dims = c(5,10,5,4,4,5), sd = 100){
+random_FLQuant_generator <- function(fixed_dims = rep(NA,6), min_dims = rep(1,6), max_dims = pmax(min_dims, c(5,10,5,4,4,5)), sd = 100){
     nage <- ifelse(is.na(fixed_dims[1]),round(runif(1,min=min_dims[1], max=max_dims[1])),fixed_dims[1])
     nyear <- ifelse(is.na(fixed_dims[2]),round(runif(1,min=min_dims[2], max=max_dims[2])),fixed_dims[2])
     nunit <- ifelse(is.na(fixed_dims[3]),round(runif(1,min=min_dims[3], max=max_dims[3])),fixed_dims[3])
@@ -61,36 +61,37 @@ random_FLQuant_list_generator <- function(min_elements = 1, max_elements = 10, .
     return(op)
 }
 
-#' Generate randomly sized and filled FLBiol objects
+#' Generate randomly sized and filled FLBiolcpp objects
 #'
-#' Generate an FLBiol of random size and filled with normally distributed random numbers with a mean of 0.
+#' Generate an FLBiolcpp of random size and filled with normally distributed random numbers with a mean of 0.
 #' Used for automatic testing, particularly of the fwdBiol class in CPP.
 #' 
 #' @param fixed_dims A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. Default value is rep(NA,6).
 #' @param max_dims A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,5,5,4,4,10).
 #' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
 #' @export
-#' @return An FLBiol
+#' @return An FLBiolcpp
 #' @examples
-#' flb <- random_FLBiol_generator()
+#' flb <- random_FLBiolcpp_generator()
 #' summary(flb)
-random_FLBiol_generator <- function(sd=100, ...){
+random_FLBiolcpp_generator <- function(sd=100, ...){
     flq <- abs(random_FLQuant_generator(sd=sd, ...))
     biol <- FLBiol(n = flq)
-    m(biol) <- abs(rnorm(prod(dim(flq)),sd=sd))
-    wt(biol) <- abs(rnorm(prod(dim(flq)),sd=sd))
-    fec(biol) <- abs(rnorm(prod(dim(flq)),sd=sd))
-    mat(biol) <- abs(rnorm(prod(dim(flq)),sd=sd))
-    spwn(biol) <- runif(prod(dim(flq)), min=0, max=1)
+    biol <- as(biol, "FLBiolcpp")
+    biol@m[] <- abs(rnorm(prod(dim(flq)),sd=sd))
+    biol@wt[] <- abs(rnorm(prod(dim(flq)),sd=sd))
+    biol@fec[] <- abs(rnorm(prod(dim(flq)),sd=sd))
+    biol@mat[] <- abs(rnorm(prod(dim(flq)),sd=sd))
+    biol@spwn[] <- runif(prod(dim(biol@spwn)), min=0, max=1)
     name(biol) <- as.character(signif(rnorm(1)*1000,3))
     desc(biol) <- as.character(signif(rnorm(1)*1000,3))
     # set the units to something sensible
-    units(m(biol)) <- "m"
-    units(wt(biol)) <- "kg"
-    units(fec(biol)) <- "prop"
-    units(mat(biol)) <- "prop"
-    units(spwn(biol)) <- "prop"
-    units(n(biol)) <- "10^3"
+    units(biol@m) <- "m"
+    units(biol@wt) <- "kg"
+    units(biol@fec) <- "prop"
+    units(biol@mat) <- "prop"
+    units(biol@spwn) <- "prop"
+    units(biol@n) <- "10^3"
     return(biol)
 }
 
@@ -224,9 +225,12 @@ random_FLFisheries_generator <- function(min_fisheries = 2, max_fisheries = 5, .
     fisheries_list <- list()
     nfisheries <- round(runif(1,min=min_fisheries, max=max_fisheries))
     for (i in 1:nfisheries){
-        fisheries_list[[i]] <- random_FLFishery_generator(...)
+#        fisheries_list[[i]] <- random_FLFishery_generator(...)
+        fisheries_list[[i]] <- random_FLFishery_generator()
+        #fisheries_list[[i]] <- FLFishery(FLCatch(FLQuant(NA, dim=c(4,5,1,1,1,1))))
     }
     names(fisheries_list) <- paste("Fishery ",as.character(1:nfisheries),sep="")
+
     fisheries <- FLFisheries(fisheries_list)
     fisheries@desc <- as.character(signif(rnorm(1)*1000,3))
     return(fisheries)
@@ -235,8 +239,8 @@ random_FLFisheries_generator <- function(min_fisheries = 2, max_fisheries = 5, .
 #' Generates a list that can be passed to the CPP fwdBiols constructor 
 #'
 #' The fwdBiols constructor takes a list (fwdbiols_list). Each element of fwdbiols_list is a list of:
-#' FLBiol, SRR model name, SRR params, SRR timelag, SRR residuals and SRR residuals mult.
-#' This function generates randomly filled FLBiol objects, of the same size.
+#' FLBiolcpp, SRR model name, SRR params, SRR timelag, SRR residuals and SRR residuals mult.
+#' This function generates randomly filled FLBiolcpp objects, of the same size.
 #' Used for automatic testing, particularly of the fwdBiols<T> class in CPP.
 #' 
 #' @param min_biols The minimum number of fwdBiols in the list. Default is 1. 
@@ -252,10 +256,10 @@ random_fwdBiols_list_generator <- function(min_biols = 1, max_biols = 5, ...){
     nbiols <- round(runif(1,min=min_biols,max=max_biols))
     biols <- list()
     # All biols must have same dims
-    seed_biol <- random_FLBiol_generator(...)
+    seed_biol <- random_FLBiolcpp_generator(...)
     for (i in 1:nbiols){
         biol_bits <- list()
-        biol_bits[["biol"]] <- random_FLBiol_generator(fixed_dims=dim(n(seed_biol)))
+        biol_bits[["biol"]] <- random_FLBiolcpp_generator(fixed_dims=dim(n(seed_biol)))
         biol_bits[["srr_model_name"]] <- "bevholt"
         biol_bits[["srr_params"]] <- FLQuant(abs(rnorm(2)), dimnames=list(params=c("a","b")))
         biol_bits[["srr_residuals"]] <- n(biol_bits[["biol"]])[1,]
@@ -267,19 +271,19 @@ random_fwdBiols_list_generator <- function(min_biols = 1, max_biols = 5, ...){
 
 #' Simple projection with minimal checks
 #'
-#' Given FLFisheries, FLBiol, FLSR, F and f.spwn, project over timesteps
+#' Given FLFisheries, FLBiolcpp, FLSR, F and f.spwn, project over timesteps
 #' No dimension checks are made!
 #' Recruitment is annual only. Happens at start of the year. SSB is calculated in previous year (or years depending on recruitment age).
 #' 
 #' @param flfs FLFisheries (with a single FLFishery with a single FLCatch)
-#' @param flb FLBiol
+#' @param flb FLBiolcpp
 #' @param f List of fishing mortality FLQuant objects (only a list of length 1 to start with)
 #' @param f_spwn List of fishing timing FLQuant objects (only a list of length 1 to start with) - not used at the moment - part of the SSB calculation
 #' @param sr_residuals FLQuant of residuals for the recruitment
 #' @param sr_residuals_mult Are the residuals multiplicative (TRUE)  or additive (FALSE)?
 #' @param timesteps Continuous sequence of integers (years and seasons)
 #' @export
-#' @return A list of FLFisheries and FLBiol objects
+#' @return A list of FLFisheries and FLBiolcpp objects
 simple_fisheries_project <- function(flfs, flb, flsr, f, f_spwn, sr_residuals, sr_residuals_mult, timesteps){
     nseason <- dim(n(flb))[4]
     nages <- 1:dim(n(flb))[1]
@@ -437,20 +441,20 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
 
 #' Create a complex annual test operating model
 #'
-#' Creates a test operating model for testing FLFishery / FLCatch / FLBiol interactions.
+#' Creates a test operating model for testing FLFishery / FLCatch / FLBiolcpp interactions.
 #' Implements all possible type of FCB interactions.
-#' Two FLFishery objects with 4 FLCatch objects between them, fishing 4 FLBiol objects.
+#' Two FLFishery objects with 4 FLCatch objects between them, fishing 4 FLBiolcpp objects.
 #' All objects are based on ple4.
 #'
 #' @export
 #' @return A list of objects for sending to C++
 make_test_operatingModel1 <- function(niters = 1000){
-    # Sort out the FLBiols
+    # Sort out the FLBiolcpps
     data(ple4)
 
     # blow up
     ple4_iters <- propagate(ple4, niters)
-    seed_biol <- as(ple4_iters,"FLBiol")
+    seed_biol <- as(ple4_iters,"FLBiolcpp")
     flbiols <- list()
     for (i in 1:5){
         biol <- seed_biol
@@ -474,7 +478,7 @@ make_test_operatingModel1 <- function(niters = 1000){
     res2 <- propagate(res2, niters)
     res2 <- res2 * abs(rnorm(prod(dim(res2)), mean = 1, sd = 0.1))
 
-    # Make the lists of FLBiol bits
+    # Make the lists of FLBiolcpp bits
     biol_bits1 <- list(biol = flbiols[[1]], srr_model_name = "bevholt", srr_params = as(params(srr1), "FLQuant"), srr_residuals = res1, srr_timelag = 1, srr_residuals_mult = TRUE)
     biol_bits2 <- list(biol = flbiols[[2]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_timelag = 1, srr_residuals_mult = TRUE)
     biol_bits3 <- list(biol = flbiols[[3]], srr_model_name = "bevholt", srr_params = as(params(srr1), "FLQuant"), srr_residuals = res1, srr_timelag = 1, srr_residuals_mult = TRUE)
@@ -533,19 +537,19 @@ make_test_operatingModel1 <- function(niters = 1000){
 
 #' Create a simple annual test operating model
 #'
-#' Creates a test operating model for testing FLFishery / FLCatch / FLBiol interactions.
-#' Two FLFishery objects with 1 FLCatch objects each fishing on the same, single FLBiol.
+#' Creates a test operating model for testing FLFishery / FLCatch / FLBiolcpp interactions.
+#' Two FLFishery objects with 1 FLCatch objects each fishing on the same, single FLBiolcpp.
 #' All objects are based on ple4.
 #'
 #' @export
 #' @return A list of objects for sending to C++
 make_test_operatingModel2 <- function(niters = 1000){
-    # Sort out the FLBiols
+    # Sort out the FLBiolcpps
     data(ple4)
 
-    # blow up niters and make FLBiol
+    # blow up niters and make FLBiolcpp
     ple4_iters <- propagate(ple4, niters)
-    seed_biol <- as(ple4_iters,"FLBiol")
+    seed_biol <- as(ple4_iters,"FLBiolcpp")
     flbiols <- list()
     biol <- seed_biol
     n(biol) <- n(biol) * abs(rnorm(prod(dim(n(biol))), mean = 1, sd = 0.1))
@@ -561,7 +565,7 @@ make_test_operatingModel2 <- function(niters = 1000){
     res1 <- propagate(res1, niters)
     res1 <- res1 * abs(rnorm(prod(dim(res1)), mean = 1, sd = 0.1))
 
-    # Make the lists of FLBiol bits
+    # Make the lists of FLBiolcpp bits
     biol_bits1 <- list(biol = flbiols[[1]], srr_model_name = "bevholt", srr_params = as(params(srr1), "FLQuant"), srr_residuals = res1, srr_timelag = 1, srr_residuals_mult = TRUE)
     biols <- list(biol1 = biol_bits1)
 
