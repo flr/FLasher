@@ -873,12 +873,13 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
  * If the target values are relative, the returned values are the proportions from the control object, not the actual values.
  * If values are based on max / min some calculation is required.
  * Returns a vector of the simultaneous target values of a target set. 
+ * Needs to return adouble because if min / max target, the returned value will depend on current effort value.
  * \param target_no References the target column in the control dataframe. Starts at 1.
  */
-std::vector<double> operatingModel::get_target_value(const int target_no) const{
+std::vector<adouble> operatingModel::get_target_value(const int target_no) const{
     Rprintf("In get_target_value all sim targets\n");
     auto nsim_target = ctrl.get_nsim_target(target_no);
-    std::vector<double> value;
+    std::vector<adouble> value;
     for (auto sim_target_count = 1; sim_target_count <= nsim_target; ++sim_target_count){
         auto sim_target_value = get_target_value(target_no, sim_target_count);
         value.insert(value.end(), sim_target_value.begin(), sim_target_value.end());
@@ -889,12 +890,13 @@ std::vector<double> operatingModel::get_target_value(const int target_no) const{
  * If the target values are relative, the returned values are the proportions from the control object, not the actual values.
  * If values are based on max / min some calculation is required.
  * Returns a vector of values of the simultaneous target from the target set. 
+ * Needs to return adouble because if min / max target, the returned value will depend on current effort value.
  * \param target_no References the target column in the control dataframe. Starts at 1.
  * \param sim_target_no References the target column in the control dataframe. Starts at 1.
  */
-std::vector<double> operatingModel::get_target_value(const int target_no, const int sim_target_no) const{
+std::vector<adouble> operatingModel::get_target_value(const int target_no, const int sim_target_no) const{
     // Pull out values for all iterations for the sim targets from the control object
-    auto niter = fisheries(1).effort().get_niter(); // number of iters taken from effort of first fishery
+    auto niter = get_niter(); // number of iters taken from effort of first fishery
     auto ctrl_niter = ctrl.get_niter();
     // iters in ctrl object may be less than iters in effort (1 or n)
     // Check if 1 or n (but ctrl niters cannot be bigger than effort iters)
@@ -902,42 +904,41 @@ std::vector<double> operatingModel::get_target_value(const int target_no, const 
     if ((niter != ctrl_niter) & (ctrl_niter != 1)){
         Rcpp::stop("In operatingModel::get_target_value. Iterations in control object must be 1 or equal to those in fishing effort.\n");
     }
+    std::vector<adouble> value(niter);
     // Are we dealing with a min / max value?
     // If so we need to get the current state of the operating model to compare with
     double max_col = ctrl.get_target_num_col(target_no, sim_target_no, "max");
     double min_col = ctrl.get_target_num_col(target_no, sim_target_no, "min");
     bool max_na = Rcpp::NumericVector::is_na(max_col);
     bool min_na = Rcpp::NumericVector::is_na(min_col);
-    std::vector<double> value(niter);
     if (!max_na | !min_na){
-        Rprintf("It's a max or min target\n");
-        // Need to make <double> from <adouble>
         std::vector<adouble> current_value = get_target_value_hat(target_no, sim_target_no);
+        value = current_value;
         if(!max_na){
             Rprintf("Max target\n");
-            // value is min of current_value and max_value - put result in value
             std::vector<double> ctrl_value = ctrl.get_target_value(target_no, sim_target_no, 3);
-            if (niter > ctrl_niter){
-                std::fill(value.begin(), value.end(), ctrl_value[0]);
-            }
-            else {
-                value = ctrl_value;
-            }
-            std::transform(value.begin(), value.end(), current_value.begin(), value.begin(), [](double x, adouble y) {return std::min(x, Value(y));});
-        }
-        if(!min_na){
-            Rprintf("Min target\n");
-            // value is max of current_value and min_value - put result in value
-            std::vector<double> ctrl_value = ctrl.get_target_value(target_no, sim_target_no, 1);
-            // Need to avoid overwriting value so have to create extra variable
-            std::vector<double> ctrl_value_long(niter);
+            // In case of only 1 ctrl iter we need to blow up niter
+            std::vector<adouble> ctrl_value_long(niter);
             if (niter > ctrl_niter){
                 std::fill(ctrl_value_long.begin(), ctrl_value_long.end(), ctrl_value[0]);
             }
             else {
-                ctrl_value_long = ctrl_value;
+                ctrl_value_long.assign(ctrl_value.begin(), ctrl_value.end());
             }
-            std::transform(ctrl_value_long.begin(), ctrl_value_long.end(), current_value.begin(), value.begin(), [](double x, adouble y) {return std::max(x, Value(y));});
+            std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::min(x, y);});
+        }
+        if(!min_na){
+            Rprintf("Min target\n");
+            std::vector<double> ctrl_value = ctrl.get_target_value(target_no, sim_target_no, 1);
+            // In case of only 1 ctrl iter we need to blow up niter
+            std::vector<adouble> ctrl_value_long(niter);
+            if (niter > ctrl_niter){
+                std::fill(ctrl_value_long.begin(), ctrl_value_long.end(), ctrl_value[0]);
+            }
+            else {
+                ctrl_value_long.assign(ctrl_value.begin(), ctrl_value.end());
+            }
+            std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::max(x, y);});
         }
     }
     // If not min or max, just get the values from the control object
@@ -947,7 +948,7 @@ std::vector<double> operatingModel::get_target_value(const int target_no, const 
             std::fill(value.begin(), value.end(), ctrl_value[0]);
         }
         else {
-            value = ctrl_value;
+            value.assign(ctrl_value.begin(), ctrl_value.end());
         }
     }
     return value;

@@ -608,8 +608,8 @@ test_that("get_target_value_hat", {
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 8))
 })
 
-# Values in control object (adjusted for min / max values)
-test_that("get_target_value", {
+# Values in control object 
+test_that("get_target_value - straight value", {
     niters <- 10 
     flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
@@ -627,6 +627,7 @@ test_that("get_target_value", {
     seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
     timesteps <- (years-1) * dim(flq)[4] + seasons;
     value <- abs(rnorm(4))
+    # Simple control object
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
                         quantity = c("catch","catch"), target = 1, value = value[1:2],
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
@@ -637,6 +638,7 @@ test_that("get_target_value", {
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
+
     # 1 iter in control, many in OM - should blow up control iters
     fwc <- fwdControl(rbind(trgt1, trgt2))
     attr(fwc@target, "FCB") <- FCB
@@ -656,6 +658,7 @@ test_that("get_target_value", {
     expect_equal(val_hat2, val_in2)
     val_hat <- test_operatingModel_get_target_value2(flfs, flbs, fwc, 2)
     expect_equal(val_hat, c(val_in1, val_in2))
+
     # Same number of iters
     fwc <- fwdControl(rbind(trgt1, trgt2), iters=niters)
     fwc@target@iters[,"value",] <- abs(rnorm(4*niters))
@@ -682,72 +685,163 @@ test_that("get_target_value", {
     attr(fwc@target, "FCB") <- FCB
     expect_error(test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1))
 
+    # Many iters in control object, 1 in OM
+    # Just throws error
+    niters <- 1 
+    flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
+    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
+    # Pull out just FLBiols for testing
+    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
+    # Fix FCB
+    FCB <- array(NA, dim=c(3,3))
+    FCB[1,] <- c(1,1,1)
+    FCB[2,] <- c(1,2,2)
+    FCB[3,] <- c(2,1,2)
+    # Make an fwdControl to test
+    # Two sim catch targets
+    years <- rep(round(runif(4, min=1,max=dim(flq)[2])),each=2)
+    seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
+    timesteps <- (years-1) * dim(flq)[4] + seasons;
+    value <- abs(rnorm(4))
+    fwc <- fwdControl(rbind(trgt1, trgt2), iters=10)
+    fwc@target@iters[,"value",] <- abs(rnorm(4*10))
+    attr(fwc@target, "FCB") <- FCB
+    expect_error(test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1))
+})
+
+test_that("get_target_value - min / max values", {
     # Min / Max tests
-    limit_iters <- sample(1:niters, 5)
-    not_limit_iters <- (1:niters)[!((1:niters) %in% limit_iters)]
-    catch1 <- c(catch(flfs[[1]][[1]])[,years[1],,seasons[[1]]])
-    max_catch1 <- catch1
-    max_catch1[limit_iters] <- max_catch1[limit_iters] * 0.9
-    max_catch1[not_limit_iters] <- max_catch1[not_limit_iters] * 1.1
-    catch2 <- c(catch(flfs[[1]][[2]])[,years[1],,seasons[[1]]] + catch(flfs[[2]][[1]])[,years[1],,seasons[[1]]])
-    max_catch2 <- catch2
-    max_catch2[limit_iters] <- max_catch2[limit_iters] * 0.9
-    max_catch2[not_limit_iters] <- max_catch2[not_limit_iters] * 1.1
-    # Max
+    niters <- 10 
+    flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
+    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
+    # Pull out just FLBiols for testing
+    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
+    # Fix FCB
+    FCB <- array(NA, dim=c(3,3))
+    FCB[1,] <- c(1,1,1)
+    FCB[2,] <- c(1,2,2)
+    FCB[3,] <- c(2,1,2)
+    # Make an fwdControl to test
+    # Two sim catch targets
+    years <- rep(round(runif(4, min=1,max=dim(flq)[2])),each=2)
+    seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
+    timesteps <- (years-1) * dim(flq)[4] + seasons;
+    value <- abs(rnorm(4))
+    # Simple control object - just catch
+    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
+                        quantity = c("catch","catch"), target = 1, value = value[1:2],
+                        fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
+                        relFishery = NA, relCatch = NA, relBiol = NA,
+                        relYear = NA, relSeason = NA)
+    # Which iters will be less (max) / greater (min) than actual catch
+    big_iters <- sort(sample(1:niters, 5)) # Bigger than actual catch - will be limited by min
+    small_iters <- (1:niters)[!((1:niters) %in% big_iters)] # Smaller than actual catch - will be limited by max
+    catch1 <- c(catch(flfs[[1]][[1]])[,years[1],,seasons[[1]]]) # The actual catch
+    ctrl_catch1 <- catch1
+    ctrl_catch1[small_iters] <- ctrl_catch1[small_iters] * 0.9
+    ctrl_catch1[big_iters] <- ctrl_catch1[big_iters] * 1.1
+    catch2 <- c(catch(flfs[[1]][[2]])[,years[1],,seasons[[1]]] + catch(flfs[[2]][[1]])[,years[1],,seasons[[1]]]) # Actual catch on biol 2
+    ctrl_catch2 <- catch2
+    ctrl_catch2[small_iters] <- ctrl_catch2[small_iters] * 0.9
+    ctrl_catch2[big_iters] <- ctrl_catch2[big_iters] * 1.1
+
+    # Max only - small iters will be limited
+    # Same iters in OM and control
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
                         quantity = c("catch","catch"), target = 1, max = catch1[1],
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
     fwc <- fwdControl(trgt1, niters)
-    fwc@target@iters[1,"max",] <- max_catch1
-    fwc@target@iters[2,"max",] <- max_catch2
+    fwc@target@iters[1,"max",] <- ctrl_catch1
+    fwc@target@iters[2,"max",] <- ctrl_catch2
     attr(fwc@target, "FCB") <- FCB
     val_hat1 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1)
-    # only the limit_iters should equal values in control
-    expect_equal(val_hat1[limit_iters], unname(fwc@target@iters[1,"max",limit_iters]))
+    # only the small iters should equal values in control
+    expect_equal(val_hat1[small_iters], unname(fwc@target@iters[1,"max",small_iters]))
     # Others same as in OM
-    expect_equal(val_hat1[not_limit_iters], catch1[not_limit_iters])
+    expect_equal(val_hat1[big_iters], catch1[big_iters])
     val_hat2 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 2)
-    expect_equal(val_hat2[limit_iters], unname(fwc@target@iters[2,"max",limit_iters]))
-    expect_equal(val_hat2[not_limit_iters], catch2[not_limit_iters])
+    expect_equal(val_hat2[small_iters], unname(fwc@target@iters[2,"max",small_iters]))
+    expect_equal(val_hat2[big_iters], catch2[big_iters])
     val_hat <- test_operatingModel_get_target_value2(flfs, flbs, fwc, 1)
     expect_equal(val_hat, c(val_hat1, val_hat2))
-    # Min
+
+    # Max only - iters in OM, only 1 in control
+    # Set max target so half of them are maxed out
+    fwc <- fwdControl(trgt1, 1)
+    max1 <- median(catch1)
+    max2 <- median(catch2)
+    maxed_out1 <- which(catch1 > max1)
+    not_maxed_out1 <- (1:niters)[!((1:niters) %in% maxed_out1)]
+    maxed_out2 <- which(catch2 > max2)
+    not_maxed_out2 <- (1:niters)[!((1:niters) %in% maxed_out2)]
+    fwc@target@iters[1,"max",] <- max1
+    fwc@target@iters[2,"max",] <- max2
+    attr(fwc@target, "FCB") <- FCB
+    val_hat1 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1)
+    expect_identical(val_hat1[maxed_out1], rep(max1, length(maxed_out1)))
+    expect_equal(val_hat1[not_maxed_out1], catch1[not_maxed_out1])
+    val_hat2 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 2)
+    expect_identical(val_hat2[maxed_out2], rep(max2, length(maxed_out2)))
+    expect_equal(val_hat2[not_maxed_out2], catch2[not_maxed_out2])
+
+    # Min only - iters in OM = iters in control
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
                         quantity = c("catch","catch"), target = 1, min = catch1[1],
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
     fwc <- fwdControl(trgt1, niters)
-    fwc@target@iters[1,"min",] <- max_catch1
-    fwc@target@iters[2,"min",] <- max_catch2
+    fwc@target@iters[1,"min",] <- ctrl_catch1
+    fwc@target@iters[2,"min",] <- ctrl_catch2
     attr(fwc@target, "FCB") <- FCB
+    # Big iters will be limited
     val_hat1 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1)
-    expect_equal(val_hat1[not_limit_iters], unname(fwc@target@iters[1,"min",not_limit_iters]))
+    expect_equal(val_hat1[big_iters], unname(fwc@target@iters[1,"min",big_iters]))
     # Others same as in OM
-    expect_equal(val_hat1[limit_iters], catch1[limit_iters])
+    expect_equal(val_hat1[small_iters], catch1[small_iters])
     val_hat2 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 2)
-    expect_equal(val_hat2[not_limit_iters], unname(fwc@target@iters[2,"min",not_limit_iters]))
-    expect_equal(val_hat2[limit_iters], catch2[limit_iters])
+    expect_equal(val_hat2[big_iters], unname(fwc@target@iters[2,"min",big_iters]))
+    expect_equal(val_hat2[small_iters], catch2[small_iters])
     val_hat <- test_operatingModel_get_target_value2(flfs, flbs, fwc, 1)
     expect_equal(val_hat, c(val_hat1, val_hat2))
 
-    # Min and Max - check this
-    min_limit_iters <- sample(1:niters, 3)
-    max_limit_iters <- sample((1:niters)[!((1:niters) %in% min_limit_iters)], 3)
+    # Min only - iters in OM, only 1 in control
+    fwc <- fwdControl(trgt1, 1)
+    min1 <- median(catch1)
+    min2 <- median(catch2)
+    mined_out1 <- which(catch1 < min1)
+    not_mined_out1 <- (1:niters)[!((1:niters) %in% mined_out1)]
+    mined_out2 <- which(catch2 < min2)
+    not_mined_out2 <- (1:niters)[!((1:niters) %in% mined_out2)]
+    fwc@target@iters[1,"min",] <- min1
+    fwc@target@iters[2,"min",] <- min2
+    attr(fwc@target, "FCB") <- FCB
+    val_hat1 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1)
+    expect_identical(val_hat1[mined_out1], rep(min1, length(mined_out1)))
+    expect_equal(val_hat1[not_mined_out1], catch1[not_mined_out1])
+    val_hat2 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 2)
+    expect_identical(val_hat2[mined_out2], rep(min2, length(mined_out2)))
+    expect_equal(val_hat2[not_mined_out2], catch2[not_mined_out2])
+
+    # Min and Max - together
+    # 3 max limits, 3 mins, 4 within
+    # Equal iters in control and OM
+    min_limit_iters <- sort(sample(1:niters, 3))
+    max_limit_iters <- sort(sample((1:niters)[!((1:niters) %in% min_limit_iters)], 3))
+    not_limit_iters <- (1:niters)[!((1:niters) %in% c(min_limit_iters, max_limit_iters))]
     not_min_limit_iters <- (1:niters)[!((1:niters) %in% min_limit_iters)]
     not_max_limit_iters <- (1:niters)[!((1:niters) %in% max_limit_iters)]
-
     catch1 <- c(catch(flfs[[1]][[1]])[,years[1],,seasons[[1]]])
     max_catch1 <- catch1
     max_catch1[max_limit_iters] <- max_catch1[max_limit_iters] * 0.9
     max_catch1[not_max_limit_iters] <- max_catch1[not_max_limit_iters] * 1.1
-
     min_catch1 <- catch1
     min_catch1[not_min_limit_iters] <- min_catch1[not_min_limit_iters] * 0.9
     min_catch1[min_limit_iters] <- min_catch1[min_limit_iters] * 1.1
-
     catch2 <- c(catch(flfs[[1]][[2]])[,years[1],,seasons[[1]]] + catch(flfs[[2]][[1]])[,years[1],,seasons[[1]]])
     max_catch2 <- catch2
     max_catch2[max_limit_iters] <- max_catch2[max_limit_iters] * 0.9
@@ -755,47 +849,63 @@ test_that("get_target_value", {
     min_catch2 <- catch2
     min_catch2[not_min_limit_iters] <- min_catch2[not_min_limit_iters] * 0.9
     min_catch2[min_limit_iters] <- min_catch2[min_limit_iters] * 1.1
-
-
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quantity = c("catch","catch"), target = 1, min = catch1[1], 
+                        quantity = c("catch","catch"), target = 1, min = min_catch1[1],
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
     fwc <- fwdControl(trgt1, niters)
     # Constructor busted so hack
-    fwc@target@element$max = catch1[1]
-
+    fwc@target@element$max = max_catch1[1]
     fwc@target@iters[1,"max",] <- max_catch1
     fwc@target@iters[1,"min",] <- min_catch1
     fwc@target@iters[2,"max",] <- max_catch2
     fwc@target@iters[2,"min",] <- min_catch2
     attr(fwc@target, "FCB") <- FCB
     val_hat1 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1)
-
-
-# Something going wrong with min / max together
-
-    # only the limit_iters should equal values in control
-    expect_equal(val_hat1[max_limit_iters], unname(fwc@target@iters[1,"max",max_limit_iters]))
-
-    expect_equal(val_hat1[min_limit_iters], unname(fwc@target@iters[1,"min",min_limit_iters]))
-
-    # Others same as in OM
+    expect_identical(val_hat1[max_limit_iters], unname(fwc@target@iters[1,"max", max_limit_iters]))
+    expect_identical(val_hat1[min_limit_iters], unname(fwc@target@iters[1,"min", min_limit_iters]))
     expect_equal(val_hat1[not_limit_iters], catch1[not_limit_iters])
+    val_hat2 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 2)
+    expect_identical(val_hat2[max_limit_iters], unname(fwc@target@iters[2,"max", max_limit_iters]))
+    expect_identical(val_hat2[min_limit_iters], unname(fwc@target@iters[2,"min", min_limit_iters]))
+    expect_equal(val_hat2[not_limit_iters], catch2[not_limit_iters])
+    val_hat <- test_operatingModel_get_target_value2(flfs, flbs, fwc, 1)
+    expect_equal(val_hat, c(val_hat1, val_hat2))
 
-
-
-    # Min and Max with 1 iter in control
-
-
-
-    # Min and Max Rel
-
-
-
-
-
-
+    # Min and Max together with 1 iter in control
+    # Set min and max limit so a few of them are maxed / mined out
+    min1 <- quantile(catch1, 0.25)
+    max1 <- quantile(catch1, 0.75)
+    min_limit_iters1 <- which(catch1 < min1)
+    max_limit_iters1 <- which(catch1 > max1)
+    not_limit_iters1 <- (1:niters)[!((1:niters) %in% c(min_limit_iters1, max_limit_iters1))]
+    min2 <- quantile(catch2, 0.25)
+    max2 <- quantile(catch2, 0.75)
+    min_limit_iters2 <- which(catch2 < min2)
+    max_limit_iters2 <- which(catch2 > max2)
+    not_limit_iters2 <- (1:niters)[!((1:niters) %in% c(min_limit_iters2, max_limit_iters2))]
+    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
+                        quantity = c("catch","catch"), target = 1, min = min_catch1[1],
+                        fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
+                        relFishery = NA, relCatch = NA, relBiol = NA,
+                        relYear = NA, relSeason = NA)
+    fwc <- fwdControl(trgt1, 1)
+    fwc@target@element$max = max_catch1[1]
+    fwc@target@iters[1,"max",] <- max1
+    fwc@target@iters[1,"min",] <- min1
+    fwc@target@iters[2,"max",] <- max2
+    fwc@target@iters[2,"min",] <- min2
+    attr(fwc@target, "FCB") <- FCB
+    val_hat1 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1)
+    expect_equal(val_hat1[not_limit_iters1], catch1[not_limit_iters1])
+    expect_equal(val_hat1[max_limit_iters1], unname(rep(max1, length(max_limit_iters1))))
+    expect_equal(val_hat1[min_limit_iters1], unname(rep(min1, length(min_limit_iters1))))
+    val_hat2 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 2)
+    expect_equal(val_hat2[not_limit_iters2], catch2[not_limit_iters2])
+    expect_equal(val_hat2[max_limit_iters2], unname(rep(max2, length(max_limit_iters2))))
+    expect_equal(val_hat2[min_limit_iters2], unname(rep(min2, length(min_limit_iters2))))
+    val_hat <- test_operatingModel_get_target_value2(flfs, flbs, fwc, 1)
+    expect_equal(val_hat, c(val_hat1, val_hat2))
 })
 

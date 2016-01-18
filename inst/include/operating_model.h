@@ -83,8 +83,8 @@ class operatingModel {
         std::vector<adouble> get_target_value_hat(const int target_no) const; 
         std::vector<adouble> get_target_value_hat(const int target_no, const int sim_target_no) const; 
         // The target value we are trying to hit - either directly from the control object or a min / max calculation using the current OM
-        std::vector<double> get_target_value(const int target_no) const; // All iters for all sim targets
-        std::vector<double> get_target_value(const int target_no, const int sim_target_no) const; // All iters for a sim target
+        std::vector<adouble> get_target_value(const int target_no) const; // All iters for all sim targets
+        std::vector<adouble> get_target_value(const int target_no, const int sim_target_no) const; // All iters for a sim target
         
 
         // Timestep of effort which drives the target value
