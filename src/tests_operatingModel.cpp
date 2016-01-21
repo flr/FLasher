@@ -85,7 +85,7 @@ unsigned int test_operatingModel_get_niter(FLFisheriesAD flfs, fwdBiolsAD biols,
     return om.get_niter();
 }
 
-/*----------- SRP calculations--------------*/
+/*----------- SRP and Rec calculations--------------*/
 
 // [[Rcpp::export]]
 FLQuantAD test_operatingModel_f_prop_spwn_FLQ_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
@@ -98,6 +98,16 @@ FLQuantAD test_operatingModel_SRP_FLQ_subset(FLFisheriesAD flfs, fwdBiolsAD biol
     operatingModel om(flfs, biols, ctrl);
     return om.srp(biol_no, indices_min, indices_max);
 }
+
+// [[Rcpp::export]]
+std::vector<double> test_operatingModel_calc_rec(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const int rec_timestep){
+    operatingModel om(flfs, biols, ctrl);
+    std::vector<adouble> out_ad = om.calc_rec(biol_no, rec_timestep);
+    std::vector<double> out(out_ad.size());
+    std::transform(out_ad.begin(), out_ad.end(), out.begin(), [](adouble x) {return Value(x);});
+    return out;
+}
+
 
 /*----------- F methods --------------*/
 

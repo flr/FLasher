@@ -254,6 +254,64 @@ test_that("operatingModel srp methods",{
     test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
 })
 
+# Checking that residuals were correctly applied
+# Most of the heavy testing is done by fwdSR::predict_recruitment
+test_that("operatingModel calc_rec", {
+    om <- make_test_operatingModel1(niters = 100)
+    biol_no <- 1 # Bevholt
+    flq <- n(om[["biols"]][[biol_no]][["biol"]])
+    rec_year <- round(runif(1,min=2,max=dim(flq)[2]))
+    rec_season <- round(runif(1,min=1,max=dim(flq)[4]))
+    rec_timestep <- (rec_year-1)*dim(flq)[4] + rec_season
+    # Here SRP timing is 1 year behind the rec timestep but the same season
+    srp_indices_min <- c(rec_year-1,1,rec_season,1,1)
+    srp_indices_max <- c(rec_year-1,1,rec_season,1,dim(flq)[6])
+    srp_in <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, srp_indices_min, srp_indices_max)
+    # It's a Bevholt model
+    a <- c(om[["biols"]][[biol_no]][["srr_params"]]['a',])
+    b <- c(om[["biols"]][[biol_no]][["srr_params"]]['b',])
+    rec_in_det <- (a * srp_in) / (b + srp_in)
+    # Apply the residuals - multiplicative
+    om[["biols"]][[biol_no]][["srr_residuals"]] <- exp(om[["biols"]][[biol_no]][["srr_residuals"]])
+    om[["biols"]][[biol_no]][["srr_residuals_mult"]] <- TRUE
+    rec_in_mult <- rec_in_det * om[["biols"]][[biol_no]][["srr_residuals"]][,rec_year,1,rec_season,1,]
+    rec_out_mult <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, rec_timestep)
+    expect_equal(c(rec_in_mult), rec_out_mult)
+    # Additive residuals
+    om[["biols"]][[biol_no]][["srr_residuals"]] <- log(om[["biols"]][[biol_no]][["srr_residuals"]])
+    om[["biols"]][[biol_no]][["srr_residuals_mult"]] <- FALSE
+    rec_in_add <- rec_in_det + om[["biols"]][[biol_no]][["srr_residuals"]][,rec_year,1,rec_season,1,]
+    rec_out_add <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, rec_timestep)
+    expect_equal(c(rec_in_add), rec_out_add)
+
+    # Ricker
+    biol_no <- 2 
+    flq <- n(om[["biols"]][[biol_no]][["biol"]])
+    rec_year <- round(runif(1,min=2,max=dim(flq)[2]))
+    rec_season <- round(runif(1,min=1,max=dim(flq)[4]))
+    rec_timestep <- (rec_year-1)*dim(flq)[4] + rec_season
+    # Here SRP timing is 1 year behind the rec timestep but the same season
+    srp_indices_min <- c(rec_year-1,1,rec_season,1,1)
+    srp_indices_max <- c(rec_year-1,1,rec_season,1,dim(flq)[6])
+    srp_in <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, srp_indices_min, srp_indices_max)
+    # It's a Ricker model
+    a <- c(om[["biols"]][[biol_no]][["srr_params"]]['a',])
+    b <- c(om[["biols"]][[biol_no]][["srr_params"]]['b',])
+    rec_in_det <- a * srp_in * exp(-b * srp_in)
+    # Apply the residuals - multiplicative
+    om[["biols"]][[biol_no]][["srr_residuals"]] <- exp(om[["biols"]][[biol_no]][["srr_residuals"]])
+    om[["biols"]][[biol_no]][["srr_residuals_mult"]] <- TRUE
+    rec_in_mult <- rec_in_det * om[["biols"]][[biol_no]][["srr_residuals"]][,rec_year,1,rec_season,1,]
+    rec_out_mult <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, rec_timestep)
+    expect_equal(c(rec_in_mult), rec_out_mult)
+    # Additive residuals
+    om[["biols"]][[biol_no]][["srr_residuals"]] <- log(om[["biols"]][[biol_no]][["srr_residuals"]])
+    om[["biols"]][[biol_no]][["srr_residuals_mult"]] <- FALSE
+    rec_in_add <- rec_in_det + om[["biols"]][[biol_no]][["srr_residuals"]][,rec_year,1,rec_season,1,]
+    rec_out_add <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, rec_timestep)
+    expect_equal(c(rec_in_add), rec_out_add)
+})
+
 test_that("operatingModel project_biol", {
     # Without Rec for the time being
     # Seasonal FLQ
@@ -730,11 +788,11 @@ test_that("get_target_value - min / max values", {
     timesteps <- (years-1) * dim(flq)[4] + seasons;
     value <- abs(rnorm(4))
     # Simple control object - just catch
-    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quantity = c("catch","catch"), target = 1, value = value[1:2],
-                        fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
-                        relFishery = NA, relCatch = NA, relBiol = NA,
-                        relYear = NA, relSeason = NA)
+    #trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
+    #                    quantity = c("catch","catch"), target = 1, value = value[1:2],
+    #                    fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
+    #                    relFishery = NA, relCatch = NA, relBiol = NA,
+    #                    relYear = NA, relSeason = NA)
     # Which iters will be less (max) / greater (min) than actual catch
     big_iters <- sort(sample(1:niters, 5)) # Bigger than actual catch - will be limited by min
     small_iters <- (1:niters)[!((1:niters) %in% big_iters)] # Smaller than actual catch - will be limited by max
