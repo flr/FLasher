@@ -9,7 +9,7 @@ test_that("fwdBiol as and wrap",{
 })
 
 test_that("fwdBiol constructors - double",{
-    flb_in <- random_FLBiolcpp_generator()
+    flb_in <- random_FLBiolcpp_generator(min_dims=c(3,3,1,1,1,1))
     # SEXP constructors
     flb_out <- test_fwdBiol_sexp_constructor(flb_in)
     expect_identical(flb_in, flb_out)

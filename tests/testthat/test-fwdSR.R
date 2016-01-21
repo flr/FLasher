@@ -245,7 +245,7 @@ test_that("fwdSR predict_recruitment",{
     # Seasonal timestep 
     # Subset year, all seasons, all iters for SRP.  All year (subset through initial indices), all seasons, all iters for params
     rec_year1 <- round(runif(1, min=2, max=dim(srp_in)[2]/2))
-    rec_year2 <- round(runif(1, min=rec_year+1, max=dim(srp_in)[2]))
+    rec_year2 <- round(runif(1, min=rec_year1+1, max=dim(srp_in)[2]))
     rec_year_subset <- rec_year1:rec_year2
     srp_year_subset <- rec_year_subset - (srp_timelag / 4) # 4 seasons but here an annual year
     rec <- FLQuant(NA, dim=c(1,length(rec_year_subset),1,dim(srp_in)[4]), iter=niters)
