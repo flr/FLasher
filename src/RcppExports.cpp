@@ -3815,6 +3815,17 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_FLQuant_get_first_age
+int test_FLQuant_get_first_age(const FLQuant flq);
+RcppExport SEXP FLasher_test_FLQuant_get_first_age(SEXP flqSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const FLQuant >::type flq(flqSEXP);
+    __result = Rcpp::wrap(test_FLQuant_get_first_age(flq));
+    return __result;
+END_RCPP
+}
 // test_FLQuant_get_data_element
 int test_FLQuant_get_data_element(const FLQuant flq, int quant, int year, int unit, int season, int area, int iter);
 RcppExport SEXP FLasher_test_FLQuant_get_data_element(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {

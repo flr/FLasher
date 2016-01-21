@@ -82,6 +82,27 @@ test_that("get accessors",{
     expect_identical(out, flq[indices[1], indices[2], indices[3], indices[4], indices[5],])
 })
 
+test_that("get_first_age",{
+    flq <- random_FLQuant_generator()
+    out <- test_FLQuant_get_first_age(flq)
+    expect_identical(as.integer(dimnames(flq)[[1]][1]),out)
+    # Force flq dimnames to start at 0
+    first_age <- 0
+    dimnames(flq)[[1]] <- seq(from=first_age,to=first_age + dim(flq)[1] - 1,by=1)
+    out <- test_FLQuant_get_first_age(flq)
+    expect_identical(as.integer(dimnames(flq)[[1]][1]),out)
+    # Force flq dimnames to start at something > 1
+    first_age <- round(runif(1,min=2, max=5))
+    dimnames(flq)[[1]] <- seq(from=first_age,to=first_age + dim(flq)[1] - 1,by=1)
+    out <- test_FLQuant_get_first_age(flq)
+    expect_identical(as.integer(dimnames(flq)[[1]][1]),out)
+    # Force flq dimnames to start at something < 0 
+    first_age <- -2
+    dimnames(flq)[[1]] <- seq(from=first_age,to=first_age + dim(flq)[1] - 1,by=1)
+    out <- test_FLQuant_get_first_age(flq)
+    expect_identical(as.integer(dimnames(flq)[[1]][1]),out)
+})
+
 test_that("set",{
     #set_data
     flq1 <- random_FLQuant_generator()

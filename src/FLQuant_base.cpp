@@ -312,6 +312,17 @@ int FLQuant_base<T>::get_data_element(const int quant, const int year, const int
 	return element;
 }
 
+/*! \brief Get the first age in the dimnames as an integer
+ *
+ */
+template <typename T>
+int FLQuant_base<T>::get_first_age() const{
+    //std::vector<std::string> age_names = Rcpp::as<std::vector<std::string> >(n_flq.get_dimnames()[0]);
+    //std::string first_age_str = age_names[0];
+    std::string test = (Rcpp::as<std::vector<std::string> >(get_dimnames()[0]))[0];
+    int first_age = std::stoi(test);
+    return first_age;
+}
 
 // Get only data accessor - single element - starts at 1
 template <typename T>

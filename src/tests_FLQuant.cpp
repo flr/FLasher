@@ -158,6 +158,12 @@ int test_FLQuant_get_niter(FLQuant flq){
 	return flq.get_niter();
 }
 
+// [[Rcpp::export]]
+int test_FLQuant_get_first_age(const FLQuant flq){
+    int out = flq.get_first_age();
+    return out;
+}
+
 //---------- () accessors -----------------
 
 // [[Rcpp::export]]

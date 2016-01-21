@@ -1201,6 +1201,10 @@ test_FLQuant_get_niter <- function(flq) {
     .Call('FLasher_test_FLQuant_get_niter', PACKAGE = 'FLasher', flq)
 }
 
+test_FLQuant_get_first_age <- function(flq) {
+    .Call('FLasher_test_FLQuant_get_first_age', PACKAGE = 'FLasher', flq)
+}
+
 test_FLQuant_get_data_element <- function(flq, quant, year, unit, season, area, iter) {
     .Call('FLasher_test_FLQuant_get_data_element', PACKAGE = 'FLasher', flq, quant, year, unit, season, area, iter)
 }
