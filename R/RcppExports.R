@@ -1641,6 +1641,10 @@ test_fwdBiolAD_n_direct_get_accessor <- function(fwdb, quant, year, unit, season
     .Call('FLasher_test_fwdBiolAD_n_direct_get_accessor', PACKAGE = 'FLasher', fwdb, quant, year, unit, season, area, iter)
 }
 
+test_fwdBiol_srp_timelag <- function(fwb) {
+    .Call('FLasher_test_fwdBiol_srp_timelag', PACKAGE = 'FLasher', fwb)
+}
+
 test_fwdBiols_as_wrap <- function(biols_in) {
     .Call('FLasher_test_fwdBiols_as_wrap', PACKAGE = 'FLasher', biols_in)
 }

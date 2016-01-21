@@ -247,12 +247,32 @@ T& fwdBiol_base<T>::n(const unsigned int quant, const unsigned int year, const u
 
 /*! \brief The timelag between recruitment being added to the biol and the calculation of the SRP that results in that recruitment
  *
+ * If the first age is 0, and we have a seasonal model, the timelag is 1 season (i.e. the season before).
+ * If the first age is 0, and we have an model, there is no timelag (it's a strange case).
+ * If the first age is >1, the timelag is the number of timesteps to same season at 0 age (so that SRP is calculated in the same season but x years before).
  */
 template <typename T>
 unsigned int fwdBiol_base<T>::srp_timelag() const{
-    // Default return number of seasons
+    unsigned int timelag = 0;
+    auto first_age = n_flq.get_first_age();
+    if (first_age < 0){
+        Rcpp::stop("In srp_timelag. Your first age is less than 0. I don't know what to do.\n");
+    }
     auto dim = n_flq.get_dim();
-    return dim[3];
+    // First age is 0  and not a seasonal model - very strange
+    if ((dim[3] == 1) & (first_age == 0)){
+        timelag = 0;
+    }
+    // First age is 0 and a seasonal model
+    else if ((dim[3] > 1) & (first_age == 0)){
+        timelag = 1;
+    }
+    // First age > 0, return number of timesteps to age 0, same season
+    // Bit dodgy? timelag is unsigned, first_age is not. But we check at start of method so should be OK.
+    else {
+        timelag = (first_age * dim[3]);
+    }
+    return timelag;
 }
 
 /*------------------------------------------------------------*/

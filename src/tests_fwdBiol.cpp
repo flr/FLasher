@@ -230,6 +230,12 @@ double test_fwdBiolAD_n_direct_get_accessor(fwdBiolAD fwdb, int quant, int year,
     return out;
 }
 
+// [[Rcpp::export]]
+unsigned int test_fwdBiol_srp_timelag(fwdBiol fwb){
+    unsigned int out = fwb.srp_timelag();
+    return out;
+}
+
 /*-------------------------------------------------------*/
 
 // fwdBiols constructors

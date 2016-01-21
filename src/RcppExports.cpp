@@ -5333,6 +5333,17 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_fwdBiol_srp_timelag
+unsigned int test_fwdBiol_srp_timelag(fwdBiol fwb);
+RcppExport SEXP FLasher_test_fwdBiol_srp_timelag(SEXP fwbSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< fwdBiol >::type fwb(fwbSEXP);
+    __result = Rcpp::wrap(test_fwdBiol_srp_timelag(fwb));
+    return __result;
+END_RCPP
+}
 // test_fwdBiols_as_wrap
 fwdBiols test_fwdBiols_as_wrap(const fwdBiols biols_in);
 RcppExport SEXP FLasher_test_fwdBiols_as_wrap(SEXP biols_inSEXP) {

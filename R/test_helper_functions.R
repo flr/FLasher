@@ -466,11 +466,11 @@ make_test_operatingModel1 <- function(niters = 1000){
     res2 <- propagate(res2, niters)
     res2 <- res2 * abs(rnorm(prod(dim(res2)), mean = 1, sd = 0.1))
     # Make the lists of FLBiolcpp bits
-    biol_bits1 <- list(biol = flbiols[[1]], srr_model_name = "bevholt", srr_params = as(params(srr1), "FLQuant"), srr_residuals = res1, srr_timelag = 1, srr_residuals_mult = TRUE)
-    biol_bits2 <- list(biol = flbiols[[2]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_timelag = 1, srr_residuals_mult = TRUE)
-    biol_bits3 <- list(biol = flbiols[[3]], srr_model_name = "bevholt", srr_params = as(params(srr1), "FLQuant"), srr_residuals = res1, srr_timelag = 1, srr_residuals_mult = TRUE)
-    biol_bits4 <- list(biol = flbiols[[4]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_timelag = 1, srr_residuals_mult = TRUE)
-    biol_bits5 <- list(biol = flbiols[[5]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_timelag = 1, srr_residuals_mult = TRUE)
+    biol_bits1 <- list(biol = flbiols[[1]], srr_model_name = "bevholt", srr_params = as(params(srr1), "FLQuant"), srr_residuals = res1, srr_residuals_mult = TRUE)
+    biol_bits2 <- list(biol = flbiols[[2]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_residuals_mult = TRUE)
+    biol_bits3 <- list(biol = flbiols[[3]], srr_model_name = "bevholt", srr_params = as(params(srr1), "FLQuant"), srr_residuals = res1, srr_residuals_mult = TRUE)
+    biol_bits4 <- list(biol = flbiols[[4]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_residuals_mult = TRUE)
+    biol_bits5 <- list(biol = flbiols[[5]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_residuals_mult = TRUE)
     biols <- list(biol1 = biol_bits1, biol2 = biol_bits2, biol3 = biol_bits3, biol4 = biol_bits4, biol5 = biol_bits5)
     # Make the Catches
     catch_seed <- as(ple4_iters, "FLCatch")
@@ -579,6 +579,78 @@ make_test_operatingModel2 <- function(niters = 1000){
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))
 }
 
+
+#' Create a very simple annual test operating model
+#'
+#' Creates the bits for a simple test operating model for projections.
+#' A single FLFishery object with 1 FLCatch fishing on a single FLBiolcpp.
+#' All objects are based on ple4.
+#'
+#' @export
+#' @return A list of objects for sending to C++
+make_test_operatingModel3 <- function(niters = 1000, sd = 0.1){
+    data(ple4)
+    # Blow up niters and make FLBiolcpp
+    ple4_iters <- propagate(ple4, niters)
+    biol <- as(ple4_iters,"FLBiol")
+    biol <- as(biol,"FLBiolcpp")
+    # Add some noise to separate iters
+    n(biol) <- n(biol) * abs(rnorm(prod(dim(n(biol))), mean = 1, sd = sd))
+    m(biol) <- m(biol) * abs(rnorm(prod(dim(m(biol))), mean = 1, sd = sd))
+    wt(biol) <- wt(biol) * abs(rnorm(prod(dim(wt(biol))), mean = 1, sd = sd))
+    desc(biol) <- "biol"
+    name(biol) <- "biol"
+    # Make SRR and add noise to residuals
+    srr1 <- fmle(as.FLSR(ple4, model="bevholt"),control = list(trace=0))
+    res1 <- window(residuals(srr1), start = 1957)
+    res1[,"1957"] <- res1[,"1958"]
+    res1 <- propagate(res1, niters)
+    res1 <- res1 * abs(rnorm(prod(dim(res1)), mean = 1, sd = sd))
+    # Make the list of FLBiolcpp bits
+    biol_bits1 <- list(biol = biol, srr_model_name = "bevholt", srr_params = as(params(srr1), "FLQuant"), srr_residuals = res1, srr_residuals_mult = TRUE)
+    biols <- list(biol1 = biol_bits1)
+
+    # Make the FLCatches
+    catch <- as(ple4_iters, "FLCatch")
+    name(catch) <- "catch"
+    desc(catch) <- "catch"
+    # Add some noise to separate iters
+    landings.n(catch) <- landings.n(catch) * abs(rnorm(prod(dim(landings.n(catch))), mean = 1, sd = sd))
+    discards.n(catch) <- discards.n(catch) * abs(rnorm(prod(dim(discards.n(catch))), mean = 1, sd = sd))
+    landings.wt(catch) <- landings.wt(catch) * abs(rnorm(prod(dim(landings.wt(catch))), mean = 1, sd = sd))
+    discards.wt(catch) <- discards.wt(catch) * abs(rnorm(prod(dim(discards.wt(catch))), mean = 1, sd = sd))
+    catch.sel(catch) <- catch.sel(catch) * abs(rnorm(prod(dim(catch.sel(catch))), mean = 1, sd = sd))
+    # Set the Catchability parameters so that an effort of 1 gives the current catch - make internally consistent
+    # set beta to 0 for simplicity
+
+
+        catch.q(catch) <- FLPar(c(1,0.5), dimnames=list(params=c("alpha","beta"), iter = 1))
+        catch_list[[i]] <- catch
+    
+    # Make fishery bits
+    fishery1 <- FLFishery(catch1=catch_list[[1]])
+    desc(fishery1) <- "fishery1"
+    effort(fishery1)[] <- 1
+    fishery1@hperiod[1,] <- runif(prod(dim(fishery1@hperiod)[2:6]),min=0, max=1)
+    fishery1@hperiod[2,] <- runif(prod(dim(fishery1@hperiod)[2:6]),min=fishery1@hperiod[1,], max=1)
+    fishery2 <- FLFishery(catch1=catch_list[[2]])
+    desc(fishery2) <- "fishery2"
+    effort(fishery2)[] <- 1
+    fishery2@hperiod[1,] <- runif(prod(dim(fishery2@hperiod)[2:6]),min=0, max=1)
+    fishery2@hperiod[2,] <- runif(prod(dim(fishery2@hperiod)[2:6]),min=fishery2@hperiod[1,], max=1)
+    fisheries <- FLFisheries(fishery1 = fishery1, fishery2 = fishery2)
+    fisheries@desc <- "fisheries"
+    # fwdControl
+    fwc <- random_fwdControl_generator(niters=niters)
+    # Make a temporary FCB attribute - add to class later
+    FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
+    colnames(FCB) <- c("F","C","B")
+    attr(fwc@target, "FCB") <- FCB
+    return(list(fisheries = fisheries, biols = biols, fwc = fwc))
+}
+
+
+
 #' Tests if two FLFishery objects are the same
 #'
 #' Tests each component seperately - allows flexibility
@@ -668,4 +740,49 @@ test_FLQuant_equal <- function(flq1, flq2){
     expect_equal(c(flq1), c(flq2))
 }
 
+#' Creates an FLFisheries and biol bits for use in FLasher from an FLStock
+#'
+#' Creates the bits needed to call FLasher from an annual FLStock.
+#' Used for testing purposes.
+#' Careful with hperiod. Not able to calculate from m.spwn and harvest.spwn slots
+#' so F is assumed to happen continuously through year (like m).
+#'
+#' @param stk An annual FLStock.
+#' @param srr_model Name of the stock-recruitmen model.
+#' @param srr_params Parameters for the SRR as an FLPar (i.e. directly from an FLSR).
+#' @param srr_residuals An FLQuant of residuals for the SRR.
+#' @param srr_residuals_mult Boolean to determine of the residuals are multiplicative or additive.
+#' @export
+#' @return A list of objects for use with FLasher.
+flasher_annual_stock_prep <- function(stk, srr_model, srr_params, srr_residuals, srr_residuals_mult, niters=1){
+    biol <- as(as(stk,"FLBiol"),"FLBiolcpp")
+    name(biol) <- "biol"
+    desc(biol) <- "biol"
+    biol <- propagate(biol, niters)
+    srr_residuals <- propagate(srr_residuals, niters)
+    biol1 <- list(biol = biol, srr_model_name = srr_model, srr_params = as(srr_params, "FLQuant"), srr_residuals = srr_residuals,  srr_residuals_mult = srr_residuals_mult)
+    biol_bits <- list(biol1 = biol1)
+    catch <- as(stk, "FLCatch")
+    catch <- propagate(catch, niters)
+    name(catch) <- "catch"
+    desc(catch) <- "catch"
+    # Set beta to 0 and alpha so that an effort of 1 gives same F as the FLStock
+    # F = alpha * biomass ^ -beta * sel * effort
+    # F = alpha * sel
+    # alpha = F / sel
+    alpha <- c((harvest(stk) / catch.sel(catch))[1,])
+    catch.q(catch) <- FLPar(NA, dimnames=list(params=c("alpha","beta"), year = dimnames(stock.n(stk))$year, iter = 1:niters))
+    catch.q(catch)['alpha',] <- alpha
+    catch.q(catch)['beta',] <- 0
+    fishery <- FLFishery(catch=catch)
+    desc(fishery) <- "fishery"
+    effort(fishery)[] <- 1
+    # Timing of fishing - cannot calculate hstart and hfinish from harvest.spwn and m.spwn - assume that F is continuous throughout time period - same as m
+    fishery@hperiod[1,] <- 0
+    fishery@hperiod[2,] <- 1
+    fisheries <- FLFisheries(fishery = fishery)
+    fisheries@desc <- "fisheries"
+    return(list(fisheries = fisheries,
+                biol = biol_bits))
+}
 

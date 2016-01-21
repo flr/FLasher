@@ -214,10 +214,43 @@ test_that("fwdBiol methods",{
     expect_equal(biomass@.Data, quantSums(n(flb_in) * wt(flb_in))[,dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]]@.Data)
 })
 
+
+test_that("fwdBiol srp_timelag",{
+    # first age 0, no seasons
+    flq_in <- FLQuant(NA, dimnames=list(age=0:5, year=1:10, iter=1:100))
+    flb_in <- as(FLBiol(flq_in), "FLBiolcpp")
+    desc(flb_in) <- "eh"
+    timelag <- test_fwdBiol_srp_timelag(flb_in)
+    expect_identical(timelag, 0)
+    # first age 0, with 12 seasons
+    flq_in <- FLQuant(NA, dimnames=list(age=0:5, year=1:10, season=1:12, iter=1:100))
+    flb_in <- as(FLBiol(flq_in), "FLBiolcpp")
+    desc(flb_in) <- "eh"
+    timelag <- test_fwdBiol_srp_timelag(flb_in)
+    expect_identical(timelag, 1)
+    # first age anything, with no seasons
+    min_age <- round(runif(1, min=1, max=5))
+    max_age <- round(runif(1, min=min_age, max=10))
+    flq_in <- FLQuant(NA, dimnames=list(age=min_age:max_age, year=1:10, iter=1:100))
+    flb_in <- as(FLBiol(flq_in), "FLBiolcpp")
+    desc(flb_in) <- "eh"
+    timelag <- test_fwdBiol_srp_timelag(flb_in)
+    expect_identical(timelag, min_age)
+    # first age anything, with seasons
+    min_age <- round(runif(1, min=1, max=5))
+    max_age <- round(runif(1, min=min_age, max=10))
+    nseasons <- round(runif(1, min=2, max=10))
+    flq_in <- FLQuant(NA, dimnames=list(age=min_age:max_age, year=1:10, season=1:nseasons, iter=1:100))
+    flb_in <- as(FLBiol(flq_in), "FLBiolcpp")
+    desc(flb_in) <- "eh"
+    timelag <- test_fwdBiol_srp_timelag(flb_in)
+    expect_identical(timelag, nseasons*min_age)
+})
+
 test_that("fwdBiols constructors",{
     # Takes a list, list_fwdBiol
     # Each element of list_fwdBiol is a list containing the fwdBiol components:
-    # FLBiolcpp, params, residuals, timelag, residuals_mult 
+    # FLBiolcpp, params, residuals, residuals_mult 
     biols <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5)
     # Scrape out the FLBiolcpps only (to test the wrap)
     flbs_in <- lapply(biols, function(x) return(x[["biol"]]))
