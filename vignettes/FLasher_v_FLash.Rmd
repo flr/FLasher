@@ -1,0 +1,482 @@
+---
+title: "FLasher vs FLash"
+author: "Finlay Scott and Iago Mosqueira"
+date: "January 19, 2016"
+output: pdf_document 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+This document compares the output of **FLash** and **FLasher** FLR packages for a series of different projections.
+The aim is to identify any differences in their output.
+
+The projections are a single fleet fishing a single biol, as this is what **FLash** does.
+
+## Basic setup
+
+First we load the libraries.
+
+```{r libraries, results="hide"}
+library(FLash)
+library(FLasher)
+```
+
+The projections are based on the *ple4* data set.
+
+```{r ple4}
+data(ple4)
+```
+
+We fit a simple stock-recruitment relationship (SRR). We add an extra year to the residuals as **FLasher** requires the residuals to cover all years of the objects.
+We also make an *FLQuant* of 'null' residuals containing just 1s (equivalent to no residuals).
+
+```{r bevholt, results="hide"}
+ple4.sr <- fmle(as.FLSR(ple4, model="bevholt"))
+res <- window(residuals(ple4.sr), start = 1957)
+res[,"1957"] <- res[,"1958"]
+res1 <- res
+res1[] <- 1
+```
+
+**FLash** uses *FLStock* objects for the projections. The data set *ple4* is already an *FLStock* so no further prepraration is necessary.
+**FLasher** uses *FLFisheries* and *FLBiols* objects. This means that we need to create these objects based on *ple4* (a suitable user interface that takes an *FLStock* will be provided in **FLasher**).
+We use the function *flasher_annual_stock_prep()* included in the **FLasher** package.
+
+```{r make_om}
+om <- flasher_annual_stock_prep(stk = ple4, srr_model = "bevholt",
+    srr_params = params(ple4.sr), srr_residuals = res1,
+    srr_residuals_mult = TRUE)
+```
+
+The returned object is a *list* containing an *FLFisheries* that has 1 *FLFishery* with 1 *FLCatch* and another list containing the biological elements (*FLBiolcpp* and SRR information).
+
+
+In **FLasher** The F calculation in **FLasher** is:
+
+$F = \alpha B^{\beta} S E$
+
+Where $\alpha$ and $\beta$ are the catchability parameters, *B* is the biomass of the stock being fished, *S* is the age structured selectivity and *E* is the fishing effort. 
+Here, $\beta$ has been set to 0 so that F is linearly related to effort.
+The selectivity and catchability parameters in the *FLFisheries* have been set up so that an effort of 1 results in the current fishing mortality values in *ple4*.
+
+The returned objects have only 1 itertation.
+
+We also make the *FCB* matrix which describes which *FLCatch* of which *FLFishery* is fishing on which *FLBiol*.
+
+```{r FCB}
+FCB <- array(c(1,1,1), dim=c(1,3))
+colnames(FCB) <- c("F","C","B")
+```
+
+## Simple projections
+
+Here we run very simple projections based on catch, landings and discards targets.
+The projected objects only have 1 iteration and there is no stochasticity.
+
+### Landings target
+
+#### Running the projections
+
+In the first example we set up a 5 year projection from 1958 with a landings target.
+
+```{r landings_target}
+landings_target <- seq(from=11000, to=20000, length=5)
+```
+
+The **FLash** control object is set up as:
+
+```{r simple_flash_landings_control}
+flash_ctrl_target <- data.frame(year = 1958:1962,
+			  quantity = "landings",
+			  val = landings_target)
+flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
+```
+
+The **FLasher** control object is also set up. This is a bit clumsy at the moment. We also need to attach the *FCB* matrix:
+
+```{r flasher_trgt}
+flasher_ctrl_target <- data.frame(year = 2:6, season = 1, timestep = 2:6,
+                        quantity = "landings", target = 1:5, value = landings_target,
+                        fishery = 1, catch = 1, biol = NA, 
+                        relFishery = NA, relCatch = NA, relBiol = NA,
+                        relYear = NA, relSeason = NA
+                        )
+flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
+attr(flasher_ctrl@target, "FCB") <- FCB
+```
+
+We run the **FLash** projection using:
+
+```{r simple_landings_fwd, results="hide"}
+flash_ple4 <- FLash:::fwd(ple4, flash_ctrl, ple4.sr)
+```
+
+We run the **FLasher** projection using:
+
+```{r simple_landings_FLasher_run, results="hide", message=FALSE}
+flasher_ple4 <- test_operatingModel_run(om$fisheries, om$biol, flasher_ctrl, 1, 1e9)
+```
+
+The message about finding more than one class of *fwdControl* comes from having loaded both **FLasher** and **FLash** and can be ignored.
+
+#### Comparing the outputs
+
+Have the targets been hit in the projection years 1958 to 1962?
+
+```{r compl1}
+landings(flash_ple4)[,ac(1957:1963)]
+landings(flasher_ple4$fisheries[[1]][[1]])[,ac(1957:1963)]
+```
+
+Is the catch information (landings and discards by age) the same? We look at the differences in the projection years.
+
+```{r compc1}
+landings.n(flash_ple4)[,ac(1957:1963)] -
+    landings.n(flasher_ple4$fisheries[[1]][[1]])[,ac(1957:1963)]
+discards.n(flash_ple4)[,ac(1957:1963)] -
+    discards.n(flasher_ple4$fisheries[[1]][[1]])[,ac(1957:1963)]
+```
+
+When **FLash** is projecting it is attempting to find the scalar multiplier for each target that is applied to the existing values for fishing mortality (F).
+**FLasher** finds the level of effort necessary to hit the targets.
+When the **FLasher** objects were set up above, the catchability parameters were set so that the F calculation was the same (F is proportional to effort) and that an effort of 1 results in the current level of F. This means that, the calculated **FLash** F multiplier is equivalent to the solved effort value in **Flasher**.
+They should be the same for the projection years 1958 to 1962.
+
+```{r compe1}
+effort(flasher_ple4[["fisheries"]][[1]])[,ac(1957:1963)]
+(flash_ple4@harvest / ple4@harvest)[1,ac(1957:1963)]
+```
+
+The corresponding levels of F at age should also be the same in the projection years.
+We calculate the **FLasher** F using the equation described above.
+
+```{r compf1}
+flasher_f <- sweep(flasher_ple4[["fisheries"]][[1]][[1]]@catch.sel, 2:6,
+    flasher_ple4[["fisheries"]][[1]][[1]]@catch.q['alpha',] *
+    flasher_ple4[["fisheries"]][[1]]@effort, "*")
+flasher_f[,ac(1957:1963)] - harvest(flash_ple4)[,ac(1957:1963)]
+```
+
+Finally, we check the stock abundances.
+The impact of the landings target is not realised in the stock abundance until the following year so here we look at the years 1959:1963.
+
+
+```{r }
+stock.n(flash_ple4)[,ac(1958:1964)] - n(flasher_ple4[["biols"]][[1]])[,ac(1958:1964)]
+```
+
+We notice that the only difference is in the final recruitment year.
+This appears to be a 'feature' with **FLash** where recruitment in the final year is set as the recruitment in the previous year instead of being calculated.
+We can see this by calling *predict()* with SSB.
+The predicted recruitment from **FLasher** is correct.
+
+
+```{r }
+ssb <- ssb(flash_ple4)[,ac(1958:1962)]
+predict(ple4.sr, ssb=ssb)
+rec(flash_ple4)[,ac(1959:1963)]
+rec(flasher_ple4[["biols"]][[1]])[,ac(1959:1963)]
+```
+
+#### Summarising the comparison
+
+```{r compfunc, echo=FALSE}
+flash_flasher_comp <- function(flash, flasher, proj_years){
+    # Compare landings.n and discards
+    landings_diff <- mean(landings.n(flash)[,ac(proj_years)] -
+        landings.n(flasher$fisheries[[1]][[1]])[,ac(proj_years)])
+    discards_diff <- mean(discards.n(flash)[,ac(proj_years)] -
+        discards.n(flasher$fisheries[[1]][[1]])[,ac(proj_years)])
+    # Effort / F mult
+    effort_diff <- mean(effort(flasher[["fisheries"]][[1]])[,ac(proj_years)] -
+        (flash@harvest / ple4@harvest)[1,ac(proj_years)])
+    # F
+    flasher_f <- sweep(flasher[["fisheries"]][[1]][[1]]@catch.sel, 2:6,
+        flasher[["fisheries"]][[1]][[1]]@catch.q['alpha',] *
+        flasher[["fisheries"]][[1]]@effort, "*")
+    f_diff <- mean((flasher_f - harvest(flash))[,ac(proj_years)])
+    # N - ignoring rec
+    n_diff <- mean(stock.n(flash)[-1,ac(proj_years+1)] - n(flasher[["biols"]][[1]])[-1,ac(proj_years+1)])
+    # Rec - ignoring final year
+    rec_diff <- mean(rec(flash)[,ac(proj_years[-length(proj_years)])] - rec(flasher[["biols"]][[1]])[,ac(proj_years[-length(proj_years)])])
+    rec_years <- proj_years + 1
+    rec_years <- rec_years[-length(rec_years)]
+        rec_diff <- mean(rec(flash)[,ac(rec_years)] - rec(flasher[["biols"]][[1]])[,ac(rec_years)])
+    out <- c(Landings = landings_diff, Discards = discards_diff, Effort_mult = effort_diff, F = f_diff, N = n_diff, Rec = rec_diff)
+    return(out)
+}
+```
+
+To summarise the differences between the results from **FLasher** and **FLash** a function has been written that returns the mean differences between the:
+
+* landings numbers at age
+* discards numbers at age
+* effort multiplier (**FLasher**) and  F multiplier (**FLash**)
+* F at age
+* stock abundance at age (in projection years + 1) - not including recruitment 
+* recruitment (in projection years + 1) - not including the final year given the problem with **FLash** identified above
+
+```{r comp1}
+flash_flasher_comp(flash_ple4, flasher_ple4, 1958:1962)
+```
+
+Using this we can run further tests on **Flasher** and **Flash** and compare the results
+
+### Mixing landings, discards and catch targets
+
+```{r, message=FALSE}
+target_values <- seq(from=10000, to=16000, length=4)
+flash_ctrl_target <- data.frame(year = 1959:1962,
+			  quantity = c("landings","discards","catch","landings"),
+			  val = target_values)
+flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
+flash_ple4 <- FLash:::fwd(ple4, flash_ctrl, ple4.sr)
+
+flasher_ctrl_target <- data.frame(year = 3:6, season = 1, timestep = 3:6,
+                        quantity = c("landings","discards","catch","landings"),
+                        target = 1:4, value = target_values,
+                        fishery = 1, catch = 1, biol = NA, 
+                        relFishery = NA, relCatch = NA, relBiol = NA,
+                        relYear = NA, relSeason = NA
+                        )
+flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
+attr(flasher_ctrl@target, "FCB") <- FCB
+flasher_ple4 <- test_operatingModel_run(om$fisheries, om$biol, flasher_ctrl, 1, 1e9)
+```
+
+Have the targets been hit?
+
+```{r }
+target_values
+c(landings(flash_ple4)[,ac(1959)],
+    discards(flash_ple4)[,ac(1960)],
+    catch(flash_ple4)[,ac(1961)],
+    landings(flash_ple4)[,ac(1962)])
+c(landings(flasher_ple4$fisheries[[1]][[1]])[,ac(1959)],
+    discards(flasher_ple4$fisheries[[1]][[1]])[,ac(1960)],
+    catch(flasher_ple4$fisheries[[1]][[1]])[,ac(1961)],
+    landings(flasher_ple4$fisheries[[1]][[1]])[,ac(1962)])
+```
+
+We summarise the differences between the two packages:
+
+```{r }
+flash_flasher_comp(flash_ple4, flasher_ple4, 1959:1962)
+```
+
+## Projections with stochasticity
+
+Here we run projections but this time with multiple iterations.
+
+### Iterations in the objects
+
+First we expand the objects to have multiple iterations.
+```{r }
+niters <- 100
+
+ple4p <- propagate(ple4, niters)
+omp <- flasher_annual_stock_prep(stk = ple4, srr_model = "bevholt",
+    srr_params = params(ple4.sr), srr_residuals = res1,
+    srr_residuals_mult = TRUE, niters=niters)
+```
+
+Then we add random noise to the stock abundances in the *FLStock* and the *FLBiol* but make sure that the abundances are the same.
+
+```{r }
+new_n <- n(omp[["biol"]][[1]][["biol"]])
+new_n <- new_n * rnorm(prod(dim(new_n)), mean=1, sd=0.1)
+n(omp[["biol"]][[1]][["biol"]]) <- new_n
+stock.n(ple4p) <- new_n
+```
+
+We project for 3 years with a landings target and with iterations in the target values.
+
+```{r, results="hide"}
+target_values <- abs(rnorm(niters * 3, mean=10000, sd=100))
+
+flash_ctrl_target <- data.frame(year = 1959:1961,
+			  quantity = c("landings","landings","landings"),
+			  val = target_values[1:3])
+flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
+# Hack the target array
+flash_ctrl@trgtArray <- array(NA, dim = c(3, 3, niters),
+    dimnames=list(1:3, c("min","val","max"), iter=1:niters))
+flash_ctrl@trgtArray[,"val",] <- target_values
+flash_ple4 <- FLash:::fwd(ple4p, flash_ctrl, ple4.sr)
+
+flasher_ctrl_target <- data.frame(year = 3:5, season = 1, timestep = 3:5,
+                        quantity = c("landings","landings","landings"),
+                        target = 1:3, value = target_values[1:3],
+                        fishery = 1, catch = 1, biol = NA, 
+                        relFishery = NA, relCatch = NA, relBiol = NA,
+                        relYear = NA, relSeason = NA
+                        )
+flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target, iters=niters)
+flasher_ctrl@target@iters[,"value",] <- target_values
+attr(flasher_ctrl@target, "FCB") <- FCB
+flasher_ple4 <- test_operatingModel_run(omp$fisheries, omp$biol, flasher_ctrl, 1, 1e9)
+```
+
+Did we hit the targets?
+
+```{r }
+FLQuant(target_values, dimnames=list(year=1959:1961, iter=1:niters))
+landings(flash_ple4)[,ac(1959:1961)]
+landings(flasher_ple4[["fisheries"]][[1]])[,ac(1959:1961)]
+```
+
+Are the **FLasher** and **FLash** results comparable?
+
+```{r }
+flash_flasher_comp(flash_ple4, flasher_ple4, 1959:1961)
+```
+
+### Stochasticity in the SRR through residuals
+
+We run the same projection as above but now also including stochastic multiplicative residuals in the SRR.
+
+We generate the multiplicative residuals by sampling with replacement:
+
+```{r }
+resp <- propagate(res, niters)
+resp[] <- sample(exp(c(res)), prod(dim(resp)), replace=TRUE)
+```
+
+To project with **FLash** we pass in the subset of the residuals that contains the years of the projection we are performing.
+
+```{r }
+flash_ple4_res <- FLash:::fwd(ple4p, flash_ctrl, ple4.sr, sr.residuals = resp[,ac(1959:1962)], sr.residuals.mult=TRUE)
+```
+
+For **FLasher** we pass in an 
+For **FLasher** we set the residuals as part of the biols list. The residuals are an *FLQuant* with the same years as the other objects but even though only a subset of them are used internally (this interface will be improved in the future).
+
+```{r, results="hide"}
+omp[["biol"]][[1]][["srr_residuals"]] <- resp
+flasher_ple4_res <- test_operatingModel_run(omp$fisheries, omp$biol, flasher_ctrl, 1, 1e9)
+```
+
+Is the predicted recruitment correct?
+Here we calculate by hand by using the SSB generated by **FLash** and applying the residuals.
+**FLasher** gives the correct results. **FLash** is different in the final year (see above). 
+
+```{r }
+predict(ple4.sr, ssb=ssb(flash_ple4_res)[,ac(1959:1961)]) * resp[,ac(1960:1962)]
+rec(flash_ple4_res)[,ac(1960:1962)]
+rec(flasher_ple4_res[["biols"]][[1]])[,ac(1960:1962)]
+```
+And the objects are the same (apart from recritment in the final year).
+
+```{r }
+flash_flasher_comp(flash_ple4, flasher_ple4, 1959:1961)
+```
+
+### Stochasticity in the SRR parameters
+
+**FLasher** and **FLash** are also capabale of adding stochasticity through the SRR parameters.
+
+First we generate some variance in the SRR parameters.
+```{r}
+paramsp <- propagate(params(ple4.sr), niters)
+paramsp[] <- abs(rnorm(niters*2, c(params(ple4.sr)), 10))
+ple4.srp <- ple4.sr
+params(ple4.srp) <- paramsp
+```
+
+Then we project **FLash** without residuals.
+
+```{r}
+flash_ple4_res <- FLash:::fwd(ple4p, flash_ctrl, ple4.srp)
+```
+
+For **FLasher** we need to set the residuals to be 1 (effectively no residuals) and set the parameters of the biols list.
+
+```{r, results="hide"}
+omp[["biol"]][[1]][["srr_residuals"]][] <- 1
+omp[["biol"]][[1]][["srr_params"]] <- as(params(ple4.srp), "FLQuant")
+flasher_ple4_res <- test_operatingModel_run(omp$fisheries, omp$biol, flasher_ctrl, 1, 1e9)
+```
+
+Again, **FLasher** and **FLash** produce the same results (except the final year for **FLash** is not right).
+The results are checked by comparing to the predicted recruitment using the predicted SSB from **FLash**.
+
+```{r}
+predict(ple4.srp, ssb=ssb(flash_ple4_res)[,ac(1958:1961)])
+rec(flash_ple4_res)[,ac(1959:1962)]
+rec(flasher_ple4_res[["biols"]][[1]])[,ac(1959:1962)]
+```
+
+## Min and max targets
+
+For simplicity we return to single iteration projections.
+
+Here we project with a landings target but with a maximum limit on discards.
+
+
+
+```{r }
+landings <- 90000
+discards <- 40000
+```
+
+```{r }
+flash_ctrl_target <- data.frame(year = rep(1958:1962, each=2),
+			  quantity = rep(c("landings", "discards"), 5),
+			  val = rep(c(landings, NA), 5),
+			  max = rep(c(NA, discards), 5))
+flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
+flash_ple4 <- FLash:::fwd(ple4, flash_ctrl, ple4.sr)
+
+landings(flash_ple4)
+discards(flash_ple4)
+```
+
+
+```{r }
+flasher_ctrl_target <- data.frame(year = rep(2:6, each=2), season = 1, timestep = rep(2:6, each=2),
+                        quantity = rep(c("landings", "discards"), 5), target = 1:10,
+                        value = rep(c(landings, NA), 5),
+                        max = rep(c(NA, discards), 5),
+                        fishery = 1, catch = 1, biol = NA, 
+                        relFishery = NA, relCatch = NA, relBiol = NA,
+                        relYear = NA, relSeason = NA
+                        )
+flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
+attr(flasher_ctrl@target, "FCB") <- FCB
+```
+
+```{r , results="hide", message=FALSE}
+flasher_ple4 <- test_operatingModel_run(om$fisheries, om$biol, flasher_ctrl, 1, 1e9)
+
+
+landings(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1958:1962)]
+landings(flash_ple4)[,ac(1958:1962)]
+discards(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1958:1962)]
+discards(flash_ple4)[,ac(1958:1962)]
+```
+
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+```{r}
+```
+
+
+
+
