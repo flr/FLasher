@@ -103,159 +103,161 @@ test_that("fwdSR predict_recruitment",{
     data(ple4)
     ricker <- fmle(as.FLSR(ple4,model="ricker"), control  = list(trace=0))
     params <- as.FLQuant(params(ricker))
-    ssb <- ssb(ricker)
+    srp <- ssb(ricker)
     rickerR <- function(srp, a, b){
         return(a * srp *(exp(-b * srp)))
     }
-    # Set up some parameters and SSB for the tests
+    # Set up some parameters and SRP for the tests
     # With seasonal timestep and multiple iterations
     niters <- 10
-    ssb_in <- FLQuant(NA, dim=c(1,dim(ssb)[2],1,4), iter=niters)
-    ssb_in[] <- abs(rnorm(prod(dim(ssb_in)), mean=c(ssb(ricker)), sd=10))
-    params_season <- FLQuant(NA, dim=c(2,dim(ssb)[2],1,4), dimnames=list(param = c("a","b")), iter=niters)
+    srp_in <- FLQuant(NA, dim=c(1,dim(srp)[2],1,4), iter=niters)
+    srp_in[] <- abs(rnorm(prod(dim(srp_in)), mean=c(ssb(ricker)), sd=10))
+    params_season <- FLQuant(NA, dim=c(2,dim(srp)[2],1,4), dimnames=list(param = c("a","b")), iter=niters)
     params_season["a",] <- abs(rnorm(prod(dim(params_season["a",])), mean=c(params["a",]), sd=1))
     params_season["b",] <- abs(rnorm(prod(dim(params_season["b",])), mean=c(params["b",]), sd=1e-6))
     # Set seasons 1, 3, 4 to 0. Only reproduces in season 2
     season <- 2
     params_season[,,,!(1:4 %in% 2)] <- 0
-    # residuals must be same dim as SSB - even if seasonal
-    residuals_mult <- ssb_in
+    # residuals must be same dim as SRP - even if seasonal
+    residuals_mult <- srp_in
     residuals_mult[] <- abs(rnorm(prod(dim(residuals_mult)), mean=1, sd = 0.1))
     residuals_mult[,,,!(1:4 %in% 2)] <- 0
-    residuals_add <- ssb_in
+    residuals_add <- srp_in
     residuals_add[] <- abs(rnorm(prod(dim(residuals_mult)), mean=0, sd = 0.1))
     residuals_add[,,,!(1:4 %in% 2)] <- 0
+    # time lag between SRP and recruitment - 1 year = 4 timesteps
+    srp_timelag <- 4
 
     # Annual timestep.
-    # All SSB years, single iter. One param year, single iter (same params for all years)
+    # All SRP years, single iter. One param year, single iter (same params for all years)
     iter <- round(runif(1, min=1, max=niters))
-    timestep <- round(runif(1, min=1, max=dim(ssb_in)[2]))
-    rec <- rickerR(ssb_in[,,,season,,iter], c(params_season["a",timestep,,season,,iter]), c(params_season["b",timestep,,season,,iter]))
+    rec_timestep <- round(runif(1, min=2, max=dim(srp_in)[2]))
+    srp_timestep <- rec_timestep - (srp_timelag / 4) # Annual not seasonal timestep here
+    rec <- rickerR(srp_in[,,,season,,iter], c(params_season["a",srp_timestep,,season,,iter]), c(params_season["b",srp_timestep,,season,,iter]))
     recm <- rec * residuals_mult[,,,season,,iter]
     reca <- rec + residuals_add[,,,season,,iter]
-    rec_outm <- test_fwdSR_predict_recruitment("ricker", params_season[,timestep,,season,,iter], residuals_mult[,,,season,,iter], TRUE, ssb_in[,,,season,,iter], c(1,1,1,1,1))
-    rec_outa <- test_fwdSR_predict_recruitment("ricker", params_season[,timestep,,season,,iter], residuals_add[,,,season,,iter], FALSE, ssb_in[,,,season,,iter], c(1,1,1,1,1))
+    # params and residuals start at beginning as passing in all SRP years
+    rec_outm <- test_fwdSR_predict_recruitment("ricker", params_season[,srp_timestep,,season,,iter], residuals_mult[,,,season,,iter], TRUE, srp_in[,,,season,,iter], c(1,1,1,1,1), c(1,1,1,1,1))
+    rec_outa <- test_fwdSR_predict_recruitment("ricker", params_season[,srp_timestep,,season,,iter], residuals_add[,,,season,,iter], FALSE, srp_in[,,,season,,iter], c(1,1,1,1,1), c(1,1,1,1,1))
     expect_equal(c(rec_outm), c(recm))
     expect_equal(c(rec_outa), c(reca))
+
+    # Annual timestep.
     # All SSB years, all iters. One param year, single iter (same params for all years)
-    rec <- FLQuant(NA, dim=c(1,dim(ssb_in)[2]), iter=niters)
+    rec <- FLQuant(NA, dim=c(1,dim(srp_in)[2]), iter=niters)
     for (i in 1:niters){
-        iter(rec,i) <- rickerR(ssb_in[,,,season,,i], c(params_season["a",timestep,,season,,iter]), c(params_season["b",timestep,,season,,iter]))
+        iter(rec,i) <- rickerR(srp_in[,,,season,,i], c(params_season["a",srp_timestep,,season,,iter]), c(params_season["b",srp_timestep,,season,,iter]))
     }
     recm <- rec * residuals_mult[,,,season,]
     reca <- rec + residuals_add[,,,season,]
-    rec_outm <- test_fwdSR_predict_recruitment("ricker", params_season[,timestep,,season,,iter], residuals_mult[,,,season,], TRUE, ssb_in[,,,season,,], c(1,1,1,1,1))
-    rec_outa <- test_fwdSR_predict_recruitment("ricker", params_season[,timestep,,season,,iter], residuals_add[,,,season,], FALSE, ssb_in[,,,season,,], c(1,1,1,1,1))
+    rec_outm <- test_fwdSR_predict_recruitment("ricker", params_season[,srp_timestep,,season,,iter], residuals_mult[,,,season,], TRUE, srp_in[,,,season,,], c(1,1,1,1,1), c(1,1,1,1,1))
+    rec_outa <- test_fwdSR_predict_recruitment("ricker", params_season[,srp_timestep,,season,,iter], residuals_add[,,,season,], FALSE, srp_in[,,,season,,], c(1,1,1,1,1), c(1,1,1,1,1))
     expect_equal(c(rec_outm), c(recm))
     expect_equal(c(rec_outa), c(reca))
+
+    # Annual timestep.
     # All SSB years, all iters. One param year, all iters
-    rec <- FLQuant(NA, dim=c(1,dim(ssb_in)[2]), iter=niters)
+    rec <- FLQuant(NA, dim=c(1,dim(srp_in)[2]), iter=niters)
     for (i in 1:niters){
-        iter(rec,i) <- rickerR(ssb_in[,,,season,,i], c(params_season["a",timestep,,season,,i]), c(params_season["b",timestep,,season,,i]))
+        iter(rec,i) <- rickerR(srp_in[,,,season,,i], c(params_season["a",srp_timestep,,season,,i]), c(params_season["b",srp_timestep,,season,,i]))
     }
     recm <- rec * residuals_mult[,,,season,]
     reca <- rec + residuals_add[,,,season,]
-    rec_outm <- test_fwdSR_predict_recruitment("ricker", params_season[,timestep,,season,], residuals_mult[,,,season,], TRUE, ssb_in[,,,season,], c(1,1,1,1,1))
-    rec_outa <- test_fwdSR_predict_recruitment("ricker", params_season[,timestep,,season,], residuals_add[,,,season,], FALSE, ssb_in[,,,season,], c(1,1,1,1,1))
+    rec_outm <- test_fwdSR_predict_recruitment("ricker", params_season[,srp_timestep,,season,], residuals_mult[,,,season,], TRUE, srp_in[,,,season,], c(1,1,1,1,1), c(1,1,1,1,1))
+    rec_outa <- test_fwdSR_predict_recruitment("ricker", params_season[,srp_timestep,,season,], residuals_add[,,,season,], FALSE, srp_in[,,,season,], c(1,1,1,1,1), c(1,1,1,1,1))
     expect_equal(c(rec_outm), c(recm))
     expect_equal(c(rec_outa), c(reca))
 
+    # Annual timestep.
     # All SSB years, all iters. All params years, all iters - either subset params, or use indices
-    rec <- FLQuant(NA, dim=c(1,dim(ssb_in)[2]), iter=niters)
+    rec <- FLQuant(NA, dim=c(1,dim(srp_in)[2]), iter=niters)
     for (i in 1:niters){
-        iter(rec,i) <- rickerR(ssb_in[,,,season,,i], c(params_season["a",,,season,,i]), c(params_season["b",,,season,,i]))
+        iter(rec,i) <- rickerR(srp_in[,,,season,,i], c(params_season["a",,,season,,i]), c(params_season["b",,,season,,i]))
     }
     recm <- rec * residuals_mult[,,,season,]
     reca <- rec + residuals_add[,,,season,]
-    rec_out1m <- test_fwdSR_predict_recruitment("ricker", params_season[,,,season,], residuals_mult[,,,season,], TRUE, ssb_in[,,,season,], c(1,1,1,1,1))
-    rec_out2m <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_mult, TRUE, ssb_in[,,,season,], c(1,1,season,1,1))
-    rec_out1a <- test_fwdSR_predict_recruitment("ricker", params_season[,,,season,], residuals_add[,,,season,], FALSE, ssb_in[,,,season,], c(1,1,1,1,1))
-    rec_out2a <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_add, FALSE, ssb_in[,,,season,], c(1,1,season,1,1))
-    expect_equal(c(rec_out1m), c(recm))
-    expect_equal(c(rec_out2m), c(recm))
-    expect_equal(c(rec_out1a), c(reca))
-    expect_equal(c(rec_out2a), c(reca))
-    # Subset SSB years, all iters. All params years, all iters (either change initial indices, or subset params)
-    timestep1 <- round(runif(1, min=1, max=dim(ssb_in)[2]/2))
-    timestep2 <- round(runif(1, min=timestep1+1, max=dim(ssb_in)[2]))
-    timestep_subset <- timestep1:timestep2
-    rec <- FLQuant(NA, dim=c(1,length(timestep_subset)), iter=niters)
-    for (i in 1:niters){
-        iter(rec,i) <- rickerR(ssb_in[,timestep_subset,,season,,i], c(params_season["a",timestep_subset,,season,,i]), c(params_season["b",timestep_subset,,season,,i]))
-    }
-    recm <- rec * residuals_mult[,timestep_subset,,season,]
-    reca <- rec + residuals_add[,timestep_subset,,season,]
+    rec_outm <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_mult, TRUE, srp_in[,,,season,], c(1,1,season,1,1), c(1,1,season,1,1))
+    rec_outa <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_add, FALSE, srp_in[,,,season,], c(1,1,season,1,1), c(1,1,season,1,1))
+    expect_equal(c(rec_outm), c(recm))
+    expect_equal(c(rec_outa), c(reca))
 
-    rec_out1m <- test_fwdSR_predict_recruitment("ricker", params_season[,timestep_subset,,season,], residuals_mult[,timestep_subset,,season,], TRUE, ssb_in[,timestep_subset,,season,], c(1,1,1,1,1))
-    rec_out1a <- test_fwdSR_predict_recruitment("ricker", params_season[,timestep_subset,,season,], residuals_add[,timestep_subset,,season,], FALSE, ssb_in[,timestep_subset,,season,], c(1,1,1,1,1))
-    expect_equal(c(rec_out1m), c(recm))
-    expect_equal(c(rec_out1a), c(reca))
-    rec_out2m <- test_fwdSR_predict_recruitment("ricker", params_season[,,,season,], residuals_mult[,,,season,], TRUE, ssb_in[,timestep_subset,,season,], c(timestep_subset[1],1,1,1,1))
-    rec_out2a <- test_fwdSR_predict_recruitment("ricker", params_season[,,,season,], residuals_add[,,,season,], FALSE, ssb_in[,timestep_subset,,season,], c(timestep_subset[1],1,1,1,1))
-    expect_equal(c(rec_out2m), c(recm))
-    expect_equal(c(rec_out2a), c(reca))
+    # Annual timestep.
+    # Subset SSB years, all iters. All params years (subset through initial indices), all iters 
+    rec_timestep1 <- round(runif(1, min=2, max=dim(srp_in)[2]/2))
+    rec_timestep2 <- round(runif(1, min=rec_timestep1+1, max=dim(srp_in)[2]))
+    rec_timestep_subset <- rec_timestep1:rec_timestep2
+    srp_timestep_subset <- rec_timestep_subset - (srp_timelag / 4) # 4 seasons but here an annual timestep
+    rec <- FLQuant(NA, dim=c(1,length(rec_timestep_subset)), iter=niters)
+    for (i in 1:niters){
+        iter(rec,i) <- rickerR(srp_in[,srp_timestep_subset,,season,,i], c(params_season["a",srp_timestep_subset,,season,,i]), c(params_season["b",srp_timestep_subset,,season,,i]))
+    }
+    recm <- rec * residuals_mult[,rec_timestep_subset,,season,]
+    reca <- rec + residuals_add[,rec_timestep_subset,,season,]
+    # Pass complete objects but subset params and residuals through the initial indices
+    rec_outm <- test_fwdSR_predict_recruitment("ricker", params_season[,,,season,], residuals_mult[,,,season,], TRUE, srp_in[,srp_timestep_subset,,season,], c(srp_timestep_subset[1],1,1,1,1), c(rec_timestep_subset[1],1,1,1,1))
+    rec_outa <- test_fwdSR_predict_recruitment("ricker", params_season[,,,season,], residuals_add[,,,season,], FALSE, srp_in[,srp_timestep_subset,,season,], c(srp_timestep_subset[1],1,1,1,1), c(rec_timestep_subset[1],1,1,1,1))
+    expect_equal(c(rec_outm), c(recm))
+    expect_equal(c(rec_outa), c(reca))
 
     # Seasonal timestep 
-    # One year, one iter, all seasons - two ways of using predict_recruitment - subset input, or use initial indices
-    rec <- rickerR(ssb_in[,timestep,,,,iter], c(params_season["a",timestep,,,,iter]), c(params_season["b",timestep,,,,iter]))
-    recm <- rec * residuals_mult[,timestep,,,,iter]
-    reca <- rec + residuals_add[,timestep,,,,iter]
-    rec_out1m <- test_fwdSR_predict_recruitment("ricker", params_season[,timestep,,,,iter], residuals_mult[,timestep,,,,iter], TRUE, ssb_in[,timestep,,,,iter], c(1,1,1,1,1))
-    rec_out2m <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_mult, TRUE, ssb_in[,timestep,,,,iter], c(timestep,1,1,1,iter))
-    expect_equal(c(rec_out1m), c(recm))
-    expect_equal(c(rec_out2m), c(recm))
-    rec_out1a <- test_fwdSR_predict_recruitment("ricker", params_season[,timestep,,,,iter], residuals_add[,timestep,,,,iter], FALSE, ssb_in[,timestep,,,,iter], c(1,1,1,1,1))
-    rec_out2a <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_add, FALSE, ssb_in[,timestep,,,,iter], c(timestep,1,1,1,iter))
-    expect_equal(c(rec_out1a), c(reca))
-    expect_equal(c(rec_out2a), c(reca))
-    # One year, all iters
-    rec <- ssb_in[,timestep]
+    # One year, all seasons, one iter for SRP and params - subset params and residuals using initial indices
+    iter <- round(runif(1, min=1, max=niters))
+    rec_year <- round(runif(1, min=2, max=dim(srp_in)[2])) 
+    srp_year <- rec_year - (srp_timelag / 4) 
+    rec <- rickerR(srp_in[,srp_year,,,,iter], c(params_season["a",srp_year,,,,iter]), c(params_season["b",srp_year,,,,iter]))
+    recm <- rec * residuals_mult[,rec_year,,,,iter]
+    reca <- rec + residuals_add[,rec_year,,,,iter]
+    rec_outm <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_mult, TRUE, srp_in[,srp_year,,,,iter], c(srp_year,1,1,1,iter), c(rec_year,1,1,1,iter))
+    expect_equal(c(rec_outm), c(recm))
+    rec_outa <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_add, FALSE, srp_in[,srp_year,,,,iter], c(srp_year,1,1,1,iter), c(rec_year,1,1,1,iter))
+    expect_equal(c(rec_outa), c(reca))
+
+    # Seasonal timestep 
+    # One year, all seasons, all iters for SRP.  One year, all seasons, one iter for params
+    rec <- srp_in[,1] # Just make rec the right size
     rec[] <- NA
     for (i in 1:niters){
-        iter(rec,i) <- rickerR(ssb_in[,timestep,,,,i], c(params_season["a",timestep,,,,i]), c(params_season["b",timestep,,,,i]))
+        iter(rec,i) <- rickerR(srp_in[,srp_year,,,,i], c(params_season["a",srp_year,,,,iter]), c(params_season["b",srp_year,,,,iter]))
     }
-    recm <- rec * residuals_mult[,timestep,]
-    reca <- rec + residuals_add[,timestep,]
-    rec_out1m <- test_fwdSR_predict_recruitment("ricker", params_season[,timestep,], residuals_mult[,timestep,], TRUE, ssb_in[,timestep,], c(1,1,1,1,1))
-    rec_out2m <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_mult, TRUE, ssb_in[,timestep,], c(timestep,1,1,1,1))
-    expect_equal(c(rec_out1m), c(recm))
-    expect_equal(c(rec_out2m), c(recm))
-    rec_out1a <- test_fwdSR_predict_recruitment("ricker", params_season[,timestep,], residuals_add[,timestep,], FALSE, ssb_in[,timestep,], c(1,1,1,1,1))
-    rec_out2a <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_add, FALSE, ssb_in[,timestep,], c(timestep,1,1,1,1))
-    expect_equal(c(rec_out1a), c(reca))
-    expect_equal(c(rec_out2a), c(reca))
-    # All years, all iters
-    rec <- ssb_in
+    recm <- rec * residuals_mult[,rec_year,]
+    reca <- rec + residuals_add[,rec_year,]
+    rec_outm <- test_fwdSR_predict_recruitment("ricker", params_season[,,,,,iter], residuals_mult, TRUE, srp_in[,srp_year,], c(srp_year,1,1,1,1), c(rec_year,1,1,1,1))
+    expect_equal(c(rec_outm), c(recm))
+    rec_outa <- test_fwdSR_predict_recruitment("ricker", params_season[,,,,,iter], residuals_add, FALSE, srp_in[,srp_year,], c(srp_year,1,1,1,1), c(rec_year,1,1,1,1))
+    expect_equal(c(rec_outa), c(reca))
+    
+    # Seasonal timestep 
+    # All year, all seasons, all iters for SRP.  All year, all seasons, all iters for params
+    rec <- srp_in
     rec[] <- NA
     for (i in 1:niters){
-        for (season_count in 1:dim(ssb_in)[4]){
-            rec[,,,season_count,,i] <- rickerR(ssb_in[,,,season_count,,i], c(params_season["a",,,season_count,,i]), c(params_season["b",,,season_count,,i]))
+        for (season_count in 1:dim(srp_in)[4]){
+            rec[,,,season_count,,i] <- rickerR(srp_in[,,,season_count,,i], c(params_season["a",,,season_count,,i]), c(params_season["b",,,season_count,,i]))
         }
     }
     recm <- rec * residuals_mult
     reca <- rec + residuals_add
-    rec_outm <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_mult, TRUE, ssb_in, c(1,1,1,1,1))
-    rec_outa <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_add, FALSE, ssb_in, c(1,1,1,1,1))
+    rec_outm <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_mult, TRUE, srp_in, c(1,1,1,1,1), c(1,1,1,1,1))
+    rec_outa <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_add, FALSE, srp_in, c(1,1,1,1,1), c(1,1,1,1,1))
     expect_equal(c(rec_outm), c(recm))
     expect_equal(c(rec_outa), c(reca))
-    # Subset years, all iters
-    timestep1 <- round(runif(1, min=1, max=dim(ssb_in)[2]/2))
-    timestep2 <- round(runif(1, min=timestep1+1, max=dim(ssb_in)[2]))
-    timestep_subset <- timestep1:timestep2
-    rec <- FLQuant(NA, dim=c(1,length(timestep_subset),1,dim(ssb_in)[4]), iter=niters)
+
+    # Seasonal timestep 
+    # Subset year, all seasons, all iters for SRP.  All year (subset through initial indices), all seasons, all iters for params
+    rec_year1 <- round(runif(1, min=2, max=dim(srp_in)[2]/2))
+    rec_year2 <- round(runif(1, min=rec_year+1, max=dim(srp_in)[2]))
+    rec_year_subset <- rec_year1:rec_year2
+    srp_year_subset <- rec_year_subset - (srp_timelag / 4) # 4 seasons but here an annual year
+    rec <- FLQuant(NA, dim=c(1,length(rec_year_subset),1,dim(srp_in)[4]), iter=niters)
     for (i in 1:niters){
-        for (season_count in 1:dim(ssb_in)[4]){
-            rec[,,,season_count,,i] <- rickerR(ssb_in[,timestep_subset,,season_count,,i], c(params_season["a",timestep_subset,,season_count,,i]), c(params_season["b",timestep_subset,,season_count,,i]))
+        for (season_count in 1:dim(srp_in)[4]){
+            rec[,,,season_count,,i] <- rickerR(srp_in[,srp_year_subset,,season_count,,i], c(params_season["a",srp_year_subset,,season_count,,i]), c(params_season["b",srp_year_subset,,season_count,,i]))
         }
     }
-    recm <- rec * residuals_mult[,timestep_subset]
-    reca <- rec + residuals_add[,timestep_subset]
-    rec_out1m <- test_fwdSR_predict_recruitment("ricker", params_season[,timestep_subset,], residuals_mult[,timestep_subset], TRUE, ssb_in[,timestep_subset,], c(1,1,1,1,1))
-    rec_out2m <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_mult, TRUE, ssb_in[,timestep_subset,], c(timestep_subset[1],1,1,1,1))
-    rec_out1a <- test_fwdSR_predict_recruitment("ricker", params_season[,timestep_subset,], residuals_add[,timestep_subset], FALSE, ssb_in[,timestep_subset,], c(1,1,1,1,1))
-    rec_out2a <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_add, FALSE, ssb_in[,timestep_subset,], c(timestep_subset[1],1,1,1,1))
-    expect_equal(c(rec_out1m), c(recm))
-    expect_equal(c(rec_out2m), c(recm))
-    expect_equal(c(rec_out1a), c(reca))
-    expect_equal(c(rec_out2a), c(reca))
+    recm <- rec * residuals_mult[,rec_year_subset]
+    reca <- rec + residuals_add[,rec_year_subset]
+    rec_outm <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_mult, TRUE, srp_in[,srp_year_subset,], c(srp_year_subset[1],1,1,1,1), c(rec_year_subset[1],1,1,1,1))
+    rec_outa <- test_fwdSR_predict_recruitment("ricker", params_season, residuals_add, FALSE, srp_in[,srp_year_subset,], c(srp_year_subset[1],1,1,1,1), c(rec_year_subset[1],1,1,1,1))
+    expect_equal(c(rec_outm), c(recm))
+    expect_equal(c(rec_outa), c(reca))
 })

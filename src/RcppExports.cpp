@@ -5869,8 +5869,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_fwdSR_predict_recruitment
-FLQuant test_fwdSR_predict_recruitment(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const FLQuant srp, const std::vector<unsigned int> initial_params_indices);
-RcppExport SEXP FLasher_test_fwdSR_predict_recruitment(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP srpSEXP, SEXP initial_params_indicesSEXP) {
+FLQuant test_fwdSR_predict_recruitment(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const FLQuant srp, const std::vector<unsigned int> initial_params_indices, const std::vector<unsigned int> initial_residuals_indices);
+RcppExport SEXP FLasher_test_fwdSR_predict_recruitment(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP srpSEXP, SEXP initial_params_indicesSEXP, SEXP initial_residuals_indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -5880,7 +5880,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP);
     Rcpp::traits::input_parameter< const FLQuant >::type srp(srpSEXP);
     Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type initial_params_indices(initial_params_indicesSEXP);
-    __result = Rcpp::wrap(test_fwdSR_predict_recruitment(model_name, params, residuals, residuals_mult, srp, initial_params_indices));
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type initial_residuals_indices(initial_residuals_indicesSEXP);
+    __result = Rcpp::wrap(test_fwdSR_predict_recruitment(model_name, params, residuals, residuals_mult, srp, initial_params_indices, initial_residuals_indices));
     return __result;
 END_RCPP
 }
@@ -6065,6 +6066,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
     Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
     __result = Rcpp::wrap(test_operatingModel_SRP_FLQ_subset(flfs, biols, ctrl, biol_no, indices_min, indices_max));
+    return __result;
+END_RCPP
+}
+// test_operatingModel_calc_rec
+std::vector<double> test_operatingModel_calc_rec(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const int rec_timestep);
+RcppExport SEXP FLasher_test_operatingModel_calc_rec(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP rec_timestepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< fwdBiolsAD >::type biols(biolsSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP);
+    Rcpp::traits::input_parameter< const int >::type rec_timestep(rec_timestepSEXP);
+    __result = Rcpp::wrap(test_operatingModel_calc_rec(flfs, biols, ctrl, biol_no, rec_timestep));
     return __result;
 END_RCPP
 }

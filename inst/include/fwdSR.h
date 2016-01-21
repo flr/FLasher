@@ -35,9 +35,8 @@ class fwdSR_base {
         T eval_model(const T srp, const std::vector<unsigned int> params_indices);
 
         // Predict recruitment. As eval() but also applies the residuals
-        FLQuant_base<T> predict_recruitment(const FLQuant_base<T> srp, const std::vector<unsigned int> initial_params_indices);
+        FLQuant_base<T> predict_recruitment(const FLQuant_base<T> srp, const std::vector<unsigned int> initial_params_indices, const std::vector<unsigned int> initial_residuals_indices);
         
-
         // Typedef for the SRR model functions
         typedef T (*srr_model_ptr)(const T, const std::vector<double>);
         typedef std::map<std::string, srr_model_ptr> model_map_type;

@@ -1801,8 +1801,8 @@ test_fwdSR_assignment_operator <- function(model_name, params, residuals, residu
     .Call('FLasher_test_fwdSR_assignment_operator', PACKAGE = 'FLasher', model_name, params, residuals, residuals_mult, srp)
 }
 
-test_fwdSR_predict_recruitment <- function(model_name, params, residuals, residuals_mult, srp, initial_params_indices) {
-    .Call('FLasher_test_fwdSR_predict_recruitment', PACKAGE = 'FLasher', model_name, params, residuals, residuals_mult, srp, initial_params_indices)
+test_fwdSR_predict_recruitment <- function(model_name, params, residuals, residuals_mult, srp, initial_params_indices, initial_residuals_indices) {
+    .Call('FLasher_test_fwdSR_predict_recruitment', PACKAGE = 'FLasher', model_name, params, residuals, residuals_mult, srp, initial_params_indices, initial_residuals_indices)
 }
 
 test_euclid_norm <- function(xvec) {
@@ -1859,6 +1859,10 @@ test_operatingModel_f_prop_spwn_FLQ_subset <- function(flfs, biols, ctrl, fisher
 
 test_operatingModel_SRP_FLQ_subset <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
     .Call('FLasher_test_operatingModel_SRP_FLQ_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_calc_rec <- function(flfs, biols, ctrl, biol_no, rec_timestep) {
+    .Call('FLasher_test_operatingModel_calc_rec', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, rec_timestep)
 }
 
 test_operatingModel_get_f_FCB <- function(flfs, biols, ctrl, fishery_no, catch_no, biol_no) {
