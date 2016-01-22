@@ -298,8 +298,8 @@ The **FLasher** projection:
 flasher_ctrl_target <- data.frame(year = rep(2:6, each=2), season = 1,
                         timestep = rep(2:6, each=2),
                         quantity = rep(c("landings", "discards"), 5), target = 1:10,
-                        value = rep(c(landings, NA), 5),
-                        max = rep(c(NA, discards), 5),
+                        value = rep(c(landings_target, NA), 5),
+                        max = rep(c(NA, discards_max), 5),
                         fishery = 1, catch = 1, biol = NA, 
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA
