@@ -228,7 +228,7 @@ Using this we can run further tests on **Flasher** and **Flash** and compare the
 
 ### Mixing landings, discards and catch targets
 
-```{r, message=FALSE}
+```{r, results='hide', message=FALSE}
 target_values <- seq(from=10000, to=16000, length=4)
 flash_ctrl_target <- data.frame(year = 1959:1962,
 			  quantity = c("landings","discards","catch","landings"),
@@ -266,6 +266,162 @@ We summarise the differences between the two packages:
 
 ```{r }
 flash_flasher_comp(flash_ple4, flasher_ple4, 1959:1962)
+```
+
+## Min and max targets
+
+Here we project with a landings target but with a maximum limit on discards.
+We still use a single iteration without stochasticity.
+
+The same target and maximum limit is applied in all years.
+
+```{r }
+landings_target <- 90000
+discards_max <- 40000
+```
+
+The **FLash** projection:
+
+```{r }
+flash_ctrl_target <- data.frame(year = rep(1958:1962, each=2),
+			  quantity = rep(c("landings", "discards"), 5),
+			  val = rep(c(landings_target, NA), 5),
+			  max = rep(c(NA, discards_max), 5))
+flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
+flash_ple4 <- FLash:::fwd(ple4, flash_ctrl, ple4.sr)
+
+```
+
+The **FLasher** projection:
+
+```{r, results="hide", message=FALSE}
+flasher_ctrl_target <- data.frame(year = rep(2:6, each=2), season = 1,
+                        timestep = rep(2:6, each=2),
+                        quantity = rep(c("landings", "discards"), 5), target = 1:10,
+                        value = rep(c(landings, NA), 5),
+                        max = rep(c(NA, discards), 5),
+                        fishery = 1, catch = 1, biol = NA, 
+                        relFishery = NA, relCatch = NA, relBiol = NA,
+                        relYear = NA, relSeason = NA
+                        )
+flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
+attr(flasher_ctrl@target, "FCB") <- FCB
+flasher_ple4 <- test_operatingModel_run(om$fisheries, om$biol, flasher_ctrl, 1, 1e9)
+```
+
+Have the targets been hit and the limits respected?
+
+```{r}
+landings(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1958:1962)]
+landings(flash_ple4)[,ac(1958:1962)]
+discards(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1958:1962)]
+discards(flash_ple4)[,ac(1958:1962)]
+```
+
+Are the **FLash** and **FLasher** objects the same?
+
+```{r}
+flash_flasher_comp(flash_ple4, flasher_ple4, 1958:1962)
+```
+
+## Relative targets
+
+In this example we set the catches to be relative to the previous year.
+The relative target is 0.9.
+
+The **FLash** projection:
+
+```{r}
+flash_ctrl_target <- data.frame(year = 1958:1962,
+			  quantity = "catch",
+			  val = 0.9, rel.year = 1957:1961)
+flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
+flash_ple4 <- FLash:::fwd(ple4, flash_ctrl, ple4.sr)
+
+```
+
+The **FLasher** projection:
+
+```{r, results="hide"}
+flasher_ctrl_target <- data.frame(year = 2:6, season = 1, timestep = 2:6,
+                        quantity = "catch", target = 1:15,
+                        value = 0.9,
+                        fishery = 1, catch = 1, biol = NA, 
+                        relFishery = 1, relCatch = 1, relBiol = NA,
+                        relYear = 1:5, relSeason = 1)
+flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
+attr(flasher_ctrl@target, "FCB") <- FCB
+flasher_ple4 <- test_operatingModel_run(om$fisheries, om$biol, flasher_ctrl, 1, 1e9)
+```
+Are the relative catches correct?
+
+```{r}
+catch(flash_ple4)[,ac(1958:1962)] /
+    catch(flash_ple4)[,ac(1957:1961)]
+catch(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1958:1962)] /
+    catch(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1957:1961)]
+```
+
+Are the **FLash** and **FLasher** objects the same?
+
+```{r}
+flash_flasher_comp(flash_ple4, flasher_ple4, 1958:1962)
+```
+
+
+## Relative targets with limits
+
+Here we increase catches by a relative amount each year, but set a maximum discards limit.
+
+The **FLash** projection:
+
+```{r}
+discards_max <- 10000
+
+flash_ctrl_target <- data.frame(year = rep(1958:1962, each=2),
+			  quantity = rep(c("catch", "discards"), 5),
+			  val = rep(c(0.9, NA), 5),
+			  max = rep(c(NA, discards_max), 5),
+            rel.year = c(1957, NA, 1958, NA, 1959, NA, 1960, NA, 1961, NA))
+flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
+flash_ple4 <- FLash:::fwd(ple4, flash_ctrl, ple4.sr)
+```
+
+The **FLasher** projection (control object is looking quite horrible):
+
+```{r, results='hide'}
+flasher_ctrl_target <- data.frame(year = rep(2:6, each=2), season = 1,
+                        timestep = rep(2:6, each=2),
+                        quantity = rep(c("catch", "discards"), 5), target = 1:10,
+                        value = rep(c(0.9, NA), 5),
+                        max = rep(c(NA, discards_max), 5),
+                        fishery = 1, catch = 1, biol = NA, 
+                        relFishery = rep(c(1,NA),5),
+                        relCatch = rep(c(1,NA),5),
+                        relBiol = NA,
+                        relYear = c(1,NA,2,NA,3,NA,4,NA,5,NA),
+                        relSeason = rep(c(1,NA),5))
+flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
+attr(flasher_ctrl@target, "FCB") <- FCB
+flasher_ple4 <- test_operatingModel_run(om$fisheries, om$biol, flasher_ctrl, 1, 1e9)
+```
+
+Relative targets have been hit, respecting the limits.
+
+```{r}
+discards(flash_ple4)[,ac(1958:1962)]
+catch(flash_ple4)[,ac(1958:1962)] /
+    catch(flash_ple4)[,ac(1957:1961)]
+
+discards(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1958:1962)]
+catch(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1958:1962)] /
+    catch(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1957:1961)]
+```
+
+And the objects are the same.
+
+```{r}
+flash_flasher_comp(flash_ple4, flasher_ple4, 1958:1962)
 ```
 
 ## Projections with stochasticity
@@ -349,11 +505,13 @@ resp[] <- sample(exp(c(res)), prod(dim(resp)), replace=TRUE)
 To project with **FLash** we pass in the subset of the residuals that contains the years of the projection we are performing.
 
 ```{r }
-flash_ple4_res <- FLash:::fwd(ple4p, flash_ctrl, ple4.sr, sr.residuals = resp[,ac(1959:1962)], sr.residuals.mult=TRUE)
+flash_ple4_res <- FLash:::fwd(ple4p, flash_ctrl, ple4.sr,
+    sr.residuals = resp[,ac(1959:1962)], sr.residuals.mult=TRUE)
 ```
 
 For **FLasher** we pass in an 
-For **FLasher** we set the residuals as part of the biols list. The residuals are an *FLQuant* with the same years as the other objects but even though only a subset of them are used internally (this interface will be improved in the future).
+For **FLasher** we set the residuals as part of the biols list.
+The residuals are an *FLQuant* with the same years as the other objects but even though only a subset of them are used internally (this interface will be improved in the future).
 
 ```{r, results="hide"}
 omp[["biol"]][[1]][["srr_residuals"]] <- resp
@@ -410,73 +568,7 @@ rec(flash_ple4_res)[,ac(1959:1962)]
 rec(flasher_ple4_res[["biols"]][[1]])[,ac(1959:1962)]
 ```
 
-## Min and max targets
-
-For simplicity we return to single iteration projections.
-
-Here we project with a landings target but with a maximum limit on discards.
-
-
-
-```{r }
-landings <- 90000
-discards <- 40000
-```
-
-```{r }
-flash_ctrl_target <- data.frame(year = rep(1958:1962, each=2),
-			  quantity = rep(c("landings", "discards"), 5),
-			  val = rep(c(landings, NA), 5),
-			  max = rep(c(NA, discards), 5))
-flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
-flash_ple4 <- FLash:::fwd(ple4, flash_ctrl, ple4.sr)
-
-landings(flash_ple4)
-discards(flash_ple4)
-```
-
-
-```{r }
-flasher_ctrl_target <- data.frame(year = rep(2:6, each=2), season = 1, timestep = rep(2:6, each=2),
-                        quantity = rep(c("landings", "discards"), 5), target = 1:10,
-                        value = rep(c(landings, NA), 5),
-                        max = rep(c(NA, discards), 5),
-                        fishery = 1, catch = 1, biol = NA, 
-                        relFishery = NA, relCatch = NA, relBiol = NA,
-                        relYear = NA, relSeason = NA
-                        )
-flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
-attr(flasher_ctrl@target, "FCB") <- FCB
-```
-
-```{r , results="hide", message=FALSE}
-flasher_ple4 <- test_operatingModel_run(om$fisheries, om$biol, flasher_ctrl, 1, 1e9)
-
-
-landings(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1958:1962)]
-landings(flash_ple4)[,ac(1958:1962)]
-discards(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1958:1962)]
-discards(flash_ple4)[,ac(1958:1962)]
-```
-
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-```{r}
-```
-
-```{r}
-```
-
-```{r}
-```
-
+## The 'Wedding Cake' example
 
 
 
