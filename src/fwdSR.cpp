@@ -22,6 +22,10 @@ void fwdSR_base<T>::init_model_map(){
     map_model_name_to_function["Bevholt"] = &bevholt;
     map_model_name_to_function["constant"] = &constant;
     map_model_name_to_function["Constant"] = &constant;
+    map_model_name_to_function["mean"] = &constant;
+    map_model_name_to_function["Mean"] = &constant;
+    map_model_name_to_function["geomean"] = &constant;
+    map_model_name_to_function["Geomean"] = &constant;
     return;
 }
 
