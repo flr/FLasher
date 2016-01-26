@@ -61,7 +61,6 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsA
     // Iters in all numbers and efforts must be the same
     // Age structure of catches catching biols must be the same
     // Year and seasons must be the same for all objects
-
     // Start with the catches - compare everything to the first fishery / catch
     std::vector<unsigned int> landings_dim11 = fisheries_in(1,1).landings_n().get_dim();
     std::vector<unsigned int> discards_dim11 = fisheries_in(1,1).discards_n().get_dim();
@@ -699,15 +698,24 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
     if (indices_min.size() != 5 | indices_max.size() != 5){
         Rcpp::stop("In operatingModel srp subsetter. Indices not of length 5\n");
     }
-    // If we have a catch_no, we must also have a fishery_no: XOR! 
-    if(Rcpp::IntegerVector::is_na(catch_no) ^ Rcpp::IntegerVector::is_na(fishery_no)){
-        Rcpp::stop("In operatingModel::eval_om. If you specify a catch_no, you must also specify a fishery_no (relative or not)\n");
+    // If we have a catch_no, we must also have a fishery_no
+    // But you are allowed a fishery with no catch - effort target
+    if(!(Rcpp::IntegerVector::is_na(catch_no)) & Rcpp::IntegerVector::is_na(fishery_no)){
+        Rcpp::stop("In operatingModel::eval_om. If you specify a catch_no, you must also specify a fishery_no.\n");
     }
+
     FLQuantAD out;
     switch(target_type){
-        //case target_effort:
-        // TO DO
-        //break;
+        case target_effort: {
+            Rprintf("target_effort\n");
+            if (Rcpp::IntegerVector::is_na(fishery_no)){
+                Rcpp::stop("In operatingModel::eval_om. Asking for effort target but fishery_no has been specified.\n");
+            }
+            else {
+                out = fisheries(fishery_no).effort(indices_min, indices_max);
+            }
+        break;
+        }
         //case target_fbar: {
         //    Rprintf("target_fbar\n");
         //    // Indices only 5D when passed in - needs age range
@@ -749,8 +757,11 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
                 Rprintf("catch is total catch from biol %i\n", biol_no);
                 out =  catches(biol_no, indices_min, indices_max);
             }
+            else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
+                Rcpp::stop("In operatingModel::eval_om. Asking for catch from a particular fishery but no catch_no has been specified.\n");
+            }
             else {
-                Rcpp::stop("In operatingModel::eval_target. Asking for catch from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total catch from just the biol instead and set catch no to NA?\n");
+                Rcpp::stop("In operatingModel::eval_om. Asking for catch from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total catch from just the biol instead and set catch no to NA?\n");
             }
             break;
         }
@@ -763,8 +774,11 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
                 Rprintf("landings are total landings from biol %i\n", biol_no);
                 out = landings(biol_no, indices_min, indices_max);
             }
+            else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
+                Rcpp::stop("In operatingModel::eval_om. Asking for landings from a particular fishery but no catch_no has been specified.\n");
+            }
             else {
-                Rcpp::stop("In operatingModel::eval_target. Asking for landings from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total landings from just the biol instead?\n");
+                Rcpp::stop("In operatingModel::eval_om. Asking for landings from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total landings from just the biol instead?\n");
             }
             break;
         }
@@ -777,8 +791,11 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
                 Rprintf("discards are total discards from biol %i\n", biol_no);
                 out = discards(biol_no, indices_min, indices_max);
             }
+            else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
+                Rcpp::stop("In operatingModel::eval_om. Asking for discards from a particular fishery but no catch_no has been specified.\n");
+            }
             else {
-                Rcpp::stop("In operatingModel::eval_target. Asking for discards from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total discards from just the biol instead?\n");
+                Rcpp::stop("In operatingModel::eval_om. Asking for discards from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total discards from just the biol instead?\n");
             }
             break;
         }
@@ -786,7 +803,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
 ////            // Spawning reproductive potential
 ////            Rprintf("target_srp\n");
 ////            if (Rcpp::IntegerVector::is_na(biol_no)){
-////                Rcpp::stop("In operatingModel eval_target. Trying to evaluate SRP target when biol no. is NA. Problem with control object?\n");
+////                Rcpp::stop("In operatingModel eval_om. Trying to evaluate SRP target when biol no. is NA. Problem with control object?\n");
 ////            }
 ////            else {
 ////                out = ssb(biol_no, indices_min, indices_max);
@@ -796,7 +813,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
 ////        case target_biomass: {
 ////            Rprintf("target_biomass\n");
 ////            if (Rcpp::IntegerVector::is_na(biol_no)){
-////                Rcpp::stop("In operatingModel eval_target. Trying to evaluate biomass target when biol no. is NA. Problem with control object?\n");
+////                Rcpp::stop("In operatingModel eval_om. Trying to evaluate biomass target when biol no. is NA. Problem with control object?\n");
 ////            }
 ////            else {
 ////                out = biols(biol_no).biomass(indices_min, indices_max);

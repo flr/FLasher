@@ -18,6 +18,7 @@
 // If you add something here you have to also add it to the map in control.cpp
 // Also, if it's an abundance based target, add it to operatingModel::get_target_fmult_timestep(const int target_no) and to abundance_targets below 
 enum fwdControlTargetType {
+    target_effort,
     target_fbar,
     target_catch,
     target_landings,

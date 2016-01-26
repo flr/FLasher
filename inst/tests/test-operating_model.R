@@ -575,6 +575,10 @@ test_that("operatingModel eval_om", {
     test_FLQuant_equal(cout, cin)
     # NA, NA, 3 error
     expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", as.integer(NA), as.integer(NA), 3, dim_min[-1], dim_max[-1]))
+    # If catch but no fishery - error
+    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", as.integer(NA), 1, as.integer(NA), dim_min[-1], dim_max[-1]))
+    # Fishery but no catch - error
+    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", 1, as.integer(NA), as.integer(NA), dim_min[-1], dim_max[-1]))
     # Landings
     # 1, 1, 1 Cannot ask for biol and a catch
     expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", 1, 1, 1, dim_min[-1], dim_max[-1]))
@@ -601,6 +605,14 @@ test_that("operatingModel eval_om", {
     test_FLQuant_equal(cout, cin)
     # NA, NA, 3 error
     expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", as.integer(NA), as.integer(NA), 3, dim_min[-1], dim_max[-1]))
+    # Effort
+    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "effort", 1, as.integer(NA), as.integer(NA), dim_min[-1], dim_max[-1])
+    test_FLQuant_equal(om[["fisheries"]][[1]]@effort[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], cout)
+    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "effort", 2, as.integer(NA), as.integer(NA), dim_min[-1], dim_max[-1])
+    test_FLQuant_equal(om[["fisheries"]][[2]]@effort[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], cout)
+    # Effort but no fishery no specified
+    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "effort", as.integer(NA), as.integer(NA), 1, dim_min[-1], dim_max[-1]))
+    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "effort", as.integer(NA), 1, as.integer(NA), dim_min[-1], dim_max[-1]))
 })
 
 # Current values in operating model (asked for by values in control)

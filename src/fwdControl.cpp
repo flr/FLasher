@@ -16,6 +16,7 @@ void fwdControl::init_target_map(){
     target_map["srp"] = target_srp;
     target_map["ssb"] = target_srp;
     target_map["biomass"] = target_biomass;
+    target_map["effort"] = target_effort;
     return;
 }
 
