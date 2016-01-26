@@ -57,43 +57,69 @@ operatingModel::operatingModel(){
  * \param ctrl_in The control object that controls the projections.
  */
 operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsAD biols_in, const fwdControl ctrl_in){
-    // Checking dims (1 - 5) of landings slots and biols are the same - but only for catches catching that biol?
-    // Dim 6 must be 1 or n
-    //Rcpp::IntegerVector catch_dim;
-    //Rcpp::IntegerVector biol_dim;
-    //const unsigned int nbiols = biols_in.get_nbiols();
-    //const unsigned int nfisheries = fisheries_in.get_nfisheries();
-    //const unsigned int ncatches = 0;
-    //for (int unsigned biol_counter = 1; biol_counter <= nbiols; ++biol_counter){
-    //    biol_dim = biols_in(biol_counter).n().get_dim();
-    //    for (int unsigned fishery_counter = 1; fishery_counter <= nfisheries; ++fishery_counter){
-    //        for (int unsigned catch_counter = 1; catch_counter <= ncatches; ++ catch_counter){
-    //            catch_dim = fisheries_in(fishery_counter)(catch_counter).landings_n().get_dim(); 
-    //            for (int dim_counter = 0; dim_counter < 5; ++dim_counter){
-    //                if((biol_dim[dim_counter] != catch_dim[dim_counter])){
-    //                    Rcpp::stop("In operatingModel constructor: Biol dims must be the same as Catch dims\n");
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
-    // Check residuals of the SRR - need to have them for the projection years in the control object
-    
+    // This requires a lot of checks...
+    // Iters in all numbers and efforts must be the same
+    // Age structure of catches catching biols must be the same
+    // Year and seasons must be the same for all objects
 
-// Iters in control values = n(biol) = catch.n(catch) = effort(fishery)
-
-    // Add ITER check for ctrl
-// Number of iters in the control object @target@iters array must match the number of iters in the effort slots of the fisheries
+    // Start with the catches - compare everything to the first fishery / catch
+    std::vector<unsigned int> landings_dim11 = fisheries_in(1,1).landings_n().get_dim();
+    std::vector<unsigned int> discards_dim11 = fisheries_in(1,1).discards_n().get_dim();
+    std::vector<unsigned int> effort_dim1 = fisheries_in(1).effort().get_dim();
+    for (int fishery_no=1; fishery_no <= fisheries_in.get_nfisheries(); ++fishery_no){
+        std::vector<unsigned int> effort_dim = fisheries_in(fishery_no).effort().get_dim();
+        for (int catch_no=1; catch_no <= fisheries_in(fishery_no).get_ncatches(); ++catch_no){
+            std::vector<unsigned int> landings_dim = fisheries_in(fishery_no,catch_no).landings_n().get_dim();
+            std::vector<unsigned int> discards_dim = fisheries_in(fishery_no,catch_no).discards_n().get_dim();
+            if ((landings_dim11[1] != landings_dim[1]) | (landings_dim11[3] != landings_dim[3])){
+                Rcpp::stop("In operatingModel constructor. All catches in all fisheries must have the same year and season range.\n");
+            }
+            if ((landings_dim[5] != effort_dim1[5]) | (discards_dim[5] != effort_dim1[5]) | (effort_dim[5] != effort_dim1[5])){
+                Rcpp::stop("In operatingModel constructor. All landings, discards and effort must have the same number of iterations.\n");
+            }
+        }
+    }
+    // Then the biols
+    for (int biol_no=1; biol_no <= biols_in.get_nbiols();  ++biol_no){
+        std::vector<unsigned int> biol_dim = biols_in(biol_no).n().get_dim();
+        if ((landings_dim11[1] != biol_dim[1]) | (landings_dim11[3] != biol_dim[3])){
+            Rcpp::stop("In operatingModel constructor. All biols and catches must have the same year and season range.\n");
+        }
+        // While we're checking biols, check the residuals are the right size
+        std::vector<unsigned int> res_dim = biols_in(biol_no).get_srr().get_residuals().get_dim();
+        // Loop over and check 2 - 5
+        for (int dim_counter = 1; dim_counter < 5; ++dim_counter){
+            if(res_dim[dim_counter] != biol_dim[dim_counter]){
+                Rcpp::stop("In operatingModel constructor. Problem with biol: %i. Dimensions 2-5 of residuals must match those of biol.\n", biol_no);
+            }
+        }
+        // Residuals iters 1 or n
+        if (!((res_dim[5] == 1) | (res_dim[5] == biol_dim[5]))){
+                Rcpp::stop("In operatingModel constructor. Problem with biol: %i. Iterations of residuals must be 1 or match those of biol.\n", biol_no);
+        }
+        // Check age structure for Biol and Catch dims = fisheries catching biols must have the same dims
+        Rcpp::IntegerMatrix FC = ctrl_in.get_FC(biol_no);
+        for (int FC_row = 0; FC_row < FC.nrow(); ++FC_row){
+            std::vector<unsigned int> landings_dim = fisheries_in(FC(FC_row,0), FC(FC_row,1)).landings_n().get_dim();
+            // Check age structure
+            if((biol_dim[0] != landings_dim[0])){
+                Rcpp::stop("In operatingModel constructor. Problem with biol: %i. Age structure must be the same as the catch dims\n", biol_no);
+            }
+        }
+        // Check iterations of the abundance
+        if (biol_dim[5] != effort_dim1[5]){
+            Rcpp::stop("In operatingModel constructor.  Problem with biol: %i. Number of iterations in abundance must match effort\n", biol_no);
+        }
+    }
+    // Iterations in the control object must be 1 or n
+    int ctrl_iters = ctrl_in.get_niter();
+    if ((ctrl_iters != effort_dim1[5]) & (ctrl_iters != 1)){
+        Rcpp::stop("In operatingModel constructor. Iterations in control object must be 1 or same as effort iterations.\n");
+    }
+    // Everything is good - set the members
     biols = biols_in;
     fisheries = fisheries_in;
     ctrl = ctrl_in;
-
-    // Again add iteration check here
-    // Iters in ctrl need to match those in biols and effort
-    // Shouldn't it recycle?
-    //if (ctrl.get_niter() != biols(1).n().get_niter()){
-    //    Rcpp::stop("In operatingModel constructor. Iters in biol must equal those in fwdControl.\n");
-    //}
 }
 
 /*! \brief The copy constructor
@@ -852,7 +878,7 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     }
     // If relFishery OR relBiol, we must have relYear AND relSeason
     if (((!target_rel_fishery_na | !target_rel_biol_na) ^ (!target_rel_year_na & !target_rel_season_na))){
-        Rcpp::stop("In operatingModel::get_target_value_hat. If relFishery and relCatch or relBiol specified, relYear and relSeason must also be specified. \n.");
+        Rcpp::stop("In operatingModel::get_target_value_hat. If relFishery and relCatch or relBiol specified, relYear and relSeason must also be specified (and vice versa). \n.");
     }
 
     if (!target_rel_year_na){

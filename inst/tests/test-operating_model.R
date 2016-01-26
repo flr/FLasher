@@ -14,7 +14,7 @@ test_that("timestep_to_year_season_conversion",{
     expect_equal(test_timestep_to_year_season(flq_in, timestep), c(year,season))
 })
 
-test_that("operatingModel constructors and updaters",{
+test_that("operatingModel constructors",{
     # Empty constructor - just check it doesn't fail
     test_operatingModel_empty_constructor()
     # Main constructor test
@@ -30,10 +30,48 @@ test_that("operatingModel constructors and updaters",{
     expect_identical(out[["biols"]], flbs_in)
     test_FLFisheries_equal(out[["fisheries"]], flfs)
     test_fwdControl_equal(out[["ctrl"]], fc)
+})
 
-    # biol - dimension check
-    # Add tests for dimension checks
-    # Residuals, fisheries, biols and who is fishing on what
+test_that("operatingModel constructor dimension checks",{
+    flq <- random_FLQuant_generator(min_dims=c(2,2,2,2,2,2))
+    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
+    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
+    good_dim <- dim(flq)
+    bad_year_dim <- good_dim
+    bad_year_dim[2] <- good_dim[2] + 1
+    bad_season_dim <- good_dim
+    bad_season_dim[4] <- good_dim[4] + 1
+    bad_iter_dim <- good_dim
+    bad_iter_dim[6] <- good_dim[6] + 1
+    bad_age_dim <- good_dim
+    bad_age_dim[1] <- good_dim[1] + 1
+    # Check Biols year and season match catch - catches already forced to have same through validity check of FLFisheries
+    bad_year_flb <- random_FLBiolcpp_generator(fixed_dims = bad_year_dim)
+    bad_season_flb <- random_FLBiolcpp_generator(fixed_dims = bad_season_dim)
+    bad_biol <- round(runif(1,min=1,max=length(flbs)))
+    bad_flbs <- flbs
+    bad_flbs[[bad_biol]][["biol"]] <- bad_year_flb
+    bad_flbs[[bad_biol]][["srr_residuals"]] <- random_FLQuant_generator(fixed_dims=bad_year_dim)
+    expect_error(test_operatingModel_full_constructor(flfs, bad_flbs, fc))
+    bad_flbs[[bad_biol]][["biol"]] <- bad_season_flb
+    bad_flbs[[bad_biol]][["srr_residuals"]] <- random_FLQuant_generator(fixed_dims=bad_season_dim)
+    expect_error(test_operatingModel_full_constructor(flfs, bad_flbs, fc))
+    # Check iters in effort, landings, discards and n must be the same
+    bad_flfs <- random_FLFisheries_generator(fixed_dims = bad_iter_dim, min_fisheries=2, max_fisheries=2)
+    expect_error(test_operatingModel_full_constructor(bad_flfs, flbs, fc))
+    # Check age range for catches and biols is the same - catch 1 catches biol 1
+    bad_age_flb <- random_FLBiolcpp_generator(fixed_dims = bad_age_dim)
+    bad_flbs <- flbs
+    bad_flbs[[1]][["biol"]] <- bad_age_flb
+    bad_flbs[[1]][["srr_residuals"]] <- random_FLQuant_generator(fixed_dims=bad_age_dim)
+    expect_error(test_operatingModel_full_constructor(flfs, bad_flbs, fc))
+    # Check iters in the control object is 1 or n
+    # iter = 1 - should be OK
+    good_fc <- random_fwdControl_generator(years = 1, niters = 1)
+    out <- test_operatingModel_full_constructor(flfs, flbs, good_fc)
+    bad_fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6]+1)
+    expect_error(test_operatingModel_full_constructor(flfs, flbs, bad_fc))
 })
 
 test_that("operatingModel housekeeping",{
