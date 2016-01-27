@@ -22,7 +22,7 @@
 #' flq <- random_FLQuant_generator(fixed_dims = c(NA,10,1,4,1,NA))
 #' dim(flq)
 #' summary(flq)
-random_FLQuant_generator <- function(fixed_dims = rep(NA,6), min_dims = rep(1,6), max_dims = pmax(min_dims, c(5,10,5,4,4,5)), sd = 100){
+random_FLQuant_generator <- function(fixed_dims = rep(NA,6), min_dims = rep(1,6), max_dims = pmax(min_dims, c(5,10,5,4,4,5)), min_age_name = 1, sd = 100){
     nage <- ifelse(is.na(fixed_dims[1]),round(runif(1,min=min_dims[1], max=max_dims[1])),fixed_dims[1])
     nyear <- ifelse(is.na(fixed_dims[2]),round(runif(1,min=min_dims[2], max=max_dims[2])),fixed_dims[2])
     nunit <- ifelse(is.na(fixed_dims[3]),round(runif(1,min=min_dims[3], max=max_dims[3])),fixed_dims[3])
@@ -30,21 +30,20 @@ random_FLQuant_generator <- function(fixed_dims = rep(NA,6), min_dims = rep(1,6)
     narea <- ifelse(is.na(fixed_dims[5]),round(runif(1,min=min_dims[5], max=max_dims[5])),fixed_dims[5])
     niter <- ifelse(is.na(fixed_dims[6]),round(runif(1,min=min_dims[6], max=max_dims[6])),fixed_dims[6])
     values <- rnorm(nage*nyear*nunit*nseason*narea*niter, sd = sd)
-    flq <- FLQuant(values, dimnames = list(age = 1:nage, year = 1:nyear, unit = 1:nunit, season = 1:nseason, area = 1:narea, iter = 1:niter))
+    flq <- FLQuant(values, dimnames = list(age = min_age_name:(min_age_name + nage - 1), year = 1:nyear, unit = 1:nunit, season = 1:nseason, area = 1:narea, iter = 1:niter))
     units(flq) <- as.character(signif(abs(rnorm(1)),3))
     return(flq)
 }
 
 #' Generate lists of randomly sized and filled FLQuant objects
 #'
-#' Generate a list of randomly sized FLQuant objects filled with normally distributed random numbers with a mean of 0.
+#' Generate a list of FLQuant objects filled with normally distributed random numbers with a mean of 0.
+#' FLQuant objects can be randomly sized, depening on arguments passed to random_FLQuant_generator().
 #' Used for automatic testing, particularly of the FLQuant7_base<T> class in CPP.
 #' 
 #' @param min_elements The minimum number of elements in the list. Default is 1. 
 #' @param max_elements The maximum number of elements in the list. Default is 10. 
-#' @param fixed_dims A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. Default value is rep(NA,6).
-#' @param max_dims A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,5,5,4,4,10).
-#' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
+#' @param ... Other arguments to pass to random_FLQuant_generator(), e.g. those that fix the size of the objects.
 #' @export
 #' @return A list of FLQuant objects
 #' @examples
@@ -66,9 +65,8 @@ random_FLQuant_list_generator <- function(min_elements = 1, max_elements = 10, .
 #' Generate an FLBiolcpp of random size and filled with normally distributed random numbers with a mean of 0.
 #' Used for automatic testing, particularly of the fwdBiol class in CPP.
 #' 
-#' @param fixed_dims A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. Default value is rep(NA,6).
-#' @param max_dims A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,5,5,4,4,10).
 #' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
+#' @params ... Other arguments to pass to random_FLQuant_generator().
 #' @export
 #' @return An FLBiolcpp
 #' @examples
@@ -85,7 +83,7 @@ random_FLBiolcpp_generator <- function(sd=100, ...){
     biol@spwn[] <- runif(prod(dim(biol@spwn)), min=0, max=1)
     name(biol) <- as.character(signif(rnorm(1)*1000,3))
     desc(biol) <- as.character(signif(rnorm(1)*1000,3))
-    # set the units to something sensible
+    # Set the units to something sensible
     units(biol@m) <- "m"
     units(biol@wt) <- "kg"
     units(biol@fec) <- "prop"
@@ -100,9 +98,8 @@ random_FLBiolcpp_generator <- function(sd=100, ...){
 #' Generate an FLCatch of random size and filled with normally distributed random numbers with a mean of 0.
 #' Used for automatic testing, particularly of the FLCatch class in CPP.
 #' 
-#' @param fixed_dims A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. Default value is rep(NA,6).
-#' @param max_dims A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,5,5,4,4,10).
 #' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
+#' @param ... Other arguments passed to random_FLQuant_generator().
 #' @export
 #' @return An FLCatch
 #' @examples
@@ -130,14 +127,12 @@ random_FLCatch_generator <- function(sd=100, ...){
 
 #' Generates an FLCatches object - a list of randomly sized and filled FLCatch objects 
 #'
-#' Generates a list of randomly sized FLCatch objects filled with normally distributed random numbers with a mean of 0.
+#' Generates a list of identically sized FLCatch objects filled with normally distributed random numbers with a mean of 0.
 #' Used for automatic testing, particularly of the FLCatches_base<T> class in CPP.
 #' 
 #' @param min_catches The minimum number of catches. Default is 2. 
 #' @param max_catches The maximum number of catches. Default is 5. 
-#' @param fixed_dims A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. 
-#' @param max_dims A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,5,5,4,4,10).
-#' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
+#' @param ... Other arguments passed to random_FLQuant_generator().
 #' @export
 #' @return An FLCatches objects
 #' @examples
@@ -146,11 +141,12 @@ random_FLCatch_generator <- function(sd=100, ...){
 #' summary(flcs)
 #' lapply(flcs, summary)
 random_FLCatches_generator <- function(min_catches = 2, max_catches = 5, ...){
-    args <- list(...)
     ncatches <- round(runif(1,min=min_catches, max=max_catches))
     op_list <- list()
     flq <- random_FLQuant_generator(...)
+    # Catches are the same size - good if they could vary in the first dim
     fixed_dims <- dim(flq)
+    args <- list(...)
     args[["fixed_dims"]] <- fixed_dims
     for (i in 1:ncatches){
         op_list[[i]] <- do.call(random_FLCatch_generator,args)    
@@ -168,19 +164,16 @@ random_FLCatches_generator <- function(min_catches = 2, max_catches = 5, ...){
 #' 
 #' @param min_catches The minimum number of catches. Default is 2. 
 #' @param max_catches The maximum number of FLCatches in the catches list. Default is 5. 
-#' @param fixed_dims A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. Default value is rep(NA,6).
-#' @param max_dims A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,5,5,4,4,10).
-#' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
+#' @param sd Standard deviation of the randomly generated FLQuant slots.
+#' @param ... Other arguments passed to random_FLCatches_generator().
 #' @export
 #' @return An FLFishery object 
 #' @examples
-#' flf <- FLasher:::random_FLFishery_list_generator()
-#' summary(flf)
 #' flf <- random_FLFishery_generator(fixed_dims = c(NA,10,1,1,1,1))
 #' lapply(flf, summary)
 #' flf <- random_FLFishery_generator(fixed_dims = c(NA,10,1,1,1,1), max_dims = c(100,NA,NA,NA,NA,NA))
-random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 100,  ...){
-    catches <- random_FLCatches_generator(min_catches, max_catches, ...)
+random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 1, ...){
+    catches <- random_FLCatches_generator(min_catches, max_catches, sd=sd, ...)
     fishery <- FLFishery(catches)
     fishery@hperiod[1,] <- runif(prod(dim(fishery@hperiod)[2:6]),min=0, max=1)
     fishery@hperiod[2,] <- runif(prod(dim(fishery@hperiod)[2:6]),min=fishery@hperiod[1,], max=1)
@@ -200,19 +193,12 @@ random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 10
 #' 
 #' @param min_fisheries The minimum number of FLFisheries in the fisheries list. Default is 2. 
 #' @param max_fisheries The maximum number of FLFisheries in the fisheries list. Default is 5. 
-#' @param min_catches The minimum number of catches. Default is 2. 
-#' @param max_catches The maximum number of FLCatches in the catches list. Default is 5. 
-#' @param fixed_dims A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. Default value is rep(NA,6).
-#' @param max_dims A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,5,5,4,4,10).
-#' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
+#' @param ... Other arguments to pass to random_FLFishery_generator().
 #' @export
 #' @return An FLFishery object 
 #' @examples
-#' flf <- FLasher:::random_FLFishery_list_generator()
-#' summary(flf)
-#' flf <- random_FLFishery_generator(fixed_dims = c(NA,10,1,1,1,1))
+#' flf <- random_FLFisheries_generator(fixed_dims = c(NA,10,1,1,1,1))
 #' lapply(flf, summary)
-#' flf <- random_FLFishery_generator(fixed_dims = c(NA,10,1,1,1,1), max_dims = c(100,NA,NA,NA,NA,NA))
 random_FLFisheries_generator <- function(min_fisheries = 2, max_fisheries = 5, ...){
     fisheries_list <- list()
     nfisheries <- round(runif(1,min=min_fisheries, max=max_fisheries))
@@ -229,14 +215,12 @@ random_FLFisheries_generator <- function(min_fisheries = 2, max_fisheries = 5, .
 #'
 #' The fwdBiols constructor takes a list (fwdbiols_list). Each element of fwdbiols_list is a list of:
 #' FLBiolcpp, SRR model name, SRR params, SRR timelag, SRR residuals and SRR residuals mult.
-#' This function generates randomly filled FLBiolcpp objects, of the same size.
+#' This function generates randomly filled FLBiolcpp objects. Objects may be of different sizes unless appropriate arguments to random_FLBiolcpp_generator() are specified.
 #' Used for automatic testing, particularly of the fwdBiols<T> class in CPP.
 #' 
 #' @param min_biols The minimum number of fwdBiols in the list. Default is 1. 
 #' @param max_biols The maximum number of fwdBiols in the list. Default is 5. 
-#' @param fixed_dims A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. Default value is rep(NA,6).
-#' @param max_dims A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,5,5,4,4,10).
-#' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
+#' @param ... Other arguments passed to random_FLBiolcpp_generator().
 #' @export
 #' @return A list object 
 #' @examples
@@ -244,11 +228,9 @@ random_FLFisheries_generator <- function(min_fisheries = 2, max_fisheries = 5, .
 random_fwdBiols_list_generator <- function(min_biols = 1, max_biols = 5, ...){
     nbiols <- round(runif(1,min=min_biols,max=max_biols))
     biols <- list()
-    # All biols must have same dims
-    seed_biol <- random_FLBiolcpp_generator(...)
     for (i in 1:nbiols){
         biol_bits <- list()
-        biol_bits[["biol"]] <- random_FLBiolcpp_generator(fixed_dims=dim(n(seed_biol)))
+        biol_bits[["biol"]] <- random_FLBiolcpp_generator(...)
         biol_bits[["srr_model_name"]] <- "bevholt"
         biol_bits[["srr_params"]] <- FLQuant(abs(rnorm(2)), dimnames=list(params=c("a","b")))
         biol_bits[["srr_residuals"]] <- n(biol_bits[["biol"]])[1,]
