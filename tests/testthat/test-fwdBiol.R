@@ -317,7 +317,9 @@ test_that("fwdBiols methods",{
 })
 
 test_that("fwdBiols iterators",{
-    biols <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5)
+    # Biols of same size
+    fixed_dims <- round(runif(6,min=2,max=10))
+    biols <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims=fixed_dims)
     flbs_in <- lapply(biols, function(x) return(x[["biol"]]))
     nin <- lapply(flbs_in, function(x) return(n(x)))
     # Const - just pulls out n - does nit do names
