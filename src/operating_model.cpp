@@ -1052,7 +1052,6 @@ std::vector<unsigned int> operatingModel::get_target_age_range_indices(const uns
             Rcpp::stop("In operatingModel::get_target_age_range_indices. biol_no and catch_no are NA. Unable to get age range.\n");
         }
     }
-
     std::vector<unsigned int> age_range = ctrl.get_age_range(target_no, sim_target_no); // Just values in the control, not the age indices
     std::vector<unsigned int> age_range_indices(2);
     // Use find() to match names - precheck in R that they exist - if not find, returns the last
@@ -1074,23 +1073,40 @@ std::vector<unsigned int> operatingModel::get_target_age_range_indices(const uns
 }
 
 //---------------Target methods ----------------------------
-//
-//// indices_min and indices_max - these are indices starting at 1, not dimnames
-//// i.e. the first dimension does not hold actual ages, just indices
-//FLQuantAD operatingModel::fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-//    // Get the F, then mean over the first dimension
-//    FLQuantAD f = partial_f(fishery_no, catch_no, biol_no, indices_min, indices_max); 
-//    FLQuantAD fbar = quant_mean(f);
-//    return fbar;
-//}
-//
-//FLQuantAD operatingModel::fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-//    // Get the F, then mean over the first dimension
-//    FLQuantAD f = total_f(biol_no, indices_min, indices_max); 
-//    FLQuantAD fbar = quant_mean(f);
-//    return fbar;
-//}
-//
+
+/*! \name fbar
+ * Calculate the mean instantaneous fishing mortality over the specified age range
+ * Note that the indices are not the names of the ages, but the positions, starting at 1
+ */
+//@{
+/*! \brief The mean instantaneous fishing mortality over the specified age range of a single biol from a single fishery / catch, subset over dimensions 2-6.
+ * It is assumed that the fishery / catch actually fishes the biol (no check is made).
+ * \param fishery_no the position of the fishery within the fisheries (starting at 1).
+ * \param catch_no the position of the catch within the fishery (starting at 1).
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ * \param indices_min The minimum indices quant, year, unit etc (length 6)
+ * \param indices_max The maximum indices quant, year, unit etc (length 6)
+*/
+FLQuantAD operatingModel::fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    // Get the F, then mean over the first dimension
+    FLQuantAD f = get_f(fishery_no, catch_no, biol_no, indices_min, indices_max); 
+    FLQuantAD fbar = quant_mean(f);
+    return fbar;
+}
+
+/*! \brief The total mean instantaneous fishing mortality over the specified age range of a single biol, subset over dimensions 2-6.
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ * \param indices_min The minimum indices quant, year, unit etc (length 6)
+ * \param indices_max The maximum indices quant, year, unit etc (length 6)
+ */
+FLQuantAD operatingModel::fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    // Get the F, then mean over the first dimension
+    FLQuantAD f = get_f(biol_no, indices_min, indices_max); 
+    FLQuantAD fbar = quant_mean(f);
+    return fbar;
+}
+//@}
+
 
 /*! \brief The total landings from a single biol 
  * Sums up the current landings from each of the FLCatch objects that fish the biol

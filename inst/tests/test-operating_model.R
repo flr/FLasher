@@ -113,6 +113,10 @@ test_that("operatingModel get_f method for FCB with random OM objects",{
     fin_sub <- fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
     expect_equal(dim(fout), dim(fin_sub))
     expect_equal(c(fout), c(fin_sub))
+    # Fbar subset 
+    fbar_out <- test_operatingModel_fbar_subset1(flfs, flbs, fc, fishery_no, catch_no, biol_no, dim_min, dim_max)
+    fbar_in <- apply(fout, 2:6, mean)
+    test_FLQuant_equal(fbar_in, fbar_out)
     # With years in the Catch Q pars too
     flp <- FLPar(abs(rnorm(2 * dim(flq)[6] * dim(flq)[2])), dimnames = list(params = c("alpha","beta"), year=1:dim(flq)[2], iter = 1:dim(flq)[6]))
     catch.q(flfs[[fishery_no]][[catch_no]]) <- flp # desc removes! Why?
@@ -159,6 +163,9 @@ test_that("get_f for biols with example operatingModel1 - total fs",{
             }
             test_FLQuant_equal(fin, fout_all)
             test_FLQuant_equal(fin[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2],indices_min[3]:indices_max[3],indices_min[4]:indices_max[4],indices_min[5]:indices_max[5],indices_min[6]:indices_max[6]], fout)
+            # Check fbar
+            fbar_out <- test_operatingModel_fbar_subset2(om[["fisheries"]], om[["biols"]], om[["fwc"]], i, indices_min, indices_max)
+            test_FLQuant_equal(apply(fout, 2:6, mean), fbar_out)
         }
     }
 })

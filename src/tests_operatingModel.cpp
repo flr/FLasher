@@ -108,7 +108,6 @@ std::vector<double> test_operatingModel_calc_rec(FLFisheriesAD flfs, fwdBiolsAD 
     return out;
 }
 
-
 /*----------- F methods --------------*/
 
 // get_f()
@@ -165,25 +164,20 @@ operatingModel test_operatingModel_run(FLFisheriesAD flfs, fwdBiolsAD biols, con
     return om;
 }
 
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_fbar_subset1(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD fb = om.fbar(fishery_no, catch_no, biol_no, indices_min, indices_max);
+    return fb;
+}
 
-//// [[Rcpp::export]]
-//FLQuantAD test_operatingModel_partial_fbar_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-//    fwdBiolsAD biols(flbs_list_sexp);
-//    operatingModel om(flfs, biols, ctrl);
-//    FLQuantAD pf = om.fbar(fishery_no, catch_no, biol_no, indices_min, indices_max);
-//    return pf;
-//}
-//
-//// [[Rcpp::export]]
-//FLQuantAD test_operatingModel_fbar_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-//    fwdBiolsAD biols(flbs_list_sexp);
-//    operatingModel om(flfs, biols, ctrl);
-//    FLQuantAD pf = om.fbar(biol_no, indices_min, indices_max);
-//    return pf;
-//}
-//
-//
-///*
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_fbar_subset2(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD fb = om.fbar(biol_no, indices_min, indices_max);
+    return fb;
+}
+
 /*----------- target calculations--------------*/
 
 // [[Rcpp::export]]

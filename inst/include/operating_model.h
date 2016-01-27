@@ -96,12 +96,10 @@ class operatingModel {
 
         // The target value calculations
         // Partial fbar of a single catch on a single biol
-        //FLQuantAD fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         // Total fbar on a biol (possibly from multiple catches)
-        //FLQuantAD fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
-        // catches from an FLCatch and fishery on a stock 
-        //FLQuantAD catches(const int fishery_no, const int catch_no) const;
         // Total catches / landings / discards from a biol
         FLQuantAD landings(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD discards(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
