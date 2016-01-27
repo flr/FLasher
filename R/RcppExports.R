@@ -1933,3 +1933,7 @@ test_operatingModel_get_target_value2 <- function(flfs, biols, ctrl, target_no) 
     .Call('FLasher_test_operatingModel_get_target_value2', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no)
 }
 
+test_operatingModel_get_target_age_range_indices <- function(flfs, biols, ctrl, target_no, sim_target_no) {
+    .Call('FLasher_test_operatingModel_get_target_age_range_indices', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no, sim_target_no)
+}
+

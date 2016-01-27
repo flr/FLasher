@@ -251,12 +251,11 @@ std::vector<double> test_operatingModel_get_target_value2(FLFisheriesAD flfs, fw
     return out;
 }
 
-//// [[Rcpp::export]]
-//std::vector<unsigned int> test_operatingModel_get_target_age_range_indices(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const unsigned int biol_no){ 
-//    fwdBiolsAD biols(flbs_list_sexp);
-//    operatingModel om(flfs, biols, ctrl);
-//    std::vector<unsigned int> age_range_indices = om.get_target_age_range_indices(target_no, sim_target_no, biol_no);
-//    return age_range_indices;
-//}
+// [[Rcpp::export]]
+std::vector<unsigned int> test_operatingModel_get_target_age_range_indices(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no){ 
+    operatingModel om(flfs, biols, ctrl);
+    std::vector<unsigned int> age_range_indices = om.get_target_age_range_indices(target_no, sim_target_no);
+    return age_range_indices;
+}
 
 

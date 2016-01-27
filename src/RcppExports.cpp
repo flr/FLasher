@@ -6338,3 +6338,18 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_operatingModel_get_target_age_range_indices
+std::vector<unsigned int> test_operatingModel_get_target_age_range_indices(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no);
+RcppExport SEXP FLasher_test_operatingModel_get_target_age_range_indices(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< fwdBiolsAD >::type biols(biolsSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type target_no(target_noSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type sim_target_no(sim_target_noSEXP);
+    __result = Rcpp::wrap(test_operatingModel_get_target_age_range_indices(flfs, biols, ctrl, target_no, sim_target_no));
+    return __result;
+END_RCPP
+}

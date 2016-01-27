@@ -90,9 +90,9 @@ class operatingModel {
         // Timestep of effort which drives the target value
         // int get_target_effort_timestep(const int target_no);
         
-        // age range indices for the f based targets
+        // age range indices for age-based targets (e.g. fbar)
         // Returns the indices of the age range, starts at 0
-        //std::vector<unsigned int> get_target_age_range_indices(const unsigned int target_no, const unsigned int sim_target_no, const unsigned int biol_no) const; 
+        std::vector<unsigned int> get_target_age_range_indices(const unsigned int target_no, const unsigned int sim_target_no) const; 
 
         // The target value calculations
         // Partial fbar of a single catch on a single biol

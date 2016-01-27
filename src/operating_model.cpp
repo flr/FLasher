@@ -1024,34 +1024,55 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
 ////}
 //
 //*/
-//
-//
-//
-//// Returns the indices of the age range, starts at 0
-//std::vector<unsigned int> operatingModel::get_target_age_range_indices(const unsigned int target_no, const unsigned int sim_target_no, const unsigned int biol_no) const {
-//    std::vector<unsigned int> age_range = ctrl.get_age_range(target_no, sim_target_no);
-//    std::vector<unsigned int> age_range_indices(2);
-//    // Get age dimnames - then find position of ages from control in them
-//    // Convert the age names to a vector of strings
-//    std::vector<std::string> age_names = Rcpp::as<std::vector<std::string> >(biols(biol_no).n().get_dimnames()[0]);
-//    // Use find() to match names - precheck in R that they exist - if not find, returns the last
-//    std::vector<std::string>::iterator age_min_iterator = find(age_names.begin(), age_names.end(), std::to_string(age_range[0]));
-//    if(age_min_iterator != age_names.end()){
-//        age_range_indices[0] = std::distance(age_names.begin(), age_min_iterator);
-//    }
-//    else {
-//        Rcpp::stop("minAge in control not found in dimnames of FLBiol\n");
-//    }
-//    std::vector<std::string>::iterator age_max_iterator = find(age_names.begin(), age_names.end(), std::to_string(age_range[1]));
-//    if(age_max_iterator != age_names.end()){
-//        age_range_indices[1] = std::distance(age_names.begin(), age_max_iterator);
-//    }
-//    else {
-//        Rcpp::stop("maxAge in control not found in dimnames of FLBiol\n");
-//    }
-//    return age_range_indices;
-//}
-//
+
+
+
+/*! \brief Returns the indices of the age range, starting at 0
+ *
+ * Returns the indices of the age dimension. These are only the same as in the control object if the first age is 0.
+ * \param target_no References the target column in the control dataframe. Starts at 1.
+ * \param sim_target_no References the target column in the control dataframe. Starts at 1.
+ */
+std::vector<unsigned int> operatingModel::get_target_age_range_indices(const unsigned int target_no, const unsigned int sim_target_no) const {
+    std::vector<std::string> age_names;
+    // Get age names from biol in target. 
+    int biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "biol"); 
+    if (!Rcpp::IntegerVector::is_na(biol_no)){
+        age_names = Rcpp::as<std::vector<std::string> >(biols(biol_no).n().get_dimnames()[0]);
+    }
+    // If no biol target, get age names from catch.
+    else {
+        int fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery"); 
+        int catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch"); 
+        if (!Rcpp::IntegerVector::is_na(catch_no)){
+            age_names = Rcpp::as<std::vector<std::string> >(fisheries(fishery_no, catch_no).landings_n().get_dimnames()[0]);
+        }
+        //  If no biol or catch target, give up.
+        else {
+            Rcpp::stop("In operatingModel::get_target_age_range_indices. biol_no and catch_no are NA. Unable to get age range.\n");
+        }
+    }
+
+    std::vector<unsigned int> age_range = ctrl.get_age_range(target_no, sim_target_no); // Just values in the control, not the age indices
+    std::vector<unsigned int> age_range_indices(2);
+    // Use find() to match names - precheck in R that they exist - if not find, returns the last
+    std::vector<std::string>::iterator age_min_iterator = find(age_names.begin(), age_names.end(), std::to_string(age_range[0]));
+    if(age_min_iterator != age_names.end()){
+        age_range_indices[0] = std::distance(age_names.begin(), age_min_iterator);
+    }
+    else {
+        Rcpp::stop("minAge in control not found in dimnames of target object\n");
+    }
+    std::vector<std::string>::iterator age_max_iterator = find(age_names.begin(), age_names.end(), std::to_string(age_range[1]));
+    if(age_max_iterator != age_names.end()){
+        age_range_indices[1] = std::distance(age_names.begin(), age_max_iterator);
+    }
+    else {
+        Rcpp::stop("maxAge in control not found in dimnames of target object\n");
+    }
+    return age_range_indices;
+}
+
 //---------------Target methods ----------------------------
 //
 //// indices_min and indices_max - these are indices starting at 1, not dimnames
