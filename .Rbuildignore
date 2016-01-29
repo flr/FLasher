@@ -2,6 +2,7 @@
 NEWS.md
 gh-pages/
 man-roxygen/
+src/Doxyfile
 Makefile
 .git/
 .editorconfig

@@ -6,9 +6,6 @@
 # Soundtrack:
 # Notes:
 
-# fwdElement
-setGeneric('fwdElement', function(element, iters, ...) standardGeneric("fwdElement"))
-
 # fwdControl
 setGeneric('fwdControl', function(target, iters, ...) standardGeneric("fwdControl"))
 

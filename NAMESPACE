@@ -4,13 +4,11 @@ importFrom(Rcpp, evalCpp)
 import("FLCore")
 import("FLFishery")
 exportClasses(
-	"fwdElement",
 	"fwdControl")
 exportMethods(
 	"[",
 	"[<-",
 	"fwdControl",
-	"fwdElement",
 	"show",
 	"target",
 	"target<-"

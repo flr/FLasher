@@ -1,16 +1,15 @@
 Package: FLasher
 Type: Package
-Title: What Can I Say?
-Version: 0.1.20140909
-Date: 20140909
-Authors@R: c(person(given = 'Finlay', family = 'Scott', role = c('aut', 'cre'),
+Title: Projection and forecasting of fish populations, stocks and fleets.
+Description: The very best
+Version: 0.1.2016-01-28
+Date: 2016-01-28
+Authors@R: c(person(given = 'Finlay', family = 'Scott', role = c('aut'),
             email = 'finlay.scott@jrc.ec.europa.eu'),
 		person(given = 'Iago', family = 'Mosqueira', role = c('aut', 'cre'),
             email = 'iago.mosqueira@jrc.ec.europa.eu'))
-Author: Finlay Scott, Iago Mosqueira, EC JRC G03.
 Maintainer: Iago Mosqueira <iago.mosqueira@jrc.ec.europa.eu>
 Copyright: European Union
-Description: The very best
 Collate: classes.R generics.R accessors.R methods.R fwd.R constructors.R RcppExports.R help.R test_helper_functions.R rcpp_plugin.R
 Depends:
     FLCore(>= 2.5.0),

@@ -1,4 +1,4 @@
-# constructors.R - Constructor methods for fwdElement and fwdControl
+# constructors.R - Constructor methods for fwdControl
 # FLasher/R/constructors.R
 
 # Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later
@@ -6,54 +6,62 @@
 # Soundtrack:
 # Notes:
 
-# fwdElement(element='data.frame', iters='array') {{{
-setMethod('fwdElement', signature(element='data.frame', iters='array'),
-  function(element, iters) {
+# fwdControl(target='data.frame', iters='array') {{{
+#' @rdname fwdControl
+#' @examples
+#'
+#' # Construct from data.frame and array
+#' fcn <- fwdControl(data.frame(year=2000:2005, quantity='f', value=0.5))
 
-    # COMPLETE df
-    ele <- new('fwdElement')@element[rep(1, nrow(element)),]
-    # HACK: drop rownames
-    rownames(ele) <- NULL
-    # CONVERT year
-    if('year' %in% names(element))
-      element$year <- as.integer(element$year)
-    # assign
-    ele[,names(element)] <- element
-    # HACK: reassign quantity to keep factors
-    ele[,'quantity']  <- factor(element$quantity, levels=FLasher:::qlevels)
+setMethod('fwdControl', signature(target='data.frame', iters='array'),
+  function(target, iters) {
 
-    # COMPLETE iters
+    # TODO TEST dimensions
+    dtg <- dim(target)
     dit <- dim(iters)
     dni <- dimnames(iters)
-    # val
-    if(dit[2] < 3) {
-      ite <- array(NA, dim=c(dit[1], 3, dit[3]), dimnames=list(row=dni[[1]],
-        val=c('min', 'value', 'max'), iter=1:dit[3]))
-      ite[,dni[[2]],] <- iters
-      iters <- ite
-    }
-    # row
-    if(dim(iters)[1] < dim(ele)[1]) {
-      dmn <- dimnames(iters)
-      dmn[['row']] <- seq(1, dim(ele)[1])
-      ite <- array(NA, dimnames=dmn, dim=unlist(lapply(dmn, length)))
-      
-      ite[dni[['row']],,]  <- iters
-  
-      # FIND missing rows (mro)
-      mro <- dmn[['row']][!dmn[['row']] %in% dni[['row']]]
-      ite[mro,'value',]  <- rep(ele[mro, 'value'], dit[3])
-      ite[mro,'min',] <- rep(ele[mro, 'min'], dit[3])
-      ite[mro,'max',] <- rep(ele[mro, 'max'], dit[3])
-      iters <- ite
-    }
-    return(new('fwdElement', element=ele, iters=iters))
-  }
-) # }}}
 
-# fwdElement(element='data.frame', iters='matrix') {{{
-setMethod('fwdElement', signature(element='data.frame', iters='matrix'),
-  function(element, iters) {
+    # COMPLETE df
+    trg <- new('fwdControl')@target[rep(1, nrow(target)),]
+    
+    # HACK: drop rownames
+    rownames(trg) <- NULL
+    
+    # CONVERT year to integer
+    if('year' %in% names(target))
+      target$year <- as.integer(target$year)
+    # ASSIGN to trg, DROP 'min', 'value', 'max'
+    trg[, names(target)[names(target) %in% names(trg)]] <- target
+    
+    # HACK: reassign quantity to keep factors
+    trg[,'quantity']  <- factor(target$quantity, levels=FLasher:::qlevels)
+
+    # MASTER iters
+    ite <- array(NA, dim=c(dtg[1], 3, dit[length(dit)]),
+      dimnames=list(row=seq(dtg[1]), val=c('min', 'value', 'max'), iter=seq(dit[length(dit)])))
+
+    # DIMNAMES in array?
+    if(!is.null(dni)) {
+      ite[, dni[['val']], ] <- iters
+
+    # or NOT
+    } else {
+      # 2D or dim[2] == 1, assign to 'value'
+      if(length(dit) == 2 | dit[2] == 1) {
+        ite[,'value',] <- iters
+      # 3D
+      } else {
+        ite[,,] <- iters
+      }
+    }
+    return(new('fwdControl', target=trg, iters=ite))
+  }
+) 
+# }}}
+
+# fwdControl(target='data.frame', iters='matrix') {{{
+setMethod('fwdControl', signature(target='data.frame', iters='matrix'),
+  function(target, iters) {
 
     dni <- dimnames(iters)
 
@@ -80,54 +88,54 @@ setMethod('fwdElement', signature(element='data.frame', iters='matrix'),
     if(!"iter" %in% names(dni))
       stop("No 'iter' dimname in iters, cannot create object")
 
-    return(fwdElement(element=element, iters=ite))
+    return(fwdControl(target=target, iters=ite))
   }
 ) # }}}
 
-# fwdElement(element='data.frame', iters='numeric') {{{
-setMethod('fwdElement', signature(element='data.frame', iters='numeric'),
-  function(element, iters) {
+# fwdControl(target='data.frame', iters='numeric') {{{
+setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
+  function(target, iters) {
   
     # CREATE iters
-    dti <- dim(element)
+    dti <- dim(target)
     ite <- array(NA, dim=c(dti[1], 3, iters), dimnames=list(row=1:dti[1], 
       val=c('min', 'value', 'max'), iter=seq(iters)))
 
-    # FIND val names in element
+    # FIND val names in target
     vns <- c('min', 'value', 'max')
-    nms <- vns %in% colnames(element)
+    nms <- vns %in% colnames(target)
 
         # ASSIGN values if 'value', 'min' or 'max' in df colnames
         if(any(nms))
-        ite[, vns[nms],] <- element[,vns[nms]]
+        ite[, vns[nms],] <- target[,vns[nms]]
 
-    return(fwdElement(element=element, iters=ite))
+    return(fwdControl(target=target, iters=ite))
   }
 )
 # }}}
 
-# fwdElement(element='data.frame', iters='missing') {{{
-setMethod('fwdElement', signature(element='data.frame', iters='missing'),
-  function(element) {
+# fwdControl(target='data.frame', iters='missing') {{{
+setMethod('fwdControl', signature(target='data.frame', iters='missing'),
+  function(target) {
     
     # CREATE iters
-    dti <- dim(element)
+    dti <- dim(target)
     ite <- array(NA, dim=c(dti[1], 3, 1), dimnames=list(row=1:dti[1], 
       val=c('min', 'value', 'max'), iter=1))
 
-    # FIND val names in element
+    # FIND val names in target
     vns <- c('min', 'value', 'max')
-    nms <- vns %in% colnames(element)
-    ite[, vns[nms], 1] <- unlist(c(element[,vns[nms]]))
+    nms <- vns %in% colnames(target)
+    ite[, vns[nms], 1] <- unlist(c(target[,vns[nms]]))
 
-    return(fwdElement(element=element, iters=ite))
+    return(fwdControl(target=target, iters=ite))
   }
 )
 # }}}
 
-# fwdElement(element='list', iters='missing') {{{
-setMethod('fwdElement', signature(element='list', iters='missing'),
-  function(element) {
+# fwdControl(target='list', iters='missing') {{{
+setMethod('fwdControl', signature(target='list', iters='missing'),
+  function(target) {
 
   foo <- function(...) {
 
@@ -150,25 +158,25 @@ setMethod('fwdElement', signature(element='list', iters='missing'),
       mat <- t(matrix(mat, nrow=length(mat), ncol=nrow(df)))
     }
 
-    ele <- new('fwdElement')@element[rep(1, 1),]
+    ele <- new('fwdControl')@target[rep(1, 1),]
     ele[names(df)] <- df
 
-    return(list(element=ele, iters=mat))
+    return(list(target=ele, iters=mat))
   }
   
-  if(is(element[[1]], 'list')) {
+  if(is(target[[1]], 'list')) {
     
-    inp <- lapply(element, function(x) do.call('foo', x))
+    inp <- lapply(target, function(x) do.call('foo', x))
 
-    ele <- do.call('rbind', lapply(inp, function(x) x$element))
+    ele <- do.call('rbind', lapply(inp, function(x) x$target))
     ite <- do.call('rbind', lapply(inp, function(x) x$iters))
 
-    return(fwdElement(element=ele, iters=ite))
+    return(fwdControl(target=ele, iters=ite))
 
   } else {
     
-    inp <- do.call('foo', element)
-    return(do.call('fwdElement', inp))
+    inp <- do.call('foo', target)
+    return(do.call('fwdControl', inp))
   }
   
     
@@ -177,8 +185,8 @@ setMethod('fwdElement', signature(element='list', iters='missing'),
 
 # }}}
 
-# fwdElement(element='missing', iters='missing') {{{
-setMethod('fwdElement', signature(element='missing', iters='missing'),
+# fwdControl(target='missing', iters='missing') {{{
+setMethod('fwdControl', signature(target='missing', iters='missing'),
   function(...) {
 
     args <- list(...)
@@ -199,57 +207,8 @@ setMethod('fwdElement', signature(element='missing', iters='missing'),
     if(nrow(df) > nrow(mat)) {
       mat <- t(matrix(mat, nrow=length(mat), ncol=nrow(df)))
     }
-    return(fwdElement(element=df, iters=mat))
+    return(fwdControl(target=df, iters=mat))
   }
 )
 
-# }}}
-
-# fwdControl(target=fwdElement, iters='missing') {{{
-setMethod('fwdControl', signature(target='fwdElement', iters='missing'),
-  function(target) {
-    return(new('fwdControl', target=target))
-  }
-) # }}}
-
-# fwdControl(target='data.frame', iters='array') {{{
-setMethod('fwdControl', signature(target='data.frame', iters='array'),
-  function(target, iters) {
-
-    ele <- fwdElement(element=target, iters=iters)
-
-    return(new("fwdControl", target=ele))
-  }
-) # }}}
-
-# fwdControl(target='data.frame', iters='matrix') {{{
-setMethod('fwdControl', signature(target='data.frame', iters='matrix'),
-  function(target, iters) {
-    
-    ele <- fwdElement(element=target, iters=iters)
-
-    return(new("fwdControl", target=ele))
-  }
-) # }}}
-
-# fwdControl(target='data.frame', iters='numeric') {{{
-setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
-  function(target, iters) {
-    
-    ele <- fwdElement(element=target, iters=iters)
-
-    return(new("fwdControl", target=ele))
-  }
-)
-# }}}
-
-# fwdControl(target='data.frame', iters='missing') {{{
-setMethod('fwdControl', signature(target='data.frame', iters='missing'),
-  function(target) {
-    
-    ele <- fwdElement(element=target)
-
-    return(new("fwdControl", target=ele))
-  }
-)
 # }}}
