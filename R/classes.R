@@ -24,7 +24,8 @@ qlevels <-  c('f', 'catch', 'ssb', 'biomass', 'landings', 'discards', 'tsb', 're
 #'
 #' @section Slots:
 #'     \describe{
-#'     \item{target}{The table of values, quantities and time steps used as target (\code{data.frame}).}
+#'     \item{target}{The table of quantities and time steps used as target (\code{data.frame}).}
+#'     \item{target}{The values and limits for each target quantity and time step (\code{array}).}
 #' }
 #'
 #' @section Validity: \describe{

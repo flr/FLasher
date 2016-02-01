@@ -65,3 +65,39 @@ context("fwdControl(target=data.frame, iters=matrix)")
 target <- data.frame(year=2000:2005, quantity='f')
 
 # }}}
+
+
+#
+
+target <- list(list(year=1990, quantity='f', value=0.1),
+     list(year=1991, quantity='ssb', value=2000))
+
+fwdControl(target)
+
+#
+
+target <- list(list(year=1990, quantity='f', value=runif(10, 0.1, 0.2)),
+     list(year=1991, quantity='ssb', value=rnorm(10, 2000)))
+
+fwdControl(target)
+
+#
+
+target <- list(list(year=1990, quantity='f', max=runif(10, 0.1, 0.2), min=0.05),
+     list(year=1991, quantity='ssb', value=rnorm(10, 2000)))
+
+fwdControl(target)
+
+# list elements with more than one row
+
+target <- list(list(year=1990:1992, quantity='f', max=rep(1, 10), min=0.05),
+     list(year=1993, quantity='ssb', value=rnorm(10, 200)))
+
+fwdControl(target)
+
+#
+
+target <- list(list(year=1990, season=1:4, quantity='f', max=rep(1, 10), min=0.05),
+     list(year=1993, quantity='ssb', value=rnorm(10, 200)))
+
+fwdControl(target)

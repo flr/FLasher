@@ -59,38 +59,87 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
 ) 
 # }}}
 
-# fwdControl(target='data.frame', iters='matrix') {{{
-setMethod('fwdControl', signature(target='data.frame', iters='matrix'),
-  function(target, iters) {
 
-    dni <- dimnames(iters)
+# parsefwdList {{{
+# RETURNS iters as aperm(c('val', 'iter' ,'row')) for processing
+parsefwdList <- function(...) {
 
-    # NO dimnames in iters, assume dims are 'row' & 'iter' for 'value'
-    if(is.null(dni)) {
-      dimnames(iters) <- list(row=1:dim(iters)[1], iter=1:dim(iters)[2])
-      dni <- dimnames(iters)
+    args <- list(...)
+  
+    # SEPARATE df and ...
+    df <- as.data.frame(args[!names(args) %in% c('value', 'min', 'max')])
+
+    #  ... array components
+    val <- args[names(args) %in% c('value', 'min', 'max')]
+
+    # TURN val into matrix
+    if(is(val, 'list')) {
+      mat <- do.call(rbind, val)
+    } else {
+      mat <- t(matrix(val))
     }
 
-    dms <- list(row=1, val=c('min', 'value', 'max'), iter=1)
-    dms[names(dni)] <- dni
+    # NEW target
+    trg <- new('fwdControl')@target[rep(1, nrow(df)),]
+    trg[names(df)] <- df
 
-    ite <- array(NA, dimnames=dms, dim=unlist(lapply(dms, length)))
+    # NEW iters
+    ite <- array(NA, dim=c(nrow(trg), 3, ncol(mat)),
+      dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'), iter=seq(ncol(mat))))
 
-    # MISSING 'val' dimension, assume val='value'
-    if(!"val" %in% names(dni)) {
-      ite[,'value',] <- iters
-    }
-    # MISSING row
-    else if (!"row" %in% names(dni)) {
-      ite[1,,] <- iters
-    }
-    # MISSING iter
-    if(!"iter" %in% names(dni))
-      stop("No 'iter' dimname in iters, cannot create object")
+    ite <- aperm(ite, c(2, 3, 1))
+    ite[match(rownames(mat), dimnames(ite)$val), ,] <- c(mat)
+ #   ite <- aperm(ite, c(3, 1, 2))
 
-    return(fwdControl(target=target, iters=ite))
+    return(list(target=trg, iters=ite))
+  } # }}}
+
+# fwdControl(target='list', iters='missing') {{{
+setMethod('fwdControl', signature(target='list', iters='missing'),
+  function(target) {
+
+  if(is(target[[1]], 'list')) {
+
+    inp <- lapply(target, function(x) do.call('parsefwdList', x))
+
+    # target
+    trg <- do.call('rbind', lapply(inp, '[[', 'target'))
+
+    # iters
+    ites <- lapply(inp, '[[', 'iters')
+    # dim as 'val', 'iters', 'row'
+    dms <- Reduce('rbind', lapply(ites, dim))
+
+    # CHECK iters match (1/N)
+    its <- max(dms[,2])
+
+    if(any(dms[,2][dms[,2] > 1] != its))
+      stop(paste("Number of iterations in 'iters' must be 1 or", its))
+
+    # FINAL array
+    # dim, sum over rows
+    dms <- c(3, its, sum(dms[,3]))
+    ite <- array(NA, dim=dms, dimnames=list(val=c('min', 'value', 'max'),
+      iters=seq(its), row=seq(dms[3])))
+
+    ite[] <- Reduce(c, lapply(ites, c))
+
+    # APERM to 'row', 'val', 'iter'
+    ite <- aperm(ite, c(3, 1, 2))
+
+    return(fwdControl(target=trg, iters=ite))
+
+  } else {
+    
+    inp <- do.call('parsefwdList', target)
+
+    return(do.call('fwdControl', inp))
   }
-) # }}}
+  }
+)
+
+# }}}
+
 
 # fwdControl(target='data.frame', iters='numeric') {{{
 setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
@@ -131,58 +180,6 @@ setMethod('fwdControl', signature(target='data.frame', iters='missing'),
     return(fwdControl(target=target, iters=ite))
   }
 )
-# }}}
-
-# fwdControl(target='list', iters='missing') {{{
-setMethod('fwdControl', signature(target='list', iters='missing'),
-  function(target) {
-
-  foo <- function(...) {
-
-    args <- list(...)
-  
-    # SEPARATE df and
-    df <- as.data.frame(args[!names(args) %in% 'value'])
-    
-    # array components
-    val <- args[['value']]
-    
-    # TURN val into matrix
-    if(is(val, 'list')) {
-      mat <- do.call(rbind, val)
-    } else {
-      mat <- t(matrix(val))
-    }
-    # CHECK no. rows in iters
-    if(nrow(df) > nrow(mat)) {
-      mat <- t(matrix(mat, nrow=length(mat), ncol=nrow(df)))
-    }
-
-    ele <- new('fwdControl')@target[rep(1, 1),]
-    ele[names(df)] <- df
-
-    return(list(target=ele, iters=mat))
-  }
-  
-  if(is(target[[1]], 'list')) {
-    
-    inp <- lapply(target, function(x) do.call('foo', x))
-
-    ele <- do.call('rbind', lapply(inp, function(x) x$target))
-    ite <- do.call('rbind', lapply(inp, function(x) x$iters))
-
-    return(fwdControl(target=ele, iters=ite))
-
-  } else {
-    
-    inp <- do.call('foo', target)
-    return(do.call('fwdControl', inp))
-  }
-  
-    
-  }
-)
-
 # }}}
 
 # fwdControl(target='missing', iters='missing') {{{
