@@ -85,7 +85,6 @@ setClass('fwdControl',
 
   # VALIDITY
   validity=function(object) {
-browser()
     # rows in target == rows in iters
     if(nrow(object@target) != dim(object@iters)[1])
       return("Mismatch in number of rows in target and array")
