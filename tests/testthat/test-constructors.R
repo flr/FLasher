@@ -111,12 +111,11 @@ target <- list(list(year=1990, season=1:4, quant='f', max=rep(1, 10), min=0.05),
 
 fwdControl(target)
 
+# wrong year order
 
-# VECTOR
+target <- list(list(year=1992:1990, quant='f', max=rep(1, 10), min=0.05),
+     list(year=1993, quant='ssb', value=rnorm(10, 200)))
 
-target <- data.frame(year=2000:2005, quant='f')
+fwdControl(target)
 
-iters <- runif(10, 0.1, 0.2)
-
-fwdControl(target, iters)
 

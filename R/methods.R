@@ -22,7 +22,6 @@ setMethod("show", signature("fwdControl"),
     # SELECT cols
     df <- object@target[, nms]
 
-      
     # SWAP median and mad from iters
     df[,c('min', 'value', 'max')] <- 
       apply(object@iters, 1:2, function(x)
@@ -35,7 +34,7 @@ setMethod("show", signature("fwdControl"),
             sprintf("%4.3f", median(x, na.rm=TRUE)), '(',
             sprintf("%4.3f", mad(x, na.rm=TRUE)), ')')
       )
-    print(df)
+    print(cbind(`(step)`=targetNo(object), df), row.names=FALSE)
       
     if(dim(object@iters)[3] > 1) {
       cat("   iters: ", dim(object@iters)[3],"\n\n")

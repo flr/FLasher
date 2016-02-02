@@ -54,44 +54,13 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
         ite[,,] <- iters
       }
     }
-    return(new('fwdControl', target=trg, iters=ite))
+    res <- new('fwdControl', target=trg, iters=ite)
+    return(
+           res[targetOrder(res),]
+           )
   }
 ) 
 # }}}
-
-# parsefwdList {{{
-# RETURNS iters as aperm(c('val', 'iter' ,'row')) for processing
-parsefwdList <- function(...) {
-
-    args <- list(...)
-  
-    # SEPARATE df and ...
-    df <- as.data.frame(args[!names(args) %in% c('value', 'min', 'max')])
-
-    #  ... array components
-    val <- args[names(args) %in% c('value', 'min', 'max')]
-
-    # TURN val into matrix
-    if(is(val, 'list')) {
-      mat <- do.call(rbind, val)
-    } else {
-      mat <- t(matrix(val))
-    }
-
-    # NEW target
-    trg <- new('fwdControl')@target[rep(1, nrow(df)),]
-    trg[names(df)] <- df
-
-    # NEW iters
-    ite <- array(NA, dim=c(nrow(trg), 3, ncol(mat)),
-      dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'), iter=seq(ncol(mat))))
-
-    ite <- aperm(ite, c(2, 3, 1))
-    ite[match(rownames(mat), dimnames(ite)$val), ,] <- c(mat)
- #   ite <- aperm(ite, c(3, 1, 2))
-
-    return(list(target=trg, iters=ite))
-  } # }}}
 
 # fwdControl(target='list', iters='missing') {{{
 setMethod('fwdControl', signature(target='list', iters='missing'),
@@ -188,4 +157,73 @@ setMethod('fwdControl', signature(target='missing', iters='missing'),
   }
 )
 
+# }}}
+
+# parsefwdList {{{
+# RETURNS iters as aperm(c('val', 'iter' ,'row')) for processing
+parsefwdList <- function(...) {
+
+    args <- list(...)
+  
+    # SEPARATE df and ...
+    df <- as.data.frame(args[!names(args) %in% c('value', 'min', 'max')])
+
+    #  ... array components
+    val <- args[names(args) %in% c('value', 'min', 'max')]
+
+    # TURN val into matrix
+    if(is(val, 'list')) {
+      mat <- do.call(rbind, val)
+    } else {
+      mat <- t(matrix(val))
+    }
+
+    # NEW target
+    trg <- new('fwdControl')@target[rep(1, nrow(df)),]
+    trg[names(df)] <- df
+
+    # NEW iters
+    ite <- array(NA, dim=c(nrow(trg), 3, ncol(mat)),
+      dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'), iter=seq(ncol(mat))))
+
+    ite <- aperm(ite, c(2, 3, 1))
+    ite[match(rownames(mat), dimnames(ite)$val), ,] <- c(mat)
+
+    # RETURNS permutated array!
+    return(list(target=trg, iters=ite))
+  } # }}}
+
+# targetOrder(object) {{{
+targetOrder <- function(object) {
+
+  trg <- object@target
+  ite <- object@iters
+
+  # ORDER by timestep (year + season) ...
+  # HACK: can only deal with 100 seasons
+  tim <- (trg$year * 100) + ifelse(is.character(trg$season), 0, as.numeric(trg$season))
+  # ... then 'value' before 'min'/'max'
+  pre <- !is.na(ite[,'value',1])
+
+  return(order(tim, pre))
+}
+# }}}
+
+# targetNo(object) {{{
+targetNo <- function(object) {
+
+  trg <- object@target
+  ite <- object@iters
+
+  # CALCULATE step
+
+  tim <- (trg$year * 100) + as.numeric(ifelse(trg$season == 'all', 0, trg$season))
+
+  # INDEX for 'value' before 'min'/'max'
+  pre <- !is.na(ite[,'value',1])
+
+  idx <- 100 * tim + pre
+
+  return(match(idx, unique(idx)))
+}
 # }}}
