@@ -13,3 +13,13 @@ This packages uses the excellent CppAD package for differentiation of C++ Algori
 - METHODS
 
 - MORE INFO
+
+year quant season area unit relYear relSeason relFishery relCatch relBiol minAge maxAge fishery catch biol
+
+
+min value max
+
+
+target timestep
+
+

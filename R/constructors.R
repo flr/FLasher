@@ -11,11 +11,11 @@
 #' @examples
 #'
 #' # Construct from data.frame and array
-#' fcn <- fwdControl(data.frame(year=2000:2005, quantity='f', value=0.5))
+#' fcn <- fwdControl(data.frame(year=2000:2005, quant='f', value=0.5))
 
 setMethod('fwdControl', signature(target='data.frame', iters='array'),
   function(target, iters) {
-
+    
     # TODO TEST dimensions
     dtg <- dim(target)
     dit <- dim(iters)
@@ -32,9 +32,9 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
       target$year <- as.integer(target$year)
     # ASSIGN to trg, DROP 'min', 'value', 'max'
     trg[, names(target)[names(target) %in% names(trg)]] <- target
-    
-    # HACK: reassign quantity to keep factors
-    trg[,'quantity']  <- factor(target$quantity, levels=FLasher:::qlevels)
+
+    # HACK: reassign quant to keep factors
+    trg[,'quant']  <- factor(target$quant, levels=FLasher:::qlevels)
 
     # MASTER iters
     ite <- array(NA, dim=c(dtg[1], 3, dit[length(dit)]),
@@ -58,7 +58,6 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
   }
 ) 
 # }}}
-
 
 # parsefwdList {{{
 # RETURNS iters as aperm(c('val', 'iter' ,'row')) for processing
@@ -140,35 +139,13 @@ setMethod('fwdControl', signature(target='list', iters='missing'),
 
 # }}}
 
-
-# fwdControl(target='data.frame', iters='numeric') {{{
-setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
-  function(target, iters) {
-  
-    # CREATE iters
-    dti <- dim(target)
-    ite <- array(NA, dim=c(dti[1], 3, iters), dimnames=list(row=1:dti[1], 
-      val=c('min', 'value', 'max'), iter=seq(iters)))
-
-    # FIND val names in target
-    vns <- c('min', 'value', 'max')
-    nms <- vns %in% colnames(target)
-
-        # ASSIGN values if 'value', 'min' or 'max' in df colnames
-        if(any(nms))
-        ite[, vns[nms],] <- target[,vns[nms]]
-
-    return(fwdControl(target=target, iters=ite))
-  }
-)
-# }}}
-
 # fwdControl(target='data.frame', iters='missing') {{{
 setMethod('fwdControl', signature(target='data.frame', iters='missing'),
   function(target) {
     
     # CREATE iters
     dti <- dim(target)
+
     ite <- array(NA, dim=c(dti[1], 3, 1), dimnames=list(row=1:dti[1], 
       val=c('min', 'value', 'max'), iter=1))
 
@@ -177,6 +154,9 @@ setMethod('fwdControl', signature(target='data.frame', iters='missing'),
     nms <- vns %in% colnames(target)
     ite[, vns[nms], 1] <- unlist(c(target[,vns[nms]]))
 
+    # DROP value, min, max
+    target <- target[!colnames(target) %in% vns[nms]]
+    
     return(fwdControl(target=target, iters=ite))
   }
 )

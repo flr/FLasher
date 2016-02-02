@@ -71,35 +71,37 @@ setClass('fwdControl',
     iters='array'),
 
   # PROTOTYPE
+  # year quant season area unit relYear relSeason relFishery relCatch relBiol minAge maxAge fishery catch biol
   prototype(
-    target=data.frame(year=1, quantity=factor(NA, levels=FLasher:::qlevels),
+    target=data.frame(year=1, quant=factor(NA, levels=FLasher:::qlevels),
       season='all', area='unique', unit='all',
-      relYear=as.integer(NA), relSeason=as.integer(NA), # relArea='NA', relUnit='NA',
+      relYear=as.integer(NA), relSeason=as.integer(NA),
+      relFishery=as.integer(NA), relCatch=as.integer(NA), relBiol=as.integer(NA),
+      minAge=as.integer(NA), maxAge=as.integer(NA),
+      fishery='NA', catch='NA', biol='NA',
       stringsAsFactors=FALSE),
     iters=array(NA, dimnames=list(row=1, val=c('min', 'value', 'max'), iter=1),
       dim=c(1,3,1))),
 
   # VALIDITY
   validity=function(object) {
-    
+browser()
     # rows in target == rows in iters
     if(nrow(object@target) != dim(object@iters)[1])
-      return("Mismatch in number of iters in target and array")
+      return("Mismatch in number of rows in target and array")
     
-    # if value, no min/max,
-    if(all(is.na(object@iters[,'value',])) &
-       any(is.na(object@iters[,'max',]), is.na(object@iters[,'min',])))
-      return("Only value or min/max")
-    
-    # and viceversa
-    if(any(is.na(object@iters[,'value',])) &
-       all(is.na(object@iters[,'max',]), is.na(object@iters[,'min',])))
-      return("Only value or min/max")
-    
+    # value & min/max
+    idx <- !is.na(object@iters)
+    ids <- idx[,1,] + idx[,3,] + (10 * idx[,2,])
+    rsu <- rowSums(ids / dim(idx)[3])
+
+    if(any(rsu == 11 | rsu == 22))
+      return("Only value OR min/max allowed by row")
+
     # TODO: classes of data.frame columns
 
-    # levels in 'quantity'
-    if(!all(as.character(object@target$quantity) %in% FLasher:::qlevels))
-      return("Specified 'quantity' not available in fwd")
+    # levels in 'quant'
+    if(!all(as.character(object@target$quant) %in% FLasher:::qlevels))
+      return("Specified 'quant' not available in fwd")
   }
 ) # }}}

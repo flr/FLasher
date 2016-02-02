@@ -10,7 +10,7 @@
 
 context("fwdControl(target=data.frame, iters=array)")
 
-target <- data.frame(year=2000:2005, quantity='f')
+target <- data.frame(year=2000:2005, quant='f')
 
   # TEST w/ iters as unnamed 3D [n,1,n] array {{{
 
@@ -62,42 +62,61 @@ target <- data.frame(year=2000:2005, quantity='f')
 
 context("fwdControl(target=data.frame, iters=matrix)")
 
-target <- data.frame(year=2000:2005, quantity='f')
+target <- data.frame(year=2000:2005, quant='f')
 
 # }}}
 
 
-#
+# LIST
 
-target <- list(list(year=1990, quantity='f', value=0.1),
-     list(year=1991, quantity='ssb', value=2000))
-
-fwdControl(target)
-
-#
-
-target <- list(list(year=1990, quantity='f', value=runif(10, 0.1, 0.2)),
-     list(year=1991, quantity='ssb', value=rnorm(10, 2000)))
+target <- list(list(year=1990, quant='f', value=0.1),
+     list(year=1991, quant='ssb', value=2000))
 
 fwdControl(target)
 
 #
 
-target <- list(list(year=1990, quantity='f', max=runif(10, 0.1, 0.2), min=0.05),
-     list(year=1991, quantity='ssb', value=rnorm(10, 2000)))
+target <- list(list(year=1990, quant='f', value=runif(10, 0.1, 0.2)),
+     list(year=1991, quant='ssb', value=rnorm(10, 2000)))
 
 fwdControl(target)
+
+#
+
+target <- list(list(year=1990, quant='f', max=runif(10, 0.1, 0.2), min=0.05),
+     list(year=1991, quant='ssb', value=rnorm(10, 2000)))
+
+fwdControl(target)
+
+#
+
+target <- list(list(year=1990, quant='f', max=runif(10, 0.1, 0.2), min=NA),
+     list(year=1991, quant='ssb', value=rnorm(10, 2000)))
+
+fwdControl(target)
+
+
 
 # list elements with more than one row
 
-target <- list(list(year=1990:1992, quantity='f', max=rep(1, 10), min=0.05),
-     list(year=1993, quantity='ssb', value=rnorm(10, 200)))
+target <- list(list(year=1990:1992, quant='f', max=rep(1, 10), min=0.05),
+     list(year=1993, quant='ssb', value=rnorm(10, 200)))
 
 fwdControl(target)
 
 #
 
-target <- list(list(year=1990, season=1:4, quantity='f', max=rep(1, 10), min=0.05),
-     list(year=1993, quantity='ssb', value=rnorm(10, 200)))
+target <- list(list(year=1990, season=1:4, quant='f', max=rep(1, 10), min=0.05),
+     list(year=1993, quant='ssb', value=rnorm(10, 200)))
 
 fwdControl(target)
+
+
+# VECTOR
+
+target <- data.frame(year=2000:2005, quant='f')
+
+iters <- runif(10, 0.1, 0.2)
+
+fwdControl(target, iters)
+
