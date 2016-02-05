@@ -118,4 +118,10 @@ target <- list(list(year=1992:1990, quant='f', max=rep(1, 10), min=0.05),
 
 fwdControl(target)
 
+# Large df
 
+target <- data.frame(year=1950:2025, quant='f')
+
+iters <- array(runif(60000, 0.3, 0.8), dim=c(76,1,10))
+
+fwdControl(target, iters)

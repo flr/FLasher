@@ -2,8 +2,8 @@ Package: FLasher
 Type: Package
 Title: Projection and forecasting of fish populations, stocks and fleets.
 Description: The very best
-Version: 0.1.20160201
-Date: 2016-02-01
+Version: 0.1.20160203
+Date: 2016-02-03
 Authors@R: c(person(given = 'Finlay', family = 'Scott', role = c('aut'),
             email = 'finlay.scott@jrc.ec.europa.eu'),
 		person(given = 'Iago', family = 'Mosqueira', role = c('aut', 'cre'),
