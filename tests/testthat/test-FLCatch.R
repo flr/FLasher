@@ -176,8 +176,10 @@ test_that("FLCatch catch_q accessor", {
     catch.q.year <- FLPar(rnorm(2 * dims[2]), dimnames = list(params = c("alpha","beta"), year = 1:dims[2], iter = 1))
     catch.q.iter <- FLPar(rnorm(2 * dims[6]), dimnames = list(params = c("alpha","beta"), iter = 1:dims[6]))
     catch.q2 <- FLPar(rnorm(2 * dims[6] * dims[2]), dimnames = list(params = c("alpha","beta"), year = 1:dims[2], iter = 1:dims[6]))
+    catch.q3 <- FLPar(rnorm(2 * dims[6] * dims[3]), dimnames = list(params = c("alpha","beta"), unit = 1:dims[3], iter = 1:dims[6]))
     catch.q4 <- FLPar(rnorm(2 * dims[6] * dims[4]), dimnames = list(params = c("alpha","beta"), season = 1:dims[4], iter = 1:dims[6]))
     catch.q24 <- FLPar(rnorm(2 * dims[2] * dims[6] * dims[4]), dimnames = list(params = c("alpha","beta"), year=1:dims[2], season = 1:dims[4], iter = 1:dims[6]))
+    catch.q234 <- FLPar(rnorm(2 * dims[2] * dims[6] * dims[3] * dims[4]), dimnames = list(params = c("alpha","beta"), year=1:dims[2], unit = 1:dims[3], season = 1:dims[4], iter = 1:dims[6]))
     indices <- round(runif(6, min=1, max=dims))
     indices_max <- round(runif(6, min=1, max=dims))
     indices_max[1] <- 2
@@ -232,6 +234,19 @@ test_that("FLCatch catch_q accessor", {
             for (icount in 1:dim(params)[6]){
                 expect_equal(c(params[qcount, ycount,,,,icount]), rep(c(subq[qcount,ycount,icount]), prod(dim(params)[c(3,4,5)])))
     }}}
+    # params, unit and iter
+    catch.q(flc_in) <- catch.q3
+    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
+    expect_identical(c(catch.q3[,indices[3],indices[6]]), c(params))
+    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
+    expect_equal(dim(params), indices_max - indices_min + 1)
+    # All units, seasons and areas the same
+    subq <- catch.q3[indices_min[1]:indices_max[1], indices_min[3]: indices_max[3], indices_min[6]:indices_max[6]]
+    for (qcount in 1:dim(params)[1]){
+        for (ucount in 1:dim(params)[3]){
+            for (icount in 1:dim(params)[6]){
+                expect_equal(c(params[qcount,, ucount,,,icount]), rep(c(subq[qcount,ucount,icount]), prod(dim(params)[c(2,4,5)])))
+    }}}
     # params, season and iter
     catch.q(flc_in) <- catch.q4
     params <- test_FLCatchAD_catch_q_params(flc_in, indices)
@@ -257,6 +272,21 @@ test_that("FLCatch catch_q accessor", {
                 for (icount in 1:dim(params)[6]){
                     expect_equal(c(params[qcount,ycount,,scount,,icount]), rep(c(subq[qcount,ycount,scount,icount]), prod(dim(params)[c(3,5)])))
     }}}}
+
+    # params, year, unit, season and iter
+    catch.q(flc_in) <- catch.q234
+    params <- test_FLCatchAD_catch_q_params(flc_in, indices)
+    expect_identical(c(catch.q234[,indices[2],indices[3],indices[4],indices[6]]), c(params))
+    params <- test_FLCatchAD_catch_q_params_subset(flc_in, indices_min, indices_max)
+    expect_equal(dim(params), indices_max - indices_min + 1)
+    subq <- catch.q234[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]: indices_max[4], indices_min[6]:indices_max[6]]
+    for (qcount in 1:dim(params)[1]){
+        for (ycount in 1:dim(params)[2]){
+            for (ucount in 1:dim(params)[3]){
+                for (scount in 1:dim(params)[4]){
+                    for (icount in 1:dim(params)[6]){
+                        expect_equal(c(params[qcount,ycount,ucount,scount,,icount]), rep(c(subq[qcount,ycount,ucount,scount,icount]), prod(dim(params)[5])))
+    }}}}}
 })
 
 test_that("FLCatch methods", {
@@ -264,74 +294,58 @@ test_that("FLCatch methods", {
     # landings
     l_in <- landings(flc_in)
     l_out <- test_FLCatch_landings(flc_in)
-    expect_identical(dimnames(l_out), dimnames(l_in)) # units not dealt with correctly
-    expect_equal(l_out@.Data, l_in@.Data) # quant sums causes numerical differences
+    test_FLQuant_equal(l_in, l_out)
     l_out <- test_FLCatchAD_landings(flc_in)
-    expect_identical(dimnames(l_out), dimnames(l_in)) # units not dealt with correctly
-    expect_equal(l_out@.Data, l_in@.Data) # quant sums causes numerical differences
+    test_FLQuant_equal(l_in, l_out)
 
     # discards
     d_in <- discards(flc_in)
     d_out <- test_FLCatch_discards(flc_in)
-    expect_identical(dimnames(d_out), dimnames(d_in)) # units not dealt with correctly
-    expect_equal(d_out@.Data, d_in@.Data) # quant sums causes numerical differences
+    test_FLQuant_equal(d_in, d_out)
     d_out <- test_FLCatchAD_discards(flc_in)
-    expect_identical(dimnames(d_out), dimnames(d_in)) # units not dealt with correctly
-    expect_equal(d_out@.Data, d_in@.Data) # quant sums causes numerical differences
+    test_FLQuant_equal(d_in, d_out)
 
     # catch_n
     cn_in <- catch.n(flc_in)
     cn_out <- test_FLCatch_catch_n(flc_in)
-    expect_identical(dimnames(cn_out), dimnames(cn_in)) # units not dealt with correctly
-    expect_equal(cn_out@.Data, cn_in@.Data) # quant sums causes numerical differences
+    test_FLQuant_equal(cn_in, cn_out)
     cn_out <- test_FLCatchAD_catch_n(flc_in)
-    expect_identical(dimnames(cn_out), dimnames(cn_in)) # units not dealt with correctly
-    expect_equal(cn_out@.Data, cn_in@.Data) # quant sums causes numerical differences
+    test_FLQuant_equal(cn_in, cn_out)
 
     # catches
     c_in <- catch(flc_in)
     c_out <- test_FLCatch_catches(flc_in)
-    expect_identical(dimnames(c_out), dimnames(c_in)) # units not dealt with correctly
-    expect_equal(c_out@.Data, c_in@.Data) # quant sums causes numerical differences
+    test_FLQuant_equal(c_in, c_out)
     c_out <- test_FLCatchAD_catches(flc_in)
-    expect_identical(dimnames(c_out), dimnames(c_in)) # units not dealt with correctly
-    expect_equal(c_out@.Data, c_in@.Data) # quant sums causes numerical differences
+    test_FLQuant_equal(c_in, c_out)
 
     # catch weight
     cw_in <- catch.wt(flc_in)
     cw_out <- test_FLCatch_catch_wt(flc_in)
-    expect_identical(dimnames(cw_out), dimnames(cw_in)) # units not dealt with correctly
-    expect_equal(cw_out@.Data, cw_in@.Data) # quant sums causes numerical differences
+    test_FLQuant_equal(cw_in, cw_out)
     cw_out <- test_FLCatchAD_catch_wt(flc_in)
-    expect_identical(dimnames(cw_out), dimnames(cw_in)) # units not dealt with correctly
-    expect_equal(cw_out@.Data, cw_in@.Data) # quant sums causes numerical differences
+    test_FLQuant_equal(cw_in, cw_out)
 
     # discards ratio
     dr_in <- discards.ratio(flc_in)
     dr_out <- test_FLCatch_discards_ratio(flc_in)
-    expect_identical(dimnames(dr_out), dimnames(dr_in)) # units not dealt with correctly
-    expect_equal(dr_out@.Data, dr_in@.Data) # quant sums causes numerical differences
+    test_FLQuant_equal(dr_in, dr_out)
     dr_out <- test_FLCatchAD_discards_ratio(flc_in)
-    expect_identical(dimnames(dr_out), dimnames(dr_in)) # units not dealt with correctly
-    expect_equal(dr_out@.Data, dr_in@.Data) # quant sums causes numerical differences
+    test_FLQuant_equal(dr_in, dr_out)
 
     # landings_sel
     ls_in <- landings.sel(flc_in)
     ls_out <- test_FLCatch_landings_sel(flc_in)
-    expect_identical(dimnames(ls_out), dimnames(ls_in))
-    expect_identical(ls_out@.Data, ls_in@.Data)
+    test_FLQuant_equal(ls_in, ls_out)
     ls_out <- test_FLCatchAD_landings_sel(flc_in)
-    expect_identical(dimnames(ls_out), dimnames(ls_in)) 
-    expect_identical(ls_out@.Data, ls_in@.Data) 
+    test_FLQuant_equal(ls_in, ls_out)
 
     # discards_sel
     ds_in <- discards.sel(flc_in)
     ds_out <- test_FLCatch_discards_sel(flc_in)
-    expect_identical(dimnames(ds_out), dimnames(ds_in))
-    expect_identical(ds_out@.Data, ds_in@.Data) 
+    test_FLQuant_equal(ds_in, ds_out)
     ds_out <- test_FLCatchAD_discards_sel(flc_in)
-    expect_identical(dimnames(ds_out), dimnames(ds_in))
-    expect_identical(ds_out@.Data, ds_in@.Data)
+    test_FLQuant_equal(ds_in, ds_out)
 })
 
 

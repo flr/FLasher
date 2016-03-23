@@ -77,11 +77,13 @@ class FLQuant_base {
         void set_units(const std::string& units_in);
 
         /* () get accessors - just get so const reinforced */
+        /* Get single values */
 		T operator () (const unsigned int element) const; 
 		T operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter) const; 
 		T operator () (const std::vector<unsigned int> indices) const; // For all the elements - must be of length 6 
-		FLQuant_base<T> operator () (const unsigned int quant_min, const unsigned int quant_max, const unsigned int year_min, const unsigned int year_max, const unsigned int unit_min, const unsigned int unit_max, const unsigned int season_min, const unsigned int season_max, const unsigned int area_min, const unsigned int area_max, const unsigned int iter_min, const unsigned int iter_max) const; // Subsetting
-        FLQuant_base<T> operator () (const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; // Neater subsetting
+        /* Get subset of FLQuant */
+		FLQuant_base<T> operator () (const unsigned int quant_min, const unsigned int quant_max, const unsigned int year_min, const unsigned int year_max, const unsigned int unit_min, const unsigned int unit_max, const unsigned int season_min, const unsigned int season_max, const unsigned int area_min, const unsigned int area_max, const unsigned int iter_min, const unsigned int iter_max) const;
+        FLQuant_base<T> operator () (const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 		FLQuant_base<T> operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area) const; // Access all iters
 
         /* () get and set accessors - const not reinforced */
@@ -94,6 +96,7 @@ class FLQuant_base {
         template <typename T2>
         void fill(const T2 value); // specialisation to fill FLQuantAD with double
 
+        /* Insert an entire FLQuant */
         void insert(const FLQuant_base<T> flq, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
 
         /* Mathematical operators */
