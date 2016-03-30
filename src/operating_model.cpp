@@ -303,6 +303,9 @@ std::vector<adouble> operatingModel::calc_rec(const int biol_no, const int rec_t
  * This method is the workhorse fishing mortality method that is called by other fishing mortality methods that do make checks.
  * F = effort * selectivity * catchability.
  * F = effort * selectivity * alpha * biomass ^ -beta
+ * Selectivity and biomass are disaggragated across all the FLQ dimensions (biomass has length 1 in the quant dimension), i.e. they will have seasons and units.
+ * Effort always has length 1 in the unit and quant dimension and is disaggregated across other dimensions.
+ * The catchability parameters can be disaggreated across dimensions 2 to 6. If not, they are recycled.
  */
 //@{
 /*! \brief Calculate the instantaneous fishing mortality of a single biol from a single fishery / catch over a subset of dimensions.
@@ -320,16 +323,19 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
     // Lop off the first value from the indices to get indices without quant - needed for effort and catch_q
     std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
     std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
-    FLQuantAD effort = fisheries(fishery_no).effort(indices_min5, indices_max5);
     FLQuantAD sel = fisheries(fishery_no, catch_no).catch_sel()(indices_min, indices_max);
     FLQuantAD biomass = biols(biol_no).biomass(indices_min5, indices_max5);
+    // Need special subsetter for effort as always length 1 in the unit dimension
+    std::vector<unsigned int> effort_indices_min5{indices_min5[0], 1, indices_min5[2], indices_min5[3], indices_min5[4]};  
+    std::vector<unsigned int> effort_indices_max5{indices_max5[0], 1, indices_max5[2], indices_max5[3], indices_max5[4]};  
+    FLQuantAD effort = fisheries(fishery_no).effort(effort_indices_min5, effort_indices_max5); // Will always have 1 in the unit dimension
     // Get q params as a whole FLQuant - just first 2 'ages' (params)
     std::vector<unsigned int> qparams_indices_min = indices_min5;
     qparams_indices_min.insert(qparams_indices_min.begin(), 1); 
     std::vector<unsigned int> qparams_indices_max = indices_max5;
     qparams_indices_max.insert(qparams_indices_max.begin(), 2); 
     FLQuant qparams = fisheries(fishery_no, catch_no).catch_q_params(qparams_indices_min, qparams_indices_max);
-    // Subset qparams to get FLQ of the indiv params - really faffy
+    // Subset qparams to get FLQ of the indiv params - i.e. seperating into alpha and beta - really faffy
     qparams_indices_min = {1,1,1,1,1,1};
     qparams_indices_max = qparams.get_dim();
     qparams_indices_max[0] = 1;
@@ -339,7 +345,7 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
     FLQuant qparams2 = qparams(qparams_indices_min, qparams_indices_max);
     std::transform(biomass.begin(), biomass.end(), qparams2.begin(), biomass.begin(),
         [](adouble x, double y) { return pow(x, -1.0 * y); } );
-    biomass = biomass * qparams1 * effort;
+    biomass = sweep_mult(biomass * qparams1, effort); // Use sweep_mult a effort always has length 1 in unit while biomass and qparams may have more
     FLQuantAD fout = sweep_mult(biomass, sel);
     return fout;
 }

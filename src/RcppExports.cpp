@@ -28,14 +28,14 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// get_dataframe_quantity
-Rcpp::CharacterVector get_dataframe_quantity(Rcpp::DataFrame ctrl);
-RcppExport SEXP FLasher_get_dataframe_quantity(SEXP ctrlSEXP) {
+// get_dataframe_quant
+Rcpp::CharacterVector get_dataframe_quant(Rcpp::DataFrame ctrl);
+RcppExport SEXP FLasher_get_dataframe_quant(SEXP ctrlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< Rcpp::DataFrame >::type ctrl(ctrlSEXP);
-    __result = Rcpp::wrap(get_dataframe_quantity(ctrl));
+    __result = Rcpp::wrap(get_dataframe_quant(ctrl));
     return __result;
 END_RCPP
 }
@@ -5718,16 +5718,16 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// test_fwdControl_get_target_quantity
-std::string test_fwdControl_get_target_quantity(const fwdControl control, const int target_no, const int sim_target_no);
-RcppExport SEXP FLasher_test_fwdControl_get_target_quantity(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
+// test_fwdControl_get_target_quant
+std::string test_fwdControl_get_target_quant(const fwdControl control, const int target_no, const int sim_target_no);
+RcppExport SEXP FLasher_test_fwdControl_get_target_quant(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
     Rcpp::traits::input_parameter< const int >::type target_no(target_noSEXP);
     Rcpp::traits::input_parameter< const int >::type sim_target_no(sim_target_noSEXP);
-    __result = Rcpp::wrap(test_fwdControl_get_target_quantity(control, target_no, sim_target_no));
+    __result = Rcpp::wrap(test_fwdControl_get_target_quant(control, target_no, sim_target_no));
     return __result;
 END_RCPP
 }
@@ -6384,6 +6384,28 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const unsigned int >::type target_no(target_noSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type sim_target_no(sim_target_noSEXP);
     __result = Rcpp::wrap(test_operatingModel_get_target_age_range_indices(flfs, biols, ctrl, target_no, sim_target_no));
+    return __result;
+END_RCPP
+}
+// test_standard_conditional
+std::vector<double> test_standard_conditional(std::vector<double> indep);
+RcppExport SEXP FLasher_test_standard_conditional(SEXP indepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector<double> >::type indep(indepSEXP);
+    __result = Rcpp::wrap(test_standard_conditional(indep));
+    return __result;
+END_RCPP
+}
+// test_cppad_conditional
+std::vector<double> test_cppad_conditional(std::vector<double> indep);
+RcppExport SEXP FLasher_test_cppad_conditional(SEXP indepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector<double> >::type indep(indepSEXP);
+    __result = Rcpp::wrap(test_cppad_conditional(indep));
     return __result;
 END_RCPP
 }

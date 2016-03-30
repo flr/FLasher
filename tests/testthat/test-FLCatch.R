@@ -169,7 +169,7 @@ test_that("FLCatch get and set data accessors", {
 
 
 test_that("FLCatch catch_q accessor", {
-    flc_in <- random_FLCatch_generator()
+    flc_in <- random_FLCatch_generator(min_dims=c(2,2,2,2,2,2))
     dims <- dim(landings.n(flc_in))
     # Make a bunch of FLPars with lengths of eiher 1 or something in the dimensions
     catch.q.params <- FLPar(rnorm(2), dimnames = list(params = c("alpha","beta"), iter = 1))
@@ -272,7 +272,6 @@ test_that("FLCatch catch_q accessor", {
                 for (icount in 1:dim(params)[6]){
                     expect_equal(c(params[qcount,ycount,,scount,,icount]), rep(c(subq[qcount,ycount,scount,icount]), prod(dim(params)[c(3,5)])))
     }}}}
-
     # params, year, unit, season and iter
     catch.q(flc_in) <- catch.q234
     params <- test_FLCatchAD_catch_q_params(flc_in, indices)
