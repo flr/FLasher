@@ -177,8 +177,12 @@ random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 1,
     fishery <- FLFishery(catches)
     fishery@hperiod[1,] <- runif(prod(dim(fishery@hperiod)[2:6]),min=0, max=1)
     fishery@hperiod[2,] <- runif(prod(dim(fishery@hperiod)[2:6]),min=fishery@hperiod[1,], max=1)
+    # Effort should only have length 1 in the unit dimension
+    dimnames <- dimnames(fishery@effort)
+    dimnames[[3]] <- "all"
+    fishery@effort <- FLQuant(NA, dimnames=dimnames)
     # fill up effort, vcost and fcost
-    effort(fishery)[] <- abs(rnorm(prod(dim(effort(fishery))),sd=sd))
+    fishery@effort <- FLQuant(abs(rnorm(prod(dim(fishery@effort)),sd=sd)), dimnames=dimnames)
     vcost(fishery)[] <- abs(rnorm(prod(dim(vcost(fishery))),sd=sd))
     fcost(fishery)[] <- abs(rnorm(prod(dim(fcost(fishery))),sd=sd))
     fishery@desc <- as.character(signif(rnorm(1)*1000,3))
@@ -326,10 +330,7 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
     seasons_col <- rep(1:nseasons, length(years))
     seasons_col <- rep(seasons_col, nsim_each)
     target <- data.frame(year=years_col,
-                          value=rlnorm(years_col),
-                          min = NA,
-                          max = NA,
-                          quantity=NA,
+                          quant=NA,
                           season = seasons_col,
                           minAge = 1,
                           maxAge = 5,
@@ -337,76 +338,65 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
                           catch = NA,
                           biol = NA
                           )
-
     target$minAge <- as.integer(round(runif(dim(target)[1], min=1, max = 10)))
     target$maxAge <- as.integer(target$minAge * 2)
-
     # Randomly pick some quantities
-    target$quantity <- quantities[round(runif(nrow(target),min=1,max=length(quantities)))]
+    target$quant <- quantities[round(runif(nrow(target),min=1,max=length(quantities)))]
     # But force last one to be an abundance target to help with testing
-    target$quantity[length(target$quantity)] <- "biomass"
+    target$quant[length(target$quant)] <- "biomass"
     # And for catch too
-    target$quantity[length(target$quantity)-1] <- "catch"
-
+    target$quant[length(target$quant)-1] <- "catch"
     # Randomly set FCB (based on target)
     # Fishery targets
-    fish_targets <- which(!(target$quantity %in% abundance_quantities))
+    fish_targets <- which(!(target$quant %in% abundance_quantities))
     # Half of these are FC, the others B
     FC_targets <- sample(fish_targets, ceiling(length(fish_targets) / 2))
     B_targets <- fish_targets[!(fish_targets %in% FC_targets)]
     target[FC_targets,c("fishery","catch")] <- round(runif(length(FC_targets)*2, min = 1, max = 4))
     target[B_targets,"biol"] <- round(runif(length(B_targets), min = 1, max = 4))
     # Abundance targets are biol only
-    biol_targets <- which(target$quantity %in% abundance_quantities)
+    biol_targets <- which(target$quant %in% abundance_quantities)
     target[biol_targets, "biol"] <- round(runif(length(biol_targets), min = 1, max = 4))
     # Fix f targets, either B, or FCB
-    f_targets <- which(target$quantity %in% f_quantities)
+    f_targets <- which(target$quant %in% f_quantities)
     f_FCB_targets <- sample(f_targets, ceiling(length(f_targets) / 2))
     if (length(f_FCB_targets > 0)){
         target[f_FCB_targets,c("fishery","catch")] <- round(runif(length(f_FCB_targets)*2, min = 1, max = 4))
     }
-
     # Force integers - should be done in fwd() dispatch or constructor
     target$fishery <- as.integer(target$fishery)
     target$catch <- as.integer(target$catch)
     target$biol <- as.integer(target$biol)
     target$year <- as.integer(target$year)
     target$season <- as.integer(target$season)
-    target$quantity <- as.character(target$quantity)
-
+    target$quant <- as.character(target$quant)
     # Some targets are min and max 
     min_max_row <- sample(1:nrow(target), ceiling(nrow(target) / 2))
     min_row <- min_max_row[1:(length(min_max_row)/2)]
     max_row <- min_max_row[!(min_max_row %in% min_row)]
-    target[min_row, "value"] <- NA
-    target[min_row, "min"] <- rnorm(length(min_row))
-    target[max_row, "value"] <- NA
-    target[max_row, "max"] <- rnorm(length(max_row))
     value_row <- which(!( (1:nrow(target)) %in% min_max_row))
-
     # Make iter values - better creator than this too
-    target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(target_no=1:nrow(target), c("min","value","max"), iter=1:niters))
+    target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(row=1:nrow(target), c("min","value","max"), iter=1:niters))
     target_iters[value_row,"value",] <- runif(niters, min=0.3, max=0.4)
     target_iters[min_row,"min",] <- runif(niters, min=0.3, max=0.4)
     target_iters[max_row,"max",] <- runif(niters, min=0.3, max=0.4)
+    # Data.frame constructor - use other constructor here?
 
+    fwc <- fwdControl(target=target, iters=target_iters)
     # Add target and timestep column - not set by user - should be added before dispatching to C++
-    target$timestep <- (target$year-1) * nseasons + target$season
-    target <- target[order(target$timestep),]
-    tsteps <- unique(target$timestep)
+    # Added after constructor is called
+    fwc@target$timestep <- (fwc@target$year-1) * nseasons + fwc@target$season
+    fwc@target <- fwc@target[order(fwc@target$timestep),]
+    tsteps <- unique(fwc@target$timestep)
     names(tsteps) <- 1:length(tsteps)
     # Look away!
     for (i in 1:length(tsteps)){
-        target[target[,"timestep"] %in% tsteps[i], "target"] <- as.integer(names(tsteps)[i])
+        fwc@target[fwc@target[,"timestep"] %in% tsteps[i], "target"] <- as.integer(names(tsteps)[i])
     }
-
-    fwc <- fwdControl(target=target, iters=target_iters)
-
     # Add fake FCB array - will be constructed on R side before calling fwd()
     FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
     colnames(FCB) <- c("F","C","B")
-    attr(fwc@target, "FCB") <- FCB
-
+    attr(fwc, "FCB") <- FCB
     return(fwc)
 }
 
@@ -604,11 +594,8 @@ make_test_operatingModel3 <- function(niters = 1000, sd = 0.1){
     catch.sel(catch) <- catch.sel(catch) * abs(rnorm(prod(dim(catch.sel(catch))), mean = 1, sd = sd))
     # Set the Catchability parameters so that an effort of 1 gives the current catch - make internally consistent
     # set beta to 0 for simplicity
-
-
-        catch.q(catch) <- FLPar(c(1,0.5), dimnames=list(params=c("alpha","beta"), iter = 1))
-        catch_list[[i]] <- catch
-    
+    catch.q(catch) <- FLPar(c(1,0.5), dimnames=list(params=c("alpha","beta"), iter = 1))
+    catch_list[[i]] <- catch
     # Make fishery bits
     fishery1 <- FLFishery(catch1=catch_list[[1]])
     desc(fishery1) <- "fishery1"
@@ -630,6 +617,75 @@ make_test_operatingModel3 <- function(niters = 1000, sd = 0.1){
     attr(fwc@target, "FCB") <- FCB
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))
 }
+
+#' Create an operating model based on Indian Ocean skipjack tuna
+#'
+#' Two FLFishery objects with 1 FLCatch each fishing on a single FLBiolcpp.
+#' The model has 4 seasons with 2 units.
+#' Spawning happens in seasons 1 and 3.
+#' @param niters The number of iterations. 
+#' @param sd The standard deviation when applying random lognormal noise to some of the slots.
+#'
+#' @export
+#' @return A list of objects for sending to C++
+make_skipjack_operatingModel <- function(niters = 1000, sd = 0.1){
+    data(skjBiol)
+    # Make the biol
+    biol <- FLBiol(wt=skj[["wt"]])
+    biol <- as(biol, "FLBiolcpp")
+    mat(biol) <- skj[["mat"]]
+    m(biol) <- skj[["m"]]
+    # spwn used to have only 1 age, This has many 
+    spwn(biol) <- skj[["spwn"]]
+    # Blow up to have iters
+    biol <- propagate(biol, niters)
+    # Add noise to wts
+    wt(biol) <- rlnorm(wt(biol), sd=sd)
+    # SRR Residuals
+    dim <- dim(n(biol))
+    dim[1] <- 1
+    res1 <- FLQuant(1, dim=dim)
+    # Make the biol bits
+    srr_model_name <- srr[["model"]]
+    srr_params <- as(srr[["params"]], "FLQuant")
+    biol_bits1 <- list(biol = biol, srr_model_name = srr_model_name, srr_params = srr_params, srr_residuals = res1, srr_residuals_mult = TRUE)
+    biols <- list(biol1 = biol_bits1)
+
+    # Make the Fisheries
+    # Fishery 1
+    catch1 <- FLCatch(landings.wt = wt(biol), discards.wt = wt(biol), name="Catch1", desc="Prince Fatty")
+    sel <- 1 / (1 + exp(-0.5 * (1:10 - 5))) # logisitic
+    catch.sel(catch1)[] <- sel # Ideally based on F
+    catch.q(catch1) <- FLPar(alpha = 1, beta=0.1) # Same catchability on both units
+    fishery1 <- FLFishery(skj = catch1, name="Cork Ball Dub", desc="Brute Dub")
+    # Force effort to have 1 unit
+    dmns <- dimnames(effort(fishery1))
+    dmns[[3]] <- "all"
+    effort(fishery1) <- FLQuant(1, dimnames=dmns)
+
+    # Fishery 2
+    catch2 <- FLCatch(landings.wt = wt(biol), discards.wt = wt(biol), name="Catch2", desc="Back off Dub")
+    sel <- 1 / (1 + exp(-1 * (1:10 - 5))) # logisitic
+    catch.sel(catch2)[] <- sel # Ideally based on F
+    catch.q(catch2) <- FLPar(alpha = 1.5, beta=0.05)
+    fishery2 <- FLFishery(skj = catch2, name="Torah Dub", desc="Devil Dub")
+    # Force effort to have 1 unit
+    dmns <- dimnames(effort(fishery2))
+    dmns[[3]] <- "all"
+    effort(fishery2) <- FLQuant(1, dimnames=dmns)
+    # Fisheries
+    fisheries <- FLFisheries(fishery1 = fishery1, fishery2 = fishery2)
+    fisheries@desc <- "Idi Amin Dub"
+
+    # fwdControl
+    fwc <- random_fwdControl_generator(niters=niters)
+    # Make a temporary FCB attribute - add to class later
+    FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
+    colnames(FCB) <- c("F","C","B")
+    attr(fwc@target, "FCB") <- FCB
+    return(list(fisheries = fisheries, biols = biols, fwc = fwc))
+}
+
 
 
 
@@ -707,8 +763,8 @@ get_FLQuant_elements <- function(flq, indices_min, indices_max){
 #'
 #' @export
 test_fwdControl_equal <- function(fwc1, fwc2){
-    expect_identical(fwc1@target@iters, fwc2@target@iters)
-    expect_identical(fwc1@target@element, fwc2@target@element)
+    expect_identical(fwc1@target, fwc2@target)
+    expect_identical(fwc1@iters, fwc2@iters)
 }
 
 #' Tests if two fwdQuant objects are the same
