@@ -33,6 +33,13 @@ double test_fwdSR_eval(std::string model_name, const FLQuant params, const FLQua
 }
 
 // [[Rcpp::export]]
+std::vector<double> test_fwdSR_get_params(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const std::vector<unsigned int> param_indices){
+    fwdSR fwdsr(model_name, params, residuals, residuals_mult);
+    std::vector<double> params_out = fwdsr.get_params(param_indices[0], param_indices[1], param_indices[2], param_indices[3], param_indices[4]);
+    return params_out;
+}
+
+// [[Rcpp::export]]
 Rcpp::List test_fwdSR_copy_constructor(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const double srp){
     fwdSR fwdsr1(model_name, params, residuals, residuals_mult);
 	fwdSR fwdsr2(fwdsr1); // uses copy constructor

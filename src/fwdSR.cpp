@@ -104,6 +104,41 @@ fwdSR_base<T>& fwdSR_base<T>::operator = (const fwdSR_base<T>& fwdSR_source){
 }
 
 
+/*! \name Get the SR parameters
+ *
+ * Given the year, unit, season, area and iter, returns the corresponding stock recruitment parameters.
+ * \param year The year of the SR parameters to use.
+ * \param unit The unit of the SR parameters to use.
+ * \param season The season of the SR parameters to use.
+ * \param area The area of the SR parameters to use.
+ * \param iter The iter of the SR parameters to use.
+ */
+template <typename T>
+std::vector<double> fwdSR_base<T>::get_params(int year, int unit, int season, int area, int iter) const{
+    const int nparams = get_nparams();
+    std::vector<double> model_params(nparams);
+    // Parameters get recycled, i.e.  if requested year is bigger than years in the params FLQuant then we just take the first one.
+    if (year > params.get_nyear()){
+        year = 1;
+    }
+    if (unit > params.get_nunit()){
+        unit = 1;
+    }
+    if (season > params.get_nseason()){
+        season = 1;
+    }
+    if (area > params.get_narea()){
+        area = 1;
+    }
+    if (iter > params.get_niter()){
+        iter = 1;
+    }
+    for (int i = 1; i <= nparams; ++i){
+        model_params[i-1] = params(i,year,unit,season,area,iter);
+    }
+    return model_params;
+}
+
 /*! \name Evaluate the SR model
  *
  * Produces a single value of recruitment given a single value of the SRP.
@@ -123,29 +158,9 @@ fwdSR_base<T>& fwdSR_base<T>::operator = (const fwdSR_base<T>& fwdSR_source){
  * \param iter The iter of the SR parameters to use.
  */
 template <typename T>
-T fwdSR_base<T>::eval_model(const T srp, int year, int unit, int season, int area, int iter) {
-    const int nparams = get_nparams();
-    std::vector<double> model_params(nparams);
-    // Sort out params - if years > no years in the params object (i.e. params are not disaggregated by time etc.) just pick the first one
-    // The real checking should be done in the R side
-    if (year > params.get_nyear()){
-        year = 1;
-    }
-    if (unit > params.get_nunit()){
-        unit = 1;
-    }
-    if (season > params.get_nseason()){
-        season = 1;
-    }
-    if (area > params.get_narea()){
-        area = 1;
-    }
-    if (iter > params.get_niter()){
-        iter = 1;
-    }
-    for (int i = 1; i <= nparams; ++i){
-        model_params[i-1] = params(i,year,unit,season,area,iter);
-    }
+T fwdSR_base<T>::eval_model(const T srp, int year, int unit, int season, int area, int iter) const{
+    // Get the parameters
+    std::vector<double> model_params = get_params(year, unit, season, area, iter);
     // Finally, evaluate the function being pointed at
     T rec = model(srp, model_params);
     return rec;
@@ -156,7 +171,7 @@ T fwdSR_base<T>::eval_model(const T srp, int year, int unit, int season, int are
  * \param params_indices The indices of the SR params (starting at 1).
  */
 template <typename T>
-T fwdSR_base<T>::eval_model(const T srp, const std::vector<unsigned int> params_indices){ 
+T fwdSR_base<T>::eval_model(const T srp, const std::vector<unsigned int> params_indices) const{ 
     // Check length of params_indices
     if (params_indices.size() != 5){
         Rcpp::stop("In fwdSR::eval_model. params_indices must be of length 5.");

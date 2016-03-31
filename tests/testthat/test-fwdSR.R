@@ -31,6 +31,64 @@ test_that("fwdSR accessor methods",{
     expect_identical(nparams, unname(dim(constant_params)[1]))
 })
 
+test_that("fwdSR get_params",{
+    residuals <- FLQuant(rnorm(100), dimnames = list(year = 1:10, iter = 1:10))
+    residuals_mult <- TRUE
+    # No structure, just params
+    params_in <- FLQuant(rnorm(2), dim=c(2,1,1,1,1,1))
+    # Asking for any dim
+    params_indices <- round(runif(6,min=1,max=10))
+    params_out <- test_fwdSR_get_params("ricker", params_in, residuals, residuals_mult, params_indices)
+    expect_identical(params_out, c(params_in))
+    # With year
+    params_in <- FLQuant(rnorm(2*10), dim=c(2,10,1,1,1,1))
+    params_indices <- round(runif(6,min=1,max=10))
+    params_out <- test_fwdSR_get_params("ricker", params_in, residuals, residuals_mult, params_indices)
+    expect_identical(params_out, c(params_in[,params_indices[1],]))
+    # With Seasons and Units
+    # Units 1 and 2 are M/F recruiting in Season 1
+    # Units 3 and 4 are M/F recruiting in Season 3
+    params_in <- FLQuant(NA, dim=c(2,1,4,4,1,1)) 
+    params_in[,,c(1,2),1,] <- rnorm(4)
+    params_in[,,c(3,4),3,] <- rnorm(4)
+    # Asking for Year 10, Season 1, Unit 1
+    params_indices <- c(10,1,1,1,1)
+    params_out <- test_fwdSR_get_params("ricker", params_in, residuals, residuals_mult, params_indices)
+    expect_identical(params_out, c(params_in[,1,1,1,1,1]))
+    # Asking for Year 10, Season 1, Unit 2
+    params_indices <- c(10,2,1,1,1)
+    params_out <- test_fwdSR_get_params("ricker", params_in, residuals, residuals_mult, params_indices)
+    expect_identical(params_out, c(params_in[,1,2,1,1,1]))
+    # Asking for Year 10, Season 1, Unit 3
+    params_indices <- c(10,3,1,1,1)
+    params_out <- test_fwdSR_get_params("ricker", params_in, residuals, residuals_mult, params_indices)
+    expect_true(all(is.na(params_out)))
+    expect_identical(params_out, c(params_in[,1,3,1,1,1]))
+    # Asking for Year 10, Season 1, Unit 4
+    params_indices <- c(10,4,1,1,1)
+    params_out <- test_fwdSR_get_params("ricker", params_in, residuals, residuals_mult, params_indices)
+    expect_true(all(is.na(params_out)))
+    expect_identical(params_out, c(params_in[,1,4,1,1,1]))
+    # Asking for Year 10, Season 3, Unit 1
+    params_indices <- c(10,1,3,1,1)
+    params_out <- test_fwdSR_get_params("ricker", params_in, residuals, residuals_mult, params_indices)
+    expect_true(all(is.na(params_out)))
+    expect_identical(params_out, c(params_in[,1,1,3,1,1]))
+    # Asking for Year 10, Season 3, Unit 2
+    params_indices <- c(10,2,3,1,1)
+    params_out <- test_fwdSR_get_params("ricker", params_in, residuals, residuals_mult, params_indices)
+    expect_true(all(is.na(params_out)))
+    expect_identical(params_out, c(params_in[,1,2,3,1,1]))
+    # Asking for Year 10, Season 3, Unit 3
+    params_indices <- c(10,3,3,1,1)
+    params_out <- test_fwdSR_get_params("ricker", params_in, residuals, residuals_mult, params_indices)
+    expect_identical(params_out, c(params_in[,1,3,3,1,1]))
+    # Asking for Year 10, Season 3, Unit 4
+    params_indices <- c(10,4,3,1,1)
+    params_out <- test_fwdSR_get_params("ricker", params_in, residuals, residuals_mult, params_indices)
+    expect_identical(params_out, c(params_in[,1,4,3,1,1]))
+})
+
 test_that("fwdSR eval",{
     data(ple4)
     ricker <- fmle(as.FLSR(ple4,model="ricker"), control  = list(trace=0))
