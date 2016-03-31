@@ -5420,15 +5420,19 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_fwdBiol_does_recruitment_happen
-bool test_fwdBiol_does_recruitment_happen(fwdBiol fwb, unsigned int unit, unsigned int timestep);
-RcppExport SEXP FLasher_test_fwdBiol_does_recruitment_happen(SEXP fwbSEXP, SEXP unitSEXP, SEXP timestepSEXP) {
+bool test_fwdBiol_does_recruitment_happen(SEXP fwbin, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, unsigned int unit, unsigned int timestep);
+RcppExport SEXP FLasher_test_fwdBiol_does_recruitment_happen(SEXP fwbinSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP unitSEXP, SEXP timestepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< fwdBiol >::type fwb(fwbSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type fwbin(fwbinSEXP);
+    Rcpp::traits::input_parameter< const std::string >::type model_name(model_nameSEXP);
+    Rcpp::traits::input_parameter< const FLQuant >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const FLQuant >::type residuals(residualsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type unit(unitSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type timestep(timestepSEXP);
-    __result = Rcpp::wrap(test_fwdBiol_does_recruitment_happen(fwb, unit, timestep));
+    __result = Rcpp::wrap(test_fwdBiol_does_recruitment_happen(fwbin, model_name, params, residuals, residuals_mult, unit, timestep));
     return __result;
 END_RCPP
 }

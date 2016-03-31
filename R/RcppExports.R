@@ -1669,8 +1669,8 @@ test_fwdBiol_srp_timelag <- function(fwb) {
     .Call('FLasher_test_fwdBiol_srp_timelag', PACKAGE = 'FLasher', fwb)
 }
 
-test_fwdBiol_does_recruitment_happen <- function(fwb, unit, timestep) {
-    .Call('FLasher_test_fwdBiol_does_recruitment_happen', PACKAGE = 'FLasher', fwb, unit, timestep)
+test_fwdBiol_does_recruitment_happen <- function(fwbin, model_name, params, residuals, residuals_mult, unit, timestep) {
+    .Call('FLasher_test_fwdBiol_does_recruitment_happen', PACKAGE = 'FLasher', fwbin, model_name, params, residuals, residuals_mult, unit, timestep)
 }
 
 test_fwdBiols_as_wrap <- function(biols_in) {
