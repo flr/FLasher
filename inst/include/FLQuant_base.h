@@ -333,3 +333,15 @@ FLQuant_base<T> max_quant(const FLQuant_base<T>& flq);
 template <typename T>
 FLQuant_base<T> scale_by_max_quant(const FLQuant_base<T>& flq);
 
+// Useful methods for other classes
+// Converting timestep to year and season and vice versa
+// Several options
+template <typename T>
+void year_season_to_timestep(const unsigned int year, const unsigned int season, const FLQuant_base<T>& flq, unsigned int& timestep);
+
+template <typename T>
+void timestep_to_year_season(const unsigned int timestep, const FLQuant_base<T>& flq, unsigned int& year, unsigned int& season);
+
+void year_season_to_timestep(const unsigned int year, const unsigned int season, const unsigned int nseason, unsigned int& timestep);
+void timestep_to_year_season(const unsigned int timestep, const unsigned int nseason, unsigned int& year, unsigned int& season);
+

@@ -1490,6 +1490,27 @@ FLQuant FLPar_to_FLQuant(SEXP flp) {
     return flq_out;
 }
 
+// Converting timestep to year and season and vice versa
+// These are based on INDICES, not characters
+template <typename T>
+void year_season_to_timestep(const unsigned int year, const unsigned int season, const FLQuant_base<T>& flq, unsigned int& timestep){
+    year_season_to_timestep(year, season, flq.get_nseason(), timestep);
+}
+
+template <typename T>
+void timestep_to_year_season(const unsigned int timestep, const FLQuant_base<T>& flq, unsigned int& year, unsigned int& season){
+    timestep_to_year_season(timestep, flq.get_nseason(), year, season);
+}
+
+void year_season_to_timestep(const unsigned int year, const unsigned int season, const unsigned int nseason, unsigned int& timestep){
+    timestep = (year-1) * nseason + season;
+}
+
+void timestep_to_year_season(const unsigned int timestep, const unsigned int nseason, unsigned int& year, unsigned int& season){
+    year =  (timestep-1) / nseason + 1; // integer divide - takes the floor
+    season = (timestep-1) % nseason + 1;
+}
+
 /*----------------------------------------------------*/
 /* Explicit instantiations - alternatively put all the definitions into the header file
  * This way we have more control over what types the functions work with
@@ -1574,4 +1595,10 @@ template FLQuant_base<adouble> max_quant(const FLQuant_base<adouble>& flq);
 
 template FLQuant_base<double> scale_by_max_quant(const FLQuant_base<double>& flq);
 template FLQuant_base<adouble> scale_by_max_quant(const FLQuant_base<adouble>& flq);
+
+template void year_season_to_timestep(const unsigned int year, const unsigned int season, const FLQuant_base<double>& flq, unsigned int& timestep);
+template void year_season_to_timestep(const unsigned int year, const unsigned int season, const FLQuant_base<adouble>& flq, unsigned int& timestep);
+
+template void timestep_to_year_season(const unsigned int timestep, const FLQuant_base<double>& flq, unsigned int& year, unsigned int& season);
+template void timestep_to_year_season(const unsigned int timestep, const FLQuant_base<adouble>& flq, unsigned int& year, unsigned int& season);
 
