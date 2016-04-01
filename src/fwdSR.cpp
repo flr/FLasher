@@ -197,6 +197,7 @@ T fwdSR_base<T>::eval_model(const T srp, const std::vector<unsigned int> params_
  */
 template <typename T>
 FLQuant_base<T> fwdSR_base<T>::predict_recruitment(const FLQuant_base<T> srp, const std::vector<unsigned int> initial_params_indices, const std::vector<unsigned int> initial_residuals_indices){ 
+    Rprintf("In predict_recruitment\n");
     if ((initial_params_indices.size() != 5) | (initial_residuals_indices.size() != 5)){
         Rcpp::stop("In fwdSR::predict_recruitment. initial_params_indices and initial_residuals_indices must be of length 5.\n");
     }
