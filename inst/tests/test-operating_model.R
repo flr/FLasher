@@ -539,13 +539,25 @@ test_that("operatingModel project_biol", {
 })
 
 test_that("operatingModel project_fisheries", {
-    # Seasonal FLQ
+    # Seasonal FLQ with Units
     # Assume get_f method works (it does...)
+    # FLB with 2 units - second biol only
+    flq_unit <- random_FLQuant_generator(fixed_dims = c(5,6,2,4,1,10))
+    flbs_unit <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq_unit))
+    # Other FLB with 1 unit
     flq <- random_FLQuant_generator(fixed_dims = c(5,6,1,4,1,10))
-    flbs <- random_fwdBiols_list_generator(min_biols = 4, max_biols = 4, fixed_dims = dim(flq))
+    flbs <- random_fwdBiols_list_generator(min_biols = 3, max_biols = 3, fixed_dims = dim(flq))
+    # Insert FLB 2 into correct place
+    flbs[["the 4th"]] <- flbs[[3]]
+    flbs[[3]] <- flbs[[2]]
+    flbs[[2]] <- flbs_unit[[1]]
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
+    # Make the fisheries - but we want FLCs 12 and 21 to be based on the units
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
+    flfs[[1]][[2]] <- flc_unit <- random_FLCatch_generator(fixed_dims = dim(flq_unit))
+    flfs[[2]][[1]] <- flc_unit <- random_FLCatch_generator(fixed_dims = dim(flq_unit))
+    flfs@desc <- "Choose life"
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
     # Fix FCB
     FCB <- array(NA, dim=c(5,3))
@@ -559,8 +571,9 @@ test_that("operatingModel project_fisheries", {
     season <- round(runif(1,min=1,max=4))
     year <- round(runif(1,min=1,dim(flq)[2]))
     timestep <- test_year_season_to_timestep(flq, year, season)
+    # Go!
     om_out <- test_operatingModel_project_fisheries(flfs, flbs, fc, timestep)
-    # FC 11
+    # FC 11 - no units
     fishery_no <- 1
     catch_no <- 1
     biol_no <- 1
@@ -568,36 +581,36 @@ test_that("operatingModel project_fisheries", {
     dout <- discards.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,,season,]
     cout <- catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,,season,]
     # Check that timestep is correct
-    fin <- test_operatingModel_get_f_B(flfs, flbs, fc, biol_no)[,year,1,season,1,]
-    zin <- fin + m(flbs_in[[biol_no]])[,year,1,season,1,]
-    cin <- (fin / zin) * (1 - exp(-zin)) * n(flbs_in[[biol_no]])[,year,1,season,1]
+    fin <- test_operatingModel_get_f_B(flfs, flbs, fc, biol_no)[,year,,season,1,]
+    zin <- fin + m(flbs_in[[biol_no]])[,year,,season,1,]
+    cin <- (fin / zin) * (1 - exp(-zin)) * n(flbs_in[[biol_no]])[,year,,season,1]
     dr <- (discards.n(flfs[[fishery_no]][[catch_no]]) / (discards.n(flfs[[fishery_no]][[catch_no]]) + landings.n(flfs[[fishery_no]][[catch_no]])))[,year,,season,]
     # Catch, Landings, Discards numbers
     test_FLQuant_equal(cin, cout)
     test_FLQuant_equal(cin*(1-dr), lout)
     test_FLQuant_equal(cin*dr, dout)
     # Check all other timesteps are unchanged
-    elem <- !((1:prod(dim(flq))) %in% get_FLQuant_elements(flq, c(1,year,1,season,1,1), c(dim(flq)[1], year, 1, season, 1, dim(flq)[6])))
+    elem <- !((1:prod(dim(flq))) %in% get_FLQuant_elements(flq, c(1,year,1,season,1,1), c(dim(flq)[1], year,1,season, 1, dim(flq)[6])))
     expect_equal(c(landings.n(flfs[[fishery_no]][[catch_no]]))[elem], c(landings.n(om_out[["fisheries"]][[fishery_no]][[catch_no]]))[elem])
     expect_equal(c(discards.n(flfs[[fishery_no]][[catch_no]]))[elem], c(discards.n(om_out[["fisheries"]][[fishery_no]][[catch_no]]))[elem])
-    # FC 12
+    # FC 12 - units
     fishery_no <- 1
     catch_no <- 2
     biol_no <- 2
     lout <- landings.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,,season,]
     dout <- discards.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,,season,]
     cout <- catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,,season,]
-    fin <- test_operatingModel_get_f_FCB(flfs, flbs, fc, fishery_no, catch_no, biol_no)[,year,1,season,1,]
-    total_fin <- test_operatingModel_get_f_B(flfs, flbs, fc, biol_no)[,year,1,season,1,]
-    zin <- total_fin + m(flbs_in[[biol_no]])[,year,1,season,1,]
-    cin <- (fin / zin) * (1 - exp(-zin)) * n(flbs_in[[biol_no]])[,year,1,season,1]
+    fin <- test_operatingModel_get_f_FCB(flfs, flbs, fc, fishery_no, catch_no, biol_no)[,year,,season,]
+    total_fin <- test_operatingModel_get_f_B(flfs, flbs, fc, biol_no)[,year,,season,]
+    zin <- total_fin + m(flbs_in[[biol_no]])[,year,,season,]
+    cin <- (fin / zin) * (1 - exp(-zin)) * n(flbs_in[[biol_no]])[,year,,season,]
     dr <- (discards.n(flfs[[fishery_no]][[catch_no]]) / (discards.n(flfs[[fishery_no]][[catch_no]]) + landings.n(flfs[[fishery_no]][[catch_no]])))[,year,,season,]
     # Catch, Landings, Discards numbers
     test_FLQuant_equal(cin, cout)
     test_FLQuant_equal(cin*(1-dr), lout)
     test_FLQuant_equal(cin*dr, dout)
     # Check all other timesteps are unchanged
-    elem <- !((1:prod(dim(flq))) %in% get_FLQuant_elements(flq, c(1,year,1,season,1,1), c(dim(flq)[1], year, 1, season, 1, dim(flq)[6])))
+    elem <- !((1:prod(dim(flq_unit))) %in% get_FLQuant_elements(flq_unit, c(1,year,1,season,1,1), c(dim(flq_unit)[1], year, dim(flq_unit)[3], season, 1, dim(flq_unit)[6])))
     expect_equal(c(landings.n(flfs[[fishery_no]][[catch_no]]))[elem], c(landings.n(om_out[["fisheries"]][[fishery_no]][[catch_no]]))[elem])
     expect_equal(c(discards.n(flfs[[fishery_no]][[catch_no]]))[elem], c(discards.n(om_out[["fisheries"]][[fishery_no]][[catch_no]]))[elem])
     # FC 21
@@ -607,17 +620,17 @@ test_that("operatingModel project_fisheries", {
     lout <- landings.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,,season,]
     dout <- discards.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,,season,]
     cout <- catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,,season,]
-    fin <- test_operatingModel_get_f_FCB(flfs, flbs, fc, fishery_no, catch_no, biol_no)[,year,1,season,1,]
-    total_fin <- test_operatingModel_get_f_B(flfs, flbs, fc, biol_no)[,year,1,season,1,]
-    zin <- total_fin + m(flbs_in[[biol_no]])[,year,1,season,1,]
-    cin <- (fin / zin) * (1 - exp(-zin)) * n(flbs_in[[biol_no]])[,year,1,season,1]
+    fin <- test_operatingModel_get_f_FCB(flfs, flbs, fc, fishery_no, catch_no, biol_no)[,year,,season,]
+    total_fin <- test_operatingModel_get_f_B(flfs, flbs, fc, biol_no)[,year,,season,]
+    zin <- total_fin + m(flbs_in[[biol_no]])[,year,,season,]
+    cin <- (fin / zin) * (1 - exp(-zin)) * n(flbs_in[[biol_no]])[,year,,season,]
     dr <- (discards.n(flfs[[fishery_no]][[catch_no]]) / (discards.n(flfs[[fishery_no]][[catch_no]]) + landings.n(flfs[[fishery_no]][[catch_no]])))[,year,,season,]
     # Catch, Landings, Discards numbers
     test_FLQuant_equal(cin, cout)
     test_FLQuant_equal(cin*(1-dr), lout)
     test_FLQuant_equal(cin*dr, dout)
     # Check all other timesteps are unchanged
-    elem <- !((1:prod(dim(flq))) %in% get_FLQuant_elements(flq, c(1,year,1,season,1,1), c(dim(flq)[1], year, 1, season, 1, dim(flq)[6])))
+    elem <- !((1:prod(dim(flq_unit))) %in% get_FLQuant_elements(flq_unit, c(1,year,1,season,1,1), c(dim(flq_unit)[1], year, dim(flq_unit)[3], season, 1, dim(flq_unit)[6])))
     expect_equal(c(landings.n(flfs[[fishery_no]][[catch_no]]))[elem], c(landings.n(om_out[["fisheries"]][[fishery_no]][[catch_no]]))[elem])
     expect_equal(c(discards.n(flfs[[fishery_no]][[catch_no]]))[elem], c(discards.n(om_out[["fisheries"]][[fishery_no]][[catch_no]]))[elem])
     # FC 22
@@ -628,15 +641,15 @@ test_that("operatingModel project_fisheries", {
     cout <- catch.n(om_out[["fisheries"]][[fishery_no]][[catch_no]])[,year,,season,]
     dr <- (discards.n(flfs[[fishery_no]][[catch_no]]) / (discards.n(flfs[[fishery_no]][[catch_no]]) + landings.n(flfs[[fishery_no]][[catch_no]])))[,year,,season,]
     biol_no <- 3
-    fin3 <- test_operatingModel_get_f_FCB(flfs, flbs, fc, fishery_no, catch_no, biol_no)[,year,1,season,1,]
-    total_fin3 <- test_operatingModel_get_f_B(flfs, flbs, fc, biol_no)[,year,1,season,1,]
-    zin3 <- total_fin3 + m(flbs_in[[biol_no]])[,year,1,season,1,]
-    cin3 <- (fin3 / zin3) * (1 - exp(-zin3)) * n(flbs_in[[biol_no]])[,year,1,season,1]
+    fin3 <- test_operatingModel_get_f_FCB(flfs, flbs, fc, fishery_no, catch_no, biol_no)[,year,,season,]
+    total_fin3 <- test_operatingModel_get_f_B(flfs, flbs, fc, biol_no)[,year,,season,]
+    zin3 <- total_fin3 + m(flbs_in[[biol_no]])[,year,,season,]
+    cin3 <- (fin3 / zin3) * (1 - exp(-zin3)) * n(flbs_in[[biol_no]])[,year,,season,]
     biol_no <- 4
-    fin4 <- test_operatingModel_get_f_FCB(flfs, flbs, fc, fishery_no, catch_no, biol_no)[,year,1,season,1,]
-    total_fin4 <- test_operatingModel_get_f_B(flfs, flbs, fc, biol_no)[,year,1,season,1,]
-    zin4 <- total_fin4 + m(flbs_in[[biol_no]])[,year,1,season,1,]
-    cin4 <- (fin4 / zin4) * (1 - exp(-zin4)) * n(flbs_in[[biol_no]])[,year,1,season,1]
+    fin4 <- test_operatingModel_get_f_FCB(flfs, flbs, fc, fishery_no, catch_no, biol_no)[,year,,season,]
+    total_fin4 <- test_operatingModel_get_f_B(flfs, flbs, fc, biol_no)[,year,,season,]
+    zin4 <- total_fin4 + m(flbs_in[[biol_no]])[,year,,season,]
+    cin4 <- (fin4 / zin4) * (1 - exp(-zin4)) * n(flbs_in[[biol_no]])[,year,,season,]
     cin <- cin3 + cin4
     # Catch, Landings, Discards numbers
     test_FLQuant_equal(cin, cout)

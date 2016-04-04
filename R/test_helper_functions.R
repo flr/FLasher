@@ -76,7 +76,8 @@ random_FLBiolcpp_generator <- function(sd=100, ...){
     flq <- abs(random_FLQuant_generator(sd=sd, ...))
     biol <- FLBiol(n = flq)
     biol <- as(biol, "FLBiolcpp")
-    biol@m[] <- abs(rnorm(prod(dim(flq)),sd=sd))
+    biol@n <- biol@n * 1000000
+    biol@m[] <- abs(rnorm(prod(dim(flq)),sd=sd)) / sd
     biol@wt[] <- abs(rnorm(prod(dim(flq)),sd=sd))
     biol@fec[] <- abs(rnorm(prod(dim(flq)),sd=sd))
     biol@mat[] <- abs(rnorm(prod(dim(flq)),sd=sd))
@@ -737,7 +738,7 @@ get_FLQuant_element <- function(flq, indices){
 
 #' Return 1D element index of FLQuant
 #'
-#' Given an FLQuant the and the indices range, returns the vector of indices
+#' Given an FLQuant and the indices range, returns the vector of indices
 #'
 #' @export
 get_FLQuant_elements <- function(flq, indices_min, indices_max){

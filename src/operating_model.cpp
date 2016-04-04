@@ -458,7 +458,7 @@ void operatingModel::project_fisheries(const int timestep){
     // What timesteps / years / seasons are we dealing with?
     unsigned int year = 0;
     unsigned int season = 0;
-    std::vector<unsigned int> catch_dim = fisheries(1,1).landings_n().get_dim();
+    std::vector<unsigned int> catch_dim = fisheries(1,1).landings_n().get_dim(); // Just used for years and seasons - same across Catches in OM
     timestep_to_year_season(timestep, catch_dim[3], year, season);
     // timestep checks
     if ((year > catch_dim[1]) | (season > catch_dim[3])){
@@ -466,16 +466,16 @@ void operatingModel::project_fisheries(const int timestep){
     }
     // CAREFUL WITH NUMBER OF ITERS
     // Number of iters for all catch_n and biol n must be the same as all derive from effort which has the number of iters
-    unsigned int niter = catch_dim[5];
-    // Not yet set up for units and areas
-    unsigned int unit = 1;
+    unsigned int niter = get_niter();
+    // Not yet set up for areas
     unsigned int area = 1;
     // Get the Total Z for every biol - order is order of biols in biols list (maybe different to FCB order)
     std::vector<FLQuantAD> total_z(biols.get_nbiols());
     // Fill it up with natural mortality to start with
     for (int biol_count=1; biol_count <= biols.get_nbiols(); ++biol_count){
-        std::vector<unsigned int> indices_min{1, year, unit, season, area, 1};
-        std::vector<unsigned int> indices_max{biols(biol_count).n().get_nquant(), year, unit, season, area, niter};
+        std::vector<unsigned int> indices_min{1, year, 1, season, area, 1};
+        std::vector<unsigned int> biol_dim = biols(biol_count).n().get_dim();
+        std::vector<unsigned int> indices_max{biol_dim[0], year, biol_dim[2], season, area, niter};
         total_z[biol_count - 1] = biols(biol_count).m(indices_min, indices_max);
     }
     // Get Partial F for every row in FCB table
@@ -486,13 +486,14 @@ void operatingModel::project_fisheries(const int timestep){
     for (unsigned int FCB_counter=0; FCB_counter < FCB.nrow(); ++FCB_counter){
         //Rprintf("FCB counter %i Biol %i\n", FCB_counter, FCB(FCB_counter, 2)); 
         // Indices for subsetting the timestep
-        std::vector<unsigned int> indices_min{1, year, unit, season, area, 1};
-        std::vector<unsigned int> indices_max{biols(FCB(FCB_counter, 2)).n().get_nquant(), year, unit, season, area, niter};
+        std::vector<unsigned int> indices_min{1, year, 1, season, area, 1};
+        std::vector<unsigned int> biol_dim = biols(FCB(FCB_counter, 2)).n().get_dim();
+        std::vector<unsigned int> indices_max{biol_dim[0], year, biol_dim[2], season, area, niter};
         partial_f[FCB_counter] = get_f(FCB(FCB_counter, 0), FCB(FCB_counter, 1), FCB(FCB_counter, 2), indices_min, indices_max);
         // Add the partial f to the total z list
         total_z[FCB(FCB_counter, 2)-1] = total_z[FCB(FCB_counter, 2)-1] + partial_f[FCB_counter];
     }
-    //Rprintf("Got total Z and partial F\n");
+    //Rprintf("Got total Z and partial F for all Biols\n");
     // Now we have the partial F of each FC on B, and the total Z of each biol, we can get the catch
     FLQuantAD landings;
     FLQuantAD discards;
@@ -502,8 +503,9 @@ void operatingModel::project_fisheries(const int timestep){
             //Rprintf("fishery_count: %i catch_count: %i\n", fishery_count, catch_count);
             // Indices for subsetting the timestep
             std::vector<unsigned int> catch_dim = fisheries(fishery_count, catch_count).landings_n().get_dim();
-            std::vector<unsigned int> indices_min{1, year, unit, season, area, 1};
-            std::vector<unsigned int> indices_max{catch_dim[0], year, unit, season, area, niter};
+            std::vector<unsigned int> indices_min{1, year, 1, season, area, 1};
+            std::vector<unsigned int> indices_max{catch_dim[0], year, catch_dim[2], season, area, niter};
+            // Make temporary catch of right size fillled with 0s
             std::vector<unsigned int> catch_temp_dims(6); // Could just use catch_dim from above but that may have multiple areas and units in the future
             std::transform(indices_max.begin(), indices_max.end(), indices_min.begin(), catch_temp_dims.begin(), [] (unsigned int x, unsigned int y) {return x-y+1;});
             FLQuantAD catch_temp(catch_temp_dims, 0.0);
