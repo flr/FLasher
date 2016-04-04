@@ -447,6 +447,7 @@ test_that("operatingModel project_biol", {
     # Assume get_f method works (it does...)
     # Single biol fished by one catch
     # Seasonal Biol with 4 units (M / F and 2 spawning morphs)
+    # Min age = 1
     flq <- random_FLQuant_generator(fixed_dims = c(5,6,4,4,1,10))
     flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
     # Set SR params - same every year but broken down by unit and season - necessary
@@ -456,6 +457,8 @@ test_that("operatingModel project_biol", {
     srr_params[,,c(1,2),1,] <- rnorm(40)
     srr_params[,,c(3,4),3,] <- rnorm(40) 
     flbs[[1]][["srr_params"]] <- srr_params
+    flbs[[1]][["srr_model_name"]] <- "bevholt"
+    flbs[[1]][["srr_residuals_mult"]] <- TRUE
     # Pull out just FLBiol for testing
     flb_in <- flbs[[1]][["biol"]]
     # Make fishery - single catch
@@ -465,7 +468,6 @@ test_that("operatingModel project_biol", {
     FCB <- array(NA, dim=c(1,3))
     FCB[1,] <- c(1,1,1)
     attr(fc@target, "FCB") <- FCB
-
     # Project in each season in a random year
     year <- round(runif(1,min=2,dim(flq)[2]))
     # Season 1
@@ -481,7 +483,12 @@ test_that("operatingModel project_biol", {
     for (unit in c(1,2)){
         test_FLQuant_equal(new_n_out[2:4,,unit,], survivors[1:3,,unit])
         test_FLQuant_equal(new_n_out[5,,unit], survivors[4,,unit]+survivors[5,,unit])
-        # Recruitment
+        # Recruitment for units 1 and 2
+        a <- srr_params[1,1,,season]
+        b <- srr_params[2,1,,season]
+        srp_in <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fc, 1, c(year-1,1,4,1,1), c(year-1,4,4,1,10))
+        rec_in <- (a * srp_in / (srp_in + b)) * flbs[[1]][["srr_residuals"]][,year,,1,]
+        test_FLQuant_equal(rec_in[,,c(1,2)], new_n_out[1,,c(1,2)])
     }
     for (unit in c(3,4)){
         test_FLQuant_equal(new_n_out[,,unit], survivors[,,unit])
@@ -512,6 +519,12 @@ test_that("operatingModel project_biol", {
     for (unit in c(3,4)){
         test_FLQuant_equal(new_n_out[2:4,,unit,], survivors[1:3,,unit])
         test_FLQuant_equal(new_n_out[5,,unit], survivors[4,,unit]+survivors[5,,unit])
+        # Recruitment for units 3 and 4
+        a <- srr_params[1,1,,season]
+        b <- srr_params[2,1,,season]
+        srp_in <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fc, 1, c(year,1,3,1,1), c(year,4,3,1,10))
+        rec_in <- (a * srp_in / (srp_in + b)) * flbs[[1]][["srr_residuals"]][,year,,3,]
+        test_FLQuant_equal(rec_in[,,c(3,4)], new_n_out[1,,c(3,4)])
     }
     # Season 4
     season <- 4
