@@ -7,62 +7,6 @@
 #include <time.h>
 #include "../../inst/include/operating_model.h"
 
-/* timestep convertors */
-
-// [[Rcpp::export]]
-unsigned int test_year_season_to_timestep_FLQuant_double(FLQuant flq, const unsigned int year, const unsigned int season){
-    unsigned int timestep = 0;
-    year_season_to_timestep(year, season, flq, timestep);
-    return timestep;
-}
-
-// [[Rcpp::export]]
-unsigned int test_year_season_to_timestep_FLQuant_adouble(FLQuantAD flqad, const unsigned int year, const unsigned int season){
-    unsigned int timestep = 0;
-    year_season_to_timestep(year, season, flqad, timestep);
-    return timestep;
-}
-
-// [[Rcpp::export]]
-unsigned int test_year_season_to_timestep(FLQuant flq, const int unsigned year, const int unsigned season){
-    unsigned int timestep = 0;
-    year_season_to_timestep(year, season, flq.get_nseason(), timestep);
-    return timestep;
-}
-
-// [[Rcpp::export]]
-Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_double(FLQuant flq, const unsigned int timestep){
-    unsigned int year = 0;
-    unsigned int season = 0;
-    timestep_to_year_season(timestep, flq, year, season);
-    Rcpp::IntegerVector out(2);
-    out[0] = year;
-    out[1] = season;
-    return out;
-}
-
-// [[Rcpp::export]]
-Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_adouble(FLQuantAD flqad, const unsigned int timestep){
-    unsigned int year = 0;
-    unsigned int season = 0;
-    timestep_to_year_season(timestep, flqad, year, season);
-    Rcpp::IntegerVector out(2);
-    out[0] = year;
-    out[1] = season;
-    return out;
-}
-
-// [[Rcpp::export]]
-Rcpp::IntegerVector test_timestep_to_year_season(FLQuant flq, const unsigned int timestep){
-    unsigned int year = 0;
-    unsigned int season = 0;
-    timestep_to_year_season(timestep, flq.get_nseason(), year, season);
-    Rcpp::IntegerVector out(2);
-    out[0] = year;
-    out[1] = season;
-    return out;
-}
-
 /* -------------- constructors and wrappers ----------------- */
 
 // [[Rcpp::export]]
@@ -100,9 +44,9 @@ FLQuantAD test_operatingModel_SRP_FLQ_subset(FLFisheriesAD flfs, fwdBiolsAD biol
 }
 
 // [[Rcpp::export]]
-std::vector<double> test_operatingModel_calc_rec(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const int rec_timestep){
+std::vector<double> test_operatingModel_calc_rec(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const int unit, const int rec_timestep){
     operatingModel om(flfs, biols, ctrl);
-    std::vector<adouble> out_ad = om.calc_rec(biol_no, rec_timestep);
+    std::vector<adouble> out_ad = om.calc_rec(biol_no, unit, rec_timestep);
     std::vector<double> out(out_ad.size());
     std::transform(out_ad.begin(), out_ad.end(), out.begin(), [](adouble x) {return Value(x);});
     return out;

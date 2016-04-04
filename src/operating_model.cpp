@@ -8,34 +8,6 @@
 
 #include "../inst/include/operating_model.h"
 
-// Converting timestep to year and season and vice versa
-// These are based on INDICES, not characters
-template <typename T>
-void year_season_to_timestep(const unsigned int year, const unsigned int season, const FLQuant_base<T>& flq, unsigned int& timestep){
-    year_season_to_timestep(year, season, flq.get_nseason(), timestep);
-}
-
-template <typename T>
-void timestep_to_year_season(const unsigned int timestep, const FLQuant_base<T>& flq, unsigned int& year, unsigned int& season){
-    timestep_to_year_season(timestep, flq.get_nseason(), year, season);
-}
-
-void year_season_to_timestep(const unsigned int year, const unsigned int season, const unsigned int nseason, unsigned int& timestep){
-    timestep = (year-1) * nseason + season;
-}
-
-void timestep_to_year_season(const unsigned int timestep, const unsigned int nseason, unsigned int& year, unsigned int& season){
-    year =  (timestep-1) / nseason + 1; // integer divide - takes the floor
-    season = (timestep-1) % nseason + 1;
-}
-
-// Instantiate
-template void year_season_to_timestep(const unsigned int year, const unsigned int season, const FLQuant_base<double>& flq, unsigned int& timestep);
-template void year_season_to_timestep(const unsigned int year, const unsigned int season, const FLQuant_base<adouble>& flq, unsigned int& timestep);
-
-template void timestep_to_year_season(const unsigned int timestep, const FLQuant_base<double>& flq, unsigned int& year, unsigned int& season);
-template void timestep_to_year_season(const unsigned int timestep, const FLQuant_base<adouble>& flq, unsigned int& year, unsigned int& season);
-
 /*------------------------------------------------------------*/
 // operatingModel class
 
@@ -206,7 +178,6 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
         FLQuantAD temp_propf = sweep_mult(tempf, temp_prop_spwn);
         f_pre_spwn = f_pre_spwn + temp_propf;
     }
-    //Rprintf("Got f_pre_spwn\n");
     // Get m pre spwn - need to adjust subsetter for the first dimension
     std::vector<unsigned int> spwn_indices_max = qindices_max;
     spwn_indices_max[0] = 1;
@@ -268,33 +239,40 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
 }
 
 
-/*! \brief Calculates the recruitment for each iteration for a particular fwdBiol at a particular timestep
+/*! \brief Calculates the recruitment for each iteration for a particular unit of a particular fwdBiol at a particular timestep
  *
+ * Each unit of a biol can recruit at a different time so we need to specify the unit we want the recruitment for.
+ * However, all units have the same timelag between spawning and recruitment.
  * The length of the returned vector is the number of iterations in the biol.
  * \param biol_no The position of the biol in the biols list (starting at 1).
+ * \param unit The unit of the biol we are dealing with.
  * \param timestep The timestep of the recruitment (not the SSB that yields the recruitment).
  */
-std::vector<adouble> operatingModel::calc_rec(const int biol_no, const int rec_timestep) const{
+std::vector<adouble> operatingModel::calc_rec(const unsigned int biol_no, const unsigned int unit, const unsigned int rec_timestep) const{
     unsigned int srp_timestep = rec_timestep - biols(biol_no).srp_timelag();
     if (srp_timestep < 1){
-        Rcpp::stop("In operatingModel::calc_rec. srp timestep outside of range");
+        Rcpp::stop("In operatingModel::calc_rec. srp_timestep outside of range");
     }
     unsigned int srp_year = 0;
     unsigned int srp_season = 0;
     std::vector<unsigned int> biol_dim = biols(biol_no).n().get_dim(); 
     timestep_to_year_season(srp_timestep, biol_dim[3], srp_year, srp_season);
-    // Unit and area not dealt with yet - set to 1
+    // Area not dealt with yet - set to 1
     unsigned int area = 1;
-    unsigned int unit = 1;
     unsigned int niter = get_niter();
+    // Get SRP for the single unit, year and season, i.e. just iters
     std::vector<unsigned int> srp_indices_min{srp_year, unit, srp_season, area, 1};
     std::vector<unsigned int> srp_indices_max{srp_year, unit, srp_season, area, niter};
     FLQuantAD srpq = srp(biol_no, srp_indices_min, srp_indices_max);
-    unsigned int rec_year = 0;
-    unsigned int rec_season = 0;
-    timestep_to_year_season(rec_timestep, biol_dim[3], rec_year, rec_season);
-    std::vector<unsigned int> residuals_indices_min{rec_year, unit, rec_season, area, 1};
-    FLQuantAD rec = biols(biol_no).srr.predict_recruitment(srpq, srp_indices_min, residuals_indices_min);
+    // Initial indices of the SR params are those of the recruitment timestep for the Biol
+    // SR params are in step with the Recruitment not the SRP
+    unsigned int initial_params_year = 0;
+    unsigned int initial_params_season = 0;
+    timestep_to_year_season(rec_timestep, biol_dim[3], initial_params_year, initial_params_season);
+    std::vector<unsigned int> initial_params_indices{initial_params_year, unit, initial_params_season, area, 1};
+    // Same for the residuals
+    std::vector<unsigned int> initial_residuals_indices_min{initial_params_year, unit, initial_params_season, area, 1};
+    FLQuantAD rec = biols(biol_no).srr.predict_recruitment(srpq, initial_params_indices);
     return rec.get_data();
 }
 
@@ -394,9 +372,9 @@ FLQuantAD operatingModel::get_f(const int biol_no) const {
 
 /*! \brief Project the Biols in the operatingModel by a single timestep
  *   Projects the Biols in the operatingModel by a single timestep.
- *   All abundances in the Biols are updated in the timestep based on the effort in the previous timestep.
+ *   All abundances in the Biols are updated in the timestep based on the fishing effort and population abundance in the previous timestep.
  *   Calculation is based on the the Baranov equation: N2 = N1 * (exp -Z)
- *   This assumes that the instantaneous rate of fishing and natural mortalities are constant over time and age and occur simultaneously.
+ *   This assumes that the instantaneous rate of fishing and natural mortalities are constant over the timestep and occur simultaneously.
  *   If a Biol is caught by multiple Catches, the fishing mortalities happen at the same time (and at the same time as the natural mortality) in the timestep.
  *   \param timestep The time step for the projection.
  */
@@ -417,44 +395,48 @@ void operatingModel::project_biols(const int timestep){
         Rcpp::stop("In operatingModel::project_biols. Timestep outside of range");
     }
     unsigned int niter = get_niter();
-    // Not yet set up for units and areas so just set to 1 for now
-    unsigned int unit = 1;
+    // Not yet set up for areas so just set to 1 for now
     unsigned int area = 1;
-    // In what age do we put next timestep abundance? If beginning of year, everything is one year older
-    unsigned int age_shift = 0;
-    if (season == 1){
-        age_shift = 1;
-    }
-    // Loop over each biol
+    // Loop over and update each biol
     for (unsigned int biol_counter=1; biol_counter <= biols.get_nbiols(); ++biol_counter){
         // Indices for subsetting the previous timestep
         std::vector<unsigned int> biol_dim = biols(biol_counter).n().get_dim();
-        std::vector<unsigned int> prev_indices_min{1, prev_year, unit, prev_season, area, 1};
-        std::vector<unsigned int> prev_indices_max{biol_dim[0], prev_year, unit, prev_season, area, niter};
-
-        std::vector<adouble> rec = calc_rec(biol_counter, timestep);
-        //std::vector<adouble> rec(niter, 0.0);
-        
+        std::vector<unsigned int> prev_indices_min{1, prev_year, 1, prev_season, area, 1};
+        std::vector<unsigned int> prev_indices_max{biol_dim[0], prev_year, biol_dim[2], prev_season, area, niter};
         // Get survivors from last timestep 
         FLQuantAD z_temp = get_f(biol_counter, prev_indices_min, prev_indices_max) + biols(biol_counter).m(prev_indices_min, prev_indices_max);
         FLQuantAD survivors = biols(biol_counter).n(prev_indices_min, prev_indices_max) * exp(-1.0 * z_temp);
-        // Update biol in timestep
-        // Without the final survivor age (careful with age shift)
-        for (unsigned int icount = 1; icount <= niter; ++icount){
-            for (unsigned int qcount = 1; qcount <= (biol_dim[0] - 1); ++qcount){
-                biols(biol_counter).n(qcount + age_shift, year, unit, season, area, icount) = survivors(qcount, 1, 1, 1, 1, icount);
+        // Update biol in timestep by putting survivors into correct age slots
+        // Process by unit (which are effectively distinct)
+        for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
+            // Need to know the age in which to the survivors 
+            // Each unit can recruit in a different season and can only recruit in one season
+            // If recruitment timestep, survivors get placed in next age i.e. it's their birthday (hooray) and they move up an age class.
+            // Else, same age in next timestep
+            // Determine if this is a recruitment timestep for this unit
+            bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, timestep);
+            unsigned int age_shift = 0;
+            if (recruiting_now){
+                age_shift = 1;
             }
-            // If at start of year add on plus group
-            if (season == 1){
-                biols(biol_counter).n(biol_dim[0], year, unit, season, area, icount) = biols(biol_counter).n(biol_dim[0], year, unit, season, area, icount) + survivors(biol_dim[0], 1, 1, 1, 1, icount);
-                // Put recruitment into first age
-                biols(biol_counter).n(1, year, unit, season, area, icount) = rec[icount-1];
-            }
-            // Else the final survivor age gets put in final age
-            else {
-                biols(biol_counter).n(biol_dim[0], year, unit, season, area, icount) = survivors(biol_dim[0], 1, 1, 1, 1, icount);
-                // Add recruitment into first age (so total = survivors + rec)
-                biols(biol_counter).n(1, year, unit, season, area, icount) = biols(biol_counter).n(1, year, unit, season, area, icount) + rec[icount-1];
+            for (unsigned int icount = 1; icount <= niter; ++icount){
+                // Place all but the final survivor age (careful with age shift) - final survivor age dealt with a bit later
+                for (unsigned int qcount = 1; qcount <= (biol_dim[0] - 1); ++qcount){
+                    biols(biol_counter).n(qcount + age_shift, year, ucount, season, area, icount) = survivors(qcount, 1, ucount, 1, 1, icount);
+                }
+                // If it is the recruitment season add final age of survivors into the plus group
+                if (recruiting_now){
+                    biols(biol_counter).n(biol_dim[0], year, ucount, season, area, icount) = biols(biol_counter).n(biol_dim[0], year, ucount, season, area, icount) + survivors(biol_dim[0], 1, ucount, 1, 1, icount);
+                    // Get the recruitment
+                    std::vector<adouble> rec = calc_rec(biol_counter, ucount, timestep);
+                    //std::vector<adouble> rec(niter, 0.0);
+                    // Put recruitment into first age
+                    biols(biol_counter).n(1, year, ucount, season, area, icount) = rec[icount-1];
+                }
+                // Else the final survivor age gets put in final age
+                else {
+                    biols(biol_counter).n(biol_dim[0], year, ucount, season, area, icount) = survivors(biol_dim[0], 1, ucount, 1, 1, icount);
+                }
             }
         }
     }
