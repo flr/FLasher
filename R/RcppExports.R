@@ -365,6 +365,10 @@ test_FLQuantAD_scale_by_max_quant <- function(flq) {
     .Call('FLasher_test_FLQuantAD_scale_by_max_quant', PACKAGE = 'FLasher', flq)
 }
 
+test_FLQuantAD_unit_sum <- function(flq) {
+    .Call('FLasher_test_FLQuantAD_unit_sum', PACKAGE = 'FLasher', flq)
+}
+
 test_sweep_multADAD <- function(flq1, flq2) {
     .Call('FLasher_test_sweep_multADAD', PACKAGE = 'FLasher', flq1, flq2)
 }

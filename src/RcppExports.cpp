@@ -1079,6 +1079,17 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_FLQuantAD_unit_sum
+FLQuantAD test_FLQuantAD_unit_sum(FLQuantAD flq);
+RcppExport SEXP FLasher_test_FLQuantAD_unit_sum(SEXP flqSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< FLQuantAD >::type flq(flqSEXP);
+    __result = Rcpp::wrap(test_FLQuantAD_unit_sum(flq));
+    return __result;
+END_RCPP
+}
 // test_sweep_multADAD
 FLQuantAD test_sweep_multADAD(FLQuantAD flq1, FLQuantAD flq2);
 RcppExport SEXP FLasher_test_sweep_multADAD(SEXP flq1SEXP, SEXP flq2SEXP) {

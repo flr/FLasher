@@ -1371,6 +1371,33 @@ FLQuant_base<T> quant_sum(const FLQuant_base<T>& flq){
 }
 
 template <typename T>
+FLQuant_base<T> unit_sum(const FLQuant_base<T>& flq){
+    std::vector<unsigned int> dim = flq.get_dim();
+    // Make an empty FLQ with the right dim
+    FLQuant_base<T> sum_flq(dim[0], dim[1], 1, dim[3], dim[4], dim[5]);
+    //// Set dimnames and units
+    Rcpp::List dimnames = flq.get_dimnames();
+    dimnames["unit"] = Rcpp::CharacterVector::create("unique");
+    sum_flq.set_dimnames(dimnames);
+    sum_flq.set_units(flq.get_units());
+    // Old school summing - looks ugly
+    // Cannot use accumulate() as not defined for adouble
+    T sum = 0;
+    for (int iters=1; iters <= flq.get_niter(); ++iters){
+        for (int areas=1; areas <= flq.get_narea(); ++areas){
+            for (int seasons=1; seasons <= flq.get_nseason(); ++seasons){
+                for (int years=1; years <= flq.get_nyear(); ++years){
+                    for (int quants=1; quants <= flq.get_nquant(); ++quants){
+                        sum = 0;
+                        for (int units=1; units <= flq.get_nunit(); ++units){
+                            sum += flq(quants, years, units, seasons, areas, iters);
+                        }
+                        sum_flq(quants, years, 1, seasons, areas, iters) = sum;
+    }}}}}
+    return sum_flq;
+}
+
+template <typename T>
 FLQuant_base<T> quant_mean(const FLQuant_base<T>& flq){
     FLQuant_base<T> flq_mean = quant_sum(flq);
     // Divide by dim
@@ -1589,6 +1616,9 @@ template FLQuant_base<double> quant_sum(const FLQuant_base<double>& flq);
 template FLQuant_base<adouble> quant_sum(const FLQuant_base<adouble>& flq);
 template FLQuant_base<double> quant_mean(const FLQuant_base<double>& flq);
 template FLQuant_base<adouble> quant_mean(const FLQuant_base<adouble>& flq);
+
+template FLQuant_base<double> unit_sum(const FLQuant_base<double>& flq);
+template FLQuant_base<adouble> unit_sum(const FLQuant_base<adouble>& flq);
 
 template FLQuant_base<double> max_quant(const FLQuant_base<double>& flq);
 template FLQuant_base<adouble> max_quant(const FLQuant_base<adouble>& flq);
