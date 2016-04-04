@@ -201,7 +201,9 @@ test_that("fwdSR predict_recruitment",{
     rec_outa <- test_fwdSR_predict_recruitment("ricker", sr_params_temp, residuals_add[,,unit,season,1,iter], FALSE, srp_temp, c(1,1,1,1,1))
     expect_equal(c(rec_outm), c(recm))
     expect_equal(c(rec_outa), c(reca))
-    # Test 2: Annual timestep with a subset of SRP
+    # What if start year of residuals is too big? Does not recycle like SR params - should fail
+    expect_error(test_fwdSR_predict_recruitment("ricker", sr_params_temp, residuals_mult[,,unit,season,1,iter], TRUE, srp_temp, c(year+1,1,1,1,1)))
+    # Test 2: Annual timestep with a subset of SRP - no dims in params
     # SRP starts at year, so we start params and residuals also at year
     srp_temp <- srp_in[,year:dim(srp_in)[2],unit,season,1,iter]
     rec_outm <- test_fwdSR_predict_recruitment("ricker", sr_params_temp, residuals_mult[,,unit,season,1,iter], TRUE, srp_temp, c(year,1,1,1,1))
@@ -217,13 +219,13 @@ test_that("fwdSR predict_recruitment",{
     recm <- rec %*% residuals_mult[,,unit,season,,iter]
     rec_outm <- test_fwdSR_predict_recruitment("ricker", sr_params_temp, residuals_mult[,,unit,season,1,iter], TRUE, srp_temp, c(1,1,1,1,1))
     expect_equal(c(rec_outm), c(recm))
-    # Test 4: Annual timestep with subset of SRP. Iters in SRP, not residuals or params
+    # Test 4: Annual timestep with subset of SRP. Iters in SRP, not residuals or params. Iters get recycled in residuals
     srp_temp <- srp_in[,year:dim(srp_in)[2],unit,season,1,]
     rec_outm <- test_fwdSR_predict_recruitment("ricker", sr_params_temp, residuals_mult[,,unit,season,1,iter], TRUE, srp_temp, c(year,1,1,1,1))
     test_FLQuant_equal(recm[,year:dim(srp_in)[2]], rec_outm)
-    # Test 5: Seasonal and Unit SRP with iters. Units in params. Residuals dim match SRP
-    srp_temp <- srp_in[,,,season,1,]
-    sr_params_temp <- sr_params[,,,season,1,iter]
+    # Test 5: Seasonal and Unit SRP with iters. Units in params. Residuals dim match SRP (including iters)
+    srp_temp <- srp_in[,,,season,]
+    sr_params_temp <- sr_params[,,,season,,iter]
     rec <- rickerR(srp_temp, c(sr_params_temp["a",]), c(sr_params_temp["b",]))
     recm <- rec %*% residuals_mult[,,,season,1,]
     rec_outm <- test_fwdSR_predict_recruitment("ricker", sr_params_temp, residuals_mult[,,,season,1,], TRUE, srp_temp, c(1,1,1,1,1))
