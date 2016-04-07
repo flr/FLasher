@@ -30,8 +30,8 @@ operatingModel::operatingModel(){
  */
 operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsAD biols_in, const fwdControl ctrl_in){
     // This requires a lot of checks...
-    // Iters in all numbers and efforts must be the same
-    // Age structure of catches catching biols must be the same
+    // Iters in all numbers and efforts must be the same (cannot be n or 1, just n)
+    // Age structure and units of catches catching biols must be the same
     // Year and seasons must be the same for all objects
     // Start with the catches - compare everything to the first fishery / catch
     std::vector<unsigned int> landings_dim11 = fisheries_in(1,1).landings_n().get_dim();
@@ -75,6 +75,9 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsA
             // Check age structure
             if((biol_dim[0] != landings_dim[0])){
                 Rcpp::stop("In operatingModel constructor. Problem with biol: %i. Age structure must be the same as the catch dims\n", biol_no);
+            }
+            if(biol_dim[2] != landings_dim[2]){
+                Rcpp::stop("In operatingModel constructor. Problem with biol: %i. Must have same number of Units as the catch\n", biol_no);
             }
         }
         // Check iterations of the abundance

@@ -32,6 +32,8 @@ test_that("operatingModel constructor dimension checks",{
     bad_iter_dim[6] <- good_dim[6] + 1
     bad_age_dim <- good_dim
     bad_age_dim[1] <- good_dim[1] + 1
+    bad_unit_dim <- good_dim
+    bad_unit_dim[3] <- good_dim[3] + 1
     # Check Biols year and season match catch - catches already forced to have same through validity check of FLFisheries
     bad_year_flb <- random_FLBiolcpp_generator(fixed_dims = bad_year_dim)
     bad_season_flb <- random_FLBiolcpp_generator(fixed_dims = bad_season_dim)
@@ -46,11 +48,15 @@ test_that("operatingModel constructor dimension checks",{
     # Check iters in effort, landings, discards and n must be the same
     bad_flfs <- random_FLFisheries_generator(fixed_dims = bad_iter_dim, min_fisheries=2, max_fisheries=2)
     expect_error(test_operatingModel_full_constructor(bad_flfs, flbs, fc))
-    # Check age range for catches and biols is the same - catch 1 catches biol 1
+    # Check age and unit range for catches and biols is the same - catch 1 catches biol 1
     bad_age_flb <- random_FLBiolcpp_generator(fixed_dims = bad_age_dim)
     bad_flbs <- flbs
     bad_flbs[[1]][["biol"]] <- bad_age_flb
     bad_flbs[[1]][["srr_residuals"]] <- random_FLQuant_generator(fixed_dims=bad_age_dim)
+    expect_error(test_operatingModel_full_constructor(flfs, bad_flbs, fc))
+    bad_unit_flb <- random_FLBiolcpp_generator(fixed_dims = bad_unit_dim)
+    bad_flbs[[bad_biol]][["biol"]] <- bad_unit_flb
+    bad_flbs[[bad_biol]][["srr_residuals"]] <- random_FLQuant_generator(fixed_dims=bad_unit_dim)
     expect_error(test_operatingModel_full_constructor(flfs, bad_flbs, fc))
     # Check iters in the control object is 1 or n
     # iter = 1 - should be OK
@@ -174,7 +180,6 @@ test_that("get_f for biols with example operatingModel1 - total Fs from multiple
         }
     }
 })
-
 
 test_that("operatingModel f_prop_spwn methods",{
     # Random OM
@@ -670,7 +675,6 @@ test_that("operatingModel landings, catch and discards methods",{
     year <- round(runif(1,min=dim_min[2],max=dim_max[2]))
     season <- round(runif(1,min=dim_min[4],max=dim_max[4]))
     timestep <- (year-1) * dim(n(om[["biols"]][[1]][["biol"]]))[4] + season
-
     # 1 biol -> 1 catch
     biol_no <- 1
     landings1_out <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
@@ -682,7 +686,6 @@ test_that("operatingModel landings, catch and discards methods",{
     catch1_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
     catch1_in <- catch(om[["fisheries"]][[1]][[1]])
     test_FLQuant_equal(catch1_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], catch1_out)
-
     # 1 biol -> 2 catch
     biol_no <- 2
     landings2_out <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
@@ -697,7 +700,6 @@ test_that("operatingModel landings, catch and discards methods",{
     catch12_in <- catch(om[["fisheries"]][[1]][[2]])
     catch21_in <- catch(om[["fisheries"]][[2]][[1]])
     test_FLQuant_equal((catch12_in+catch21_in)[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], catch2_out)
-
     # 2 biol -> 1 catch
     # Not yet implemented for a single catch so fails
     biol_no <- 3
@@ -709,8 +711,6 @@ test_that("operatingModel landings, catch and discards methods",{
     expect_error(test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
     expect_error(test_operatingModel_catch_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
 })
-
-
 
 # eval_om work with units - important as the target calculations use unit_sum()
 test_that("operatingModel eval_om units", {
@@ -982,12 +982,12 @@ test_that("get_target_value - straight value", {
     value <- abs(rnorm(4))
     # Simple control object
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quantity = c("catch","catch"), target = 1, value = value[1:2],
+                        quant = c("catch","catch"), target = 1, value = value[1:2],
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
     trgt2 <- data.frame(year = years[3:4], season = seasons[3:4], timestep = timesteps[3:4],
-                        quantity = c("landings","discards"), target = 2, value = value[3:4],
+                        quant = c("landings","discards"), target = 2, value = value[3:4],
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
@@ -1084,7 +1084,7 @@ test_that("get_target_value - min / max values", {
     value <- abs(rnorm(4))
     # Simple control object - just catch
     #trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-    #                    quantity = c("catch","catch"), target = 1, value = value[1:2],
+    #                    quant = c("catch","catch"), target = 1, value = value[1:2],
     #                    fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
     #                    relFishery = NA, relCatch = NA, relBiol = NA,
     #                    relYear = NA, relSeason = NA)
@@ -1103,7 +1103,7 @@ test_that("get_target_value - min / max values", {
     # Max only - small iters will be limited
     # Same iters in OM and control
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quantity = c("catch","catch"), target = 1, max = catch1[1],
+                        quant = c("catch","catch"), target = 1, max = catch1[1],
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
@@ -1143,7 +1143,7 @@ test_that("get_target_value - min / max values", {
 
     # Min only - iters in OM = iters in control
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quantity = c("catch","catch"), target = 1, min = catch1[1],
+                        quant = c("catch","catch"), target = 1, min = catch1[1],
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
@@ -1203,7 +1203,7 @@ test_that("get_target_value - min / max values", {
     min_catch2[not_min_limit_iters] <- min_catch2[not_min_limit_iters] * 0.9
     min_catch2[min_limit_iters] <- min_catch2[min_limit_iters] * 1.1
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quantity = c("catch","catch"), target = 1, min = min_catch1[1],
+                        quant = c("catch","catch"), target = 1, min = min_catch1[1],
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
@@ -1239,7 +1239,7 @@ test_that("get_target_value - min / max values", {
     max_limit_iters2 <- which(catch2 > max2)
     not_limit_iters2 <- (1:niters)[!((1:niters) %in% c(min_limit_iters2, max_limit_iters2))]
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quantity = c("catch","catch"), target = 1, min = min_catch1[1],
+                        quant = c("catch","catch"), target = 1, min = min_catch1[1],
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
@@ -1272,7 +1272,7 @@ test_that("operatingModel get_target_age_range", {
     max_age <- round(runif(1,min=min_age, max=max(ages)))
     # With biol no
     trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
-                        quantity = "f", target = 1, value=1,
+                        quant = "f", target = 1, value=1,
                         fishery = NA, catch = NA, biol = 1,
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA,
@@ -1285,7 +1285,7 @@ test_that("operatingModel get_target_age_range", {
     expect_identical(ind_out, ind_in)
     # With catch no
     trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
-                        quantity = "f", target = 1, value=1,
+                        quant = "f", target = 1, value=1,
                         fishery = 1, catch = 1, biol = NA,
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA,
@@ -1298,7 +1298,7 @@ test_that("operatingModel get_target_age_range", {
     expect_identical(ind_out, ind_in)
     # With neither
     trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
-                        quantity = "f", target = 1, value=1,
+                        quant = "f", target = 1, value=1,
                         fishery = NA, catch = NA, biol = NA,
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA,
