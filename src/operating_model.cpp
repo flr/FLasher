@@ -685,6 +685,11 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
  */
 FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
     // Check length of indices_min and max - should be of length 5 (no age structured quantities returned)
+    //
+    // What about Unit structured quantities?
+    // Indices are still length 5 but Unit is ignored
+    // Or are Indices only of length 4 Year, Season, Area, Iter - Better
+    //
     if (indices_min.size() != 5 | indices_max.size() != 5){
         Rcpp::stop("In operatingModel srp subsetter. Indices not of length 5\n");
     }
@@ -706,6 +711,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             }
         break;
         }
+
         //case target_fbar: {
         //    Rprintf("target_fbar\n");
         //    // Indices only 5D when passed in - needs age range
@@ -741,11 +747,11 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             // Is it total catch of a biol, or catch of an FLCatch
             if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
                 Rprintf("biol_no is NA, catch is from FLCatch %i in FLFishery %i\n", catch_no, fishery_no);
-                out = fisheries(fishery_no, catch_no).catches(indices_min, indices_max);
+                out = unit_sum(fisheries(fishery_no, catch_no).catches(indices_min, indices_max));
             }
             else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 Rprintf("catch is total catch from biol %i\n", biol_no);
-                out =  catches(biol_no, indices_min, indices_max);
+                out =  unit_sum(catches(biol_no, indices_min, indices_max));
             }
             else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 Rcpp::stop("In operatingModel::eval_om. Asking for catch from a particular fishery but no catch_no has been specified.\n");
@@ -758,11 +764,11 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         case target_landings: {
             Rprintf("target_landings\n");
             if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
-                out = fisheries(fishery_no, catch_no).landings(indices_min, indices_max);
+                out = unit_sum(fisheries(fishery_no, catch_no).landings(indices_min, indices_max));
             }
             else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 Rprintf("landings are total landings from biol %i\n", biol_no);
-                out = landings(biol_no, indices_min, indices_max);
+                out = unit_sum(landings(biol_no, indices_min, indices_max));
             }
             else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 Rcpp::stop("In operatingModel::eval_om. Asking for landings from a particular fishery but no catch_no has been specified.\n");
@@ -775,11 +781,11 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         case target_discards: {
             Rprintf("target_discards\n");
             if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
-                out = fisheries(fishery_no, catch_no).discards(indices_min, indices_max);
+                out = unit_sum(fisheries(fishery_no, catch_no).discards(indices_min, indices_max));
             }
             else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 Rprintf("discards are total discards from biol %i\n", biol_no);
-                out = discards(biol_no, indices_min, indices_max);
+                out = unit_sum(discards(biol_no, indices_min, indices_max));
             }
             else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 Rcpp::stop("In operatingModel::eval_om. Asking for discards from a particular fishery but no catch_no has been specified.\n");
@@ -841,27 +847,42 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no) c
 
 /*! \brief Get the current target values in the operating model for all simultaneous targets.
  *
- * Returns a vector of the current simultaneous target values.
+ * Returns a vector of the current simultaneous target values in the operating model.
  * If the target is relative, the method calculates the current relative state.
  * The values can be compared to the desired target values from get_target_value(). 
+ * At the moment, targets can not be specified for individual Units.
  * \param target_no References the target column in the control dataframe. Starts at 1.
  * \param sim_target_no References the simultaneous target in the target set. Starts at 1.
  */
 std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, const int sim_target_no) const{
-    //Rprintf("In get_target_value_hat sim_target_no\n");
-    //Rprintf("sim_target_no: %i\n", sim_target_no);
+    Rprintf("In get_target_value_hat sim_target_no\n");
+    Rprintf("sim_target_no: %i\n", sim_target_no);
     // Target information: type, fishery, catch, biol, etc
-    auto niter = fisheries(1).effort().get_niter();
+    auto niter = get_niter();
     unsigned int year = ctrl.get_target_int_col(target_no, sim_target_no, "year");
     unsigned int season = ctrl.get_target_int_col(target_no, sim_target_no, "season");
+    Rprintf("year: %i, season: %i\n", year, season);
+    // Could add unit here if necessary.
     fwdControlTargetType target_type = ctrl.get_target_type(target_no, sim_target_no);
     unsigned int fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
     unsigned int catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
     unsigned int biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "biol");
-    //Rprintf("fishery no: %i, catch no: %i, biol no: %i\n", fishery_no, catch_no, biol_no);
-    // Indices for subsetting the target values
+    Rprintf("fishery no: %i, catch no: %i, biol no: %i\n", fishery_no, catch_no, biol_no);
+    // Set indices for subsetting the target values
+    // Need to know unit range but could be biol only (total catch), or catch only (total catch from several biols), or fishery only (econ)
+    // If biol not NA, choose unit from biol
+    unsigned int nunit = 1;
+    if (!Rcpp::IntegerVector::is_na(biol_no)){
+        nunit = biols(biol_no).n().get_nunit();
+    }
+    // Else if catch not NA choose unit from catch
+    else if (!Rcpp::IntegerVector::is_na(catch_no)){
+        nunit = fisheries(fishery_no, catch_no).landings_n().get_nunit();
+    }
+    Rprintf("nunit: %i\n", nunit);
+    // Else unit comes from fishery which is always 1
     std::vector<unsigned int> indices_min = {year,1,season,1,1};
-    std::vector<unsigned int> indices_max = {year,1,season,1,niter};
+    std::vector<unsigned int> indices_max = {year,nunit,season,1,niter};
     // Get the current absolute values, i.e. not relative, as FLQuant
     FLQuantAD target_value = eval_om(target_type, fishery_no, catch_no, biol_no, indices_min, indices_max);
     // Are we dealing with absolute or relative values?
@@ -887,16 +908,27 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     if (((!target_rel_fishery_na | !target_rel_biol_na) ^ (!target_rel_year_na & !target_rel_season_na))){
         Rcpp::stop("In operatingModel::get_target_value_hat. If relFishery and relCatch or relBiol specified, relYear and relSeason must also be specified (and vice versa). \n.");
     }
-
     if (!target_rel_year_na){
         Rprintf("Relative target target\n");
+        // Set indices for subsetting the relative target values
+        // Need to know unit range but could be biol only (total catch), or catch only (total catch from several biols), or fishery only (econ)
+        // If biol not NA, choose unit from biol
+        unsigned int rel_nunit = 1;
+        if (!Rcpp::IntegerVector::is_na(rel_biol)){
+            rel_nunit = biols(rel_biol).n().get_nunit();
+        }
+        // Else if catch not NA choose unit from catch
+        else if (!Rcpp::IntegerVector::is_na(rel_catch)){
+            rel_nunit = fisheries(rel_fishery, rel_catch).landings_n().get_nunit();
+        }
+        Rprintf("rel_nunit: %i\n", rel_nunit);
         std::vector<unsigned int> rel_indices_min = {rel_year,1,rel_season,1,1};
-        std::vector<unsigned int> rel_indices_max = {rel_year,1,rel_season,1,niter};
+        std::vector<unsigned int> rel_indices_max = {rel_year,rel_nunit,rel_season,1,niter};
         FLQuantAD rel_target_value = eval_om(target_type, rel_fishery, rel_catch, rel_biol, rel_indices_min, rel_indices_max);
         target_value = target_value / rel_target_value;
     }
     std::vector<adouble> value = target_value.get_data();
-    //Rprintf("Leaving get_target_value_hat sim_target\n");
+    Rprintf("Leaving get_target_value_hat sim_target\n");
     return value;
 } 
 //@}
@@ -926,6 +958,7 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no) const
  * If values are based on max / min some calculation is required.
  * Returns a vector of values of the simultaneous target from the target set. 
  * Needs to return adouble because if min / max target, the returned value will depend on current effort value.
+ * Note that targets cannot currently be specified by Unit. 
  * \param target_no References the target column in the control dataframe. Starts at 1.
  * \param sim_target_no References the target column in the control dataframe. Starts at 1.
  */

@@ -710,7 +710,79 @@ test_that("operatingModel landings, catch and discards methods",{
     expect_error(test_operatingModel_catch_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
 })
 
-test_that("operatingModel eval_om", {
+
+
+# eval_om work with units - important as the target calculations use unit_sum()
+test_that("operatingModel eval_om units", {
+    # Two fisheries, 1 catch each on 1 biol
+    nunits <- 8
+    niters <- 10 
+    flq <- random_FLQuant_generator(fixed_dims = c(5,20,nunits,4,1,niters))
+    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
+    # Pull out just FLBiols for testing
+    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
+    fwc <- random_fwdControl_generator(niters=1)
+    FCB <- array(NA, dim=c(3,3))
+    FCB[1,] <- c(1,1,1)
+    FCB[2,] <- c(1,2,2)
+    FCB[3,] <- c(2,1,2)
+    attr(fwc, "FCB") <- FCB
+    # Random indices
+    dim_max <- dim(n(flbs[[1]][["biol"]]))
+    dim_min <- round(runif(6, min=1, max=dim_max - c(1,1,1,1,0,1))) # 1 season so 0
+    #  Catch FC1
+    cout <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 1, 1, as.integer(NA), dim_min[-1], dim_max[-1])
+    cin <- unitSums(catch(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(cout,cin)
+    #  Catch FC2
+    cout <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 2, 1, as.integer(NA), dim_min[-1], dim_max[-1])
+    cin <- unitSums(catch(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(cout,cin)
+    #  Catch B1
+    cout <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", as.integer(NA),as.integer(NA),1, dim_min[-1], dim_max[-1])
+    cin <- unitSums(test_operatingModel_catches_subset(flfs, flbs, fwc, 1, dim_min[-1], dim_max[-1]))
+    test_FLQuant_equal(cout,cin)
+    #  Landings FC1
+    lout <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", 1, 1, as.integer(NA), dim_min[-1], dim_max[-1])
+    lin <- unitSums(landings(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(lout,lin)
+    #  Landings FC2
+    lout <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", 2, 1, as.integer(NA), dim_min[-1], dim_max[-1])
+    lin <- unitSums(landings(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(lout,lin)
+    #  Landings B1
+    lout <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", as.integer(NA),as.integer(NA),1, dim_min[-1], dim_max[-1])
+    lin <- unitSums(test_operatingModel_landings_subset(flfs, flbs, fwc, 1, dim_min[-1], dim_max[-1]))
+    test_FLQuant_equal(lout,lin)
+    #  Discards FC1
+    dout <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", 1, 1, as.integer(NA), dim_min[-1], dim_max[-1])
+    din <- unitSums(discards(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(dout,din)
+    #  Discards FC2
+    dout <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", 2, 1, as.integer(NA), dim_min[-1], dim_max[-1])
+    din <- unitSums(discards(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(dout,din)
+    #  Discards B1
+    dout <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", as.integer(NA),as.integer(NA),1, dim_min[-1], dim_max[-1])
+    din <- unitSums(test_operatingModel_discards_subset(flfs, flbs, fwc, 1, dim_min[-1], dim_max[-1]))
+    test_FLQuant_equal(dout,din)
+    # Effort has no unit structure
+    dim_min[3] <- 1
+    dim_max[3] <- 1
+    # Effort E1
+    eout <- test_operatingModel_eval_om(flfs, flbs, fwc, "effort", 1,as.integer(NA),as.integer(NA), dim_min[-1], dim_max[-1])
+    ein <- flfs[[1]]@effort[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]
+    test_FLQuant_equal(eout,ein)
+    # Effort E2
+    eout <- test_operatingModel_eval_om(flfs, flbs, fwc, "effort", 2,as.integer(NA),as.integer(NA), dim_min[-1], dim_max[-1])
+    ein <- flfs[[2]]@effort[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]
+    test_FLQuant_equal(eout,ein)
+})
+
+
+test_that("operatingModel eval_om simple", {
+    # Based on ple4 simple
     # Add more as target types added
     niters <- 10 
     om <- make_test_operatingModel1(niters)
@@ -772,7 +844,7 @@ test_that("operatingModel eval_om", {
 # Current values in operating model (asked for by values in control)
 test_that("get_target_value_hat", {
     niters <- 10 
-    flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
+    flq <- random_FLQuant_generator(fixed_dims = c(5,20,2,4,1,niters))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
@@ -788,33 +860,41 @@ test_that("get_target_value_hat", {
     seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
     timesteps <- (years-1) * dim(flq)[4] + seasons;
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quantity = c("catch","catch"), target = 1, value = 10,
+                        quant = c("catch","catch"), target = 1, value = 10,
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
     trgt2 <- data.frame(year = years[3:4], season = seasons[3:4], timestep = timesteps[3:4],
-                        quantity = c("landings","discards"), target = 2, value = 10,
+                        quant = c("landings","discards"), target = 2, value = 10,
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
     rel_years <- rep(round(runif(4, min=1,max=dim(flq)[2])),each=2)
     rel_seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
     rel_trgt1 <- data.frame(year = years[5:6], season = seasons[5:6], timestep = timesteps[5:6],
-                        quantity = c("catch","catch"), target = 3, value = 10,
+                        quant = c("catch","catch"), target = 3, value = 10,
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = c(1,NA), relCatch = c(1,NA), relBiol = c(NA,2),
                         relYear = rel_years[5:6], relSeason = rel_seasons[5:6])
     # Discards relative to different catch and fishery
     rel_trgt2 <- data.frame(year = years[7:8], season = seasons[7:8], timestep = timesteps[7:8],
-                        quantity = c("landings","discards"), target = 4, value = 10,
+                        quant = c("landings","discards"), target = 4, value = 10,
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = c(NA,2), relCatch = c(NA,1), relBiol = c(1,NA),
                         relYear = rel_years[7:8], relSeason = rel_seasons[7:8])
+
+    # Constructor drops my target and timestep columns
+    # And stuffs up the biol column
     fwc <- fwdControl(rbind(trgt1, trgt2, rel_trgt1, rel_trgt2))
-    attr(fwc@target, "FCB") <- FCB
+    attr(fwc, "FCB") <- FCB
+    fwc@target$timestep <- c(trgt1$timestep, trgt2$timestep, rel_trgt1$timestep, rel_trgt2$timestep)
+    fwc@target$target <- c(trgt1$target, trgt2$target, rel_trgt1$target, rel_trgt2$target)
+    # So hack it
+    fwc@target <- rbind(trgt1, trgt2, rel_trgt1, rel_trgt2)
+
     # Target 1 - 1 sim target at a time
     val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
-    val_in1 <- c(catch(flfs[[1]][[1]])[,years[1],,seasons[1]])
+    val_in1 <- c(unitSums(catch(flfs[[1]][[1]])[,years[1],,seasons[1]]))
     expect_equal(val_hat1, val_in1)
     val_hat2 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 2)
     val_in2 <- c(catch(flfs[[1]][[2]])[,years[2],,seasons[2]]) + c(catch(flfs[[2]][[1]])[,years[2],,seasons[2]])
@@ -822,6 +902,7 @@ test_that("get_target_value_hat", {
     # Both sim targets
     val_hat <- test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 1)
     expect_equal(val_hat, c(val_in1,val_in2))
+
     # Target 2 - 1 sim target at a time
     val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 2, 1)
     val_in1 <- c(landings(flfs[[1]][[1]])[,years[3],,seasons[3]])
