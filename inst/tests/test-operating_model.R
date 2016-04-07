@@ -851,6 +851,9 @@ test_that("operatingModel eval_om simple", {
 
 # Current values in operating model (asked for by values in control)
 test_that("get_target_value_hat", {
+    # Two fisheries, two biols, with units
+    # FC11 -> B1
+    # FC12 and FC21 -> B2
     niters <- 10 
     flq <- random_FLQuant_generator(fixed_dims = c(5,20,2,4,1,niters))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
@@ -890,7 +893,6 @@ test_that("get_target_value_hat", {
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = c(NA,2), relCatch = c(NA,1), relBiol = c(1,NA),
                         relYear = rel_years[7:8], relSeason = rel_seasons[7:8])
-
     # Constructor drops my target and timestep columns
     # And stuffs up the biol column
     fwc <- fwdControl(rbind(trgt1, trgt2, rel_trgt1, rel_trgt2))
@@ -899,56 +901,56 @@ test_that("get_target_value_hat", {
     fwc@target$target <- c(trgt1$target, trgt2$target, rel_trgt1$target, rel_trgt2$target)
     # So hack it
     fwc@target <- rbind(trgt1, trgt2, rel_trgt1, rel_trgt2)
-
     # Target 1 - 1 sim target at a time
     val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
     val_in1 <- c(unitSums(catch(flfs[[1]][[1]])[,years[1],,seasons[1]]))
     expect_equal(val_hat1, val_in1)
     val_hat2 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 2)
-    val_in2 <- c(catch(flfs[[1]][[2]])[,years[2],,seasons[2]]) + c(catch(flfs[[2]][[1]])[,years[2],,seasons[2]])
+    val_in2 <- c(unitSums((catch(flfs[[1]][[2]]) + catch(flfs[[2]][[1]]))[,years[2],,seasons[2]]))
     expect_equal(val_hat2, val_in2)
     # Both sim targets
     val_hat <- test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 1)
     expect_equal(val_hat, c(val_in1,val_in2))
-
     # Target 2 - 1 sim target at a time
     val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 2, 1)
-    val_in1 <- c(landings(flfs[[1]][[1]])[,years[3],,seasons[3]])
+    val_in1 <- c(unitSums(landings(flfs[[1]][[1]])[,years[3],,seasons[3]]))
     expect_equal(val_hat1, val_in1)
     val_hat2 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 2, 2)
-    val_in2 <- c(discards(flfs[[1]][[2]])[,years[4],,seasons[4]])
+    val_in2 <- c(unitSums(discards(flfs[[1]][[2]])[,years[4],,seasons[4]]))
     expect_equal(val_hat2, val_in2)
     # Both sim targets
     val_hat <- test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 2)
     expect_equal(val_hat, c(val_in1,val_in2))
     # Target 3 - Relative - 1 sim target at a time
     val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 3, 1)
-    val_in1 <- c(catch(flfs[[1]][[1]])[,years[5],,seasons[5]]) / c(catch(flfs[[1]][[1]])[,rel_years[5],,rel_seasons[5]])
+    val_in1 <- c(unitSums(catch(flfs[[1]][[1]])[,years[5],,seasons[5]]) / unitSums(catch(flfs[[1]][[1]])[,rel_years[5],,rel_seasons[5]]))
     expect_equal(val_hat1, val_in1)
     val_hat2 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 3, 2)
-    val_in2 <- (c(catch(flfs[[1]][[2]])[,years[6],,seasons[6]]) + c(catch(flfs[[2]][[1]])[,years[6],,seasons[6]])) / (c(catch(flfs[[1]][[2]])[,rel_years[6],,rel_seasons[6]]) + c(catch(flfs[[2]][[1]])[,rel_years[6],,rel_seasons[6]]))
+    val_in2 <- c(unitSums((catch(flfs[[1]][[2]]) + catch(flfs[[2]][[1]]))[,years[6],,seasons[6]]) / unitSums((catch(flfs[[1]][[2]]) + catch(flfs[[2]][[1]]))[,rel_years[6],,rel_seasons[6]]))
     expect_equal(val_hat2, val_in2)
     # Both sim targets
     val_hat <- test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 3)
     expect_equal(val_hat, c(val_in1,val_in2))
     # Target 4 - Relative - 1 sim target at a time
     val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 4, 1)
-    val_in1 <- c(landings(flfs[[1]][[1]])[,years[7],,seasons[7]]) / c(landings(flfs[[1]][[1]])[,rel_years[7],,rel_seasons[7]])
+    val_in1 <- c(unitSums(landings(flfs[[1]][[1]])[,years[7],,seasons[7]]) / unitSums(landings(flfs[[1]][[1]])[,rel_years[7],,rel_seasons[7]]))
     expect_equal(val_hat1, val_in1)
     val_hat2 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 4, 2)
-    val_in2 <- c(discards(flfs[[1]][[2]])[,years[8],,seasons[8]]) / c(discards(flfs[[2]][[1]])[,rel_years[8],,rel_seasons[8]])
+    val_in2 <- c(unitSums(discards(flfs[[1]][[2]])[,years[8],,seasons[8]]) / unitSums(discards(flfs[[2]][[1]])[,rel_years[8],,rel_seasons[8]]))
     expect_equal(val_hat2, val_in2)
     # Both sim targets
     val_hat <- test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 4)
     expect_equal(val_hat, c(val_in1,val_in2))
     # Relative fails due to not being set properly
     rel_trgt3 <- data.frame(year = 1:8, season = 1, timestep = 1:8,
-                        quantity = "catch", target = 1:8,
+                        quant = "catch", target = 1:8,
                         fishery = 1, catch = 1, biol = NA,
                         relFishery = c(NA,1,1,1,1,NA,NA,NA), relCatch = c(1,NA,1,1,1,NA,NA,NA), relBiol = c(NA,NA,NA,NA,NA,1,1,NA),
                         relYear = c(1,1,NA,NA,1,1,NA,1), relSeason = c(1,1,NA,1,NA,NA,1,1))
     fwc <- fwdControl(rel_trgt3)
-    attr(fwc@target, "FCB") <- FCB
+    # Hack!
+    fwc@target <- rel_trgt3
+    attr(fwc, "FCB") <- FCB
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 1))
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 2)) 
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 3))
