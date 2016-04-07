@@ -714,7 +714,9 @@ test_that("operatingModel landings, catch and discards methods",{
 
 # eval_om work with units - important as the target calculations use unit_sum()
 test_that("operatingModel eval_om units", {
-    # Two fisheries, 1 catch each on 1 biol
+    # Two fisheries, two biols
+    # FC11 -> B1
+    # FC12 and FC21 -> B2
     nunits <- 8
     niters <- 10 
     flq <- random_FLQuant_generator(fixed_dims = c(5,20,nunits,4,1,niters))
@@ -731,55 +733,61 @@ test_that("operatingModel eval_om units", {
     # Random indices
     dim_max <- dim(n(flbs[[1]][["biol"]]))
     dim_min <- round(runif(6, min=1, max=dim_max - c(1,1,1,1,0,1))) # 1 season so 0
-    #  Catch FC1
-    cout <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 1, 1, as.integer(NA), dim_min[-1], dim_max[-1])
-    cin <- unitSums(catch(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    test_FLQuant_equal(cout,cin)
-    #  Catch FC2
-    cout <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 2, 1, as.integer(NA), dim_min[-1], dim_max[-1])
-    cin <- unitSums(catch(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    test_FLQuant_equal(cout,cin)
+    #  Catch FC11
+    cout11 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 1, 1, as.integer(NA), dim_min[-1], dim_max[-1])
+    cin11 <- unitSums(catch(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(cout11,cin11)
+    #  Catch FC12
+    cout12 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 1, 2, as.integer(NA), dim_min[-1], dim_max[-1])
+    cin12 <- unitSums(catch(flfs[[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(cout12,cin12)
+    #  Catch FC21
+    cout21 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 2, 1, as.integer(NA), dim_min[-1], dim_max[-1])
+    cin21 <- unitSums(catch(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(cout21,cin21)
     #  Catch B1
-    cout <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", as.integer(NA),as.integer(NA),1, dim_min[-1], dim_max[-1])
-    cin <- unitSums(test_operatingModel_catches_subset(flfs, flbs, fwc, 1, dim_min[-1], dim_max[-1]))
-    test_FLQuant_equal(cout,cin)
-    #  Landings FC1
-    lout <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", 1, 1, as.integer(NA), dim_min[-1], dim_max[-1])
-    lin <- unitSums(landings(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    test_FLQuant_equal(lout,lin)
-    #  Landings FC2
-    lout <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", 2, 1, as.integer(NA), dim_min[-1], dim_max[-1])
-    lin <- unitSums(landings(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    test_FLQuant_equal(lout,lin)
+    coutb1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", as.integer(NA),as.integer(NA),1, dim_min[-1], dim_max[-1])
+    test_FLQuant_equal(coutb1,cin11)
+    #  Catch B2
+    coutb2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", as.integer(NA),as.integer(NA),2, dim_min[-1], dim_max[-1])
+    test_FLQuant_equal(coutb2,cin12+cin21)
+    #  Landings FC11
+    lout11 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", 1, 1, as.integer(NA), dim_min[-1], dim_max[-1])
+    lin11 <- unitSums(landings(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(lout11,lin11)
+    #  Landings FC12
+    lout12 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", 1, 2, as.integer(NA), dim_min[-1], dim_max[-1])
+    lin12 <- unitSums(landings(flfs[[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(lout12,lin12)
+    #  Landings FC21
+    lout21 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", 2, 1, as.integer(NA), dim_min[-1], dim_max[-1])
+    lin21 <- unitSums(landings(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(lout21,lin21)
     #  Landings B1
-    lout <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", as.integer(NA),as.integer(NA),1, dim_min[-1], dim_max[-1])
-    lin <- unitSums(test_operatingModel_landings_subset(flfs, flbs, fwc, 1, dim_min[-1], dim_max[-1]))
-    test_FLQuant_equal(lout,lin)
-    #  Discards FC1
-    dout <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", 1, 1, as.integer(NA), dim_min[-1], dim_max[-1])
-    din <- unitSums(discards(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    test_FLQuant_equal(dout,din)
-    #  Discards FC2
-    dout <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", 2, 1, as.integer(NA), dim_min[-1], dim_max[-1])
-    din <- unitSums(discards(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    test_FLQuant_equal(dout,din)
+    loutb1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", as.integer(NA),as.integer(NA),1, dim_min[-1], dim_max[-1])
+    test_FLQuant_equal(loutb1,lin11)
+    #  Landings B2
+    loutb2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", as.integer(NA),as.integer(NA),2, dim_min[-1], dim_max[-1])
+    test_FLQuant_equal(loutb2,lin12+lin21)
+    #  Discards FC11
+    dout11 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", 1, 1, as.integer(NA), dim_min[-1], dim_max[-1])
+    din11 <- unitSums(discards(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(dout11,din11)
+    #  Discards FC12
+    dout12 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", 1, 2, as.integer(NA), dim_min[-1], dim_max[-1])
+    din12 <- unitSums(discards(flfs[[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(dout12,din12)
+    #  Discards FC21
+    dout21 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", 2, 1, as.integer(NA), dim_min[-1], dim_max[-1])
+    din21 <- unitSums(discards(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+    test_FLQuant_equal(dout21,din21)
     #  Discards B1
-    dout <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", as.integer(NA),as.integer(NA),1, dim_min[-1], dim_max[-1])
-    din <- unitSums(test_operatingModel_discards_subset(flfs, flbs, fwc, 1, dim_min[-1], dim_max[-1]))
-    test_FLQuant_equal(dout,din)
-    # Effort has no unit structure
-    dim_min[3] <- 1
-    dim_max[3] <- 1
-    # Effort E1
-    eout <- test_operatingModel_eval_om(flfs, flbs, fwc, "effort", 1,as.integer(NA),as.integer(NA), dim_min[-1], dim_max[-1])
-    ein <- flfs[[1]]@effort[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]
-    test_FLQuant_equal(eout,ein)
-    # Effort E2
-    eout <- test_operatingModel_eval_om(flfs, flbs, fwc, "effort", 2,as.integer(NA),as.integer(NA), dim_min[-1], dim_max[-1])
-    ein <- flfs[[2]]@effort[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]
-    test_FLQuant_equal(eout,ein)
+    doutb1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", as.integer(NA),as.integer(NA),1, dim_min[-1], dim_max[-1])
+    test_FLQuant_equal(doutb1,din11)
+    #  Discards B2
+    doutb2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", as.integer(NA),as.integer(NA),2, dim_min[-1], dim_max[-1])
+    test_FLQuant_equal(doutb2,din12+din21)
 })
-
 
 test_that("operatingModel eval_om simple", {
     # Based on ple4 simple
