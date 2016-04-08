@@ -213,11 +213,10 @@ test_that("operatingModel f_prop_spwn methods",{
     prop_out <- test_operatingModel_f_prop_spwn_FLQ_subset(flfs, flbs, fc, fishery_no, biol_no, indices_min[-1], indices_max[-1])
     test_FLQuant_equal(prop_in[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], prop_out)
 })
-    
 
 test_that("operatingModel srp methods with units",{
     # Random simple OM with units - 1 biol fished by 1 catch
-    flq <- random_FLQuant_generator()
+    flq <- random_FLQuant_generator(min_dims=c(2,2,2,2,2,2))
     flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
@@ -230,31 +229,21 @@ test_that("operatingModel srp methods with units",{
     biol_no <- 1
     fishery_no <- 1
     catch_no <- 1
-
-    # hperiod should not have units
-    dim <- dim(flfs[[fishery_no]]@hperiod)
-
-
-    dim[1] <- 1
+    dim <- dim(flbs_in[[1]]@n)
+    # Get full range
+    indices_min <- rep(1,6)
+    indices_max <- dim
+    prop_in <- test_operatingModel_f_prop_spwn_FLQ_subset(flfs, flbs, fc, fishery_no, biol_no, indices_min[-1], indices_max[-1])
+    f_in <- test_operatingModel_get_f_FCB_subset(flfs, flbs, fc, fishery_no, catch_no, biol_no, indices_min, indices_max)
+    srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-(f_in %*% prop_in) - (flbs_in[[biol_no]]@m %*% flbs_in[[biol_no]]@spwn[1,])))
+    srp_out <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fc, biol_no, indices_min[-1], indices_max[-1])
+    test_FLQuant_equal(srp_in, srp_out)
+    # Subset
     indices_max <- round(runif(6,1,dim))
     indices_min <- round(runif(6,1,indices_max))
-    # Get full range
-    f_indices_min <- rep(1,6)
-    f_indices_max <- dim(om[["biols"]][[biol_no]][["biol"]]@n)
-    prop_in <- test_operatingModel_f_prop_spwn_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, biol_no, f_indices_min[-1], f_indices_max[-1])
-    f_in <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, f_indices_min, f_indices_max)
-    # Add dimnames else sweep fails
-    dimnames(f_in) <- dimnames(flbs_in[[biol_no]]@m)
-    dimnames(prop_in)[2:6] <- dimnames(flbs_in[[biol_no]]@n)[2:6]
-    srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-sweep(f_in, 2:6, prop_in, "*") -sweep(flbs_in[[biol_no]]@m, 2:6, flbs_in[[biol_no]]@spwn[1,], "*")))
-    srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
+    srp_out <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fc, biol_no, indices_min[-1], indices_max[-1])
     test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
-    test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
-
-
 })
-
-
 
 test_that("operatingModel srp methods with annual OM",{
     # Assumes that f_prop_spwn and f is working correctly
@@ -265,7 +254,7 @@ test_that("operatingModel srp methods with annual OM",{
     biol_no <- 1
     fishery_no <- 1
     catch_no <- 1
-    dim <- dim(om$fisheries[[fishery_no]]@hperiod)
+    dim <- dim(flbs_in[[biol_no]]@n)
     dim[1] <- 1
     indices_max <- round(runif(6,1,dim))
     indices_min <- round(runif(6,1,indices_max))
@@ -274,18 +263,14 @@ test_that("operatingModel srp methods with annual OM",{
     f_indices_max <- dim(om[["biols"]][[biol_no]][["biol"]]@n)
     prop_in <- test_operatingModel_f_prop_spwn_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, biol_no, f_indices_min[-1], f_indices_max[-1])
     f_in <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, f_indices_min, f_indices_max)
-    # Add dimnames else sweep fails
-    dimnames(f_in) <- dimnames(flbs_in[[biol_no]]@m)
-    dimnames(prop_in)[2:6] <- dimnames(flbs_in[[biol_no]]@n)[2:6]
-    srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-sweep(f_in, 2:6, prop_in, "*") -sweep(flbs_in[[biol_no]]@m, 2:6, flbs_in[[biol_no]]@spwn[1,], "*")))
+    srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-(f_in %*% prop_in) - (flbs_in[[biol_no]]@m %*% flbs_in[[biol_no]]@spwn[1,])))
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
-    test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
     test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
     # Biol 2
     biol_no <- 2
     fishery_no <- 1
     catch_no <- 2
-    dim <- dim(om$fisheries[[fishery_no]]@hperiod)
+    dim <- dim(flbs_in[[biol_no]]@n)
     dim[1] <- 1
     indices_max <- round(runif(6,1,dim))
     indices_min <- round(runif(6,1,indices_max))
@@ -296,20 +281,15 @@ test_that("operatingModel srp methods with annual OM",{
     f_in1 <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, biol_no, f_indices_min, f_indices_max)
     prop_in2 <- test_operatingModel_f_prop_spwn_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, biol_no, f_indices_min[-1], f_indices_max[-1])
     f_in2 <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 1, biol_no, f_indices_min, f_indices_max)
-    # Add dimnames else sweep fails
-    dimnames(f_in1) <- dimnames(flbs_in[[biol_no]]@m)
-    dimnames(prop_in1)[2:6] <- dimnames(flbs_in[[biol_no]]@n)[2:6]
-    dimnames(f_in2) <- dimnames(flbs_in[[biol_no]]@m)
-    dimnames(prop_in2)[2:6] <- dimnames(flbs_in[[biol_no]]@n)[2:6]
-    f_prop <- sweep(f_in1, 2:6, prop_in1, "*") + sweep(f_in2, 2:6, prop_in2, "*")
-    srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-f_prop -sweep(flbs_in[[biol_no]]@m, 2:6, flbs_in[[biol_no]]@spwn[1,], "*")))
+    f_prop <- (f_in1 %*% prop_in1) + (f_in2 %*% prop_in2)
+    srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-f_prop - (flbs_in[[biol_no]]@m %*% flbs_in[[biol_no]]@spwn[1,])))
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
     test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
     # Biol 3
     biol_no <- 3
     fishery_no <- 2
     catch_no <- 2
-    dim <- dim(om$fisheries[[fishery_no]]@hperiod)
+    dim <- dim(flbs_in[[biol_no]]@n)
     dim[1] <- 1
     indices_max <- round(runif(6,1,dim))
     indices_min <- round(runif(6,1,indices_max))
@@ -318,17 +298,14 @@ test_that("operatingModel srp methods with annual OM",{
     f_indices_max <- dim(om[["biols"]][[biol_no]][["biol"]]@n)
     prop_in <- test_operatingModel_f_prop_spwn_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, biol_no, f_indices_min[-1], f_indices_max[-1])
     f_in <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, f_indices_min, f_indices_max)
-    # Add dimnames else sweep fails
-    dimnames(f_in) <- dimnames(flbs_in[[biol_no]]@m)
-    dimnames(prop_in)[2:6] <- dimnames(flbs_in[[biol_no]]@n)[2:6]
-    srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-sweep(f_in, 2:6, prop_in, "*") -sweep(flbs_in[[biol_no]]@m, 2:6, flbs_in[[biol_no]]@spwn[1,], "*")))
+    srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-(f_in %*% prop_in) - (flbs_in[[biol_no]]@m %*% flbs_in[[biol_no]]@spwn[1,])))
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
     test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
     # Biol 4
     biol_no <- 4
     fishery_no <- 2
     catch_no <- 2
-    dim <- dim(om$fisheries[[fishery_no]]@hperiod)
+    dim <- dim(flbs_in[[biol_no]]@n)
     dim[1] <- 1
     indices_max <- round(runif(6,1,dim))
     indices_min <- round(runif(6,1,indices_max))
@@ -337,10 +314,7 @@ test_that("operatingModel srp methods with annual OM",{
     f_indices_max <- dim(om[["biols"]][[biol_no]][["biol"]]@n)
     prop_in <- test_operatingModel_f_prop_spwn_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, biol_no, f_indices_min[-1], f_indices_max[-1])
     f_in <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, f_indices_min, f_indices_max)
-    # Add dimnames else sweep fails
-    dimnames(f_in) <- dimnames(flbs_in[[biol_no]]@m)
-    dimnames(prop_in)[2:6] <- dimnames(flbs_in[[biol_no]]@n)[2:6]
-    srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-sweep(f_in, 2:6, prop_in, "*") -sweep(flbs_in[[biol_no]]@m, 2:6, flbs_in[[biol_no]]@spwn[1,], "*")))
+    srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-(f_in %*% prop_in) - (flbs_in[[biol_no]]@m %*% flbs_in[[biol_no]]@spwn[1,])))
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
     test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
     # Biol 5 - no fishing
