@@ -182,7 +182,7 @@ test_that("get_f for biols with example operatingModel1 - total Fs from multiple
 })
 
 test_that("operatingModel f_prop_spwn methods",{
-    # Random OM
+    # Random OM with units
     flq <- random_FLQuant_generator()
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
@@ -195,11 +195,16 @@ test_that("operatingModel f_prop_spwn methods",{
     # Get full FLQ
     indices_min <- rep(1,6)
     indices_max <- dim(n(flbs_in[[biol_no]]))
-    prop_in <- (spwn(flbs_in[[biol_no]])[1,] - flfs[[fishery_no]]@hperiod[1,]) / (flfs[[fishery_no]]@hperiod[2,] - flfs[[fishery_no]]@hperiod[1,])
+    prop_in <- (spwn(flbs_in[[biol_no]])[1,] %-% flfs[[fishery_no]]@hperiod[1,]) %/% (flfs[[fishery_no]]@hperiod[2,] - flfs[[fishery_no]]@hperiod[1,])
     # If hperiod1 > spwn, prop = 1
     # If hperiod2 < spwn, prop = 0
-    prop_in[flfs[[fishery_no]]@hperiod[1,] >= spwn(flbs_in[[biol_no]])[1,]] <- 0
-    prop_in[flfs[[fishery_no]]@hperiod[2,] <= spwn(flbs_in[[biol_no]])[1,]] <- 1
+    nunit <- dim(flq)[3]
+    for (i in 1:nunit){
+        prop_in_temp <- prop_in[,,i,]
+        prop_in_temp@.Data[flfs[[fishery_no]]@hperiod[1,,1] >= spwn(flbs_in[[biol_no]])[1,,i] ] <- 0
+        prop_in_temp@.Data[flfs[[fishery_no]]@hperiod[2,,1] <= spwn(flbs_in[[biol_no]])[1,,i] ] <- 1
+        prop_in[,,i,] <- prop_in_temp
+    }
     prop_out <- test_operatingModel_f_prop_spwn_FLQ_subset(flfs, flbs, fc, fishery_no, biol_no, indices_min[-1], indices_max[-1])
     test_FLQuant_equal(prop_in, prop_out) 
     # Subset of f
@@ -209,7 +214,49 @@ test_that("operatingModel f_prop_spwn methods",{
     test_FLQuant_equal(prop_in[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], prop_out)
 })
     
-test_that("operatingModel srp methods",{
+
+test_that("operatingModel srp methods with units",{
+    # Random simple OM with units - 1 biol fished by 1 catch
+    flq <- random_FLQuant_generator()
+    flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
+    # Pull out just FLBiols for testing
+    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=1, max_fisheries=1)
+    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
+    FCB <- array(NA, dim=c(1,3))
+    FCB[1,] <- c(1,1,1)
+    attr(fc@target, "FCB") <- FCB
+    # Biol 1
+    biol_no <- 1
+    fishery_no <- 1
+    catch_no <- 1
+
+    # hperiod should not have units
+    dim <- dim(flfs[[fishery_no]]@hperiod)
+
+
+    dim[1] <- 1
+    indices_max <- round(runif(6,1,dim))
+    indices_min <- round(runif(6,1,indices_max))
+    # Get full range
+    f_indices_min <- rep(1,6)
+    f_indices_max <- dim(om[["biols"]][[biol_no]][["biol"]]@n)
+    prop_in <- test_operatingModel_f_prop_spwn_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, biol_no, f_indices_min[-1], f_indices_max[-1])
+    f_in <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, f_indices_min, f_indices_max)
+    # Add dimnames else sweep fails
+    dimnames(f_in) <- dimnames(flbs_in[[biol_no]]@m)
+    dimnames(prop_in)[2:6] <- dimnames(flbs_in[[biol_no]]@n)[2:6]
+    srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-sweep(f_in, 2:6, prop_in, "*") -sweep(flbs_in[[biol_no]]@m, 2:6, flbs_in[[biol_no]]@spwn[1,], "*")))
+    srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
+    test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
+    test_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
+
+
+})
+
+
+
+test_that("operatingModel srp methods with annual OM",{
     # Assumes that f_prop_spwn and f is working correctly
     # Calculated as SSB: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
     om <- make_test_operatingModel1(niters = 100)

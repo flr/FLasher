@@ -178,6 +178,8 @@ random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 1,
     fishery <- FLFishery(catches)
     fishery@hperiod[1,] <- runif(prod(dim(fishery@hperiod)[2:6]),min=0, max=1)
     fishery@hperiod[2,] <- runif(prod(dim(fishery@hperiod)[2:6]),min=fishery@hperiod[1,], max=1)
+    # hperiod should only have length 1 in the unit dimension
+    fishery@hperiod <- fishery@hperiod[,,1,]
     # Effort should only have length 1 in the unit dimension
     dimnames <- dimnames(fishery@effort)
     dimnames[[3]] <- "all"

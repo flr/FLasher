@@ -222,8 +222,9 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
                     for (unsigned int iter_count=indices_min[4]; iter_count <= indices_max[4]; ++iter_count){
                         // Fix this depending on representation of fperiod
                         //Rprintf("year_count: %i, unit_count: %i, season_count: %i, area_count: %i, iter_count: %i\n", year_count, unit_count, season_count, area_count, iter_count);
-                        double fstart = hperiod(1,year_count, unit_count, season_count, area_count, iter_count);
-                        double fend = hperiod(2,year_count, unit_count, season_count, area_count, iter_count);
+                        // hperiod has length 1 in the unit dimension
+                        double fstart = hperiod(1,year_count, 1, season_count, area_count, iter_count);
+                        double fend = hperiod(2,year_count, 1, season_count, area_count, iter_count);
                         double spwn = spwn_all(1,year_count, unit_count, season_count, area_count, iter_count);
                         if (fend < spwn){
                             propf = 1.0;
