@@ -5,7 +5,7 @@
 
 #include "../../inst/include/fwdControl.h"
 
-// maps the quantity type character string to the enumerated types
+// maps the quant type character string to the enumerated types
 void fwdControl::init_target_map(){
     // Fill up the map
     target_map["f"] = target_fbar;
@@ -30,20 +30,17 @@ fwdControl::fwdControl(){
 // Constructor used as intrinsic 'as'
 fwdControl::fwdControl(SEXP fwd_control_sexp){
 	Rcpp::S4 fwd_control_s4 = Rcpp::as<Rcpp::S4>(fwd_control_sexp);
-	Rcpp::S4 target_s4 = fwd_control_s4.slot("target");
-    target_iters = target_s4.slot("iters");
-    target = target_s4.slot("element");
-    FCB = Rcpp::as<Rcpp::IntegerMatrix>(target_s4.slot("FCB"));
+    target_iters = fwd_control_s4.slot("iters");
+    target = fwd_control_s4.slot("target");
+    FCB = Rcpp::as<Rcpp::IntegerMatrix>(fwd_control_s4.slot("FCB"));
     init_target_map();
 }
 
-// intrinsic 'wrap' - does not return FCB as not part of class
+// Intrinsic 'wrap' - does not return FCB as not part of class
 fwdControl::operator SEXP() const{
     Rcpp::S4 fwd_control_s4("fwdControl");
-    Rcpp::S4 fwd_element_s4("fwdElement");
-    fwd_element_s4.slot("element") = target;
-    fwd_element_s4.slot("iters") = target_iters;
-    fwd_control_s4.slot("target") = fwd_element_s4;
+    fwd_control_s4.slot("target") = target;
+    fwd_control_s4.slot("iters") = target_iters;
     return Rcpp::wrap(fwd_control_s4);
 }
 
@@ -332,7 +329,7 @@ unsigned int fwdControl::get_target_effort_timestep(unsigned int target_no, unsi
  */
 std::string fwdControl::get_target_quantity(const int target_no, const int sim_target_no) const{
     auto row = get_target_row(target_no, sim_target_no);
-    Rcpp::CharacterVector quantities = target["quantity"];
+    Rcpp::CharacterVector quantities = target["quant"];
     return Rcpp::as<std::string>(quantities[row]);
 }
 
@@ -441,6 +438,6 @@ Rcpp::NumericVector get_dataframe_value(Rcpp::DataFrame ctrl){
 
 // [[Rcpp::export]]
 Rcpp::CharacterVector get_dataframe_quantity(Rcpp::DataFrame ctrl){
-    Rcpp::CharacterVector quantity = ctrl["quantity"];
+    Rcpp::CharacterVector quantity = ctrl["quant"];
     return quantity;
 }

@@ -6242,17 +6242,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_operatingModel_run
-operatingModel test_operatingModel_run(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double indep_min, const double indep_max);
-RcppExport SEXP FLasher_test_operatingModel_run(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP) {
+operatingModel test_operatingModel_run(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double effort_mult_initial, const double indep_min, const double indep_max);
+RcppExport SEXP FLasher_test_operatingModel_run(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP effort_mult_initialSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
     Rcpp::traits::input_parameter< fwdBiolsAD >::type biols(biolsSEXP);
     Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const double >::type effort_mult_initial(effort_mult_initialSEXP);
     Rcpp::traits::input_parameter< const double >::type indep_min(indep_minSEXP);
     Rcpp::traits::input_parameter< const double >::type indep_max(indep_maxSEXP);
-    __result = Rcpp::wrap(test_operatingModel_run(flfs, biols, ctrl, indep_min, indep_max));
+    __result = Rcpp::wrap(test_operatingModel_run(flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max));
     return __result;
 END_RCPP
 }

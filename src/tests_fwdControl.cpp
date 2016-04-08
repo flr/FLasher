@@ -28,11 +28,6 @@ fwdControl test_fwdControl_assignment_operator(fwdControl fc){
     return out;
 }
 
-//// [[Rcpp::export]]
-//unsigned int test_fwdControl_get_ntimestep(const fwdControl control){
-//    return control.get_ntimestep();
-//}
-
 // [[Rcpp::export]]
 Rcpp::DataFrame test_fwdControl_get_target(const fwdControl control){
     return control.get_target();

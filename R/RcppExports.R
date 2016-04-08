@@ -1909,8 +1909,8 @@ test_operatingModel_project_fisheries <- function(flfs, biols, ctrl, timestep) {
     .Call('FLasher_test_operatingModel_project_fisheries', PACKAGE = 'FLasher', flfs, biols, ctrl, timestep)
 }
 
-test_operatingModel_run <- function(flfs, biols, ctrl, indep_min, indep_max) {
-    .Call('FLasher_test_operatingModel_run', PACKAGE = 'FLasher', flfs, biols, ctrl, indep_min, indep_max)
+test_operatingModel_run <- function(flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max) {
+    .Call('FLasher_test_operatingModel_run', PACKAGE = 'FLasher', flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max)
 }
 
 test_operatingModel_fbar_subset1 <- function(flfs, biols, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max) {

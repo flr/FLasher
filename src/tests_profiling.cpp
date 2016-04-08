@@ -14,6 +14,94 @@
  * They are not called as part of the testing suite - they are called by the R scratch script
  */
 
+
+
+//--------- Conditional --------
+
+// indep has a length of 1
+// [[Rcpp::export]]
+std::vector<double> test_standard_conditional(std::vector<double> indep){
+    std::vector<adouble> indep_ad(1, indep[0]);
+    // Tape on
+    CppAD::Independent(indep_ad);
+    std::vector<adouble> dep_ad(1, 0.0);
+    // Standard conditional - only one option gets taped
+    if (indep_ad[0] >= 4.0){
+        Rprintf("Taping y = x^2\n");
+        dep_ad[0] = indep_ad[0] * indep_ad[0];
+    }
+    else {
+        Rprintf("Taping y = x^3\n");
+        dep_ad[0] = indep_ad[0] * indep_ad[0] * indep_ad[0];
+    }
+    // Tape off
+    CppAD::ADFun<double> fun(indep_ad, dep_ad);
+    std::vector<double> dep(1, 0.0);
+    std::vector<double> jac(1, 0.0);
+    std::vector<double> out(4, 0.0);
+    // Interogate tape at at x >= 4
+    indep[0] = 4.0;
+    dep = fun.Forward(0, indep); 
+    jac = fun.Jacobian(indep);
+    out[0] = dep[0];
+    out[1] = jac[0];
+    // Interrogate at x = 3
+    indep[0] = 3.0;
+    dep = fun.Forward(0, indep); 
+    jac = fun.Jacobian(indep);
+    out[2] = dep[0];
+    out[3] = jac[0];
+    // Both get evaluated at the one that was taped - not what we want
+    return out;
+}
+
+// [[Rcpp::export]]
+std::vector<double> test_cppad_conditional(std::vector<double> indep){
+    std::vector<adouble> indep_ad(1, indep[0]);
+    // Tape on
+    CppAD::Independent(indep_ad);
+    std::vector<adouble> dep_ad(1, 0.0);
+
+    // Records both sides
+    // result = CondExpRel(left, right, if_true, if_false) 
+    // All types the same - no double
+    adouble max_indep = 4.0;
+
+//    dep_ad[0] = CondExpGe(indep_ad[0], max_indep,
+//            indep_ad[0] * indep_ad[0],
+//            indep_ad[0] * indep_ad[0] * indep_ad[0]);
+
+    // Can we execute more complicated things?
+    // Looks like it
+    dep_ad[0] = CondExpGe(indep_ad[0], max_indep,
+            ({ 
+            adouble test = indep_ad[0];
+            test * test;
+            })
+            ,
+            {indep_ad[0] * indep_ad[0] * indep_ad[0]});
+    // Tape off
+    CppAD::ADFun<double> fun(indep_ad, dep_ad);
+    std::vector<double> dep(1, 0.0);
+    std::vector<double> jac(1, 0.0);
+    std::vector<double> out(4, 0.0);
+    // Interogate tape at at x >= 4
+    indep[0] = 4.0;
+    dep = fun.Forward(0, indep); 
+    jac = fun.Jacobian(indep);
+    out[0] = dep[0];
+    out[1] = jac[0];
+    // Interrogate at x = 3
+    indep[0] = 3.0;
+    dep = fun.Forward(0, indep); 
+    jac = fun.Jacobian(indep);
+    out[2] = dep[0];
+    out[3] = jac[0];
+    // Both get evaluated at the one that was taped - not what we want
+    return out;
+}
+
+
 //--------- NA tests -------------
 
 
