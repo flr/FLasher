@@ -967,6 +967,7 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no) const
  * \param sim_target_no References the target column in the control dataframe. Starts at 1.
  */
 std::vector<adouble> operatingModel::get_target_value(const int target_no, const int sim_target_no) const{
+    Rprintf("Get target value\n");
     // Pull out values for all iterations for the sim targets from the control object
     auto niter = get_niter(); // number of iters taken from effort of first fishery
     auto ctrl_niter = ctrl.get_niter();
@@ -979,11 +980,16 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
     std::vector<adouble> value(niter);
     // Are we dealing with a min / max value?
     // If so we need to get the current state of the operating model to compare with
-    double max_col = ctrl.get_target_num_col(target_no, sim_target_no, "max");
-    double min_col = ctrl.get_target_num_col(target_no, sim_target_no, "min");
-    bool max_na = Rcpp::NumericVector::is_na(max_col);
-    bool min_na = Rcpp::NumericVector::is_na(min_col);
+    // This should not ask for a min / max column in target, but check the first value of min / max column in iters
+    //double max_col = ctrl.get_target_num_col(target_no, sim_target_no, "max");
+    //double min_col = ctrl.get_target_num_col(target_no, sim_target_no, "min");
+    std::vector<double> max_col = ctrl.get_target_value(target_no, sim_target_no, 3); 
+    std::vector<double> min_col = ctrl.get_target_value(target_no, sim_target_no, 1); 
+    // Just check first iteration of min and max values
+    bool max_na = Rcpp::NumericVector::is_na(max_col[0]);
+    bool min_na = Rcpp::NumericVector::is_na(min_col[0]);
     if (!max_na | !min_na){
+        // Get current value in OM to compare to the min and max
         std::vector<adouble> current_value = get_target_value_hat(target_no, sim_target_no);
         value = current_value;
         if(!max_na){
@@ -997,7 +1003,12 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
             else {
                 ctrl_value_long.assign(ctrl_value.begin(), ctrl_value.end());
             }
-            std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::min(x, y);});
+            // Conditional AD min
+            for (auto i=0; i < value.size(); ++i){
+                value[i] = CppAD::CondExpLt(value[i], ctrl_value_long[i], value[i], ctrl_value_long[i]);
+            }
+            // Incorrect for AD - only one path taped
+            //std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::min(x, y);});
         }
         if(!min_na){
             Rprintf("Min target\n");
@@ -1010,7 +1021,11 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
             else {
                 ctrl_value_long.assign(ctrl_value.begin(), ctrl_value.end());
             }
-            std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::max(x, y);});
+            // Conditional AD max
+            for (auto i=0; i < value.size(); ++i){
+                value[i] = CppAD::CondExpGt(value[i], ctrl_value_long[i], value[i], ctrl_value_long[i]);
+            }
+            //std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::max(x, y);});
         }
     }
     // If not min or max, just get the values from the control object

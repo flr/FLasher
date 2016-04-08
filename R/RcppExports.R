@@ -9,8 +9,8 @@ get_dataframe_value <- function(ctrl) {
     .Call('FLasher_get_dataframe_value', PACKAGE = 'FLasher', ctrl)
 }
 
-get_dataframe_quant <- function(ctrl) {
-    .Call('FLasher_get_dataframe_quant', PACKAGE = 'FLasher', ctrl)
+get_dataframe_quantity <- function(ctrl) {
+    .Call('FLasher_get_dataframe_quantity', PACKAGE = 'FLasher', ctrl)
 }
 
 cppad_found <- function() {
@@ -1789,8 +1789,8 @@ test_fwdControl_get_target_value2 <- function(control, target_no, sim_target_no,
     .Call('FLasher_test_fwdControl_get_target_value2', PACKAGE = 'FLasher', control, target_no, sim_target_no, col)
 }
 
-test_fwdControl_get_target_quant <- function(control, target_no, sim_target_no) {
-    .Call('FLasher_test_fwdControl_get_target_quant', PACKAGE = 'FLasher', control, target_no, sim_target_no)
+test_fwdControl_get_target_quantity <- function(control, target_no, sim_target_no) {
+    .Call('FLasher_test_fwdControl_get_target_quantity', PACKAGE = 'FLasher', control, target_no, sim_target_no)
 }
 
 test_fwdControl_get_age_range <- function(control, target_no, sim_target_no) {
