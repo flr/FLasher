@@ -76,14 +76,21 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
         //Rprintf("nr_count: %i\n", nr_count);
         // Get y = f(x0)
         //Rprintf("Forward\n");
+        //Rprintf("indep1: %f\n", indep[0]);
         y = fun.Forward(0, indep); 
         //Rprintf("indep1: %f\n", indep[0]);
         //Rprintf("indep2: %f\n", indep[1]);
-        //Rprintf("y: %f\n", y[0]);
+        Rprintf("error: %f\n", y[0]);
         //Rprintf("y: %f\n", y[1]);
         // Get f'(x0) -  gets Jacobian for all simultaneous targets
         //Rprintf("Getting SparseJacobian\n");
-        jac = fun.SparseJacobian(indep);
+        //jac = fun.SparseJacobian(indep);
+        jac = fun.Jacobian(indep);
+        // Alt - does the same 
+        //std::vector<double> weight(1);
+        //weight[0] = 1.0;
+        //jac   = fun.Reverse(1, weight);
+        //Rprintf("jac[0]: %f\n", jac[0]);
         //Rprintf("Got it\n");
         // Get w (f(x0) / f'(x0)) for each iteration if necessary
         // Loop over simultaneous targets, solving if necessary
@@ -124,6 +131,7 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
         }
         // Update x = x - w
         // Ideally should only update the iterations that have not hit the tolerance
+        //Rprintf("delta_indep[0]: %f\n", delta_indep[0]);
         std::transform(indep.begin(),indep.end(),delta_indep.begin(),indep.begin(),std::minus<double>());
 
         //// indep cannot be less than minimum value or greater than maximum value

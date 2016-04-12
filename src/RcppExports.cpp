@@ -6431,6 +6431,39 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// test_max3
+std::vector<double> test_max3(std::vector<double> indep);
+RcppExport SEXP FLasher_test_max3(SEXP indepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector<double> >::type indep(indepSEXP);
+    __result = Rcpp::wrap(test_max3(indep));
+    return __result;
+END_RCPP
+}
+// test_max2
+std::vector<double> test_max2(std::vector<double> indep);
+RcppExport SEXP FLasher_test_max2(SEXP indepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector<double> >::type indep(indepSEXP);
+    __result = Rcpp::wrap(test_max2(indep));
+    return __result;
+END_RCPP
+}
+// test_max
+std::vector<double> test_max(std::vector<double> indep);
+RcppExport SEXP FLasher_test_max(SEXP indepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector<double> >::type indep(indepSEXP);
+    __result = Rcpp::wrap(test_max(indep));
+    return __result;
+END_RCPP
+}
 // test_standard_conditional
 std::vector<double> test_standard_conditional(std::vector<double> indep);
 RcppExport SEXP FLasher_test_standard_conditional(SEXP indepSEXP) {

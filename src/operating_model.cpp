@@ -590,7 +590,9 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
         unsigned int target_effort_season = 0;
         timestep_to_year_season(target_effort_timestep, biols(1).n().get_nseason(), target_effort_year, target_effort_season);
         Rprintf("target_effort_timestep: %i\n", target_effort_timestep);
-
+        // Get the target value based on control object and current value in the OM (if Max / Min)
+        // This is not part of the operation sequence so is evaluated before we turn on the tape
+        std::vector<adouble> target_value = get_target_value(target_count); // values of all sim targets for the target
         // Turn tape on
         // Set up effort multipliers - do all efforts and iters at same time (keep timesteps, areas, units seperate)
         std::vector<adouble> effort_mult_ad(neffort * niter, effort_mult_initial);
@@ -601,7 +603,7 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
         //Rprintf("target_effort_season: %i\n", target_effort_season);
         // Update fisheries.effort() with effort multiplier in the effort timestep (area and unit effectively ignored)
         //Rprintf("Updating effort with multipler\n");
-        Rprintf("Before updating effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));
+        //Rprintf("Before updating effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));
         for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
             for (int iter_count = 1; iter_count <= niter; ++ iter_count){
                 fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) = 
@@ -609,7 +611,7 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
                     effort_mult_ad[(fisheries_count - 1) * niter + iter_count - 1];
             }
         }
-        Rprintf("After updating effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));
+        //Rprintf("After updating effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));
         Rprintf("Projecting\n");
         // Project fisheries in the target effort timestep
         // (landings and discards are functions of effort in the effort timestep)
@@ -621,11 +623,11 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
             project_biols(target_effort_timestep+1); 
         }
         //Rprintf("Back from projecting\n");
-
         // Calc error
         //Rprintf("Getting desired target values from control object\n");
-        std::vector<adouble> target_value = get_target_value(target_count); // values of all sim targets for the target
+        //std::vector<adouble> target_value = get_target_value(target_count); // values of all sim targets for the target
         //Rprintf("Getting current state of operating model\n");
+        // Get current state of operating model
         std::vector<adouble> target_value_hat = get_target_value_hat(target_count); 
         //Rprintf("Back from target_value_hat\n");
         //Rprintf("Length of target_value_hat: %i\n", target_value.size());
@@ -634,32 +636,24 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
         std::vector<adouble> error(target_value_hat.size());
         //Rprintf("Calculating error\n");
         std::transform(target_value.begin(), target_value.end(), target_value_hat.begin(), error.begin(),
-                //[](adouble x, adouble y){return x - y;});
-                [](adouble x, adouble y){return (x - y) * (x - y);}); // squared error
-
-        Rprintf("target 1. target_value: %f target_value_hat: %f error: %f\n", Value(target_value[0]), Value(target_value_hat[0]), Value(error[0]));
+                [](adouble x, adouble y){return x - y;});
+                //[](adouble x, adouble y){return (x - y) * (x - y);}); // squared error - not as effective
+        //Rprintf("target 1. target_value: %f target_value_hat: %f error: %f\n", Value(target_value[0]), Value(target_value_hat[0]), Value(error[0]));
         //Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", Value(target_value[1]), Value(target_value_hat[1]), Value(error[1]));
-        
-        // Error is being calculated correctly - so why is solver stopping after 2
-
         // Stop recording
         CppAD::ADFun<double> fun(effort_mult_ad, error);
         //Rprintf("Turned off tape\n\n");
-
         // Solve the target
         // double version of effort mult used in solver
         std::vector<double> effort_mult(neffort * niter, effort_mult_initial);
         std::fill(effort_mult.begin(), effort_mult.end(), effort_mult_initial);
-
         //Rprintf("Calling NR\n");
         // indep_min and max should be arguments to run and passable from R
         auto nr_out = newton_raphson(effort_mult, fun, niter, nsim_targets, indep_min, indep_max, 50);
         //Rprintf("NR done\n");
-
         // Check nr_out - if not all 1 then something has gone wrong - flag up warning
-        Rprintf("effort_mult: %f\n", effort_mult[0]);
-
-        Rprintf("Updating effort with solved effort mult\n");
+        //Rprintf("effort_mult: %f\n", effort_mult[0]);
+        //Rprintf("Updating effort with solved effort mult\n");
         for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
             for (int iter_count = 1; iter_count <= niter; ++ iter_count){
                 fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) = 
@@ -667,16 +661,16 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
                     effort_mult[(fisheries_count - 1) * niter + iter_count - 1] / effort_mult_initial;
             }
         }
-        Rprintf("Final effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));
-
-        Rprintf("Projecting again\n");
+        //Rprintf("Final effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));
+        //Rprintf("Projecting again\n");
         project_fisheries(target_effort_timestep); 
         // If space, update biols too
         if ((target_effort_timestep+1) <= max_timestep){
             project_biols(target_effort_timestep+1); 
         }
         //Rprintf("Done projecting again\n");
-        Rprintf("Discards: %f\n", Value((fisheries(1,1).discards())(1,2,1,1,1,1)));
+        //Rprintf("Discards: %f\n", Value((fisheries(1,1).discards())(1,2,1,1,1,1)));
+        //Rprintf("Landings: %f\n", Value((fisheries(1,1).landings())(1,2,1,1,1,1)));
     }
     Rprintf("Leaving run\n");
 }
@@ -864,7 +858,7 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no) c
  * \param sim_target_no References the simultaneous target in the target set. Starts at 1.
  */
 std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, const int sim_target_no) const{
-    Rprintf("In get_target_value_hat sim_target_no\n");
+    // Rprintf("In get_target_value_hat sim_target_no\n");
     Rprintf("sim_target_no: %i\n", sim_target_no);
     // Target information: type, fishery, catch, biol, etc
     auto niter = get_niter();
@@ -888,7 +882,7 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     else if (!Rcpp::IntegerVector::is_na(catch_no)){
         nunit = fisheries(fishery_no, catch_no).landings_n().get_nunit();
     }
-    Rprintf("nunit: %i\n", nunit);
+    //Rprintf("nunit: %i\n", nunit);
     // Else unit comes from fishery which is always 1
     std::vector<unsigned int> indices_min = {year,1,season,1,1};
     std::vector<unsigned int> indices_max = {year,nunit,season,1,niter};
@@ -1007,15 +1001,15 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
             else {
                 ctrl_value_long.assign(ctrl_value.begin(), ctrl_value.end());
             }
-            // Conditional AD min
-            for (auto i=0; i < value.size(); ++i){
-                Rprintf("value[%i]: %f\n", i, Value(value[i]));
-                Rprintf("ctrl_value_long[%i]: %f\n", i, Value(ctrl_value_long[i]));
-                value[i] = CppAD::CondExpLt(value[i], ctrl_value_long[i], value[i], ctrl_value_long[i]);
-                Rprintf("so value[%i]: %f\n", i, Value(value[i]));
-            }
-            // Incorrect for AD - only one path taped
-            //std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::min(x, y);});
+            // No need to use CppAD Conditional as target value is evaluated before the operation sequence, i.e. not on the tape
+            //for (auto i=0; i < value.size(); ++i){
+            //    auto temp_value = value[i];
+            //    Rprintf("value[%i]: %f\n", i, Value(value[i]));
+            //    Rprintf("ctrl_value_long[%i]: %f\n", i, Value(ctrl_value_long[i]));
+            //    value[i] = CppAD::CondExpLt(value[i], ctrl_value_long[i], value[i], ctrl_value_long[i]);
+            //    Rprintf("so value[%i]: %f\n", i, Value(value[i]));
+            //}
+            std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::min(x, y);});
         }
         if(!min_na){
             Rprintf("Min target\n");
@@ -1029,10 +1023,10 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
                 ctrl_value_long.assign(ctrl_value.begin(), ctrl_value.end());
             }
             // Conditional AD max
-            for (auto i=0; i < value.size(); ++i){
-                value[i] = CppAD::CondExpGt(value[i], ctrl_value_long[i], value[i], ctrl_value_long[i]);
-            }
-            //std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::max(x, y);});
+            //for (auto i=0; i < value.size(); ++i){
+            //    value[i] = CppAD::CondExpGt(value[i], ctrl_value_long[i], value[i], ctrl_value_long[i]);
+            //}
+            std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::max(x, y);});
         }
     }
     // If not min or max, just get the values from the control object
@@ -1045,7 +1039,7 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
             value.assign(ctrl_value.begin(), ctrl_value.end());
         }
     }
-    Rprintf("Returned value: %f\n", Value(value[0]));
+    //Rprintf("Returned value: %f\n", Value(value[0]));
     return value;
 }
 //@}

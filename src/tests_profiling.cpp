@@ -18,6 +18,90 @@
 
 //--------- Conditional --------
 
+// [[Rcpp::export]]
+std::vector<double> test_max3(std::vector<double> indep){
+    std::vector<adouble> indep_ad(1, indep[0]);
+    std::vector<adouble> error(1);
+    adouble target = 0;
+
+    // Tape on
+    CppAD::Independent(indep_ad);
+    std::vector<adouble> dep_ad(1, 0.0);
+    std::vector<adouble> max_value(1);
+    max_value[0] = 100;
+    dep_ad[0] = CppAD::CondExpLt(indep_ad[0] * indep_ad[0], max_value[0], indep_ad[0] * indep_ad[0], max_value[0]);
+    error[0] = dep_ad[0] - target;
+
+    // Tape off
+    CppAD::ADFun<double> fun(indep_ad, error);
+    // solve
+    newton_raphson(indep, fun, 1, 1, -10, 10, 50, 1e-6);
+
+    return indep;
+}
+
+// More complicated
+// [[Rcpp::export]]
+std::vector<double> test_max2(std::vector<double> indep){
+    std::vector<adouble> indep_ad(1, indep[0]);
+
+    // Tape on
+    CppAD::Independent(indep_ad);
+    std::vector<adouble> dep_ad(1, 0.0);
+    std::vector<adouble> max_value(1);
+    max_value[0] = 100;
+    dep_ad[0] = CppAD::CondExpLt(indep_ad[0] * indep_ad[0], max_value[0], indep_ad[0] * indep_ad[0], max_value[0]);
+    // Tape off
+    CppAD::ADFun<double> fun(indep_ad, dep_ad);
+
+    // Interrogate repeatedly
+    std::vector<double> out(indep.size() * 2);
+    std::vector<double> dep(1, 0.0);
+    std::vector<double> jac(1, 0.0);
+
+    for (auto i=0; i<indep.size(); ++i){
+        std::vector<double> indep_temp(1);
+        indep_temp[0] = indep[i];
+        dep = fun.Forward(0, indep_temp); 
+        jac = fun.Jacobian(indep_temp);
+        out[(i*2)] = dep[0];
+        out[(i*2)+1] = jac[0];
+    }
+
+    return out;
+}
+
+
+// [[Rcpp::export]]
+std::vector<double> test_max(std::vector<double> indep){
+    std::vector<adouble> indep_ad(1, indep[0]);
+    // Tape on
+    CppAD::Independent(indep_ad);
+    std::vector<adouble> dep_ad(1, 0.0);
+    std::vector<adouble> max_value(1);
+    max_value[0] = 100;
+    dep_ad[0] = CppAD::CondExpLt(indep_ad[0], max_value[0], indep_ad[0], max_value[0]);
+    // Tape off
+    CppAD::ADFun<double> fun(indep_ad, dep_ad);
+    // Interrogate repeatedly
+    std::vector<double> out(indep.size() * 2);
+    std::vector<double> dep(1, 0.0);
+    std::vector<double> jac(1, 0.0);
+
+    for (auto i=0; i<indep.size(); ++i){
+        std::vector<double> indep_temp(1);
+        indep_temp[0] = indep[i];
+        dep = fun.Forward(0, indep_temp); 
+        jac = fun.Jacobian(indep_temp);
+        out[(i*2)] = dep[0];
+        out[(i*2)+1] = jac[0];
+    }
+
+    return out;
+}
+
+
+
 // indep has a length of 1
 // [[Rcpp::export]]
 std::vector<double> test_standard_conditional(std::vector<double> indep){
@@ -73,14 +157,20 @@ std::vector<double> test_cppad_conditional(std::vector<double> indep){
 
     // Can we execute more complicated things?
     // Looks like it
+    Rprintf("Taping\n");
     dep_ad[0] = CondExpGe(indep_ad[0], max_indep,
             ({ 
+             Rprintf("squared\n");
             adouble test = indep_ad[0];
             test * test;
             })
             ,
-            {indep_ad[0] * indep_ad[0] * indep_ad[0]});
+            ({
+             Rprintf("cubed\n");
+            indep_ad[0] * indep_ad[0] * indep_ad[0];
+            }));
     // Tape off
+    Rprintf("Done taping\n");
     CppAD::ADFun<double> fun(indep_ad, dep_ad);
     std::vector<double> dep(1, 0.0);
     std::vector<double> jac(1, 0.0);

@@ -1957,6 +1957,18 @@ test_operatingModel_get_target_age_range_indices <- function(flfs, biols, ctrl, 
     .Call('FLasher_test_operatingModel_get_target_age_range_indices', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no, sim_target_no)
 }
 
+test_max3 <- function(indep) {
+    .Call('FLasher_test_max3', PACKAGE = 'FLasher', indep)
+}
+
+test_max2 <- function(indep) {
+    .Call('FLasher_test_max2', PACKAGE = 'FLasher', indep)
+}
+
+test_max <- function(indep) {
+    .Call('FLasher_test_max', PACKAGE = 'FLasher', indep)
+}
+
 test_standard_conditional <- function(indep) {
     .Call('FLasher_test_standard_conditional', PACKAGE = 'FLasher', indep)
 }
