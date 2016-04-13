@@ -1853,8 +1853,8 @@ test_euclid_norm <- function(xvec) {
     .Call('FLasher_test_euclid_norm', PACKAGE = 'FLasher', xvec)
 }
 
-test_NR1 <- function(initial_value, max_iters, indep_min, indep_max, tolerance) {
-    .Call('FLasher_test_NR1', PACKAGE = 'FLasher', initial_value, max_iters, indep_min, indep_max, tolerance)
+test_NR_quad_iters <- function(coefs, initial_value, max_iters, indep_min, indep_max, tolerance) {
+    .Call('FLasher_test_NR_quad_iters', PACKAGE = 'FLasher', coefs, initial_value, max_iters, indep_min, indep_max, tolerance)
 }
 
 test_NR2 <- function(initial_value, max_iters, indep_min, indep_max, tolerance) {
@@ -1909,8 +1909,8 @@ test_operatingModel_project_fisheries <- function(flfs, biols, ctrl, timestep) {
     .Call('FLasher_test_operatingModel_project_fisheries', PACKAGE = 'FLasher', flfs, biols, ctrl, timestep)
 }
 
-test_operatingModel_run <- function(flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max) {
-    .Call('FLasher_test_operatingModel_run', PACKAGE = 'FLasher', flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max)
+test_operatingModel_run <- function(flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max, nr_iters = 50L) {
+    .Call('FLasher_test_operatingModel_run', PACKAGE = 'FLasher', flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max, nr_iters)
 }
 
 test_operatingModel_fbar_subset1 <- function(flfs, biols, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max) {

@@ -35,7 +35,8 @@ double euclid_norm(std::vector<double> x){
  * Also, the Jacobian matrix can be very sparse. 
  * This implementation therefore solves each 'chunk' independently to save inverting a massive matrix.
  * The size of each chunk is given by the number of simulation targets (the parameter nsim_targets).
- * Iterations continue either all the chunks are solved to within the desired tolerance or the maximum number of iterations has been hit.
+ * Iterations continue until either all the chunks are solved to within the desired tolerance or the maximum number of iterations has been hit.
+ * Limits are applied to the minimum and maximum value of indep. These limits are applied while solving to prevent the solver going to strange places.
  * \param indep The initial values of the independent values.
  * \param fun The CppAD function object.
  * \param niter The number of iterations in the simulations.
@@ -60,17 +61,14 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
     std::vector<double> iter_y(nsim_targets);
     std::vector<int> iter_solved(niter, 0); // If 0, that iter has not been solved
     int jac_element = 0; // an index for Jacobian used for subsetting the Jacobian for each iter
-
     // Reasons for stopping
-    //  9 - NA
     //  1 - Solved within tolerance
-    // -1 - Iteration limit reached;
-    // -2 - Min limit reached;
+    // -1 - Iteration limit reached (default position, if it hasn't stopped for any other reason then it's because the iterations have maxed out)
+    // -2 - Min limit reached
     // -3 - Max limit reached
-    std::vector<int> success_code(niter, 9); 
+    std::vector<int> success_code(niter, -1); 
     int nr_count = 0;
     // Keep looping until all sim_targets have been solved, or number of iterations (NR iterations, not FLR iterations) has been hit
-    
     while((std::accumulate(iter_solved.begin(), iter_solved.end(), 0) < niter) & (nr_count < max_iters)){ 
         ++nr_count;
         //Rprintf("nr_count: %i\n", nr_count);
@@ -78,7 +76,7 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
         //Rprintf("Forward\n");
         //Rprintf("indep1: %f\n", indep[0]);
         y = fun.Forward(0, indep); 
-        //Rprintf("indep1: %f\n", indep[0]);
+        Rprintf("indep1: %f\n", indep[0]);
         //Rprintf("indep2: %f\n", indep[1]);
         Rprintf("error: %f\n", y[0]);
         //Rprintf("y: %f\n", y[1]);
@@ -90,8 +88,7 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
         //std::vector<double> weight(1);
         //weight[0] = 1.0;
         //jac   = fun.Reverse(1, weight);
-        //Rprintf("jac[0]: %f\n", jac[0]);
-        //Rprintf("Got it\n");
+        Rprintf("jac[0]: %f\n", jac[0]);
         // Get w (f(x0) / f'(x0)) for each iteration if necessary
         // Loop over simultaneous targets, solving if necessary
         for (int iter_count = 0; iter_count < niter; ++iter_count){
@@ -122,6 +119,8 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
                 if (euclid_norm(iter_y) < tolerance){
                     iter_solved[iter_count] = 1;
                     success_code[iter_count] = 1;
+                    // Set that iter_y to 0 as we want to stop updating all the solved iterations when solving the remainder
+                    fill(iter_y.begin(), iter_y.end(), 0.0);
                 }
                 // put iter_y into delta_indep - needs for loop
                 for(int jac_count = 0; jac_count < nsim_targets; ++jac_count){
@@ -133,21 +132,24 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
         // Ideally should only update the iterations that have not hit the tolerance
         //Rprintf("delta_indep[0]: %f\n", delta_indep[0]);
         std::transform(indep.begin(),indep.end(),delta_indep.begin(),indep.begin(),std::minus<double>());
-
-        //// indep cannot be less than minimum value or greater than maximum value
-        //for (auto minmax_counter = 0; minmax_counter < indep.size(); ++minmax_counter){
-        //    // Have we breached min limit?
-        //    if (indep[minmax_counter] < indep_min){
-        //        indep[minmax_counter] = indep_min;
-        //        // Which iter is this
-        //        success_code[minmax_counter / nsim_targets] = -2;
-        //    }
-        //    // Have we breached max limit?
-        //    if (indep[minmax_counter] > indep_max){
-        //        indep[minmax_counter] = indep_max;
-        //        success_code[minmax_counter / nsim_targets] = -3;
-        //    }
-        //} 
+        //Rprintf("new indep[0]: %f\n", indep[0]);
+        // Bluntly enforce limits
+        // indep cannot be less than minimum value or greater than maximum value
+        // Limit during solving loop to prevent the solver going off to weird places? Yes
+        // Or just ID the breached iters at the end and correct them (even though solver may go outside limit on way to solution within limit)
+        // Should each indep value have it's own limit? - maybe later
+        for (auto minmax_counter = 0; minmax_counter < indep.size(); ++minmax_counter){
+            // Have we breached min limit?
+            if (indep[minmax_counter] <= indep_min){
+                indep[minmax_counter] = indep_min;
+                success_code[minmax_counter / nsim_targets] = -2;
+            }
+            // Have we breached max limit?
+            if (indep[minmax_counter] >= indep_max){
+                indep[minmax_counter] = indep_max;
+                success_code[minmax_counter / nsim_targets] = -3;
+            }
+        } 
     }
     Rprintf("Leaving solver after %i iterations.\n\n", nr_count);
     return success_code;

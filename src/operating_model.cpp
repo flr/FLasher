@@ -545,7 +545,7 @@ void operatingModel::project_fisheries(const int timestep){
  * \param indep_min The minimum value of effort multipliers
  * \param indep_max The maximum value of effort multipliers
  */
-void operatingModel::run(const double effort_mult_initial, const double indep_min, const double indep_max){
+void operatingModel::run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters){
     Rprintf("Running\n");
     // Housekeeping
     auto niter = get_niter(); // number of iters taken from effort of first fishery
@@ -654,7 +654,7 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
         std::fill(effort_mult.begin(), effort_mult.end(), effort_mult_initial);
         //Rprintf("Calling NR\n");
         // indep_min and max should be arguments to run and passable from R
-        auto nr_out = newton_raphson(effort_mult, fun, niter, nsim_targets, indep_min, indep_max, 50);
+        auto nr_out = newton_raphson(effort_mult, fun, niter, nsim_targets, indep_min, indep_max, nr_iters);
         //Rprintf("NR done\n");
         // Check nr_out - if not all 1 then something has gone wrong - flag up warning
         //Rprintf("effort_mult: %f\n", effort_mult[0]);

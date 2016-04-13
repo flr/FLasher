@@ -65,7 +65,7 @@ class operatingModel {
         FLQuantAD get_f(const int biol_no) const;
         void project_biols(const int timestep); // Uses effort in previous timestep
         void project_fisheries(const int timestep); // Uses effort in that timestep
-        void run(const double effort_mult_initial, const double indep_min, const double); 
+        void run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters = 50); 
 
         FLQuantAD eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         // The actual current target values in the OM - to be compared to the desired values

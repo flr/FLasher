@@ -102,9 +102,9 @@ operatingModel test_operatingModel_project_fisheries(FLFisheriesAD flfs, fwdBiol
 }
 
 // [[Rcpp::export]]
-operatingModel test_operatingModel_run(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double effort_mult_initial, const double indep_min, const double indep_max){
+operatingModel test_operatingModel_run(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double effort_mult_initial, const double indep_min, const double indep_max, const int nr_iters = 50){
     operatingModel om(flfs, biols, ctrl);
-    om.run(effort_mult_initial, indep_min, indep_max);
+    om.run(effort_mult_initial, indep_min, indep_max, nr_iters);
     return om;
 }
 
