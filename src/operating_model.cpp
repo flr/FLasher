@@ -409,6 +409,7 @@ void operatingModel::project_biols(const int timestep){
         std::vector<unsigned int> prev_indices_max{biol_dim[0], prev_year, biol_dim[2], prev_season, area, niter};
         // Get survivors from last timestep 
         FLQuantAD z_temp = get_f(biol_counter, prev_indices_min, prev_indices_max) + biols(biol_counter).m(prev_indices_min, prev_indices_max);
+        //FLQuantAD z_temp(prev_indices_max[0] - prev_indices_min[0]+1, prev_indices_max[1] - prev_indices_min[1]+1, prev_indices_max[2] - prev_indices_min[2]+1, prev_indices_max[3] - prev_indices_min[3]+1, prev_indices_max[4] - prev_indices_min[4]+1, prev_indices_max[5] - prev_indices_min[5]+1, 0.0);
         FLQuantAD survivors = biols(biol_counter).n(prev_indices_min, prev_indices_max) * exp(-1.0 * z_temp);
         // Update biol in timestep by putting survivors into correct age slots
         // Process by unit (which are effectively distinct)
@@ -419,10 +420,15 @@ void operatingModel::project_biols(const int timestep){
             // Else, same age in next timestep
             // Determine if this is a recruitment timestep for this unit
             bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, timestep);
+            //bool recruiting_now = true;
             unsigned int age_shift = 0;
+            std::vector<adouble> rec(niter, 0.0);
             if (recruiting_now){
                 age_shift = 1;
+                // Get the recruitment, all iters
+                rec = calc_rec(biol_counter, ucount, timestep);
             }
+            // Need to loop over things as objects are awkward size
             for (unsigned int icount = 1; icount <= niter; ++icount){
                 // Place all but the final survivor age (careful with age shift) - final survivor age dealt with a bit later
                 for (unsigned int qcount = 1; qcount <= (biol_dim[0] - 1); ++qcount){
@@ -431,9 +437,6 @@ void operatingModel::project_biols(const int timestep){
                 // If it is the recruitment season add final age of survivors into the plus group
                 if (recruiting_now){
                     biols(biol_counter).n(biol_dim[0], year, ucount, season, area, icount) = biols(biol_counter).n(biol_dim[0], year, ucount, season, area, icount) + survivors(biol_dim[0], 1, ucount, 1, 1, icount);
-                    // Get the recruitment
-                    std::vector<adouble> rec = calc_rec(biol_counter, ucount, timestep);
-                    //std::vector<adouble> rec(niter, 0.0);
                     // Put recruitment into first age
                     biols(biol_counter).n(1, year, ucount, season, area, icount) = rec[icount-1];
                 }
@@ -598,7 +601,7 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
         std::vector<adouble> effort_mult_ad(neffort * niter, effort_mult_initial);
         std::fill(effort_mult_ad.begin(), effort_mult_ad.end(), effort_mult_initial);
         CppAD::Independent(effort_mult_ad);
-        Rprintf("Turned on tape\n");
+        //Rprintf("Turned on tape\n");
         //Rprintf("target_effort_year: %i\n", target_effort_year);
         //Rprintf("target_effort_season: %i\n", target_effort_season);
         // Update fisheries.effort() with effort multiplier in the effort timestep (area and unit effectively ignored)
@@ -612,14 +615,16 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
             }
         }
         //Rprintf("After updating effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));
-        Rprintf("Projecting\n");
+        //Rprintf("Projecting\n");
         // Project fisheries in the target effort timestep
         // (landings and discards are functions of effort in the effort timestep)
+        Rprintf("Projecting fisheries\n");
         project_fisheries(target_effort_timestep); 
         // Project biology in the target effort timestep plus 1
         // (biology abundances are functions of effort in the previous timestep)
         // Only update if there is room
         if ((target_effort_timestep+1) <= max_timestep){
+            Rprintf("Projecting biols\n");
             project_biols(target_effort_timestep+1); 
         }
         //Rprintf("Back from projecting\n");
@@ -924,7 +929,7 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
         else if (!Rcpp::IntegerVector::is_na(rel_catch)){
             rel_nunit = fisheries(rel_fishery, rel_catch).landings_n().get_nunit();
         }
-        Rprintf("rel_nunit: %i\n", rel_nunit);
+        //Rprintf("rel_nunit: %i\n", rel_nunit);
         std::vector<unsigned int> rel_indices_min = {rel_year,1,rel_season,1,1};
         std::vector<unsigned int> rel_indices_max = {rel_year,rel_nunit,rel_season,1,niter};
         FLQuantAD rel_target_value = eval_om(target_type, rel_fishery, rel_catch, rel_biol, rel_indices_min, rel_indices_max);
