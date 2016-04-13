@@ -101,25 +101,25 @@ test_that("fwdControl accessors", {
 test_that("fwdControl get_FCB methods", {
     fwc <- random_fwdControl_generator()
     # Get FC
-    biol_no <- sample(unique(fwc@target@FCB[,"B"]),1)
+    biol_no <- sample(unique(fwc@FCB[,"B"]),1)
     FC_out <- test_fwdControl_get_FC(fwc, biol_no)
-    FC_in <- fwc@target@FCB[fwc@target@FCB[,"B"] == biol_no,c("F","C"), drop=FALSE]
+    FC_in <- fwc@FCB[fwc@FCB[,"B"] == biol_no,c("F","C"), drop=FALSE]
     expect_equal(unname(FC_in), FC_out)
     # What if biol not found in FCB? - empty array - no rows
-    biol_no <- max(fwc@target@FCB[,"B"])+1
+    biol_no <- max(fwc@FCB[,"B"])+1
     FC_out <- test_fwdControl_get_FC(fwc, biol_no)
     expect_equal(nrow(FC_out), 0)
     # Get B
-    row_no <- sample(nrow(fwc@target@FCB),1)
-    FC <- fwc@target@FCB[row_no,c("F","C")]
-    B_out <- test_fwdControl_get_B(fwc, fwc@target@FCB[row_no,"F"], fwc@target@FCB[row_no,"C"])
-    B_in <- fwc@target@FCB[(fwc@target@FCB[,"F"] == FC["F"]) & (fwc@target@FCB[,"C"] == FC["C"]),"B"]
+    row_no <- sample(nrow(fwc@FCB),1)
+    FC <- fwc@FCB[row_no,c("F","C")]
+    B_out <- test_fwdControl_get_B(fwc, fwc@FCB[row_no,"F"], fwc@FCB[row_no,"C"])
+    B_in <- fwc@FCB[(fwc@FCB[,"F"] == FC["F"]) & (fwc@FCB[,"C"] == FC["C"]),"B"]
     expect_equal(unname(B_in), unname(B_out))
     # Get nrow
     nrow_out <- test_fwdControl_get_FCB_nrow(fwc)
-    expect_equal(nrow_out, dim(fwc@target@FCB)[1])
+    expect_equal(nrow_out, dim(fwc@FCB)[1])
     # Get row no
-    fcb <- fwc@target@FCB
+    fcb <- fwc@FCB
     # Pick a row
     row_in <- round(runif(1, min=1, max=nrow(fcb)))
     row_out <- test_fwdControl_get_FCB_row_no(fwc, fcb[row_in,"F"], fcb[row_in,"C"], fcb[row_in,"B"])
