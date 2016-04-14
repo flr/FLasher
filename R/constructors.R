@@ -65,11 +65,26 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
 ) 
 # }}}
 
-# fwdControl(target='data.frame', iters='numeric')
+# fwdControl(target='data.frame', iters='numeric') {{{
+setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
+  function(target, iters) {
 
-# propagate()
+  if(length(iters) > 1)
+    stop("'iters' must be of length 1 or of class 'array'")
 
-# length(iters) == 1, blow iters to dim[3], repeat value in df
+  # CREATE w/ empty iters
+  res <- fwdControl(target=target)
+  # then EXTEND
+  resits <- res@iters[,,rep(1, iters), drop=FALSE]
+  # HACK: fix iters dimnames$iter
+  dimnames(resits)$iter <- seq(1, iters)
+  res@iters <- resits
+
+  return(res)
+
+  }
+) # }}}
+
 
 # fwdControl(target='list', iters='missing') {{{
 setMethod('fwdControl', signature(target='list', iters='missing'),

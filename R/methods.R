@@ -105,3 +105,5 @@ setMethod("[<-", signature(x="fwdControl", value="vector"),
 )
 
 # }}}
+
+# propagate()

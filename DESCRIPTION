@@ -16,6 +16,7 @@ Depends:
     FLFishery(>= 0.1)
 Imports: Rcpp (>= 0.12.0)
 LinkingTo: Rcpp
+Additional_repositories: http://flr-project.org/R
 Suggests: testthat, knitr
 License: file LICENSE
 VignetteBuilder: knitr

@@ -66,6 +66,15 @@ target <- data.frame(year=2000:2005, quant='f')
 
 # }}}
 
+# CONTEXT fwdControl(target=data.frame, iters=numeric) {{{
+
+context("fwdControl(target=data.frame, iters=numeric)")
+
+target <- data.frame(year=2000:2005, quant='f', value=1)
+
+fwdControl(target=target, iters=25)
+
+# }}}
 
 # LIST
 
