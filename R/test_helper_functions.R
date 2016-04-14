@@ -388,7 +388,7 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
     # Add target and timestep column - not set by user - should be added before dispatching to C++
     # Added after constructor is called
     fwc@target$timestep <- (fwc@target$year-1) * nseasons + fwc@target$season
-    fwc@order <- fwc@order[order(fwc@target$timestep),]
+    fwc@target <- fwc@target[order(fwc@target$timestep),]
     tsteps <- unique(fwc@target$timestep)
     names(tsteps) <- 1:length(tsteps)
     # Look away!
