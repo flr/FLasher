@@ -54,6 +54,9 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
         ite[,,] <- iters
       }
     }
+
+    # ADD timestep and order
+
     res <- new('fwdControl', target=trg, iters=ite)
     return(
            res[targetOrder(res),]
@@ -61,6 +64,12 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
   }
 ) 
 # }}}
+
+# fwdControl(target='data.frame', iters='numeric')
+
+# propagate()
+
+# length(iters) == 1, blow iters to dim[3], repeat value in df
 
 # fwdControl(target='list', iters='missing') {{{
 setMethod('fwdControl', signature(target='list', iters='missing'),
@@ -200,7 +209,7 @@ targetOrder <- function(object) {
   ite <- object@iters
 
   # ORDER by timestep (year + season) ...
-  # HACK: can only deal with 100 seasons
+  # LIMIT: can only deal with 100 seasons
   tim <- (trg$year * 100) + ifelse(is.character(trg$season), 0, as.numeric(trg$season))
   # ... then 'value' before 'min'/'max'
   pre <- !is.na(ite[,'value',1])

@@ -66,19 +66,20 @@ qlevels <-  c('f', 'catch', 'ssb', 'biomass', 'landings', 'discards', 'tsb', 're
 setClass('fwdControl',
 
   # REPRESENTATION
-  representation(
+  slots=c(
     target='data.frame',
     iters='array'),
 
   # PROTOTYPE
   # year quant season area unit relYear relSeason relFishery relCatch relBiol minAge maxAge fishery catch biol
-  prototype(
+  prototype=list(
     target=data.frame(year=1, quant=factor(NA, levels=FLasher:::qlevels),
       season='all', area='unique', unit='all',
       relYear=as.integer(NA), relSeason=as.integer(NA),
       relFishery=as.integer(NA), relCatch=as.integer(NA), relBiol=as.integer(NA),
       minAge=as.integer(NA), maxAge=as.integer(NA),
       fishery='NA', catch='NA', biol='NA',
+      timestep=1, order=1,
       stringsAsFactors=FALSE),
     iters=array(NA, dimnames=list(row=1, val=c('min', 'value', 'max'), iter=1),
       dim=c(1,3,1))),
@@ -99,6 +100,8 @@ setClass('fwdControl',
       return("Only value OR min/max allowed by row")
 
     # TODO: classes of data.frame columns
+
+    # colnames in target
 
     # levels in 'quant'
     if(!all(as.character(object@target$quant) %in% FLasher:::qlevels))
