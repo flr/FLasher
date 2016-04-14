@@ -1,10 +1,10 @@
 # classes.R - DESC
 # FLasher/R/classes.R
 
-# Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later
-# Maintainer: Iago Mosqueira, JRC
-# Soundtrack:
-# Notes:
+# Copyright European Union, 2016
+# Author: Iago Mosqueira (EC JRC) <iago.mosqueira@jrc.ec.europa.eu>
+#
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 qlevels <-  c('f', 'catch', 'ssb', 'biomass', 'landings', 'discards', 'tsb', 'rec')
 
@@ -105,6 +105,6 @@ setClass('fwdControl',
 
     # levels in 'quant'
     if(!all(as.character(object@target$quant) %in% FLasher:::qlevels))
-      return("Specified 'quant' not available in fwd")
+      return("Specified 'quant' currently not available as target in fwd")
   }
 ) # }}}

@@ -1,14 +1,16 @@
 useDynLib(FLasher)
 exportPattern("^[[:alpha:]]+")
-importFrom(Rcpp, evalCpp)
-import("FLCore")
-import("FLFishery")
+importFrom(Rcpp,
+  evalCpp)
+import(FLCore)
+import(FLFishery)
 exportClasses(
 	"fwdControl")
 exportMethods(
 	"[",
 	"[<-",
 	"fwdControl",
+  "propagate",
 	"show",
 	"target",
 	"target<-"

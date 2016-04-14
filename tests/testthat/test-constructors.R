@@ -70,7 +70,7 @@ target <- data.frame(year=2000:2005, quant='f')
 
 context("fwdControl(target=data.frame, iters=numeric)")
 
-target <- data.frame(year=2000:2005, quant='f', value=1)
+target <- data.frame(year=2000:2005, quant='f', value=0.8)
 
 fwdControl(target=target, iters=25)
 
