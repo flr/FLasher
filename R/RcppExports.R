@@ -1849,18 +1849,6 @@ test_fwdSR_predict_recruitment <- function(model_name, params, residuals, residu
     .Call('FLasher_test_fwdSR_predict_recruitment', PACKAGE = 'FLasher', model_name, params, residuals, residuals_mult, srp, initial_params_indices)
 }
 
-test_euclid_norm <- function(xvec) {
-    .Call('FLasher_test_euclid_norm', PACKAGE = 'FLasher', xvec)
-}
-
-test_NR_quad_iters <- function(coefs, initial_value, max_iters, indep_min, indep_max, tolerance) {
-    .Call('FLasher_test_NR_quad_iters', PACKAGE = 'FLasher', coefs, initial_value, max_iters, indep_min, indep_max, tolerance)
-}
-
-test_NR2 <- function(initial_value, max_iters, indep_min, indep_max, tolerance) {
-    .Call('FLasher_test_NR2', PACKAGE = 'FLasher', initial_value, max_iters, indep_min, indep_max, tolerance)
-}
-
 test_operatingModel_empty_constructor <- function() {
     invisible(.Call('FLasher_test_operatingModel_empty_constructor', PACKAGE = 'FLasher'))
 }
@@ -1975,5 +1963,17 @@ test_standard_conditional <- function(indep) {
 
 test_cppad_conditional <- function(indep) {
     .Call('FLasher_test_cppad_conditional', PACKAGE = 'FLasher', indep)
+}
+
+test_euclid_norm <- function(xvec) {
+    .Call('FLasher_test_euclid_norm', PACKAGE = 'FLasher', xvec)
+}
+
+test_NR_quad_iters <- function(coefs, initial_value, max_iters, indep_min, indep_max, tolerance) {
+    .Call('FLasher_test_NR_quad_iters', PACKAGE = 'FLasher', coefs, initial_value, max_iters, indep_min, indep_max, tolerance)
+}
+
+test_NR_linear <- function(initial_value, coefs, max_iters, indep_min, indep_max, tolerance) {
+    .Call('FLasher_test_NR_linear', PACKAGE = 'FLasher', initial_value, coefs, max_iters, indep_min, indep_max, tolerance)
 }
 

@@ -76,7 +76,7 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
         //Rprintf("Forward\n");
         //Rprintf("indep1: %f\n", indep[0]);
         y = fun.Forward(0, indep); 
-        Rprintf("indep1: %f\n", indep[0]);
+        //Rprintf("indep1: %f\n", indep[0]);
         //Rprintf("indep2: %f\n", indep[1]);
         Rprintf("error: %f\n", y[0]);
         //Rprintf("y: %f\n", y[1]);
@@ -88,7 +88,7 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
         //std::vector<double> weight(1);
         //weight[0] = 1.0;
         //jac   = fun.Reverse(1, weight);
-        Rprintf("jac[0]: %f\n", jac[0]);
+        //Rprintf("jac[0]: %f\n", jac[0]);
         // Get w (f(x0) / f'(x0)) for each iteration if necessary
         // Loop over simultaneous targets, solving if necessary
         for (int iter_count = 0; iter_count < niter; ++iter_count){

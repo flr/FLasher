@@ -33,23 +33,32 @@ Rcpp::List test_NR_quad_iters(const Rcpp::NumericMatrix coefs, const double init
                             Rcpp::Named("success_code",success_code));
 }
 
-
-// Simple 2D: solution: +- 0.8895, 1.7913
+// General coupled linear equation: 
+// a11 x + a12 y + a13 z + ... + a14 = 0
+// a21 x + a22 y + a23 z + ... + a24 = 0
+// a31 x + a32 y + a33 z + ... + a34 = 0
+// ... x + ... y + ... z + ... + ... = 0
 // [[Rcpp::export]]
-Rcpp::List test_NR2(std::vector<double> initial_value, const int max_iters, const double indep_min, const double indep_max, const double tolerance){
-    // f(x) = x^3 - 2x + 2, take 0 as starting point = infinite cycle
-    std::vector<CppAD::AD<double> > x(2);
+Rcpp::List test_NR_linear(std::vector<double> initial_value, const Rcpp::NumericMatrix coefs, const int max_iters, const double indep_min, const double indep_max, const double tolerance){
+    // Dim of coefs = n x (n+1)
+    // Number of indeps = nrow coefs
+    auto nindeps = coefs.nrow();
+    std::vector<adouble> x(nindeps);
     std::copy(initial_value.begin(), initial_value.end(), x.begin());
-    CppAD::Independent(x);
-    std::vector<CppAD::AD<double> > y(2); 
-    y[0] = pow(x[0],2) + pow(x[1],2) - 4; // A circle!
-    y[1] = pow(x[0],2) - x[1] + 1;
-    // simple: 2, 3
-    //y[0] = 2 * x[1] + x[0] - 8;
-    //y[1] = 1 + x[1] - 2*x[0];
+    CppAD::Independent(x); // Tape on
+    std::vector<adouble> y(nindeps); 
+    for (auto row_count=0; row_count < coefs.nrow(); ++row_count){
+        y[row_count] = 0.0;
+        for (auto indep_count = 0; indep_count < nindeps; ++indep_count){
+            y[row_count] = y[row_count] + coefs(row_count,indep_count) * x[indep_count];
+        }
+        y[row_count] = y[row_count] + coefs(row_count, nindeps); // Add on final coefficient with no multiplier
+    }
     CppAD::ADFun<double> fun(x, y);
     std::vector<double> xsolve = initial_value; 
-    std::vector<int> out = newton_raphson(xsolve, fun, 1, 2, indep_min, indep_max, max_iters, tolerance);
+    std::vector<int> success_code = newton_raphson(xsolve, fun, 1, nindeps, indep_min, indep_max, max_iters, tolerance);
 	return Rcpp::List::create(Rcpp::Named("x", xsolve),
-                            Rcpp::Named("out",out));
+                            Rcpp::Named("success_code",success_code));
 }
+
+

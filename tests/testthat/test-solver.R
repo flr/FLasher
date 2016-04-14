@@ -65,20 +65,29 @@ test_that("Newton-Raphson quadratic tests",{
     expect_true(fit6$success_code[3]==-1)
 })
 
-
+# Solve a simple simultaneous equation
 test_that("Newton-Raphson 2D tests",{
-    # 2D test 
+    # 3D test 
+    tol <- .Machine$double.eps ^ 0.5   
     max_iters <- 50
-    initial <- abs(rnorm(2, sd=2))
     indep_min <- -1000
     indep_max <- 1000
-    fit <- test_NR2(initial, max_iters, indep_min, indep_max, tol)
-    y1 <- fit$x[1]^2 + fit$x[2]^2 - 4
-    y2 <- fit$x[1]^2 - fit$x[2] + 1
-    expect_that(c(y1,y2), equals(c(0.0,0.0)))
-    expect_that(fit$out, equals(1L))
-
-    # Check multiple iters
-
+    # linear equation
+    A <- matrix(data=c(1, 2, 3, 2, 5, 9, 5, 7, 8), nrow=3, ncol=3, byrow=TRUE)    
+    b <- matrix(data=c(20, 100, 200), nrow=3, ncol=1, byrow=FALSE)
+    out <- round(solve(A, b), 3)
+    initial <- c(1,1,1)
+    fit <- test_NR_linear(c(1,1,1), cbind(A,-b), max_iters, indep_min, indep_max, tol) 
+    expect_true(all(abs(fit$x - out) < tol))
+    expect_true(fit$success_code == 1)
+    # If put tight bounds on - interesting the others fit OK
+    fit <- test_NR_linear(c(1,1,1), cbind(A,-b), max_iters, indep_min, 150, tol) 
+    expect_true(fit$success_code == -3)
+    # If put tight bounds on
+    fit <- test_NR_linear(c(1,1,1), cbind(A,-b), max_iters, 0, indep_max, tol) 
+    expect_true(fit$success_code == -2)
+    # Too few iterations
+    fit <- test_NR_linear(c(1,1,1), cbind(A,-b), 1, indep_min, indep_max, tol) 
+    expect_true(fit$success_code == -1)
 })
 

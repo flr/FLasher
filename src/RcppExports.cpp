@@ -6024,48 +6024,6 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// test_euclid_norm
-double test_euclid_norm(std::vector<double> xvec);
-RcppExport SEXP FLasher_test_euclid_norm(SEXP xvecSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< std::vector<double> >::type xvec(xvecSEXP);
-    __result = Rcpp::wrap(test_euclid_norm(xvec));
-    return __result;
-END_RCPP
-}
-// test_NR_quad_iters
-Rcpp::List test_NR_quad_iters(const Rcpp::NumericMatrix coefs, const double initial_value, const int max_iters, const double indep_min, const double indep_max, const double tolerance);
-RcppExport SEXP FLasher_test_NR_quad_iters(SEXP coefsSEXP, SEXP initial_valueSEXP, SEXP max_itersSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP toleranceSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type coefs(coefsSEXP);
-    Rcpp::traits::input_parameter< const double >::type initial_value(initial_valueSEXP);
-    Rcpp::traits::input_parameter< const int >::type max_iters(max_itersSEXP);
-    Rcpp::traits::input_parameter< const double >::type indep_min(indep_minSEXP);
-    Rcpp::traits::input_parameter< const double >::type indep_max(indep_maxSEXP);
-    Rcpp::traits::input_parameter< const double >::type tolerance(toleranceSEXP);
-    __result = Rcpp::wrap(test_NR_quad_iters(coefs, initial_value, max_iters, indep_min, indep_max, tolerance));
-    return __result;
-END_RCPP
-}
-// test_NR2
-Rcpp::List test_NR2(std::vector<double> initial_value, const int max_iters, const double indep_min, const double indep_max, const double tolerance);
-RcppExport SEXP FLasher_test_NR2(SEXP initial_valueSEXP, SEXP max_itersSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP toleranceSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< std::vector<double> >::type initial_value(initial_valueSEXP);
-    Rcpp::traits::input_parameter< const int >::type max_iters(max_itersSEXP);
-    Rcpp::traits::input_parameter< const double >::type indep_min(indep_minSEXP);
-    Rcpp::traits::input_parameter< const double >::type indep_max(indep_maxSEXP);
-    Rcpp::traits::input_parameter< const double >::type tolerance(toleranceSEXP);
-    __result = Rcpp::wrap(test_NR2(initial_value, max_iters, indep_min, indep_max, tolerance));
-    return __result;
-END_RCPP
-}
 // test_operatingModel_empty_constructor
 void test_operatingModel_empty_constructor();
 RcppExport SEXP FLasher_test_operatingModel_empty_constructor() {
@@ -6485,6 +6443,49 @@ BEGIN_RCPP
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< std::vector<double> >::type indep(indepSEXP);
     __result = Rcpp::wrap(test_cppad_conditional(indep));
+    return __result;
+END_RCPP
+}
+// test_euclid_norm
+double test_euclid_norm(std::vector<double> xvec);
+RcppExport SEXP FLasher_test_euclid_norm(SEXP xvecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector<double> >::type xvec(xvecSEXP);
+    __result = Rcpp::wrap(test_euclid_norm(xvec));
+    return __result;
+END_RCPP
+}
+// test_NR_quad_iters
+Rcpp::List test_NR_quad_iters(const Rcpp::NumericMatrix coefs, const double initial_value, const int max_iters, const double indep_min, const double indep_max, const double tolerance);
+RcppExport SEXP FLasher_test_NR_quad_iters(SEXP coefsSEXP, SEXP initial_valueSEXP, SEXP max_itersSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP toleranceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type coefs(coefsSEXP);
+    Rcpp::traits::input_parameter< const double >::type initial_value(initial_valueSEXP);
+    Rcpp::traits::input_parameter< const int >::type max_iters(max_itersSEXP);
+    Rcpp::traits::input_parameter< const double >::type indep_min(indep_minSEXP);
+    Rcpp::traits::input_parameter< const double >::type indep_max(indep_maxSEXP);
+    Rcpp::traits::input_parameter< const double >::type tolerance(toleranceSEXP);
+    __result = Rcpp::wrap(test_NR_quad_iters(coefs, initial_value, max_iters, indep_min, indep_max, tolerance));
+    return __result;
+END_RCPP
+}
+// test_NR_linear
+Rcpp::List test_NR_linear(std::vector<double> initial_value, const Rcpp::NumericMatrix coefs, const int max_iters, const double indep_min, const double indep_max, const double tolerance);
+RcppExport SEXP FLasher_test_NR_linear(SEXP initial_valueSEXP, SEXP coefsSEXP, SEXP max_itersSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP toleranceSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::vector<double> >::type initial_value(initial_valueSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type coefs(coefsSEXP);
+    Rcpp::traits::input_parameter< const int >::type max_iters(max_itersSEXP);
+    Rcpp::traits::input_parameter< const double >::type indep_min(indep_minSEXP);
+    Rcpp::traits::input_parameter< const double >::type indep_max(indep_maxSEXP);
+    Rcpp::traits::input_parameter< const double >::type tolerance(toleranceSEXP);
+    __result = Rcpp::wrap(test_NR_linear(initial_value, coefs, max_iters, indep_min, indep_max, tolerance));
     return __result;
 END_RCPP
 }
