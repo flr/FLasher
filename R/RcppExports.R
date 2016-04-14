@@ -13,14 +13,6 @@ get_dataframe_quantity <- function(ctrl) {
     .Call('FLasher_get_dataframe_quantity', PACKAGE = 'FLasher', ctrl)
 }
 
-cppad_found <- function() {
-    invisible(.Call('FLasher_cppad_found', PACKAGE = 'FLasher'))
-}
-
-poly <- function(k_in, x_in) {
-    .Call('FLasher_poly', PACKAGE = 'FLasher', k_in, x_in)
-}
-
 rcpp_hello_world <- function() {
     .Call('FLasher_rcpp_hello_world', PACKAGE = 'FLasher')
 }
@@ -1899,6 +1891,10 @@ test_operatingModel_project_fisheries <- function(flfs, biols, ctrl, timestep) {
 
 test_operatingModel_run <- function(flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max, nr_iters = 50L) {
     .Call('FLasher_test_operatingModel_run', PACKAGE = 'FLasher', flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max, nr_iters)
+}
+
+test_operatingModel_run2 <- function(flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max, nr_iters = 50L) {
+    .Call('FLasher_test_operatingModel_run2', PACKAGE = 'FLasher', flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max, nr_iters)
 }
 
 test_operatingModel_fbar_subset1 <- function(flfs, biols, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max) {

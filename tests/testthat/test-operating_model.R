@@ -893,36 +893,30 @@ test_that("get_target_value_hat", {
     seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
     timesteps <- (years-1) * dim(flq)[4] + seasons;
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quant = c("catch","catch"), target = 1, 
+                        quant = c("catch","catch"), order = 1, 
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
     trgt2 <- data.frame(year = years[3:4], season = seasons[3:4], timestep = timesteps[3:4],
-                        quant = c("landings","discards"), target = 2, 
+                        quant = c("landings","discards"), order = 2, 
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
     rel_years <- rep(round(runif(4, min=1,max=dim(flq)[2])),each=2)
     rel_seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
     rel_trgt1 <- data.frame(year = years[5:6], season = seasons[5:6], timestep = timesteps[5:6],
-                        quant = c("catch","catch"), target = 3, 
+                        quant = c("catch","catch"), order = 3, 
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = c(1,NA), relCatch = c(1,NA), relBiol = c(NA,2),
                         relYear = rel_years[5:6], relSeason = rel_seasons[5:6])
     # Discards relative to different catch and fishery
     rel_trgt2 <- data.frame(year = years[7:8], season = seasons[7:8], timestep = timesteps[7:8],
-                        quant = c("landings","discards"), target = 4, 
+                        quant = c("landings","discards"), order = 4, 
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = c(NA,2), relCatch = c(NA,1), relBiol = c(1,NA),
                         relYear = rel_years[7:8], relSeason = rel_seasons[7:8])
-    # Constructor drops my target and timestep columns
-    # And stuffs up the biol column
     fwc <- fwdControl(rbind(trgt1, trgt2, rel_trgt1, rel_trgt2))
     attr(fwc, "FCB") <- FCB
-    fwc@target$timestep <- c(trgt1$timestep, trgt2$timestep, rel_trgt1$timestep, rel_trgt2$timestep)
-    fwc@target$target <- c(trgt1$target, trgt2$target, rel_trgt1$target, rel_trgt2$target)
-    # So hack it
-    fwc@target <- rbind(trgt1, trgt2, rel_trgt1, rel_trgt2)
     # Target 1 - 1 sim target at a time
     val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
     val_in1 <- c(unitSums(catch(flfs[[1]][[1]])[,years[1],,seasons[1]]))
@@ -965,13 +959,11 @@ test_that("get_target_value_hat", {
     expect_equal(val_hat, c(val_in1,val_in2))
     # Relative fails due to not being set properly
     rel_trgt3 <- data.frame(year = 1:8, season = 1, timestep = 1:8,
-                        quant = "catch", target = 1:8,
+                        quant = "catch", order = 1:8,
                         fishery = 1, catch = 1, biol = NA,
                         relFishery = c(NA,1,1,1,1,NA,NA,NA), relCatch = c(1,NA,1,1,1,NA,NA,NA), relBiol = c(NA,NA,NA,NA,NA,1,1,NA),
                         relYear = c(1,1,NA,NA,1,1,NA,1), relSeason = c(1,1,NA,1,NA,NA,1,1))
     fwc <- fwdControl(rel_trgt3)
-    # Hack!
-    fwc@target <- rel_trgt3
     attr(fwc, "FCB") <- FCB
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 1))
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 2)) 
@@ -998,42 +990,22 @@ test_that("get_target_value - straight value", {
     FCB[3,] <- c(2,1,2)
     # Make an fwdControl to test
     # Two sim catch targets
-    years <- rep(round(runif(4, min=1,max=dim(flq)[2])),each=2)
-    seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
-    timesteps <- (years-1) * dim(flq)[4] + seasons;
+    years <- sort(rep(round(runif(4, min=1,max=dim(flq)[2])),each=2))
+    seasons <- sort(rep(round(runif(4, min=1,max=dim(flq)[4])),each=2))
+    timesteps <- sort((years-1) * dim(flq)[4] + seasons)
     value <- abs(rnorm(4))
+    # 1 iter in control, many in OM - should blow up control iters internally
     # Simple control object
-#    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-#                        quant = c("catch","catch"), target = 1, value = value[1:2],
-#                        fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
-#                        relFishery = NA, relCatch = NA, relBiol = NA,
-#                        relYear = NA, relSeason = NA)
-#    trgt2 <- data.frame(year = years[3:4], season = seasons[3:4], timestep = timesteps[3:4],
-#                        quant = c("landings","discards"), target = 2, value = value[3:4],
-#                        fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
-#                        relFishery = NA, relCatch = NA, relBiol = NA,
-#                        relYear = NA, relSeason = NA)
-#
-    # 1 iter in control, many in OM - should blow up control iters
-    # fwdControl constructor is not working properly
-    #fwc <- fwdControl(rbind(trgt1, trgt2))
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quant = c("catch","catch"), target = 1, #value = value[1:2],
-                        fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
-                        relFishery = NA, relCatch = NA, relBiol = NA,
-                        relYear = NA, relSeason = NA)
+                        quant = c("catch","catch"), order = 1, value = value[1:2],
+                        fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2))
     trgt2 <- data.frame(year = years[3:4], season = seasons[3:4], timestep = timesteps[3:4],
-                        quant = c("landings","discards"), target = 2, #value = value[3:4],
-                        fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
-                        relFishery = NA, relCatch = NA, relBiol = NA,
-                        relYear = NA, relSeason = NA)
+                        quant = c("landings","discards"), order = 2, value = value[3:4],
+                        fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA))
     fwc <- fwdControl(rbind(trgt1,trgt2))
-    # Hack
-    fwc@target <- rbind(trgt1,trgt2)
     attr(fwc, "FCB") <- FCB
-    # Need to add values to iters
-
     # No iters in control - but iters in OM
+    # Hack - why are values in some weird order
     fwc@iters[,"value",] <- value
     val_hat1 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1)
     val_in1 <- rep(fwc@iters[1,"value",],niters)
@@ -1053,16 +1025,8 @@ test_that("get_target_value - straight value", {
     expect_equal(val_hat, c(val_in1, val_in2))
 
     # Same number of iters in iters and OM
-    # How do I add iters to control?
-    # This used to work
-    #fwc <- fwdControl(rbind(trgt1, trgt2), niters)
-    # Hack
-    fwc <- fwdControl(rbind(trgt1, trgt2))
-    fwc@target <- rbind(trgt1,trgt2)
-    iters_array <- array(NA, dim=c(4,3,niters), dimnames=list(1:4, c("min","value", "max"), 1:niters))
-    fwc@iters <- iters_array
+    fwc <- fwdControl(rbind(trgt1, trgt2), niters)
     fwc@iters[,"value",] <- abs(rnorm(4*niters))
-    # - end hack
     attr(fwc, "FCB") <- FCB
     val_hat1 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1)
     val_in1 <- fwc@iters[1,"value",]
@@ -1081,12 +1045,7 @@ test_that("get_target_value - straight value", {
     val_hat <- test_operatingModel_get_target_value2(flfs, flbs, fwc, 2)
     expect_equal(val_hat, unname(c(val_in1, val_in2)))
     # Too few iters in control - should fail
-    #fwc <- fwdControl(rbind(trgt1, trgt2), iters=niters-1)
-    # Hack
-    fwc <- fwdControl(rbind(trgt1, trgt2))
-    fwc@target <- rbind(trgt1,trgt2)
-    iters_array <- array(NA, dim=c(4,3,niters-1), dimnames=list(1:4, c("min","value", "max"), 1:(niters-1)))
-    fwc@iters <- iters_array
+    fwc <- fwdControl(rbind(trgt1, trgt2), iters=niters-1)
     fwc@iters[,"value",] <- abs(rnorm(4*(niters-1)))
     attr(fwc, "FCB") <- FCB
     expect_error(test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1))
@@ -1099,28 +1058,15 @@ test_that("get_target_value - straight value", {
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
-    # Fix FCB
-    FCB <- array(NA, dim=c(3,3))
-    FCB[1,] <- c(1,1,1)
-    FCB[2,] <- c(1,2,2)
-    FCB[3,] <- c(2,1,2)
     # Make an fwdControl to test
     # Two sim catch targets
     years <- rep(round(runif(4, min=1,max=dim(flq)[2])),each=2)
     seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
     timesteps <- (years-1) * dim(flq)[4] + seasons;
-    value <- abs(rnorm(4))
-    # Needs to be fixed in fwdControl constructor
-    #fwc <- fwdControl(rbind(trgt1, trgt2), iters=10)
-    # HACK
-    fwc <- fwdControl(rbind(trgt1, trgt2))
-    fwc@target <- rbind(trgt1,trgt2)
-    iters_array <- array(NA, dim=c(4,3,10), dimnames=list(1:4, c("min","value", "max"), 1:10))
-    fwc@iters <- iters_array
-    fwc@iters[,"value",] <- abs(rnorm(4*10))
+    niters <- 100
+    fwc <- fwdControl(rbind(trgt1, trgt2), niters)
+    fwc@iters[,"value",] <- abs(rnorm(4*niters))
     attr(fwc, "FCB") <- FCB
-    fwc@iters[,"value",] <- abs(rnorm(4*10))
-    attr(fwc@target, "FCB") <- FCB
     expect_error(test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1))
 })
 
@@ -1159,18 +1105,10 @@ test_that("get_target_value - min / max values", {
     # Max only - small iters will be limited
     # Same iters in OM and control
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quant = c("catch","catch"), target = 1,# max = catch1[1],
-                        fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
-                        relFishery = NA, relCatch = NA, relBiol = NA,
-                        relYear = NA, relSeason = NA)
+                        quant = c("catch","catch"), order = 1,
+                        fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2))
     # fwdControl constructor fix
-    #fwc <- fwdControl(trgt1, niters)
-# HACK
-    fwc <- fwdControl(trgt1)
-    fwc@target <- rbind(trgt1)
-    iters_array <- array(NA, dim=c(2,3,niters), dimnames=list(1:2, c("min","value", "max"), 1:niters))
-    fwc@iters <- iters_array
-    # ----
+    fwc <- fwdControl(trgt1, niters)
     fwc@iters[1,"max",] <- ctrl_catch1
     fwc@iters[2,"max",] <- ctrl_catch2
     attr(fwc, "FCB") <- FCB
@@ -1187,22 +1125,16 @@ test_that("get_target_value - min / max values", {
 
     # Max only - iters in OM, only 1 in control
     # Set max target so half of them are maxed out
-    #fwc <- fwdControl(trgt1, 1)
-    # Hack
-    fwc <- fwdControl(trgt1)
-    fwc@target <- rbind(trgt1)
-    iters_array <- array(NA, dim=c(2,3,1), dimnames=list(1:2, c("min","value", "max"), 1))
-    fwc@iters <- iters_array
-    #-----
+    fwc <- fwdControl(trgt1, 1)
     max1 <- median(catch1)
     max2 <- median(catch2)
+    fwc@iters[1,"max",] <- max1
+    fwc@iters[2,"max",] <- max2
+    attr(fwc, "FCB") <- FCB
     maxed_out1 <- which(catch1 > max1)
     not_maxed_out1 <- (1:niters)[!((1:niters) %in% maxed_out1)]
     maxed_out2 <- which(catch2 > max2)
     not_maxed_out2 <- (1:niters)[!((1:niters) %in% maxed_out2)]
-    fwc@iters[1,"max",] <- max1
-    fwc@iters[2,"max",] <- max2
-    attr(fwc, "FCB") <- FCB
     val_hat1 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1)
     expect_identical(val_hat1[maxed_out1], rep(max1, length(maxed_out1)))
     expect_equal(val_hat1[not_maxed_out1], catch1[not_maxed_out1])
@@ -1212,17 +1144,9 @@ test_that("get_target_value - min / max values", {
 
     # Min only - iters in OM = iters in control
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quant = c("catch","catch"), target = 1,# min = catch1[1],
-                        fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
-                        relFishery = NA, relCatch = NA, relBiol = NA,
-                        relYear = NA, relSeason = NA)
-    #fwc <- fwdControl(trgt1, niters)
-    # Hack
-    fwc <- fwdControl(trgt1)
-    fwc@target <- rbind(trgt1)
-    iters_array <- array(NA, dim=c(2,3,niters), dimnames=list(1:2, c("min","value", "max"), 1:niters))
-    fwc@iters <- iters_array
-    # ----
+                        quant = c("catch","catch"), order = 1,
+                        fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2))
+    fwc <- fwdControl(trgt1, niters)
     fwc@iters[1,"min",] <- ctrl_catch1
     fwc@iters[2,"min",] <- ctrl_catch2
     attr(fwc, "FCB") <- FCB
@@ -1238,22 +1162,16 @@ test_that("get_target_value - min / max values", {
     expect_equal(val_hat, c(val_hat1, val_hat2))
 
     # Min only - iters in OM, only 1 in control
-    #fwc <- fwdControl(trgt1, 1)
-    # Hack
-    fwc <- fwdControl(trgt1)
-    fwc@target <- rbind(trgt1)
-    iters_array <- array(NA, dim=c(2,3,1), dimnames=list(1:2, c("min","value", "max"), 1))
-    fwc@iters <- iters_array
-#-----
+    fwc <- fwdControl(trgt1, 1)
     min1 <- median(catch1)
     min2 <- median(catch2)
+    fwc@iters[1,"min",] <- min1
+    fwc@iters[2,"min",] <- min2
+    attr(fwc, "FCB") <- FCB
     mined_out1 <- which(catch1 < min1)
     not_mined_out1 <- (1:niters)[!((1:niters) %in% mined_out1)]
     mined_out2 <- which(catch2 < min2)
     not_mined_out2 <- (1:niters)[!((1:niters) %in% mined_out2)]
-    fwc@iters[1,"min",] <- min1
-    fwc@iters[2,"min",] <- min2
-    attr(fwc, "FCB") <- FCB
     val_hat1 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1)
     expect_identical(val_hat1[mined_out1], rep(min1, length(mined_out1)))
     expect_equal(val_hat1[not_mined_out1], catch1[not_mined_out1])
@@ -1284,17 +1202,9 @@ test_that("get_target_value - min / max values", {
     min_catch2[not_min_limit_iters] <- min_catch2[not_min_limit_iters] * 0.9
     min_catch2[min_limit_iters] <- min_catch2[min_limit_iters] * 1.1
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quant = c("catch","catch"), target = 1, 
-                        fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
-                        relFishery = NA, relCatch = NA, relBiol = NA,
-                        relYear = NA, relSeason = NA)
-    #fwc <- fwdControl(trgt1, niters)
-    # Hack
-    fwc <- fwdControl(trgt1)
-    fwc@target <- rbind(trgt1)
-    iters_array <- array(NA, dim=c(2,3,niters), dimnames=list(1:2, c("min","value", "max"), 1:niters))
-    fwc@iters <- iters_array
-    #-----
+                        quant = c("catch","catch"), order = 1, 
+                        fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2))
+    fwc <- fwdControl(trgt1, niters)
     fwc@iters[1,"max",] <- max_catch1
     fwc@iters[1,"min",] <- min_catch1
     fwc@iters[2,"max",] <- max_catch2
@@ -1324,17 +1234,10 @@ test_that("get_target_value - min / max values", {
     max_limit_iters2 <- which(catch2 > max2)
     not_limit_iters2 <- (1:niters)[!((1:niters) %in% c(min_limit_iters2, max_limit_iters2))]
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quant = c("catch","catch"), target = 1, 
-                        fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
-                        relFishery = NA, relCatch = NA, relBiol = NA,
-                        relYear = NA, relSeason = NA)
-    #fwc <- fwdControl(trgt1, 1)
-    # Hack
-    fwc <- fwdControl(trgt1)
-    fwc@target <- rbind(trgt1)
-    iters_array <- array(NA, dim=c(2,3,1), dimnames=list(1:2, c("min","value", "max"), 1))
-    fwc@iters <- iters_array
-    #------
+                        quant = c("catch","catch"), order= 1, 
+                        fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2))
+
+    fwc <- fwdControl(trgt1, 1)
     fwc@iters[1,"max",] <- max1
     fwc@iters[1,"min",] <- min1
     fwc@iters[2,"max",] <- max2

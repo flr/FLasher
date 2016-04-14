@@ -545,7 +545,7 @@ void operatingModel::project_fisheries(const int timestep){
  * \param indep_min The minimum value of effort multipliers
  * \param indep_max The maximum value of effort multipliers
  */
-void operatingModel::run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters){
+Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters){
     Rprintf("Running\n");
     // Housekeeping
     auto niter = get_niter(); // number of iters taken from effort of first fishery
@@ -576,7 +576,8 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
     // But a target can be made up of multiple simultaneous targets
     auto ntarget = ctrl.get_ntarget();
     Rprintf("Targets to solve: %i \n", ntarget);
-
+    // Ntarget x iter
+    Rcpp::IntegerMatrix solver_codes(ntarget,niter);
     // Loop over targets and solve all simultaneous targets in that target set
     // e.g. With 2 fisheries with 2 efforts, we can set 2 catch targets to be solved at the same time
     // Indexing of targets starts at 1
@@ -652,11 +653,13 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
         // double version of effort mult used in solver
         std::vector<double> effort_mult(neffort * niter, effort_mult_initial);
         std::fill(effort_mult.begin(), effort_mult.end(), effort_mult_initial);
-        //Rprintf("Calling NR\n");
-        // indep_min and max should be arguments to run and passable from R
-        auto nr_out = newton_raphson(effort_mult, fun, niter, nsim_targets, indep_min, indep_max, nr_iters);
-        //Rprintf("NR done\n");
+        std::vector<int> nr_out = newton_raphson(effort_mult, fun, niter, nsim_targets, indep_min, indep_max, nr_iters);
         // Check nr_out - if not all 1 then something has gone wrong - flag up warning
+        // Each iter has a success code for all sim targets - put them into a matrix
+        // Ntarget x iter
+        for (auto iter_count = 0; iter_count < niter; ++iter_count){
+            solver_codes(target_count - 1, iter_count) = nr_out[iter_count];
+        }
         //Rprintf("effort_mult: %f\n", effort_mult[0]);
         //Rprintf("Updating effort with solved effort mult\n");
         for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
@@ -673,11 +676,9 @@ void operatingModel::run(const double effort_mult_initial, const double indep_mi
         if ((target_effort_timestep+1) <= max_timestep){
             project_biols(target_effort_timestep+1); 
         }
-        //Rprintf("Done projecting again\n");
-        //Rprintf("Discards: %f\n", Value((fisheries(1,1).discards())(1,2,1,1,1,1)));
-        //Rprintf("Landings: %f\n", Value((fisheries(1,1).landings())(1,2,1,1,1,1)));
     }
     Rprintf("Leaving run\n");
+    return solver_codes;
 }
 
 /*! \brief Evaluate the current state of the operating model. 

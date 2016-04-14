@@ -104,8 +104,16 @@ operatingModel test_operatingModel_project_fisheries(FLFisheriesAD flfs, fwdBiol
 // [[Rcpp::export]]
 operatingModel test_operatingModel_run(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double effort_mult_initial, const double indep_min, const double indep_max, const int nr_iters = 50){
     operatingModel om(flfs, biols, ctrl);
-    om.run(effort_mult_initial, indep_min, indep_max, nr_iters);
+    Rcpp::IntegerMatrix solver_codes = om.run(effort_mult_initial, indep_min, indep_max, nr_iters);
     return om;
+}
+
+// [[Rcpp::export]]
+Rcpp::List test_operatingModel_run2(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double effort_mult_initial, const double indep_min, const double indep_max, const int nr_iters = 50){
+    operatingModel om(flfs, biols, ctrl);
+    Rcpp::IntegerMatrix solver_codes = om.run(effort_mult_initial, indep_min, indep_max, nr_iters);
+	return Rcpp::List::create(Rcpp::Named("om", om),
+        Rcpp::Named("solver_codes",solver_codes));
 }
 
 // [[Rcpp::export]]
