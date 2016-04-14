@@ -893,36 +893,30 @@ test_that("get_target_value_hat", {
     seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
     timesteps <- (years-1) * dim(flq)[4] + seasons;
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
-                        quant = c("catch","catch"), target = 1, 
+                        quant = c("catch","catch"), order = 1, 
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
     trgt2 <- data.frame(year = years[3:4], season = seasons[3:4], timestep = timesteps[3:4],
-                        quant = c("landings","discards"), target = 2, 
+                        quant = c("landings","discards"), order = 2, 
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
     rel_years <- rep(round(runif(4, min=1,max=dim(flq)[2])),each=2)
     rel_seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
     rel_trgt1 <- data.frame(year = years[5:6], season = seasons[5:6], timestep = timesteps[5:6],
-                        quant = c("catch","catch"), target = 3, 
+                        quant = c("catch","catch"), order = 3, 
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = c(1,NA), relCatch = c(1,NA), relBiol = c(NA,2),
                         relYear = rel_years[5:6], relSeason = rel_seasons[5:6])
     # Discards relative to different catch and fishery
     rel_trgt2 <- data.frame(year = years[7:8], season = seasons[7:8], timestep = timesteps[7:8],
-                        quant = c("landings","discards"), target = 4, 
+                        quant = c("landings","discards"), order = 4, 
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = c(NA,2), relCatch = c(NA,1), relBiol = c(1,NA),
                         relYear = rel_years[7:8], relSeason = rel_seasons[7:8])
-    # Constructor drops my target and timestep columns
-    # And stuffs up the biol column
     fwc <- fwdControl(rbind(trgt1, trgt2, rel_trgt1, rel_trgt2))
     attr(fwc, "FCB") <- FCB
-    fwc@target$timestep <- c(trgt1$timestep, trgt2$timestep, rel_trgt1$timestep, rel_trgt2$timestep)
-    fwc@target$target <- c(trgt1$target, trgt2$target, rel_trgt1$target, rel_trgt2$target)
-    # So hack it
-    fwc@target <- rbind(trgt1, trgt2, rel_trgt1, rel_trgt2)
     # Target 1 - 1 sim target at a time
     val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
     val_in1 <- c(unitSums(catch(flfs[[1]][[1]])[,years[1],,seasons[1]]))
@@ -965,13 +959,11 @@ test_that("get_target_value_hat", {
     expect_equal(val_hat, c(val_in1,val_in2))
     # Relative fails due to not being set properly
     rel_trgt3 <- data.frame(year = 1:8, season = 1, timestep = 1:8,
-                        quant = "catch", target = 1:8,
+                        quant = "catch", order = 1:8,
                         fishery = 1, catch = 1, biol = NA,
                         relFishery = c(NA,1,1,1,1,NA,NA,NA), relCatch = c(1,NA,1,1,1,NA,NA,NA), relBiol = c(NA,NA,NA,NA,NA,1,1,NA),
                         relYear = c(1,1,NA,NA,1,1,NA,1), relSeason = c(1,1,NA,1,NA,NA,1,1))
     fwc <- fwdControl(rel_trgt3)
-    # Hack!
-    fwc@target <- rel_trgt3
     attr(fwc, "FCB") <- FCB
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 1))
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 2)) 
