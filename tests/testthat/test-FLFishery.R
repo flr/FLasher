@@ -67,7 +67,8 @@ test_that("FLCatches get and set data accessors - double", {
                 c(discards.sel(flf_in[[element]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(discards.ratio(flf_in[[element]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]))
     expect_equal(values_out, values_in) # Not identical as some use the quant_sum method - numerical differences
-    # get const hperiod, effort, vcost, fcost accessor
+    # get const hperiod, effort, vcost, fcost accessor - no units
+    indices[3] <- 1
     values_out <- test_FLFishery_const_economics_get_accessors(flf_in, indices[2], indices[3], indices[4], indices[5], indices[6])
     values_in <- c(c(flf_in@effort[1, indices[2], indices[3], indices[4], indices[5], indices[6]]),
                 c(flf_in@vcost[1, indices[2], indices[3], indices[4], indices[5], indices[6]]),
