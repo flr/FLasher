@@ -384,17 +384,16 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
     target_iters[min_row,"min",] <- runif(niters, min=0.3, max=0.4)
     target_iters[max_row,"max",] <- runif(niters, min=0.3, max=0.4)
     # Data.frame constructor - use other constructor here?
-
     fwc <- fwdControl(target=target, iters=target_iters)
     # Add target and timestep column - not set by user - should be added before dispatching to C++
     # Added after constructor is called
     fwc@target$timestep <- (fwc@target$year-1) * nseasons + fwc@target$season
-    fwc@target <- fwc@target[order(fwc@target$timestep),]
+    fwc@order <- fwc@order[order(fwc@target$timestep),]
     tsteps <- unique(fwc@target$timestep)
     names(tsteps) <- 1:length(tsteps)
     # Look away!
     for (i in 1:length(tsteps)){
-        fwc@target[fwc@target[,"timestep"] %in% tsteps[i], "target"] <- as.integer(names(tsteps)[i])
+        fwc@target[fwc@target[,"timestep"] %in% tsteps[i], "order"] <- as.integer(names(tsteps)[i])
     }
     # Add fake FCB array - will be constructed on R side before calling fwd()
     FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))

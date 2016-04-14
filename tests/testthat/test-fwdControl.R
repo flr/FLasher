@@ -24,32 +24,32 @@ test_that("fwdControl accessors", {
     target <- test_fwdControl_get_target(fc)
     expect_identical(target, fc@target)
     # get ntarget
-    # If no target column - fail
+    # If no order column - fail
     fc2 <- fc
-    fc2@target <- fc2@target[,colnames(fc2@target) != "target"]
+    fc2@target <- fc2@target[,colnames(fc2@target) != "order"]
     expect_error(test_fwdControl_get_ntarget(fc2))
-    # With target column
-    expect_equal(test_fwdControl_get_ntarget(fc), max(fc@target$target) - min(fc@target$target) + 1)
+    # With order column
+    expect_equal(test_fwdControl_get_ntarget(fc), max(fc@target$order) - min(fc@target$order) + 1)
     # get niter
     niter <- test_fwdControl_get_niter(fc)
     expect_identical(niter, dim(fc@iters)[3])
     # Pull out random target for testing - would be good to pull out a target with sim targets
-    target_no <- fc@target$target[round(runif(1, min=1, max=length(fc@target$target)))]
+    target_no <- fc@target$order[round(runif(1, min=1, max=length(fc@target$order)))]
     # nsim_target
-    expect_equal(sum(fc@target$target == target_no), test_fwdControl_get_nsim_target(fc, target_no))
-    expect_error(test_fwdControl_get_nsim_target(fc, max(fc@target$target)+1)) # Out of bounds
+    expect_equal(sum(fc@target$order == target_no), test_fwdControl_get_nsim_target(fc, target_no))
+    expect_error(test_fwdControl_get_nsim_target(fc, max(fc@target$order)+1)) # Out of bounds
     # get target row and rows
-    nsim_target <- sum(fc@target$target == target_no)
+    nsim_target <- sum(fc@target$order == target_no)
     sim_target_no <- round(runif(1, min=1, max=nsim_target))
-    row_no <- which(fc@target$target==target_no)[sim_target_no]
+    row_no <- which(fc@target$order==target_no)[sim_target_no]
     expect_equal(row_no, test_fwdControl_get_target_row(fc, target_no, sim_target_no) + 1) # +1 as start at 0
-    row_nos <- which(fc@target$target==target_no)
+    row_nos <- which(fc@target$order==target_no)
     expect_equal(row_nos, test_fwdControl_get_target_rows(fc, target_no) + 1)
     # get target value
     col_no <- round(runif(1,min=1,max=3))
     # all sim targets
     values <- test_fwdControl_get_target_value(fc, target_no, col_no)
-    target_rows <- which(fc@target$target==target_no)
+    target_rows <- which(fc@target$order==target_no)
     expect_equal(c(t(fc@iters[target_rows,col_no,])), values)
     # a single sim target
     values <- test_fwdControl_get_target_value2(fc, target_no, sim_target_no, col_no)
@@ -77,14 +77,14 @@ test_that("fwdControl accessors", {
     fc@target$fishery[1] <- as.integer(NA)
     if (any(is.na(fc@target$fishery))){
         na_row <- which(is.na(fc@target$fishery))[1]
-        na_target_no <- fc@target$target[na_row]
-        na_sim_target_no <- which(which(fc@target$target == na_target_no) == na_row)
+        na_target_no <- fc@target$order[na_row]
+        na_sim_target_no <- which(which(fc@target$order == na_target_no) == na_row)
         expect_true(is.na(as.integer(test_fwdControl_get_target_int_col2(fc, na_target_no, na_sim_target_no, "fishery"))))
     }
     # get target type / quantity
     type <- test_fwdControl_get_target_quantity(fc, target_no, sim_target_no)
     expect_identical(type, as.character(fc@target[target_rows[sim_target_no], "quant"]))
-    expect_error(test_fwdControl_get_target_quantity(fc, max(fc@target$target)+1, sim_target_no)) # target number too high
+    expect_error(test_fwdControl_get_target_quantity(fc, max(fc@target$order)+1, sim_target_no)) # target number too high
     # age range    
     age_range <- test_fwdControl_get_age_range(fc, target_no, sim_target_no)
     expect_equal(unname(unlist( fc@target[row_no,c("minAge", "maxAge")])), age_range)

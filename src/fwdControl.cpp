@@ -72,10 +72,10 @@ Rcpp::DataFrame fwdControl::get_target() const{
 unsigned int fwdControl::get_ntarget() const{
     // Check that the target column exists 
     std::vector<std::string> col_names = target.attr("names");
-    if (std::find(col_names.begin(), col_names.end(), "target") == col_names.end()){
-        Rcpp::stop("In fwdControl::get_ntarget - no target column in control dataframe\n");
+    if (std::find(col_names.begin(), col_names.end(), "order") == col_names.end()){
+        Rcpp::stop("In fwdControl::get_ntarget - no order column in control dataframe\n");
     }
-    std::vector<unsigned int> target_no = target["target"];
+    std::vector<unsigned int> target_no = target["order"];
     auto minmax = std::minmax_element(target_no.begin(), target_no.end());
     auto ntarget = (*minmax.second - *minmax.first + 1);
     return ntarget;
@@ -108,10 +108,10 @@ std::vector<unsigned int> fwdControl::get_age_range(const unsigned int target_no
 unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
     // Check that the target column exists 
     std::vector<std::string> col_names = target.attr("names");
-    if (std::find(col_names.begin(), col_names.end(), "target") == col_names.end()){
-        Rcpp::stop("In fwdControl::get_ntarget - no target column in control dataframe\n");
+    if (std::find(col_names.begin(), col_names.end(), "order") == col_names.end()){
+        Rcpp::stop("In fwdControl::get_nsim_target - no order column in control dataframe\n");
     }
-    Rcpp::IntegerVector targets = target["target"];
+    Rcpp::IntegerVector targets = target["order"];
     // Sort them
     std::sort(targets.begin(), targets.end());
     // [&] means capture variable, means we can get target_no
@@ -120,7 +120,7 @@ unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
     // Get the position of the first target_no
     auto it_value = std::find(targets.begin(), targets.end(), target_no);
     if (it_value == targets.end()){
-        Rcpp::stop("In fwdControl::get_nsim_target. target_no not found in target column\n");
+        Rcpp::stop("In fwdControl::get_nsim_target. target_no not found in order column\n");
     }
     return it_greater - it_value;
 }
@@ -136,17 +136,17 @@ unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
 std::vector<unsigned int> fwdControl::get_target_row(unsigned int target_no) const {
     // Check that the target column exists 
     std::vector<std::string> col_names = target.attr("names");
-    if (std::find(col_names.begin(), col_names.end(), "target") == col_names.end()){
-        Rcpp::stop("In fwdControl::get_ntarget - no target column in control dataframe\n");
+    if (std::find(col_names.begin(), col_names.end(), "order") == col_names.end()){
+        Rcpp::stop("In fwdControl::get_target_row - no order column in control dataframe\n");
     }
-    Rcpp::IntegerVector targets = target["target"];
+    Rcpp::IntegerVector targets = target["order"];
     unsigned int nsim_target = get_nsim_target(target_no);
     std::vector<unsigned int> rows(nsim_target);
     auto current_target = targets.begin();
     for (unsigned int target_count = 0; target_count < nsim_target; ++target_count){
         current_target = std::find(current_target, targets.end(), target_no);
         if (current_target == targets.end()){
-            Rcpp::stop("In fwdControl::get_target_row. target row not found\n");
+            Rcpp::stop("In fwdControl::get_target_row. order row not found\n");
         }
         rows[target_count] = current_target - targets.begin();
         current_target++;
