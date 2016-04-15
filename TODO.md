@@ -2,6 +2,7 @@
 # fwdControl
 
 - WRITE validTargets() RCpp function, returns character
+- ADD timestep & order check to fwdControl()
 
 # fwd()
 
