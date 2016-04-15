@@ -6,7 +6,12 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
-qlevels <-  c('f', 'catch', 'ssb', 'biomass', 'landings', 'discards', 'tsb', 'rec')
+qlevels <-  c('catch', 'landings', 'discards')
+
+# TODO
+# qlevels <-  c('f', 'z', 'ssb', 'tsb', 'rec', 'biomass', 'catch', 'landings',
+#   'discards', 'costs', 'revenue', 'profit', 'effort', 'msize')
+
 
 # fwdControl class {{{
 
