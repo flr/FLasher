@@ -20,3 +20,18 @@ setReplaceMethod("target", signature(object="fwdControl", value="data.frame"),
 		return(object)
 	}
 )
+
+# iters
+setMethod("iters", signature(object="fwdControl"),
+	function(object) {
+		return(object@iters)
+	}
+)
+
+# iters<-
+setReplaceMethod("iters", signature(object="fwdControl", value="array"),
+	function(object, value) {
+		
+		return(object)
+	}
+)

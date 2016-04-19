@@ -106,4 +106,27 @@ setMethod("[<-", signature(x="fwdControl", value="vector"),
 
 # }}}
 
-# propagate()
+# propagate {{{
+setMethod("propagate", signature(object="fwdControl"),
+  function(object, iter, fill.iter=TRUE) {
+
+    nit <- dim(object@iters)[3]
+
+    if(iter == nit)
+      return(object)
+    
+    # Only extend if iter == 1
+    if(nit > 1)
+      stop("Can only propagate an object with a single 'iter'")
+
+    its <- object@iters[, , rep(1, iter), drop=FALSE]
+    dimnames(its)$iter <- seq(1, iter)
+
+    if(!fill.iter)
+      its[,,seq(2, iter)] <- NA
+
+    object@iters <- its
+
+    return(object)
+  }
+)# }}}
