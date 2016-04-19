@@ -181,6 +181,29 @@ test_that("get_f for biols with example operatingModel1 - total Fs from multiple
     }
 })
 
+test_that("operatingModel get_unit_z - one catch on one biol",{
+    flq <- random_FLQuant_generator(min_dims = c(2,2,5,2,2,2))
+    flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
+    # Pull out just FLBiols for testing
+    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=1, max_fisheries=1)
+    # fwdControl and FCB needed for constructor but not actually used to test F
+    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
+    FCB <- array(1, dim = c(1,3))
+    attr(fc@target, "FCB") <- FCB
+    dim_max <- dim(flq)
+    dim_min <- round(runif(6, min=1, max = dim_max))
+    # Assume F is correct
+    fin <- test_operatingModel_get_f_B_subset(flfs, flbs, fc, 1, dim_min, dim_max)
+    min <- flbs_in[[1]]@m[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
+    zin <- min+fin
+    nin <- flbs_in[[1]]@n[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
+    survivors <- nin*exp(-zin)
+    unit_zin <- -log(unitSums(survivors) / unitSums(nin))
+    unit_zout <- test_operatingModel_unit_z_subset(flfs, flbs, fc, 1, dim_min, dim_max)
+    test_FLQuant_equal(unit_zin, unit_zout)
+})
+
 test_that("operatingModel f_prop_spwn methods",{
     # Random OM with units
     flq <- random_FLQuant_generator()

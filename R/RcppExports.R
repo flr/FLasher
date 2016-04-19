@@ -1881,6 +1881,18 @@ test_operatingModel_get_f_B <- function(flfs, biols, ctrl, biol_no) {
     .Call('FLasher_test_operatingModel_get_f_B', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no)
 }
 
+test_operatingModel_fbar_subset1 <- function(flfs, biols, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_fbar_subset1', PACKAGE = 'FLasher', flfs, biols, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_fbar_subset2 <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_fbar_subset2', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_unit_z_subset <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_unit_z_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
 test_operatingModel_project_biols <- function(flfs, biols, ctrl, timestep) {
     .Call('FLasher_test_operatingModel_project_biols', PACKAGE = 'FLasher', flfs, biols, ctrl, timestep)
 }
@@ -1895,14 +1907,6 @@ test_operatingModel_run <- function(flfs, biols, ctrl, effort_mult_initial, inde
 
 test_operatingModel_run2 <- function(flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max, nr_iters = 50L) {
     .Call('FLasher_test_operatingModel_run2', PACKAGE = 'FLasher', flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max, nr_iters)
-}
-
-test_operatingModel_fbar_subset1 <- function(flfs, biols, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_fbar_subset1', PACKAGE = 'FLasher', flfs, biols, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_fbar_subset2 <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_fbar_subset2', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
 }
 
 test_operatingModel_eval_om <- function(flfs, biols, ctrl, strquantity, fishery_no, catch_no, biol_no, indices_min, indices_max) {

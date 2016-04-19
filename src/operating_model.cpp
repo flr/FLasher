@@ -352,6 +352,9 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
 FLQuantAD operatingModel::get_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
     unsigned int fishery_no;
     unsigned int catch_no;
+    if (biol_no > biols.get_nbiols()){
+        Rcpp::stop("In OM get_f biol. biol_no is greater than number of biols\n");
+    }
     // We need to know the Fishery / Catches that catch the biol
     const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
     // What happens if no-one is fishing that biol? FC.nrow() == 0 so loop never triggers
@@ -373,6 +376,33 @@ FLQuantAD operatingModel::get_f(const int biol_no) const {
     return f;
 }
 //@}
+
+
+/*! \brief Get the total mortality on a Biol, collapsed over the unit dimension.
+ * This is a special case for Biols with multiple units where you want the total mortality combined over units (i.e. the unit dimension is collapsed).
+ * It is used to help get the fishing mortality combined over units.
+ * This is calculated as follows :
+ * (notation: Nut is the abundance in unit u at time t)
+ * N12 = N11 exp(-Z1) # survivors for unit 1
+ * N22 = N21 exp(-Z2) # survivors for unit 2
+ * Ntotal1 = N11 + N21 # combine the units
+ * Ntotal2 = N12 + N22
+ * Ntotal2 = Ntotal1 exp(-Ztotal) # survivors of combined units
+ * Rearrange to give:
+ * Zt = -log ((N11 exp(-Z1) + N21 exp(-Z2) + ...) / (N11 + N21 + ...))
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
+ * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
+ */
+FLQuantAD operatingModel::get_unit_z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if (indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel get_unit_z subsetter. Indices not of length 6\n");
+    }
+    FLQuantAD n = biols(biol_no).n(indices_min, indices_max);
+    FLQuantAD survivors = n * exp(-1.0 * (get_f(biol_no, indices_min, indices_max) + biols(biol_no).m(indices_min, indices_max)));
+    FLQuantAD unit_z = -1.0 * log(unit_sum(survivors) / unit_sum(n));
+    return unit_z; 
+}
 
 /*! \brief Project the Biols in the operatingModel by a single timestep
  *   Projects the Biols in the operatingModel by a single timestep.
