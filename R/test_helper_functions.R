@@ -323,7 +323,7 @@ simple_fisheries_project <- function(flfs, flb, flsr, f, f_spwn, sr_residuals, s
 #' @export
 #' @return A fwdControl object
 random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), nseasons = 2, max_nsim_target = 3, niters = round(runif(1,min=5,max=10))){
-    quantities <- c("f","catch","landings","discards", "ssb", "biomass")
+    quantities <- c("f","catch","landings","discards")#, "ssb", "biomass")
     abundance_quantities <- c("ssb", "biomass", "f")
     f_quantities <- c("f") # either B, or FCB
     # Randomly set simultaneous targets
@@ -346,7 +346,7 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
     # Randomly pick some quantities
     target$quant <- quantities[round(runif(nrow(target),min=1,max=length(quantities)))]
     # But force last one to be an abundance target to help with testing
-    target$quant[length(target$quant)] <- "biomass"
+    #target$quant[length(target$quant)] <- "biomass"
     # And for catch too
     target$quant[length(target$quant)-1] <- "catch"
     # Randomly set FCB (based on target)
