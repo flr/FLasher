@@ -117,7 +117,6 @@ FLQuantAD test_operatingModel_unit_f_subset(FLFisheriesAD flfs, fwdBiolsAD biols
     return f;
 }
 
-
 /*----------- project and run methods --------------*/
 // [[Rcpp::export]]
 operatingModel test_operatingModel_project_biols(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int timestep){

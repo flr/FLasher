@@ -423,14 +423,12 @@ FLQuantAD operatingModel::get_unit_f(const int biol_no, const std::vector<unsign
     if (indices_min.size() != 6 | indices_max.size() != 6){
         Rcpp::stop("In operatingModel get_unit_f subsetter. Indices not of length 6\n");
     }
-    
     FLQuantAD unit_catch =  unit_sum(catch_n(biol_no, indices_min, indices_max));
     FLQuantAD unit_z = get_unit_z(biol_no, indices_min, indices_max);
     FLQuantAD n = unit_sum(biols(biol_no).n(indices_min, indices_max));
     FLQuantAD unit_f = (unit_catch * unit_z) / ((1.0-exp(-1.0 * unit_z)) * n);
     return unit_f;
 }
-
 
 /*! \brief Project the Biols in the operatingModel by a single timestep
  *   Projects the Biols in the operatingModel by a single timestep.
