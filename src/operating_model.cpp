@@ -381,6 +381,7 @@ FLQuantAD operatingModel::get_f(const int biol_no) const {
 /*! \brief Get the total mortality on a Biol, collapsed over the unit dimension.
  * This is a special case for Biols with multiple units where you want the total mortality combined over units (i.e. the unit dimension is collapsed).
  * It is used to help get the fishing mortality combined over units.
+ * It does not use the current effort to calculate and F and assumes that the operatingModel is updated for the indices requested.
  * This is calculated as follows :
  * (notation: Nut is the abundance in unit u at time t)
  * N12 = N11 exp(-Z1) # survivors for unit 1
@@ -403,6 +404,33 @@ FLQuantAD operatingModel::get_unit_z(const int biol_no, const std::vector<unsign
     FLQuantAD unit_z = -1.0 * log(unit_sum(survivors) / unit_sum(n));
     return unit_z; 
 }
+
+/*! \brief Get the fishing mortality on a Biol, collapsed over the unit dimension.
+ * This is a special case for Biols with multiple units where you want the fishing mortality combined over units (i.e. the unit dimension is collapsed).
+ * This is calculated using the total catch and therefore assumes that the catch and biol abundance have been correctly updated to reflect the fishing mortality.
+ * It does not use the current effort to calculate the catch and F and assumes that the operatingModel is updated for the indices requested.
+ * (notation: Nut is the abundance in unit u at time t)
+ * Given the standard Baranov catch equation:
+ * C = (F / Z) * (1 - exp(-Z)) * N
+ * Rearranging to give:
+ * F = C Z / ((1 - exp(-Z))*N)
+ * Where C, Z and N have been collapsed over the unit dimension.
+ * \param biol_no the position of the biol within the biols (starting at 1).
+ * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
+ * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
+ */
+FLQuantAD operatingModel::get_unit_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if (indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel get_unit_f subsetter. Indices not of length 6\n");
+    }
+    
+    FLQuantAD unit_catch =  unit_sum(catch_n(biol_no, indices_min, indices_max));
+    FLQuantAD unit_z = get_unit_z(biol_no, indices_min, indices_max);
+    FLQuantAD n = unit_sum(biols(biol_no).n(indices_min, indices_max));
+    FLQuantAD unit_f = (unit_catch * unit_z) / ((1.0-exp(-1.0 * unit_z)) * n);
+    return unit_f;
+}
+
 
 /*! \brief Project the Biols in the operatingModel by a single timestep
  *   Projects the Biols in the operatingModel by a single timestep.
@@ -1188,7 +1216,7 @@ FLQuantAD operatingModel::fbar(const int biol_no, const std::vector<unsigned int
 //@}
 
 
-/*! \brief The total landings from a single biol 
+/*! \brief The total landings mass from a single biol 
  * Sums up the current landings from each of the FLCatch objects that fish the biol
  * However, this only works if none of the FLCatch objects also fish on another biol (because then the total catches in the FLCatch come from a mix of biols).
  * In this case, we need to split the catches between the biols.
@@ -1281,6 +1309,88 @@ FLQuantAD operatingModel::catches(const int biol_no, const std::vector<unsigned 
     }
     FLQuantAD total_catches = landings(biol_no, indices_min, indices_max) + discards(biol_no, indices_min, indices_max);
     return total_catches;
+}
+
+/*! \brief The total landings abundance by age from a single biol 
+ * Sums up the current landings from each of the FLCatch objects that fish the biol
+ * However, this only works if none of the FLCatch objects also fish on another biol (because then the total catches in the FLCatch come from a mix of biols).
+ * In this case, we need to split the catches between the biols.
+ * This is not yet implemented. 
+ *
+ * \param biol_no Position of the chosen biol in the biols list
+ * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 6)
+ * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 6)
+ */
+FLQuantAD operatingModel::landings_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if(indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel landings_n on a biol subset method. indices_min and max must be of length 6\n");
+    }
+    // Empty quant for storage
+    FLQuantAD total_landings_n(indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1, indices_max[5] - indices_min[5] + 1); 
+    total_landings_n.fill(0.0);
+    // Get the Fishery / Catches that catch the biol
+    const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
+    // Loop over the FCs that catch from that biol 
+    for (int FC_counter = 0; FC_counter < FC.nrow(); ++FC_counter){
+        // What biols are also fished by that FC
+       std::vector<int> biols_fished = ctrl.get_B(FC(FC_counter, 0), FC(FC_counter, 1)); 
+        // Do any of these FCs catch another biol - if so STOP and return error
+        if (biols_fished.size() > 1){
+            Rcpp::stop("In om::landings_n. Trying to get landings from a biol that is fished by an FLCatch that also fishes another biol. Not yet implemented.\n");
+        }
+        total_landings_n = total_landings_n + fisheries(FC(FC_counter,0), FC(FC_counter,1)).landings_n(indices_min, indices_max);
+    }
+    return total_landings_n;
+}
+
+/*! \brief The total discards abundance by age from a single biol 
+ * Sums up the current discards from each of the FLCatch objects that fish the biol
+ * However, this only works if none of the FLCatch objects also fish on another biol (because then the total catches in the FLCatch come from a mix of biols).
+ * In this case, we need to split the catches between the biols.
+ * This is not yet implemented. 
+ *
+ * \param biol_no Position of the chosen biol in the biols list
+ * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 6)
+ * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 6)
+ */
+FLQuantAD operatingModel::discards_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if(indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel discards_n on a biol subset method. indices_min and max must be of length 6\n");
+    }
+    // Empty quant for storage
+    FLQuantAD total_discards_n(indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1, indices_max[5] - indices_min[5] + 1); 
+    total_discards_n.fill(0.0);
+    // Get the Fishery / Catches that catch the biol
+    const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
+    // Loop over the FCs that catch from that biol 
+    for (int FC_counter = 0; FC_counter < FC.nrow(); ++FC_counter){
+        // What biols are also fished by that FC
+       std::vector<int> biols_fished = ctrl.get_B(FC(FC_counter, 0), FC(FC_counter, 1)); 
+        // Do any of these FCs catch another biol - if so STOP and return error
+        if (biols_fished.size() > 1){
+            Rcpp::stop("In om::discards_n. Trying to get discards from a biol that is fished by an FLCatch that also fishes another biol. Not yet implemented.\n");
+        }
+        total_discards_n = total_discards_n + fisheries(FC(FC_counter,0), FC(FC_counter,1)).discards_n(indices_min, indices_max);
+    }
+    return total_discards_n;
+}
+
+/*! \brief Subset the total catch numbers from a single biol 
+ * The catches are taken directly from the catches in the FLCatch object, i.e. they are not recalculated. Therefore, if effort or something has changed, this method will not reflect those changes.
+ * If a biol is fished by a catch that also catches from another biol (i.e. a catch fishing on two sub stocks)
+ * the catches from each biol have to be recalculated as there is no direct way of splitting the total catch
+ * into the catches from each biol. This is not yet implemented.
+ *
+ * \param biol_no Position of the chosen biol in the biols list
+ * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 6)
+ * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 6)
+ */
+FLQuantAD operatingModel::catch_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if(indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel catch_n on a biol subset method. indices_min and max must be of length 5\n");
+    }
+    FLQuantAD total_catch_n = landings_n(biol_no, indices_min, indices_max) + discards_n(biol_no, indices_min, indices_max);
+    return total_catch_n;
 }
 
 ////-------------------------------------------------

@@ -85,7 +85,7 @@ test_that("operatingModel get_f method for FCB with random OM objects - just par
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
     # fwdControl and FCB needed for constructor but not actually used to test F
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
-    attr(fc@target, "FCB") <- array(0, dim = c(10,3))
+    attr(fc, "FCB") <- array(0, dim = c(10,3))
     # Any FLC FLB combination
     fishery_no <- round(runif(1,min=1, max=length(flfs)))
     catch_no <- round(runif(1,min=1, max=length(flfs[[fishery_no]])))
@@ -181,7 +181,7 @@ test_that("get_f for biols with example operatingModel1 - total Fs from multiple
     }
 })
 
-test_that("operatingModel get_unit_z - one catch on one biol",{
+test_that("operatingModel get_unit_z and unit_f- one catch on one biol",{
     flq <- random_FLQuant_generator(min_dims = c(2,2,5,2,2,2))
     flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
@@ -190,7 +190,7 @@ test_that("operatingModel get_unit_z - one catch on one biol",{
     # fwdControl and FCB needed for constructor but not actually used to test F
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
     FCB <- array(1, dim = c(1,3))
-    attr(fc@target, "FCB") <- FCB
+    attr(fc, "FCB") <- FCB
     dim_max <- dim(flq)
     dim_min <- round(runif(6, min=1, max = dim_max))
     # Assume F is correct
@@ -202,6 +202,10 @@ test_that("operatingModel get_unit_z - one catch on one biol",{
     unit_zin <- -log(unitSums(survivors) / unitSums(nin))
     unit_zout <- test_operatingModel_unit_z_subset(flfs, flbs, fc, 1, dim_min, dim_max)
     test_FLQuant_equal(unit_zin, unit_zout)
+
+
+    unit_fout <- test_operatingModel_unit_f_subset(flfs, flbs, fc, 1, dim_min, dim_max)
+
 })
 
 test_that("operatingModel f_prop_spwn methods",{
@@ -247,7 +251,7 @@ test_that("operatingModel srp methods with units",{
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
     FCB <- array(NA, dim=c(1,3))
     FCB[1,] <- c(1,1,1)
-    attr(fc@target, "FCB") <- FCB
+    attr(fc, "FCB") <- FCB
     # Biol 1
     biol_no <- 1
     fishery_no <- 1
@@ -433,7 +437,7 @@ test_that("operatingModel calc_rec complex OM", {
     # Fix FCB
     FCB <- array(NA, dim=c(1,3))
     FCB[1,] <- c(1,1,1)
-    attr(fc@target, "FCB") <- FCB
+    attr(fc, "FCB") <- FCB
     # Rec in season 1
     rec_year <- round(runif(1,min=2,max=dim(flq)[2]))
     rec_season <- 1
@@ -517,7 +521,7 @@ test_that("operatingModel project_biol", {
     # Fix FCB
     FCB <- array(NA, dim=c(1,3))
     FCB[1,] <- c(1,1,1)
-    attr(fc@target, "FCB") <- FCB
+    attr(fc, "FCB") <- FCB
     # Project in each season in a random year
     year <- round(runif(1,min=2,dim(flq)[2]))
     # Season 1
@@ -616,7 +620,7 @@ test_that("operatingModel project_fisheries", {
     FCB[3,] <- c(2,1,2)
     FCB[4,] <- c(2,2,3)
     FCB[5,] <- c(2,2,4)
-    attr(fc@target, "FCB") <- FCB
+    attr(fc, "FCB") <- FCB
     # Random timestep
     season <- round(runif(1,min=1,max=4))
     year <- round(runif(1,min=1,dim(flq)[2]))
@@ -731,6 +735,17 @@ test_that("operatingModel landings, catch and discards methods",{
     catch1_out <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
     catch1_in <- catch(om[["fisheries"]][[1]][[1]])
     test_FLQuant_equal(catch1_in[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], catch1_out)
+
+    landings1_n_out <- test_operatingModel_landings_n_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max)
+    landings1_n_in <- landings.n(om[["fisheries"]][[1]][[1]])
+    test_FLQuant_equal(landings1_n_in[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], landings1_n_out)
+    discards1_n_out <- test_operatingModel_discards_n_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max)
+    discards1_n_in <- discards.n(om[["fisheries"]][[1]][[1]])
+    test_FLQuant_equal(discards1_n_in[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], discards1_n_out)
+    catch1_n_out <- test_operatingModel_catch_n_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max)
+    catch1_n_in <- catch.n(om[["fisheries"]][[1]][[1]])
+    test_FLQuant_equal(catch1_n_in[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], catch1_n_out)
+
     # 1 biol -> 2 catch
     biol_no <- 2
     landings2_out <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1])
@@ -745,16 +760,37 @@ test_that("operatingModel landings, catch and discards methods",{
     catch12_in <- catch(om[["fisheries"]][[1]][[2]])
     catch21_in <- catch(om[["fisheries"]][[2]][[1]])
     test_FLQuant_equal((catch12_in+catch21_in)[, dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], catch2_out)
+
+    landings2_n_out <- test_operatingModel_landings_n_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max)
+    landings12_n_in <- landings.n(om[["fisheries"]][[1]][[2]])
+    landings21_n_in <- landings.n(om[["fisheries"]][[2]][[1]])
+    test_FLQuant_equal((landings12_n_in+landings21_n_in)[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], landings2_n_out)
+
+    discards2_n_out <- test_operatingModel_discards_n_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max)
+    discards12_n_in <- discards.n(om[["fisheries"]][[1]][[2]])
+    discards21_n_in <- discards.n(om[["fisheries"]][[2]][[1]])
+    test_FLQuant_equal((discards12_n_in+discards21_n_in)[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], discards2_n_out)
+    catch2_n_out <- test_operatingModel_catch_n_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max)
+    catch12_n_in <- catch.n(om[["fisheries"]][[1]][[2]])
+    catch21_n_in <- catch.n(om[["fisheries"]][[2]][[1]])
+    test_FLQuant_equal((catch12_n_in+catch21_n_in)[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], catch2_n_out)
+
     # 2 biol -> 1 catch
     # Not yet implemented for a single catch so fails
     biol_no <- 3
     expect_error(test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
     expect_error(test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
     expect_error(test_operatingModel_catch_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
+    expect_error(test_operatingModel_landings_n_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max))
+    expect_error(test_operatingModel_discards_n_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max))
+    expect_error(test_operatingModel_catch_n_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max))
     biol_no <- 4
     expect_error(test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
     expect_error(test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
     expect_error(test_operatingModel_catch_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
+    expect_error(test_operatingModel_landings_n_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max))
+    expect_error(test_operatingModel_discards_n_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max))
+    expect_error(test_operatingModel_catch_n_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max))
 })
 
 # eval_om work with units - important as the target calculations use unit_sum()

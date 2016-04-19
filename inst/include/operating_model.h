@@ -64,9 +64,7 @@ class operatingModel {
         FLQuantAD get_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD get_f(const int biol_no) const;
         FLQuantAD get_unit_z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        FLQuantAD get_unit_z(const int biol_no) const;
         FLQuantAD get_unit_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        FLQuantAD get_unit_f(const int biol_no) const;
         void project_biols(const int timestep); // Uses effort in previous timestep
         void project_fisheries(const int timestep); // Uses effort in that timestep
         Rcpp::IntegerMatrix run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters = 50); 
@@ -93,10 +91,13 @@ class operatingModel {
         // Total fbar on a biol (possibly from multiple catches)
         FLQuantAD fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
-        // Total catches / landings / discards from a biol
+        // Extract total catches / landings / discards from a biol - not calculated from effort
         FLQuantAD landings(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD discards(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD catches(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD landings_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD discards_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD catch_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
         // Total biomass from a biol
         //FLQuantAD biomass(const int biol_no) const;

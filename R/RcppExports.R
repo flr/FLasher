@@ -1893,6 +1893,10 @@ test_operatingModel_unit_z_subset <- function(flfs, biols, ctrl, biol_no, indice
     .Call('FLasher_test_operatingModel_unit_z_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
 }
 
+test_operatingModel_unit_f_subset <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_unit_f_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
 test_operatingModel_project_biols <- function(flfs, biols, ctrl, timestep) {
     .Call('FLasher_test_operatingModel_project_biols', PACKAGE = 'FLasher', flfs, biols, ctrl, timestep)
 }
@@ -1921,6 +1925,18 @@ test_operatingModel_get_target_value_hat2 <- function(flfs, biols, ctrl, target_
     .Call('FLasher_test_operatingModel_get_target_value_hat2', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no)
 }
 
+test_operatingModel_get_target_value <- function(flfs, biols, ctrl, target_no, sim_target_no) {
+    .Call('FLasher_test_operatingModel_get_target_value', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no, sim_target_no)
+}
+
+test_operatingModel_get_target_value2 <- function(flfs, biols, ctrl, target_no) {
+    .Call('FLasher_test_operatingModel_get_target_value2', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no)
+}
+
+test_operatingModel_get_target_age_range_indices <- function(flfs, biols, ctrl, target_no, sim_target_no) {
+    .Call('FLasher_test_operatingModel_get_target_age_range_indices', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no, sim_target_no)
+}
+
 test_operatingModel_catches_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
     .Call('FLasher_test_operatingModel_catches_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
 }
@@ -1933,16 +1949,16 @@ test_operatingModel_discards_subset <- function(flfs, flbs_list_sexp, ctrl, biol
     .Call('FLasher_test_operatingModel_discards_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
 }
 
-test_operatingModel_get_target_value <- function(flfs, biols, ctrl, target_no, sim_target_no) {
-    .Call('FLasher_test_operatingModel_get_target_value', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no, sim_target_no)
+test_operatingModel_catch_n_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_catch_n_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
 }
 
-test_operatingModel_get_target_value2 <- function(flfs, biols, ctrl, target_no) {
-    .Call('FLasher_test_operatingModel_get_target_value2', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no)
+test_operatingModel_landings_n_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_landings_n_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
 }
 
-test_operatingModel_get_target_age_range_indices <- function(flfs, biols, ctrl, target_no, sim_target_no) {
-    .Call('FLasher_test_operatingModel_get_target_age_range_indices', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no, sim_target_no)
+test_operatingModel_discards_n_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_discards_n_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
 }
 
 test_max3 <- function(indep) {
