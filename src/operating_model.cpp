@@ -407,7 +407,8 @@ FLQuantAD operatingModel::get_unit_z(const int biol_no, const std::vector<unsign
 
 /*! \brief Get the fishing mortality on a Biol, collapsed over the unit dimension.
  * This is a special case for Biols with multiple units where you want the fishing mortality combined over units (i.e. the unit dimension is collapsed).
- * This is calculated using the total catch and therefore assumes that the catch and biol abundance have been correctly updated to reflect the fishing mortality.
+ * This is calculated by extracting the current total catch from the OM. The catch is not calculated 'live' using the current effort.
+ * It therefore assumes that the catch and biol abundance have been correctly updated to reflect the fishing mortality.
  * It does not use the current effort to calculate the catch and F and assumes that the operatingModel is updated for the indices requested.
  * (notation: Nut is the abundance in unit u at time t)
  * Given the standard Baranov catch equation:

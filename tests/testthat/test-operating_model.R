@@ -210,6 +210,41 @@ test_that("operatingModel get_unit_z and unit_f- two catches on one biol",{
     unit_fin <- (cin * unit_zin) / ((1 - exp(-unit_zin)) * nin)
     unit_fout <- test_operatingModel_unit_f_subset(flfs, flbs, fc, 1, dim_min, dim_max)
     test_FLQuant_equal(unit_fin, unit_fout)
+
+    # If we only have 1 unit, zin same as unit_zout and fin will be same as unit_fout
+    # But we have to update the catches in the OM first else calculation to get F is not correct (F is essentially back calculated from catches)
+    # Just one timestep
+    flq <- random_FLQuant_generator(min_dims = c(2,1,1,1,1,1), max_dims = c(5,1,1,1,1,1))
+    flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
+    # Pull out just FLBiols for testing
+    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
+    # fwdControl and FCB needed for constructor but not actually used to test F
+    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
+    FCB <- array(c(1,2,1,1,1,1), dim = c(2,3))
+    attr(fc, "FCB") <- FCB
+    dim_max <- dim(flq)
+    #dim_min <- round(runif(6, min=1, max = dim_max))
+    dim_min <- rep(1,6)
+    # Assume F is correct
+    fin <- test_operatingModel_get_f_B_subset(flfs, flbs, fc, 1, dim_min, dim_max)
+    min <- flbs_in[[1]]@m[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
+    zin <- min+fin
+    nin <- flbs_in[[1]]@n[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
+    survivors <- nin*exp(-zin)
+    unit_zin <- -log(unitSums(survivors) / unitSums(nin))
+    unit_zout <- test_operatingModel_unit_z_subset(flfs, flbs, fc, 1, dim_min, dim_max)
+    test_FLQuant_equal(unit_zin, unit_zout)
+    test_FLQuant_equal(zin, unit_zout)
+    cin <- catch.n(flfs[[1]][[1]])[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]] +
+        catch.n(flfs[[2]][[1]])[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
+    # Need to project to get correct catches in fisheries (else f, catch and n inconsistent)
+    om_out <- test_operatingModel_project_fisheries(flfs, flbs, fc, 1)
+    cin <- catch.n(om_out$fisheries[[1]][[1]]) + catch.n(om_out$fisheries[[2]][[1]])
+    unit_fin <- (cin * zin) / ((1-exp(-zin))*nin)
+    unit_fout <- test_operatingModel_unit_f_subset(om_out$fisheries, flbs, fc, 1, dim_min, dim_max)
+    test_FLQuant_equal(fin, unit_fout)
+    test_FLQuant_equal(fin, unit_fin)
 })
 
 test_that("operatingModel f_prop_spwn methods",{
