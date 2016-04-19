@@ -5,6 +5,7 @@
 # Maintainer: Iago Mosqueira, JRC
 # Soundtrack:
 # Notes:
+setGeneric('target<-', function(object, ..., value) standardGeneric('target<-'))
 
 # fwdControl
 setGeneric('fwdControl', function(target, iters, ...) standardGeneric("fwdControl"))
@@ -13,3 +14,5 @@ setGeneric('fwdControl', function(target, iters, ...) standardGeneric("fwdContro
 setGeneric('target', function(object, ...) standardGeneric('target'))
 setGeneric('target<-', function(object, ..., value) standardGeneric('target<-'))
 
+# iters<-
+setGeneric('iters<-', function(object, ..., value) standardGeneric('iters<-'))
