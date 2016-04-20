@@ -105,10 +105,6 @@ test_that("operatingModel get_f method for FCB with random OM objects - just par
     fin_sub <- fin[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
     expect_equal(dim(fout), dim(fin_sub))
     expect_equal(c(fout), c(fin_sub))
-    # Fbar subset 
-    fbar_out <- test_operatingModel_fbar_subset1(flfs, flbs, fc, fishery_no, catch_no, biol_no, dim_min, dim_max)
-    fbar_in <- apply(fout, 2:6, mean)
-    test_FLQuant_equal(fbar_in, fbar_out)
     # With years in the Catch Q pars too
     flp <- FLPar(abs(rnorm(2 * dim(flq)[6] * dim(flq)[2])), dimnames = list(params = c("alpha","beta"), year=1:dim(flq)[2], iter = 1:dim(flq)[6]))
     catch.q(flfs[[fishery_no]][[catch_no]]) <- flp # desc removes! Why?
@@ -174,9 +170,6 @@ test_that("get_f for biols with example operatingModel1 - total Fs from multiple
             }
             test_FLQuant_equal(fin, fout_all)
             test_FLQuant_equal(fin[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2],indices_min[3]:indices_max[3],indices_min[4]:indices_max[4],indices_min[5]:indices_max[5],indices_min[6]:indices_max[6]], fout)
-            # Check fbar
-            fbar_out <- test_operatingModel_fbar_subset2(om[["fisheries"]], om[["biols"]], om[["fwc"]], i, indices_min, indices_max)
-            test_FLQuant_equal(apply(fout, 2:6, mean), fbar_out)
         }
     }
 })
@@ -261,6 +254,35 @@ test_that("operatingModel get_unit_z and unit_f- two catches on one biol",{
     test_FLQuant_equal(fin, unit_fout)
     test_FLQuant_equal(unit_fout1 + unit_fout2, fin)
 })
+
+test_that("operatingModel fbar methods",{
+    # Two catches on a biol
+    flq <- random_FLQuant_generator(fixed_dims = c(10,2,2,2,2,20))
+    flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
+    # Pull out just FLBiols for testing
+    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
+    # fwdControl and FCB needed for constructor but not actually used to test F
+    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
+    FCB <- array(c(1,2,1,1,1,1), dim = c(2,3))
+    attr(fc, "FCB") <- FCB
+    dim_max <- dim(flq)
+    dim_min <- round(runif(6, min=1, max = dim_max))
+    # Fbar on whole biol
+    fin <- test_operatingModel_unit_f_B_subset(flfs, flbs, fc, 1, dim_min, dim_max)
+    fbar_in <- apply(fin, 2:6, mean)
+    fbar_out <- test_operatingModel_fbar_B(flfs, flbs, fc, 1, dim_min, dim_max)
+    test_FLQuant_equal(fbar_in, fbar_out)
+    # Fbar from single catch
+    fin <- test_operatingModel_unit_f_FCB_subset(flfs, flbs, fc, 1,1,1, dim_min, dim_max)
+    fbar_in <- apply(fin, 2:6, mean)
+    fbar_out <- test_operatingModel_fbar_FCB(flfs, flbs, fc, 1,1,1, dim_min, dim_max)
+    test_FLQuant_equal(fbar_in, fbar_out)
+    fin <- test_operatingModel_unit_f_FCB_subset(flfs, flbs, fc, 2,1,1, dim_min, dim_max)
+    fbar_in <- apply(fin, 2:6, mean)
+    fbar_out <- test_operatingModel_fbar_FCB(flfs, flbs, fc, 2,1,1, dim_min, dim_max)
+    test_FLQuant_equal(fbar_in, fbar_out)
+}
 
 test_that("operatingModel f_prop_spwn methods",{
     # Random OM with units

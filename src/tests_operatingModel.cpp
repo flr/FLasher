@@ -88,14 +88,14 @@ FLQuantAD test_operatingModel_get_f_B(FLFisheriesAD flfs, fwdBiolsAD biols, cons
 }
 
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_fbar_subset1(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+FLQuantAD test_operatingModel_fbar_FCB(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
     operatingModel om(flfs, biols, ctrl);
     FLQuantAD fb = om.fbar(fishery_no, catch_no, biol_no, indices_min, indices_max);
     return fb;
 }
 
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_fbar_subset2(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+FLQuantAD test_operatingModel_fbar_B(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
     operatingModel om(flfs, biols, ctrl);
     FLQuantAD fb = om.fbar(biol_no, indices_min, indices_max);
     return fb;

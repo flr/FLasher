@@ -1200,7 +1200,10 @@ std::vector<unsigned int> operatingModel::get_target_age_range_indices(const uns
 //---------------Target methods ----------------------------
 
 /*! \name fbar
- * Calculate the mean instantaneous fishing mortality over the specified age range
+ * Calculate the mean instantaneous fishing mortality over the specified age range.
+ * This collapses the unit dimension using the get_unit_f() method which extracts the current catches in the OM.
+ * It is therefore assumed that the catches in the OM for the specified indices have been updated and reflect the current effort and abundance.
+ * If this is not the case, you will need to run project_fisheries() for the desired timesteps.
  * Note that the indices are not the names of the ages, but the positions, starting at 1
  */
 //@{
@@ -1214,7 +1217,7 @@ std::vector<unsigned int> operatingModel::get_target_age_range_indices(const uns
 */
 FLQuantAD operatingModel::fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
     // Get the F, then mean over the first dimension
-    FLQuantAD f = get_f(fishery_no, catch_no, biol_no, indices_min, indices_max); 
+    FLQuantAD f = get_unit_f(fishery_no, catch_no, biol_no, indices_min, indices_max); 
     FLQuantAD fbar = quant_mean(f);
     return fbar;
 }
@@ -1226,7 +1229,7 @@ FLQuantAD operatingModel::fbar(const int fishery_no, const int catch_no, const i
  */
 FLQuantAD operatingModel::fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
     // Get the F, then mean over the first dimension
-    FLQuantAD f = get_f(biol_no, indices_min, indices_max); 
+    FLQuantAD f = get_unit_f(biol_no, indices_min, indices_max); 
     FLQuantAD fbar = quant_mean(f);
     return fbar;
 }
