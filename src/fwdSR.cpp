@@ -26,6 +26,8 @@ void fwdSR_base<T>::init_model_map(){
     map_model_name_to_function["Mean"] = &constant;
     map_model_name_to_function["geomean"] = &constant;
     map_model_name_to_function["Geomean"] = &constant;
+    map_model_name_to_function["bevholtSS3"] = &bevholtSS3;
+    map_model_name_to_function["BevholtSS3"] = &bevholtSS3;
     return;
 }
 
@@ -310,6 +312,19 @@ T constant(const T srp, const std::vector<double> params){
     return rec;
 }
 
+template <typename T>
+T bevholtSS3(const T srp, const std::vector<double> params){
+    // (4 * s * R0 * ssb) / (v * (1 - s) + ssb * (5 * s - 1)) 
+    // SRP is * 0.5 for the sex ratio
+    double s = params[0];
+    double R0 = params[1];
+    double v = params[2];
+    T srp_sex = srp * 0.5;
+    T rec;
+    rec = (4.0 * s * R0 * srp_sex) / (v * (1 - s) + srp_sex * (5 * s - 1.0));
+    return rec;
+}
+
 // Instantiate functions
 template double ricker(const double ssb, const std::vector<double> params);
 template adouble ricker(const adouble ssb, const std::vector<double> params);
@@ -317,4 +332,6 @@ template double bevholt(const double ssb, const std::vector<double> params);
 template adouble bevholt(const adouble ssb, const std::vector<double> params);
 template double constant(const double srp, const std::vector<double> params);
 template adouble constant(const adouble srp, const std::vector<double> params);
+template double bevholtSS3(const double ssb, const std::vector<double> params);
+template adouble bevholtSS3(const adouble ssb, const std::vector<double> params);
 
