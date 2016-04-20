@@ -1893,8 +1893,12 @@ test_operatingModel_unit_z_subset <- function(flfs, biols, ctrl, biol_no, indice
     .Call('FLasher_test_operatingModel_unit_z_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
 }
 
-test_operatingModel_unit_f_subset <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_unit_f_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+test_operatingModel_unit_f_B_subset <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_unit_f_B_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_unit_f_FCB_subset <- function(flfs, biols, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_unit_f_FCB_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max)
 }
 
 test_operatingModel_project_biols <- function(flfs, biols, ctrl, timestep) {

@@ -405,17 +405,23 @@ FLQuantAD operatingModel::get_unit_z(const int biol_no, const std::vector<unsign
     return unit_z; 
 }
 
-/*! \brief Get the fishing mortality on a Biol, collapsed over the unit dimension.
- * This is a special case for Biols with multiple units where you want the fishing mortality combined over units (i.e. the unit dimension is collapsed).
- * This is calculated by extracting the current total catch from the OM. The catch is not calculated 'live' using the current effort.
+
+/*! \name get_unit_f
+ * Get the fishing mortality collapsed over the unit dimension.
+ * This is a special case for Biols and Catches with multiple units where you want the fishing mortality combined over units (i.e. the unit dimension is collapsed).
+ * This is calculated by extracting the current total catch from the FLCatches. The catch is not calculated 'live' using the current effort.
  * It therefore assumes that the catch and biol abundance have been correctly updated to reflect the fishing mortality.
  * It does not use the current effort to calculate the catch and F and assumes that the operatingModel is updated for the indices requested.
- * (notation: Nut is the abundance in unit u at time t)
  * Given the standard Baranov catch equation:
  * C = (F / Z) * (1 - exp(-Z)) * N
  * Rearranging to give:
  * F = C Z / ((1 - exp(-Z))*N)
- * Where C, Z and N have been collapsed over the unit dimension.
+ * Z is the total mortality on the Biol from all FLCatches and fishing mortality
+ * C is the catch from either an individual Catch or the Catch on the Biol
+ * C, Z and N have been collapsed over the unit dimension.
+ */
+//@{
+/*! \brief Get the fishing mortality on a Biol, collapsed over the unit dimension.
  * \param biol_no the position of the biol within the biols (starting at 1).
  * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
@@ -430,6 +436,24 @@ FLQuantAD operatingModel::get_unit_f(const int biol_no, const std::vector<unsign
     FLQuantAD unit_f = (unit_catch * unit_z) / ((1.0-exp(-1.0 * unit_z)) * n);
     return unit_f;
 }
+/*! \brief Get the fishing mortality from an individual Catch on a Biol, collapsed over the unit dimension.
+ * \param fishery_no the position of the Fishery within the Fisheries (starting at 1).
+ * \param catch_no the position of the Catch within the Catches (starting at 1).
+ * \param biol_no the position of the Biol within the Biols (starting at 1).
+ * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
+ * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
+ */
+FLQuantAD operatingModel::get_unit_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if (indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel get_unit_f subsetter. Indices not of length 6\n");
+    }
+    FLQuantAD unit_catch = unit_sum(fisheries(fishery_no, catch_no).catch_n(indices_min, indices_max));
+    FLQuantAD unit_z = get_unit_z(biol_no, indices_min, indices_max);
+    FLQuantAD n = unit_sum(biols(biol_no).n(indices_min, indices_max));
+    FLQuantAD unit_f = (unit_catch * unit_z) / ((1.0-exp(-1.0 * unit_z)) * n);
+    return unit_f;
+}
+//@}
 
 /*! \brief Project the Biols in the operatingModel by a single timestep
  *   Projects the Biols in the operatingModel by a single timestep.
@@ -751,11 +775,6 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
  */
 FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
     // Check length of indices_min and max - should be of length 5 (no age structured quantities returned)
-    //
-    // What about Unit structured quantities?
-    // Indices are still length 5 but Unit is ignored
-    // Or are Indices only of length 4 Year, Season, Area, Iter - Better
-    //
     if (indices_min.size() != 5 | indices_max.size() != 5){
         Rcpp::stop("In operatingModel srp subsetter. Indices not of length 5\n");
     }
@@ -764,7 +783,6 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
     if(!(Rcpp::IntegerVector::is_na(catch_no)) & Rcpp::IntegerVector::is_na(fishery_no)){
         Rcpp::stop("In operatingModel::eval_om. If you specify a catch_no, you must also specify a fishery_no.\n");
     }
-
     FLQuantAD out;
     switch(target_type){
         case target_effort: {
@@ -778,36 +796,36 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         break;
         }
 
-        //case target_fbar: {
-        //    Rprintf("target_fbar\n");
-        //    // Indices only 5D when passed in - needs age range
-        //    if (Rcpp::IntegerVector::is_na(biol_no)) {
-        //        Rcpp::stop("In operatingModel::eval_target. Asking for fbar when biol_na is NA. Not yet implemented.\n");
-        //    }
-        //    std::vector<unsigned int> age_range_indices = get_target_age_range_indices(target_no, sim_target_no, biol_no); // indices start at 0
-        //    std::vector<unsigned int> age_indices_min = indices_min;
-        //    std::vector<unsigned int> age_indices_max = indices_max;
-        //    age_indices_min.insert(age_indices_min.begin(), age_range_indices[0] + 1); // +1 because accessor starts at 1 but age indices 0 - sorry
-        //    age_indices_max.insert(age_indices_max.begin(), age_range_indices[1] + 1);
-        //    // Is it total fbar on a biol, or fbar of an FLCatch
-        //    if (!Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
-        //        Rprintf("fbar is from FLCatch %i in FLFishery %i on biol %i\n", catch_no, fishery_no, biol_no);
-        //        out = fbar(fishery_no, catch_no, biol_no, age_indices_min, age_indices_max);
-        //    }
-        //    else {
-        //        Rprintf("catch_no is NA. fbar is total fbar from biol %i\n", biol_no);
-        //        Rprintf("ages_indices_min\n");
-        //        for (auto i=0; i<6; ++i){
-        //            Rprintf("age_indices_min %i\n", age_indices_min[i]);
-        //        }
-        //        Rprintf("ages_indices_max\n");
-        //        for (auto i=0; i<6; ++i){
-        //            Rprintf("age_indices_max %i\n", age_indices_max[i]);
-        //        }
-        //        out = fbar(biol_no, age_indices_min, age_indices_max);
-        //    }
-        //    break;
-        //}
+//        case target_fbar: {
+//            Rprintf("target_fbar\n");
+//            // Indices only 5D when passed in - needs age range
+//            if (Rcpp::IntegerVector::is_na(biol_no)) {
+//                Rcpp::stop("In operatingModel::eval_target. Asking for fbar when biol_na is NA. Not yet implemented.\n");
+//            }
+//            std::vector<unsigned int> age_range_indices = get_target_age_range_indices(target_no, sim_target_no, biol_no); // indices start at 0
+//            std::vector<unsigned int> age_indices_min = indices_min;
+//            std::vector<unsigned int> age_indices_max = indices_max;
+//            age_indices_min.insert(age_indices_min.begin(), age_range_indices[0] + 1); // +1 because accessor starts at 1 but age indices 0 - sorry
+//            age_indices_max.insert(age_indices_max.begin(), age_range_indices[1] + 1);
+//            // Is it total fbar on a biol, or fbar of an FLCatch
+//            if (!Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
+//                Rprintf("fbar is from FLCatch %i in FLFishery %i on biol %i\n", catch_no, fishery_no, biol_no);
+//                out = fbar(fishery_no, catch_no, biol_no, age_indices_min, age_indices_max);
+//            }
+//            else {
+//                Rprintf("catch_no is NA. fbar is total fbar from biol %i\n", biol_no);
+//                Rprintf("ages_indices_min\n");
+//        //        for (auto i=0; i<6; ++i){
+//        //            Rprintf("age_indices_min %i\n", age_indices_min[i]);
+//        //        }
+//        //        Rprintf("ages_indices_max\n");
+//        //        for (auto i=0; i<6; ++i){
+//        //            Rprintf("age_indices_max %i\n", age_indices_max[i]);
+//        //        }
+//                out = fbar(biol_no, age_indices_min, age_indices_max);
+//            }
+//            break;
+//        }
         case target_catch: {
             Rprintf("target_catch\n");
             // Is it total catch of a biol, or catch of an FLCatch
@@ -1136,7 +1154,7 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
 
 /*! \brief Returns the indices of the age range, starting at 0
  *
- * Returns the indices of the age dimension. These are only the same as in the control object if the first age is 0.
+ * Returns the indices of the age dimension. These are only the same as the minAge and maxAge columns in the control object if the first age is 0.
  * \param target_no References the target column in the control dataframe. Starts at 1.
  * \param sim_target_no References the target column in the control dataframe. Starts at 1.
  */
