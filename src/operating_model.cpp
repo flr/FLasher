@@ -770,14 +770,10 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
  * \param fishery_no The fishery number. 
  * \param catch_no The catch number. 
  * \param biol_no The biol number. 
- * \param indices_min The minimum range of the returned FLQuant
- * \param indices_max The maximum range of the returned FLQuant
+ * \param indices_min The minimum range of the returned FLQuant. Of length 5 or 6 depending on the target type (F needs age, catch and effort do not).
+ * \param indices_max The maximum range of the returned FLQuant. Of length 5 or 6 depending on the target type (F needs age, catch and effort do not).
  */
 FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
-    // Check length of indices_min and max - should be of length 5 (no age structured quantities returned)
-    if (indices_min.size() != 5 | indices_max.size() != 5){
-        Rcpp::stop("In operatingModel srp subsetter. Indices not of length 5\n");
-    }
     // If we have a catch_no, we must also have a fishery_no
     // But you are allowed a fishery with no catch - effort target
     if(!(Rcpp::IntegerVector::is_na(catch_no)) & Rcpp::IntegerVector::is_na(fishery_no)){
@@ -787,6 +783,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
     switch(target_type){
         case target_effort: {
             Rprintf("target_effort\n");
+            // Indices should be of length 5
             if (Rcpp::IntegerVector::is_na(fishery_no)){
                 Rcpp::stop("In operatingModel::eval_om. Asking for effort target but fishery_no has been specified.\n");
             }
@@ -795,39 +792,26 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             }
         break;
         }
-
-//        case target_fbar: {
-//            Rprintf("target_fbar\n");
-//            // Indices only 5D when passed in - needs age range
-//            if (Rcpp::IntegerVector::is_na(biol_no)) {
-//                Rcpp::stop("In operatingModel::eval_target. Asking for fbar when biol_na is NA. Not yet implemented.\n");
-//            }
-//            std::vector<unsigned int> age_range_indices = get_target_age_range_indices(target_no, sim_target_no, biol_no); // indices start at 0
-//            std::vector<unsigned int> age_indices_min = indices_min;
-//            std::vector<unsigned int> age_indices_max = indices_max;
-//            age_indices_min.insert(age_indices_min.begin(), age_range_indices[0] + 1); // +1 because accessor starts at 1 but age indices 0 - sorry
-//            age_indices_max.insert(age_indices_max.begin(), age_range_indices[1] + 1);
-//            // Is it total fbar on a biol, or fbar of an FLCatch
-//            if (!Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
-//                Rprintf("fbar is from FLCatch %i in FLFishery %i on biol %i\n", catch_no, fishery_no, biol_no);
-//                out = fbar(fishery_no, catch_no, biol_no, age_indices_min, age_indices_max);
-//            }
-//            else {
-//                Rprintf("catch_no is NA. fbar is total fbar from biol %i\n", biol_no);
-//                Rprintf("ages_indices_min\n");
-//        //        for (auto i=0; i<6; ++i){
-//        //            Rprintf("age_indices_min %i\n", age_indices_min[i]);
-//        //        }
-//        //        Rprintf("ages_indices_max\n");
-//        //        for (auto i=0; i<6; ++i){
-//        //            Rprintf("age_indices_max %i\n", age_indices_max[i]);
-//        //        }
-//                out = fbar(biol_no, age_indices_min, age_indices_max);
-//            }
-//            break;
-//        }
+        case target_fbar: {
+            Rprintf("target_fbar\n");
+            // Indices should be of length 6
+            if (Rcpp::IntegerVector::is_na(biol_no)) {
+                Rcpp::stop("In operatingModel::eval_om. Asking for fbar when biol_no is NA. Not yet implemented. Please specify which Biol you mean.\n");
+            }
+            // Is it total fbar on a biol, or fbar of an FLCatch
+            if (!Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
+                Rprintf("fbar is from FLCatch %i in FLFishery %i on biol %i\n", catch_no, fishery_no, biol_no);
+                out = fbar(fishery_no, catch_no, biol_no, indices_min, indices_max);
+            }
+            else {
+                Rprintf("catch_no is NA. fbar is total fbar from biol %i\n", biol_no);
+                out = fbar(biol_no, indices_min, indices_max);
+            }
+            break;
+        }
         case target_catch: {
             Rprintf("target_catch\n");
+            // Indices should be of length 5
             // Is it total catch of a biol, or catch of an FLCatch
             if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
                 Rprintf("biol_no is NA, catch is from FLCatch %i in FLFishery %i\n", catch_no, fishery_no);
@@ -847,6 +831,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         }
         case target_landings: {
             Rprintf("target_landings\n");
+            // Indices should be of length 5
             if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
                 out = unit_sum(fisheries(fishery_no, catch_no).landings(indices_min, indices_max));
             }
@@ -864,6 +849,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         }
         case target_discards: {
             Rprintf("target_discards\n");
+            // Indices should be of length 5
             if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
                 out = unit_sum(fisheries(fishery_no, catch_no).discards(indices_min, indices_max));
             }
@@ -967,6 +953,12 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     // Else unit comes from fishery which is always 1
     std::vector<unsigned int> indices_min = {year,1,season,1,1};
     std::vector<unsigned int> indices_max = {year,nunit,season,1,niter};
+    // If fbar target we need to add age range to the indices - fix relative indices lower down too
+    if (target_type == target_fbar){
+            std::vector<unsigned int> age_range_indices = get_target_age_range_indices(target_no, sim_target_no); // indices start at 0
+            indices_min.insert(indices_min.begin(), age_range_indices[0] + 1); // +1 because accessor starts at 1 but age indices 0 - sorry
+            indices_max.insert(indices_max.begin(), age_range_indices[1] + 1);
+    }
     // Get the current absolute values, i.e. not relative, as FLQuant
     FLQuantAD target_value = eval_om(target_type, fishery_no, catch_no, biol_no, indices_min, indices_max);
     // Are we dealing with absolute or relative values?
@@ -1008,6 +1000,16 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
         //Rprintf("rel_nunit: %i\n", rel_nunit);
         std::vector<unsigned int> rel_indices_min = {rel_year,1,rel_season,1,1};
         std::vector<unsigned int> rel_indices_max = {rel_year,rel_nunit,rel_season,1,niter};
+        // If fbar target we need to add age range to the indices
+        // But this adds age range of the target object, not the object it is relative to - this is not right
+        // Maybe want F relative to F in another biol - current code maybe won't fail but it's not correct
+        // Same age range for target and relative target
+        if (target_type == target_fbar){
+                Rcpp::warning("Getting age range for relative target. Assuming age range is the same as the target\n");
+                std::vector<unsigned int> age_range_indices = get_target_age_range_indices(target_no, sim_target_no); // indices start at 0
+                rel_indices_min.insert(indices_min.begin(), age_range_indices[0] + 1); // +1 because accessor starts at 1 but age indices 0 - sorry
+                rel_indices_max.insert(indices_max.begin(), age_range_indices[1] + 1);
+        }
         FLQuantAD rel_target_value = eval_om(target_type, rel_fishery, rel_catch, rel_biol, rel_indices_min, rel_indices_max);
         target_value = target_value / rel_target_value;
     }
@@ -1083,13 +1085,6 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
                 ctrl_value_long.assign(ctrl_value.begin(), ctrl_value.end());
             }
             // No need to use CppAD Conditional as target value is evaluated before the operation sequence, i.e. not on the tape
-            //for (auto i=0; i < value.size(); ++i){
-            //    auto temp_value = value[i];
-            //    Rprintf("value[%i]: %f\n", i, Value(value[i]));
-            //    Rprintf("ctrl_value_long[%i]: %f\n", i, Value(ctrl_value_long[i]));
-            //    value[i] = CppAD::CondExpLt(value[i], ctrl_value_long[i], value[i], ctrl_value_long[i]);
-            //    Rprintf("so value[%i]: %f\n", i, Value(value[i]));
-            //}
             std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::min(x, y);});
         }
         if(!min_na){
@@ -1103,10 +1098,6 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
             else {
                 ctrl_value_long.assign(ctrl_value.begin(), ctrl_value.end());
             }
-            // Conditional AD max
-            //for (auto i=0; i < value.size(); ++i){
-            //    value[i] = CppAD::CondExpGt(value[i], ctrl_value_long[i], value[i], ctrl_value_long[i]);
-            //}
             std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::max(x, y);});
         }
     }
@@ -1124,12 +1115,6 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
     return value;
 }
 //@}
-
-
-
-
-
-
 
 //// The timestep that fmult affects to calculate the target value
 //// e.g. if Biomass is target, then adjust the fmult in the previous timestep
@@ -1155,6 +1140,7 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
 /*! \brief Returns the indices of the age range, starting at 0
  *
  * Returns the indices of the age dimension. These are only the same as the minAge and maxAge columns in the control object if the first age is 0.
+ * These relate to the Biol / Catch / Fishery not the relBiol / relCatch / relFishery
  * \param target_no References the target column in the control dataframe. Starts at 1.
  * \param sim_target_no References the target column in the control dataframe. Starts at 1.
  */
@@ -1205,6 +1191,7 @@ std::vector<unsigned int> operatingModel::get_target_age_range_indices(const uns
  * It is therefore assumed that the catches in the OM for the specified indices have been updated and reflect the current effort and abundance.
  * If this is not the case, you will need to run project_fisheries() for the desired timesteps.
  * Note that the indices are not the names of the ages, but the positions, starting at 1
+ * No check is made to see if the Fishery and Catch are fishing on the Biol.
  */
 //@{
 /*! \brief The mean instantaneous fishing mortality over the specified age range of a single biol from a single fishery / catch, subset over dimensions 2-6.

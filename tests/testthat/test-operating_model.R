@@ -944,6 +944,26 @@ test_that("operatingModel eval_om units", {
     #  Discards B2
     doutb2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", as.integer(NA),as.integer(NA),2, dim_min[-1], dim_max[-1])
     test_FLQuant_equal(doutb2,din12+din21)
+    # Fbar B1
+    foutb1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", as.integer(NA),as.integer(NA),1, dim_min, dim_max)
+    finb1 <- test_operatingModel_fbar_B(flfs, flbs, fwc, 1, dim_min, dim_max) # Assume is correct
+    test_FLQuant_equal(foutb1,finb1)
+    # Fbar FC11
+    foutfc11 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", 1,1,1, dim_min, dim_max)
+    finfc11 <- test_operatingModel_fbar_FCB(flfs, flbs, fwc, 1,1,1, dim_min, dim_max) # Assume is correct
+    test_FLQuant_equal(foutfc11,finfc11)
+    # Fbar B2
+    foutb2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", as.integer(NA),as.integer(NA),1, dim_min, dim_max)
+    finb2 <- test_operatingModel_fbar_B(flfs, flbs, fwc, 1, dim_min, dim_max) # Assume is correct
+    test_FLQuant_equal(foutb1,finb1)
+    # Fbar FC12
+    foutfc12 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", 1,2,1, dim_min, dim_max)
+    finfc12 <- test_operatingModel_fbar_FCB(flfs, flbs, fwc, 1,2,1, dim_min, dim_max) # Assume is correct
+    test_FLQuant_equal(foutfc12,finfc12)
+    # Fbar FC22
+    foutfc21 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", 2,1,1, dim_min, dim_max)
+    finfc21 <- test_operatingModel_fbar_FCB(flfs, flbs, fwc, 2,1,1, dim_min, dim_max) # Assume is correct
+    test_FLQuant_equal(foutfc21,finfc21)
 })
 
 test_that("operatingModel eval_om simple", {
@@ -1050,7 +1070,7 @@ test_that("get_target_value_hat", {
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = c(NA,2), relCatch = c(NA,1), relBiol = c(1,NA),
                         relYear = rel_years[7:8], relSeason = rel_seasons[7:8])
-    fwc <- fwdControl(rbind(trgt1, trgt2, rel_trgt1, rel_trgt2))
+    fwc <- fwdControl(rbind(trgt1, trgt2, rel_trgt1, rel_trgt2, f_trgt2))
     attr(fwc, "FCB") <- FCB
     # Target 1 - 1 sim target at a time
     val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
@@ -1108,6 +1128,34 @@ test_that("get_target_value_hat", {
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 6))
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 7))
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 8))
+
+    # New Control object for simplicity
+    # Fbar target
+    min_age = round(runif(1,min=min(as.numeric(dimnames(flq)$age)), max=max(as.numeric(dimnames(flq)$age)))-1)
+    max_age = round(runif(1,min=min_age, max=max(as.numeric(dimnames(flq)$age))))
+    years <- rep(round(runif(1, min=1,max=dim(flq)[2])),each=2)
+    seasons <- rep(round(runif(1, min=1,max=dim(flq)[4])),each=2)
+    timesteps <- (years-1) * dim(flq)[4] + seasons;
+    f_trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[9:10],
+                        quant = c("f","f"), order = 1, 
+                        fishery = c(NA,1), catch = c(NA,2), biol = c(1,1),
+                        minAge = min_age, maxAge = max_age)
+    fwc <- fwdControl(rbind(f_trgt1))
+    attr(fwc, "FCB") <- FCB
+    # Target 5 - 1 sim target at a time
+    dim_min <- c(min_age, years[1], 1, seasons[1], 1, 1)
+    dim_max <- c(max_age, years[1], dim(flq)[3], seasons[1], dim(flq)[5], dim(flq)[6])
+    # Sim 1
+    val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
+    val_in1 <- c(test_operatingModel_fbar_B(flfs, flbs, fwc, 1, dim_min, dim_max))
+    expect_equal(val_hat1, val_in1)
+    # Sim 2
+    val_hat2 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 2)
+    val_in2 <- c(test_operatingModel_fbar_FCB(flfs, flbs, fwc, 1,2,1, dim_min, dim_max))
+    expect_equal(val_hat2, val_in2)
+    # Both
+    val_hat <- test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 1)
+    expect_equal(val_hat, c(val_in1, val_in2))
 })
 
 # Values in control object 
