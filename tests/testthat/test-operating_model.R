@@ -1353,49 +1353,59 @@ test_that("get_target_value - min / max values", {
     expect_equal(val_hat, c(val_hat1, val_hat2))
 })
 
-#test_that("operatingModel get_target_age_range", {
-#    min_age_name <- round(runif(1,min=0,max=10))
-#    flq <- random_FLQuant_generator(min_dims=c(5,5,1,1,1,1), min_age_name = min_age_name)
-#    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq), min_age_name=min_age_name)
-#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2, min_age_name=min_age_name)
-#    ages <- as.numeric(dimnames(flq)$age)
-#    min_age <- round(runif(1,min=ages[1],max=max(ages)))
-#    max_age <- round(runif(1,min=min_age, max=max(ages)))
-#    # With biol no
-#    trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
-#                        quant = "f", target = 1, value=1,
-#                        fishery = NA, catch = NA, biol = 1,
-#                        relFishery = NA, relCatch = NA, relBiol = NA,
-#                        relYear = NA, relSeason = NA,
-#                        minAge = min_age, maxAge = max_age)
-#    fwc <- fwdControl(trgt1)
-#    FCB <- array(1, dim=c(3,3))
-#    attr(fwc, "FCB") <- FCB
-#    ind_out <- test_operatingModel_get_target_age_range_indices(flfs, flbs, fwc, 1, 1) 
-#    ind_in <- c(which(ages %in% min_age), which(ages %in% max_age)) - 1
-#    expect_identical(ind_out, ind_in)
-#    # With catch no
-#    trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
-#                        quant = "f", target = 1, value=1,
-#                        fishery = 1, catch = 1, biol = NA,
-#                        relFishery = NA, relCatch = NA, relBiol = NA,
-#                        relYear = NA, relSeason = NA,
-#                        minAge = min_age, maxAge = max_age)
-#    fwc <- fwdControl(trgt1)
-#    FCB <- array(1, dim=c(3,3))
-#    attr(fwc@target, "FCB") <- FCB
-#    ind_out <- test_operatingModel_get_target_age_range_indices(flfs, flbs, fwc, 1, 1) 
-#    ind_in <- c(which(ages %in% min_age), which(ages %in% max_age)) - 1
-#    expect_identical(ind_out, ind_in)
-#    # With neither
-#    trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
-#                        quant = "f", target = 1, value=1,
-#                        fishery = NA, catch = NA, biol = NA,
-#                        relFishery = NA, relCatch = NA, relBiol = NA,
-#                        relYear = NA, relSeason = NA,
-#                        minAge = min_age, maxAge = max_age)
-#    fwc <- fwdControl(trgt1)
-#    FCB <- array(1, dim=c(3,3))
-#    attr(fwc@target, "FCB") <- FCB
-#    expect_error(test_operatingModel_get_target_age_range_indices(flfs, flbs, fwc, 1, 1))
-#})
+test_that("operatingModel get_target_age_range", {
+    min_age_name <- round(runif(1,min=0,max=10))
+    flq <- random_FLQuant_generator(min_dims=c(5,5,1,1,1,1), min_age_name = min_age_name)
+    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq), min_age_name=min_age_name)
+    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2, min_age_name=min_age_name)
+    ages <- as.numeric(dimnames(flq)$age)
+    min_age <- round(runif(1,min=ages[1],max=max(ages)))
+    max_age <- round(runif(1,min=min_age, max=max(ages)))
+    # With biol no
+    trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
+                        quant = "f", order = 1,
+                        fishery = NA, catch = NA, biol = 1,
+                        minAge = min_age, maxAge = max_age)
+    fwc <- fwdControl(trgt1)
+    FCB <- array(1, dim=c(3,3))
+    attr(fwc, "FCB") <- FCB
+    ind_out <- test_operatingModel_get_target_age_range_indices(flfs, flbs, fwc, 1, 1) 
+    ind_in <- c(which(ages %in% min_age), which(ages %in% max_age)) - 1
+    expect_identical(ind_out, ind_in)
+    # With catch no
+    trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
+                        quant = "f", order = 1, 
+                        fishery = 1, catch = 1, biol = NA,
+                        minAge = min_age, maxAge = max_age)
+    fwc <- fwdControl(trgt1)
+    FCB <- array(1, dim=c(3,3))
+    attr(fwc, "FCB") <- FCB
+    ind_out <- test_operatingModel_get_target_age_range_indices(flfs, flbs, fwc, 1, 1) 
+    ind_in <- c(which(ages %in% min_age), which(ages %in% max_age)) - 1
+    expect_identical(ind_out, ind_in)
+    # minAge outside age range - error
+    trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
+                        quant = "f", order = 1, 
+                        fishery = 1, catch = 1, biol = NA,
+                        minAge = min_age_name - 1, maxAge = max_age)
+    fwc <- fwdControl(trgt1)
+    attr(fwc, "FCB") <- FCB
+    expect_error(test_operatingModel_get_target_age_range_indices(flfs, flbs, fwc, 1, 1))
+    # maxAge outside age range - error
+    trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
+                        quant = "f", order = 1, 
+                        fishery = 1, catch = 1, biol = NA,
+                        minAge = min_age, maxAge = max(as.numeric(dimnames(flq)$age))+1)
+    fwc <- fwdControl(trgt1)
+    attr(fwc, "FCB") <- FCB
+    expect_error(test_operatingModel_get_target_age_range_indices(flfs, flbs, fwc, 1, 1))
+    # Without catch or biol in control - error
+    trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
+                        quant = "f", target = 1,
+                        fishery = NA, catch = NA, biol = NA,
+                        minAge = min_age, maxAge = max_age)
+    fwc <- fwdControl(trgt1)
+    FCB <- array(1, dim=c(3,3))
+    attr(fwc, "FCB") <- FCB
+    expect_error(test_operatingModel_get_target_age_range_indices(flfs, flbs, fwc, 1, 1))
+})
