@@ -6,7 +6,7 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
-qlevels <-  c('catch', 'landings', 'discards', 'f')
+qlevels <-  c('catch', 'landings', 'discards', 'f', 'ssb')
 
 # TODO
 # qlevels <-  c('f', 'z', 'ssb', 'tsb', 'rec', 'biomass', 'catch', 'landings',

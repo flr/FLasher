@@ -1789,10 +1789,6 @@ test_fwdControl_get_age_range <- function(control, target_no, sim_target_no) {
     .Call('FLasher_test_fwdControl_get_age_range', PACKAGE = 'FLasher', control, target_no, sim_target_no)
 }
 
-test_fwdControl_get_target_effort_timestep <- function(control, target_no, sim_target_no) {
-    .Call('FLasher_test_fwdControl_get_target_effort_timestep', PACKAGE = 'FLasher', control, target_no, sim_target_no)
-}
-
 test_fwdControl_get_FC <- function(control, biol_no) {
     .Call('FLasher_test_fwdControl_get_FC', PACKAGE = 'FLasher', control, biol_no)
 }
@@ -1887,18 +1883,6 @@ test_operatingModel_fbar_FCB <- function(flfs, biols, ctrl, fishery_no, catch_no
 
 test_operatingModel_fbar_B <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
     .Call('FLasher_test_operatingModel_fbar_B', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_unit_z_subset <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_unit_z_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_unit_f_B_subset <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_unit_f_B_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
-}
-
-test_operatingModel_unit_f_FCB_subset <- function(flfs, biols, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_unit_f_FCB_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, fishery_no, catch_no, biol_no, indices_min, indices_max)
 }
 
 test_operatingModel_project_biols <- function(flfs, biols, ctrl, timestep) {

@@ -5,7 +5,8 @@ test_that("operatingModel constructors",{
     test_operatingModel_empty_constructor()
     # Main constructor test
     # Set up parameters for full test 
-    flq <- random_FLQuant_generator()
+    #flq <- random_FLQuant_generator()
+    flq <- random_FLQuant_generator(fixed_dims=c(NA,NA,1,NA,NA,NA))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
@@ -19,7 +20,8 @@ test_that("operatingModel constructors",{
 })
 
 test_that("operatingModel constructor dimension checks",{
-    flq <- random_FLQuant_generator(min_dims=c(2,2,2,2,2,2))
+    #flq <- random_FLQuant_generator(min_dims=c(2,2,2,2,2,2))
+    flq <- random_FLQuant_generator(min_dims=c(2,2,1,2,2,2), fixed_dims=c(NA,NA,1,NA,NA,NA))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
@@ -67,7 +69,8 @@ test_that("operatingModel constructor dimension checks",{
 })
 
 test_that("operatingModel housekeeping",{
-    flq <- random_FLQuant_generator()
+    #flq <- random_FLQuant_generator()
+    flq <- random_FLQuant_generator(fixed_dims=c(NA,NA,1,NA,NA,NA))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
@@ -78,7 +81,7 @@ test_that("operatingModel housekeeping",{
 # Test F method with random Biols and Fisheries
 # No check if FC catches B
 test_that("operatingModel get_f method for FCB with random OM objects - just partial F - one catch on one biol",{
-    flq <- random_FLQuant_generator(min_dims = c(2,2,2,2,2,2))
+    flq <- random_FLQuant_generator(min_dims = c(2,2,2,2,2,2), fixed_dims=c(NA,NA,1,NA,NA,NA))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
@@ -174,90 +177,91 @@ test_that("get_f for biols with example operatingModel1 - total Fs from multiple
     }
 })
 
-test_that("operatingModel get_unit_z and unit_f- two catches on one biol",{
-    flq <- random_FLQuant_generator(min_dims = c(2,2,5,2,2,2))
-    flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
-    # Pull out just FLBiols for testing
-    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
-    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
-    # fwdControl and FCB needed for constructor but not actually used to test F
-    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
-    FCB <- array(c(1,2,1,1,1,1), dim = c(2,3))
-    attr(fc, "FCB") <- FCB
-    dim_max <- dim(flq)
-    dim_min <- round(runif(6, min=1, max = dim_max))
-    # Total Z from all Catches
-    fin <- test_operatingModel_get_f_B_subset(flfs, flbs, fc, 1, dim_min, dim_max)
-    min <- flbs_in[[1]]@m[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
-    zin <- min+fin
-    nin <- flbs_in[[1]]@n[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
-    survivors <- nin*exp(-zin)
-    unit_zin <- -log(unitSums(survivors) / unitSums(nin))
-    unit_zout <- test_operatingModel_unit_z_subset(flfs, flbs, fc, 1, dim_min, dim_max)
-    test_FLQuant_equal(unit_zin, unit_zout)
-    # F from catch1 and catch 2 seperately
-    unit_nin <- unitSums(nin)
-    cin1 <- unitSums(catch.n(flfs[[1]][[1]])[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]])
-    unit_fin1 <- (cin1 * unit_zin) / ((1 - exp(-unit_zin)) * unit_nin)
-    unit_fout1 <- test_operatingModel_unit_f_FCB_subset(flfs, flbs, fc, 1, 1, 1, dim_min, dim_max)
-    test_FLQuant_equal(unit_fin1, unit_fout1)
-    cin2 <- unitSums(catch.n(flfs[[2]][[1]])[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]])
-    unit_fin2 <- (cin2 * unit_zin) / ((1 - exp(-unit_zin)) * unit_nin)
-    unit_fout2 <- test_operatingModel_unit_f_FCB_subset(flfs, flbs, fc, 2, 1, 1, dim_min, dim_max)
-    test_FLQuant_equal(unit_fin2, unit_fout2)
-    # F from both catches
-    cin <- cin1 + cin2
-    unit_fin <- (cin * unit_zin) / ((1 - exp(-unit_zin)) * unit_nin)
-    unit_fout <- test_operatingModel_unit_f_B_subset(flfs, flbs, fc, 1, dim_min, dim_max)
-    test_FLQuant_equal(unit_fin, unit_fout)
-    # Should be the sum of the individuals
-    test_FLQuant_equal(unit_fout, unit_fout1 + unit_fout2)
-
-    # If we only have 1 unit, zin same as unit_zout and fin will be same as unit_fout
-    # But we have to update the catches in the OM first else calculation to get F is not correct (F is essentially back calculated from catches)
-    # Just one timestep as we have to project
-    flq <- random_FLQuant_generator(min_dims = c(2,1,1,1,1,1), max_dims = c(6,1,1,1,1,10))
-    flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
-    # Pull out just FLBiols for testing
-    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
-    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
-    # fwdControl and FCB needed for constructor but not actually used to test F
-    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
-    FCB <- array(c(1,2,1,1,1,1), dim = c(2,3))
-    attr(fc, "FCB") <- FCB
-    dim_max <- dim(flq)
-    dim_min <- round(runif(6, min=1, max = dim_max))
-    # Assume total F on Biol is correct
-    fin <- test_operatingModel_get_f_B_subset(flfs, flbs, fc, 1, dim_min, dim_max)
-    min <- flbs_in[[1]]@m[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
-    zin <- min+fin
-    nin <- flbs_in[[1]]@n[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
-    survivors <- nin*exp(-zin)
-    unit_zin <- -log(unitSums(survivors) / unitSums(nin))
-    unit_zout <- test_operatingModel_unit_z_subset(flfs, flbs, fc, 1, dim_min, dim_max)
-    test_FLQuant_equal(unit_zin, unit_zout)
-    test_FLQuant_equal(zin, unit_zout)
-    # Need to project to get correct catches in fisheries (else f, catch and n inconsistent)
-    om_out <- test_operatingModel_project_fisheries(flfs, flbs, fc, 1)
-    cin1 <- catch.n(om_out$fisheries[[1]][[1]])[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
-    unit_fin1 <- (cin1 * zin) / ((1-exp(-zin))*nin)
-    unit_fout1 <- test_operatingModel_unit_f_FCB_subset(om_out$fisheries, flbs, fc,1,1,1, dim_min, dim_max)
-    test_FLQuant_equal(unit_fin1, unit_fout1)
-    cin2 <- catch.n(om_out$fisheries[[2]][[1]])[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
-    unit_fin2 <- (cin2 * zin) / ((1-exp(-zin))*nin)
-    unit_fout2 <- test_operatingModel_unit_f_FCB_subset(om_out$fisheries, flbs, fc,2,1,1, dim_min, dim_max)
-    test_FLQuant_equal(unit_fin2, unit_fout2)
-    cin <- cin1 + cin2
-    unit_fin <- (cin * zin) / ((1-exp(-zin))*nin)
-    unit_fout <- test_operatingModel_unit_f_B_subset(om_out$fisheries, flbs, fc, 1, dim_min, dim_max)
-    test_FLQuant_equal(unit_fin, unit_fout)
-    test_FLQuant_equal(fin, unit_fout)
-    test_FLQuant_equal(unit_fout1 + unit_fout2, fin)
-})
+#test_that("operatingModel get_unit_z and unit_f- two catches on one biol",{
+#    flq <- random_FLQuant_generator(min_dims = c(2,2,5,2,2,2))
+#    flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
+#    # Pull out just FLBiols for testing
+#    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
+#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
+#    # fwdControl and FCB needed for constructor but not actually used to test F
+#    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
+#    FCB <- array(c(1,2,1,1,1,1), dim = c(2,3))
+#    attr(fc, "FCB") <- FCB
+#    dim_max <- dim(flq)
+#    dim_min <- round(runif(6, min=1, max = dim_max))
+#    # Total Z from all Catches
+#    fin <- test_operatingModel_get_f_B_subset(flfs, flbs, fc, 1, dim_min, dim_max)
+#    min <- flbs_in[[1]]@m[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
+#    zin <- min+fin
+#    nin <- flbs_in[[1]]@n[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
+#    survivors <- nin*exp(-zin)
+#    unit_zin <- -log(unitSums(survivors) / unitSums(nin))
+#    unit_zout <- test_operatingModel_unit_z_subset(flfs, flbs, fc, 1, dim_min, dim_max)
+#    test_FLQuant_equal(unit_zin, unit_zout)
+#    # F from catch1 and catch 2 seperately
+#    unit_nin <- unitSums(nin)
+#    cin1 <- unitSums(catch.n(flfs[[1]][[1]])[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]])
+#    unit_fin1 <- (cin1 * unit_zin) / ((1 - exp(-unit_zin)) * unit_nin)
+#    unit_fout1 <- test_operatingModel_unit_f_FCB_subset(flfs, flbs, fc, 1, 1, 1, dim_min, dim_max)
+#    test_FLQuant_equal(unit_fin1, unit_fout1)
+#    cin2 <- unitSums(catch.n(flfs[[2]][[1]])[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]])
+#    unit_fin2 <- (cin2 * unit_zin) / ((1 - exp(-unit_zin)) * unit_nin)
+#    unit_fout2 <- test_operatingModel_unit_f_FCB_subset(flfs, flbs, fc, 2, 1, 1, dim_min, dim_max)
+#    test_FLQuant_equal(unit_fin2, unit_fout2)
+#    # F from both catches
+#    cin <- cin1 + cin2
+#    unit_fin <- (cin * unit_zin) / ((1 - exp(-unit_zin)) * unit_nin)
+#    unit_fout <- test_operatingModel_unit_f_B_subset(flfs, flbs, fc, 1, dim_min, dim_max)
+#    test_FLQuant_equal(unit_fin, unit_fout)
+#    # Should be the sum of the individuals
+#    test_FLQuant_equal(unit_fout, unit_fout1 + unit_fout2)
+#
+#    # If we only have 1 unit, zin same as unit_zout and fin will be same as unit_fout
+#    # But we have to update the catches in the OM first else calculation to get F is not correct (F is essentially back calculated from catches)
+#    # Just one timestep as we have to project
+#    flq <- random_FLQuant_generator(min_dims = c(2,1,1,1,1,1), max_dims = c(6,1,1,1,1,10))
+#    flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
+#    # Pull out just FLBiols for testing
+#    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
+#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
+#    # fwdControl and FCB needed for constructor but not actually used to test F
+#    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
+#    FCB <- array(c(1,2,1,1,1,1), dim = c(2,3))
+#    attr(fc, "FCB") <- FCB
+#    dim_max <- dim(flq)
+#    dim_min <- round(runif(6, min=1, max = dim_max))
+#    # Assume total F on Biol is correct
+#    fin <- test_operatingModel_get_f_B_subset(flfs, flbs, fc, 1, dim_min, dim_max)
+#    min <- flbs_in[[1]]@m[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
+#    zin <- min+fin
+#    nin <- flbs_in[[1]]@n[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
+#    survivors <- nin*exp(-zin)
+#    unit_zin <- -log(unitSums(survivors) / unitSums(nin))
+#    unit_zout <- test_operatingModel_unit_z_subset(flfs, flbs, fc, 1, dim_min, dim_max)
+#    test_FLQuant_equal(unit_zin, unit_zout)
+#    test_FLQuant_equal(zin, unit_zout)
+#    # Need to project to get correct catches in fisheries (else f, catch and n inconsistent)
+#    om_out <- test_operatingModel_project_fisheries(flfs, flbs, fc, 1)
+#    cin1 <- catch.n(om_out$fisheries[[1]][[1]])[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
+#    unit_fin1 <- (cin1 * zin) / ((1-exp(-zin))*nin)
+#    unit_fout1 <- test_operatingModel_unit_f_FCB_subset(om_out$fisheries, flbs, fc,1,1,1, dim_min, dim_max)
+#    test_FLQuant_equal(unit_fin1, unit_fout1)
+#    cin2 <- catch.n(om_out$fisheries[[2]][[1]])[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2],dim_min[3]:dim_max[3],dim_min[4]:dim_max[4],dim_min[5]:dim_max[5],dim_min[6]:dim_max[6]]
+#    unit_fin2 <- (cin2 * zin) / ((1-exp(-zin))*nin)
+#    unit_fout2 <- test_operatingModel_unit_f_FCB_subset(om_out$fisheries, flbs, fc,2,1,1, dim_min, dim_max)
+#    test_FLQuant_equal(unit_fin2, unit_fout2)
+#    cin <- cin1 + cin2
+#    unit_fin <- (cin * zin) / ((1-exp(-zin))*nin)
+#    unit_fout <- test_operatingModel_unit_f_B_subset(om_out$fisheries, flbs, fc, 1, dim_min, dim_max)
+#    test_FLQuant_equal(unit_fin, unit_fout)
+#    test_FLQuant_equal(fin, unit_fout)
+#    test_FLQuant_equal(unit_fout1 + unit_fout2, fin)
+#})
 
 test_that("operatingModel fbar methods",{
     # Two catches on a biol
-    flq <- random_FLQuant_generator(fixed_dims = c(10,2,2,2,2,20))
+    #flq <- random_FLQuant_generator(fixed_dims = c(10,2,2,2,2,20))
+    flq <- random_FLQuant_generator(fixed_dims = c(10,2,1,2,2,20))
     flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
@@ -269,24 +273,27 @@ test_that("operatingModel fbar methods",{
     dim_max <- dim(flq)
     dim_min <- round(runif(6, min=1, max = dim_max))
     # Fbar on whole biol
-    fin <- test_operatingModel_unit_f_B_subset(flfs, flbs, fc, 1, dim_min, dim_max)
+    #fin <- test_operatingModel_unit_f_B_subset(flfs, flbs, fc, 1, dim_min, dim_max)
+    fin <- test_operatingModel_get_f_B_subset(flfs, flbs, fc, 1, dim_min, dim_max)
     fbar_in <- apply(fin, 2:6, mean)
     fbar_out <- test_operatingModel_fbar_B(flfs, flbs, fc, 1, dim_min, dim_max)
     test_FLQuant_equal(fbar_in, fbar_out)
     # Fbar from single catch
-    fin <- test_operatingModel_unit_f_FCB_subset(flfs, flbs, fc, 1,1,1, dim_min, dim_max)
+    #fin <- test_operatingModel_unit_f_FCB_subset(flfs, flbs, fc, 1,1,1, dim_min, dim_max)
+    fin <- test_operatingModel_get_f_FCB_subset(flfs, flbs, fc, 1,1,1, dim_min, dim_max)
     fbar_in <- apply(fin, 2:6, mean)
     fbar_out <- test_operatingModel_fbar_FCB(flfs, flbs, fc, 1,1,1, dim_min, dim_max)
     test_FLQuant_equal(fbar_in, fbar_out)
-    fin <- test_operatingModel_unit_f_FCB_subset(flfs, flbs, fc, 2,1,1, dim_min, dim_max)
+    #fin <- test_operatingModel_unit_f_FCB_subset(flfs, flbs, fc, 2,1,1, dim_min, dim_max)
+    fin <- test_operatingModel_get_f_FCB_subset(flfs, flbs, fc, 2,1,1, dim_min, dim_max)
     fbar_in <- apply(fin, 2:6, mean)
     fbar_out <- test_operatingModel_fbar_FCB(flfs, flbs, fc, 2,1,1, dim_min, dim_max)
     test_FLQuant_equal(fbar_in, fbar_out)
-}
+})
 
 test_that("operatingModel f_prop_spwn methods",{
-    # Random OM with units
-    flq <- random_FLQuant_generator()
+    # Random OM with units - NOT ANY MORE
+    flq <- random_FLQuant_generator(fixed_dims=c(NA,NA,1,rep(NA,3)))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
@@ -318,8 +325,8 @@ test_that("operatingModel f_prop_spwn methods",{
 })
 
 test_that("operatingModel srp methods with units",{
-    # Random simple OM with units - 1 biol fished by 1 catch
-    flq <- random_FLQuant_generator(min_dims=c(2,2,2,2,2,2))
+    # Random simple OM with units - 1 biol fished by 1 catch - FIX UNITS
+    flq <- random_FLQuant_generator(min_dims=c(2,2,2,2,2,2), fixed_dims=c(NA,NA,1,rep(NA,3)))
     flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
@@ -492,16 +499,20 @@ test_that("operatingModel calc_rec simple OM", {
 
 test_that("operatingModel calc_rec complex OM", {
     # Biol with 4 seasons and 4 units, fished by 1 fishery and 1 catch
+    # FIX UNITS
     # First age = 0, SRP lag = 1 timestep
     min_age_name <- 0
-    flq <- random_FLQuant_generator(fixed_dims = c(5,6,4,4,1,10))
+    #flq <- random_FLQuant_generator(fixed_dims = c(5,6,4,4,1,10))
+    flq <- random_FLQuant_generator(fixed_dims = c(5,6,1,4,1,10), min_age_name = min_age_name)
     flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq), min_age_name = min_age_name)
     # Set SR params - same every year but broken down by unit and season - necessary
     # Units 1 and 2 recruit in season 1
     # Units 3 and 4 recruit in season 3
-    srr_params <- FLQuant(NA, dim=c(2,1,4,4,1,10))
-    srr_params[,,c(1,2),1,] <- abs(rnorm(40))
-    srr_params[,,c(3,4),3,] <- abs(rnorm(40))
+    #srr_params <- FLQuant(NA, dim=c(2,1,4,4,1,10))
+    srr_params <- FLQuant(NA, dim=c(2,1,1,4,1,10))
+    #srr_params[,,c(1,2),1,] <- abs(rnorm(40))
+    #srr_params[,,c(3,4),3,] <- abs(rnorm(40))
+    srr_params[,,1,1,] <- abs(rnorm(20))
     flbs[[1]][["srr_params"]] <- srr_params
     flbs[[1]][["srr_model_name"]] <- "bevholt"
     flbs[[1]][["srr_residuals_mult"]] <- TRUE
@@ -527,15 +538,17 @@ test_that("operatingModel calc_rec complex OM", {
     b <- (srr_params[2,1,,rec_season,])
     rec_in_det <- a * srp_in / (b + srp_in)
     rec_in_mult <- rec_in_det * flbs[[1]][["srr_residuals"]][,rec_year,,rec_season,,]
-    for (unit_count in 1:2){ # Only 1 and 2 recruit
+    #for (unit_count in 1:2){ # Only 1 and 2 recruit
+    for (unit_count in 1:1){ # Only 1 and 2 recruit
         rec_out_mult <- test_operatingModel_calc_rec(flfs, flbs, fc, 1, unit_count, rec_timestep)
         expect_equal(rec_out_mult, c(rec_in_mult[,,unit_count,]))
     }
-    for (unit_count in 3:4){ # No recruitment for units 3 and 4 NAs
-        expect_true(all(is.na(test_operatingModel_calc_rec(flfs, flbs, fc, 1, unit_count, rec_timestep))))
-    }
+    #for (unit_count in 3:4){ # No recruitment for units 3 and 4 NAs
+    #    expect_true(all(is.na(test_operatingModel_calc_rec(flfs, flbs, fc, 1, unit_count, rec_timestep))))
+    #}
     # Rec in seasons 2 and 4
-    for (rec_season in c(2,4)){
+    #for (rec_season in c(2,4)){
+    for (rec_season in c(2,3,4)){
         rec_year <- round(runif(1,min=2,max=dim(flq)[2]))
         rec_timestep <- (rec_year-1)*dim(flq)[4] + rec_season
         # Rec for all units in that timestep
@@ -547,30 +560,31 @@ test_that("operatingModel calc_rec complex OM", {
         b <- (srr_params[2,1,,rec_season,])
         rec_in_det <- a * srp_in / (b + srp_in)
         rec_in_mult <- rec_in_det * flbs[[1]][["srr_residuals"]][,rec_year,,rec_season,,]
-        for (unit_count in 1:4){ # No recruitment 
+        #for (unit_count in 1:4){ # No recruitment 
+        for (unit_count in 1:1){ # No recruitment 
             expect_true(all(is.na(test_operatingModel_calc_rec(flfs, flbs, fc, 1, unit_count, rec_timestep))))
         }
     }
-    # Rec in season 3
-    rec_year <- round(runif(1,min=2,max=dim(flq)[2]))
-    rec_season <- 3
-    rec_timestep <- (rec_year-1)*dim(flq)[4] + rec_season
-    # Rec for all units in that timestep
-    srp_indices_min <- c(rec_year,1,rec_season-1,1,1)
-    srp_indices_max <- c(rec_year,dim(flq)[3],rec_season-1,1,dim(flq)[6])
-    srp_in <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fc, 1, srp_indices_min, srp_indices_max)
-    # All units at same time
-    a <- (srr_params[1,1,,rec_season,])
-    b <- (srr_params[2,1,,rec_season,])
-    rec_in_det <- a * srp_in / (b + srp_in)
-    rec_in_mult <- rec_in_det * flbs[[1]][["srr_residuals"]][,rec_year,,rec_season,,]
-    for (unit_count in 3:4){ # Only 1 and 2 recruit
-        rec_out_mult <- test_operatingModel_calc_rec(flfs, flbs, fc, 1, unit_count, rec_timestep)
-        expect_equal(rec_out_mult, c(rec_in_mult[,,unit_count,]))
-    }
-    for (unit_count in 1:2){ # No recruitment for units 3 and 4 NAs
-        expect_true(all(is.na(test_operatingModel_calc_rec(flfs, flbs, fc, 1, unit_count, rec_timestep))))
-    }
+#    # Rec in season 3
+#    rec_year <- round(runif(1,min=2,max=dim(flq)[2]))
+#    rec_season <- 3
+#    rec_timestep <- (rec_year-1)*dim(flq)[4] + rec_season
+#    # Rec for all units in that timestep
+#    srp_indices_min <- c(rec_year,1,rec_season-1,1,1)
+#    srp_indices_max <- c(rec_year,dim(flq)[3],rec_season-1,1,dim(flq)[6])
+#    srp_in <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fc, 1, srp_indices_min, srp_indices_max)
+#    # All units at same time
+#    a <- (srr_params[1,1,,rec_season,])
+#    b <- (srr_params[2,1,,rec_season,])
+#    rec_in_det <- a * srp_in / (b + srp_in)
+#    rec_in_mult <- rec_in_det * flbs[[1]][["srr_residuals"]][,rec_year,,rec_season,,]
+#    for (unit_count in 3:4){ # Only 1 and 2 recruit
+#        rec_out_mult <- test_operatingModel_calc_rec(flfs, flbs, fc, 1, unit_count, rec_timestep)
+#        expect_equal(rec_out_mult, c(rec_in_mult[,,unit_count,]))
+#    }
+#    for (unit_count in 1:2){ # No recruitment for units 3 and 4 NAs
+#        expect_true(all(is.na(test_operatingModel_calc_rec(flfs, flbs, fc, 1, unit_count, rec_timestep))))
+#    }
 })
 
 test_that("operatingModel project_biol", {
@@ -578,14 +592,17 @@ test_that("operatingModel project_biol", {
     # Single biol fished by one catch
     # Seasonal Biol with 4 units (M / F and 2 spawning morphs)
     # Min age = 1
-    flq <- random_FLQuant_generator(fixed_dims = c(5,6,4,4,1,10))
+    #flq <- random_FLQuant_generator(fixed_dims = c(5,6,4,4,1,10))
+    flq <- random_FLQuant_generator(fixed_dims = c(5,6,1,4,1,10))
     flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
     # Set SR params - same every year but broken down by unit and season - necessary
     # Units 1 and 2 recruit in season 1
     # Units 3 and 4 recruit in season 3
-    srr_params <- FLQuant(NA, dim=c(2,1,4,4,1,10))
-    srr_params[,,c(1,2),1,] <- rnorm(40)
-    srr_params[,,c(3,4),3,] <- rnorm(40) 
+    #srr_params <- FLQuant(NA, dim=c(2,1,4,4,1,10))
+    #srr_params[,,c(1,2),1,] <- rnorm(40)
+    #srr_params[,,c(3,4),3,] <- rnorm(40) 
+    srr_params <- FLQuant(NA, dim=c(2,1,1,4,1,10))
+    srr_params[,,1,3,] <- rnorm(20)
     flbs[[1]][["srr_params"]] <- srr_params
     flbs[[1]][["srr_model_name"]] <- "bevholt"
     flbs[[1]][["srr_residuals_mult"]] <- TRUE
@@ -610,17 +627,18 @@ test_that("operatingModel project_biol", {
     new_n_out <- n(om_out[["biols"]][[1]])[,year,,1,]
     # Check each unit
     # Unit 1 and 2 should have birthday!
-    for (unit in c(1,2)){
-        test_FLQuant_equal(new_n_out[2:4,,unit,], survivors[1:3,,unit])
-        test_FLQuant_equal(new_n_out[5,,unit], survivors[4,,unit]+survivors[5,,unit])
-        # Recruitment for units 1 and 2
-        a <- srr_params[1,1,,season]
-        b <- srr_params[2,1,,season]
-        srp_in <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fc, 1, c(year-1,1,4,1,1), c(year-1,4,4,1,10))
-        rec_in <- (a * srp_in / (srp_in + b)) * flbs[[1]][["srr_residuals"]][,year,,1,]
-        test_FLQuant_equal(rec_in[,,c(1,2)], new_n_out[1,,c(1,2)])
-    }
-    for (unit in c(3,4)){
+    #for (unit in c(1,2)){
+    #    test_FLQuant_equal(new_n_out[2:4,,unit,], survivors[1:3,,unit])
+    #    test_FLQuant_equal(new_n_out[5,,unit], survivors[4,,unit]+survivors[5,,unit])
+    #    # Recruitment for units 1 and 2
+    #    a <- srr_params[1,1,,season]
+    #    b <- srr_params[2,1,,season]
+    #    srp_in <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fc, 1, c(year-1,1,4,1,1), c(year-1,4,4,1,10))
+    #    rec_in <- (a * srp_in / (srp_in + b)) * flbs[[1]][["srr_residuals"]][,year,,1,]
+    #    test_FLQuant_equal(rec_in[,,c(1,2)], new_n_out[1,,c(1,2)])
+    #}
+    #for (unit in c(3,4)){
+    for (unit in 1){
         test_FLQuant_equal(new_n_out[,,unit], survivors[,,unit])
     }
     # Season 2
@@ -642,19 +660,22 @@ test_that("operatingModel project_biol", {
     survivors <- old_n * exp(-(fout + m(flb_in)[,year,,season-1,]))
     new_n_out <- n(om_out[["biols"]][[1]])[,year,,season,]
     # Check each unit
-    for (unit in c(1,2)){
-        test_FLQuant_equal(new_n_out[,,unit], survivors[,,unit])
-    }
-    # Unit 3 and 4 should have birthday!
-    for (unit in c(3,4)){
+    #for (unit in c(1,2)){
+    #    test_FLQuant_equal(new_n_out[,,unit], survivors[,,unit])
+    #}
+    ## Unit 3 and 4 should have birthday!
+    #for (unit in c(3,4)){
+    for (unit in c(1)){
         test_FLQuant_equal(new_n_out[2:4,,unit,], survivors[1:3,,unit])
         test_FLQuant_equal(new_n_out[5,,unit], survivors[4,,unit]+survivors[5,,unit])
         # Recruitment for units 3 and 4
         a <- srr_params[1,1,,season]
         b <- srr_params[2,1,,season]
-        srp_in <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fc, 1, c(year,1,3,1,1), c(year,4,3,1,10))
+        #srp_in <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fc, 1, c(year,1,3,1,1), c(year,4,3,1,10))
+        srp_in <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fc, 1, c(year,1,3,1,1), c(year,1,3,1,10))
         rec_in <- (a * srp_in / (srp_in + b)) * flbs[[1]][["srr_residuals"]][,year,,3,]
-        test_FLQuant_equal(rec_in[,,c(3,4)], new_n_out[1,,c(3,4)])
+        #test_FLQuant_equal(rec_in[,,c(3,4)], new_n_out[1,,c(3,4)])
+        test_FLQuant_equal(rec_in[,,c(1)], new_n_out[1,,c(1)])
     }
     # Season 4
     season <- 4
@@ -672,7 +693,9 @@ test_that("operatingModel project_fisheries", {
     # Seasonal FLQ with Units
     # Assume get_f method works (it does...)
     # FLB with 2 units - second biol only
-    flq_unit <- random_FLQuant_generator(fixed_dims = c(5,6,2,4,1,10))
+    #flq_unit <- random_FLQuant_generator(fixed_dims = c(5,6,2,4,1,10))
+    #flbs_unit <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq_unit))
+    flq_unit <- random_FLQuant_generator(fixed_dims = c(5,6,1,4,1,10))
     flbs_unit <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq_unit))
     # Other FLB with 1 unit
     flq <- random_FLQuant_generator(fixed_dims = c(5,6,1,4,1,10))
@@ -874,7 +897,8 @@ test_that("operatingModel eval_om units", {
     # Two fisheries, two biols
     # FC11 -> B1
     # FC12 and FC21 -> B2
-    nunits <- 8
+    #nunits <- 8
+    nunits <- 1
     niters <- 10 
     flq <- random_FLQuant_generator(fixed_dims = c(5,20,nunits,4,1,niters))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
@@ -889,7 +913,8 @@ test_that("operatingModel eval_om units", {
     attr(fwc, "FCB") <- FCB
     # Random indices
     dim_max <- dim(n(flbs[[1]][["biol"]]))
-    dim_min <- round(runif(6, min=1, max=dim_max - c(1,1,1,1,0,1))) # 1 season so 0
+    #dim_min <- round(runif(6, min=1, max=dim_max - c(1,1,1,1,0,1))) # 1 area so 0
+    dim_min <- round(runif(6, min=1, max=dim_max - c(1,1,0,1,0,1))) # 1 area and unit so 0
     #  Catch FC11
     cout11 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 1, 1, as.integer(NA), dim_min[-1], dim_max[-1])
     cin11 <- unitSums(catch(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
@@ -1032,7 +1057,8 @@ test_that("get_target_value_hat", {
     # FC11 -> B1
     # FC12 and FC21 -> B2
     niters <- 10 
-    flq <- random_FLQuant_generator(fixed_dims = c(5,20,2,4,1,niters))
+    #flq <- random_FLQuant_generator(fixed_dims = c(5,20,2,4,1,niters))
+    flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
@@ -1070,7 +1096,7 @@ test_that("get_target_value_hat", {
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = c(NA,2), relCatch = c(NA,1), relBiol = c(1,NA),
                         relYear = rel_years[7:8], relSeason = rel_seasons[7:8])
-    fwc <- fwdControl(rbind(trgt1, trgt2, rel_trgt1, rel_trgt2, f_trgt2))
+    fwc <- fwdControl(rbind(trgt1, trgt2, rel_trgt1, rel_trgt2))
     attr(fwc, "FCB") <- FCB
     # Target 1 - 1 sim target at a time
     val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
@@ -1161,7 +1187,8 @@ test_that("get_target_value_hat", {
 # Values in control object 
 test_that("get_target_value - straight value", {
     niters <- 10 
-    flq <- random_FLQuant_generator(fixed_dims = c(5,20,3,4,1,niters))
+    #flq <- random_FLQuant_generator(fixed_dims = c(5,20,3,4,1,niters))
+    flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
@@ -1256,7 +1283,8 @@ test_that("get_target_value - straight value", {
 test_that("get_target_value - min / max values", {
     # Min / Max tests
     niters <- 10 
-    flq <- random_FLQuant_generator(fixed_dims = c(5,20,6,4,1,niters))
+    #flq <- random_FLQuant_generator(fixed_dims = c(5,20,6,4,1,niters))
+    flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
@@ -1440,7 +1468,8 @@ test_that("get_target_value - min / max values", {
 
 test_that("operatingModel get_target_age_range", {
     min_age_name <- round(runif(1,min=0,max=10))
-    flq <- random_FLQuant_generator(min_dims=c(5,5,1,1,1,1), min_age_name = min_age_name)
+    #flq <- random_FLQuant_generator(min_dims=c(5,5,1,1,1,1), min_age_name = min_age_name)
+    flq <- random_FLQuant_generator(min_dims=c(5,5,1,1,1,1), fixed_dims=c(NA,NA,1,rep(NA,3)), min_age_name = min_age_name)
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq), min_age_name=min_age_name)
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2, min_age_name=min_age_name)
     ages <- as.numeric(dimnames(flq)$age)

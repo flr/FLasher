@@ -14,7 +14,7 @@ void fwdControl::init_target_map(){
     target_map["landings"] = target_landings;
     target_map["discards"] = target_discards;
     target_map["srp"] = target_srp;
-    target_map["ssb"] = target_srp;
+    target_map["ssb"] = target_srp; // Does the same thing as SRP at the moment
     target_map["biomass"] = target_biomass;
     target_map["effort"] = target_effort;
     return;
@@ -224,7 +224,8 @@ std::vector<double> fwdControl::get_target_value(const int target_no, const int 
  * Rcpp::IntegerVector is used as return type as this preserves any NAs passed from R.
  * Converting to std::vector<unsigned int> does not work with is_na() (but it does compile).
  * Can be used on non-Integer columns (no check is made) but who knows what the result will be?!?!
- * \param target_no References the target column in the control dataframe.
+ * \param target_no The target number as given by the target column in the control dataframe.
+ * \param col The name of the integer column in the control dataframe.
  */
 Rcpp::IntegerVector fwdControl::get_target_int_col(const int target_no, const std::string col) const {
     // Check that column exists in data.frame
@@ -299,27 +300,6 @@ double fwdControl::get_target_num_col(const int target_no, const int sim_target_
     return values[sim_target_no-1];
 }
 //@}
-
-// Adjust this for biol abundance targets
-/*! \brief Get the timestep in which we must adjust effort to hit the target
- *
- * For fishery target types (catch, F) etc, the effort timestep is the same as the target timestep.
- * For biological abundance based targets (e.g. SSB and biomass), the abundance is reported at the beginning of the timestep (in line with FLR objects).
- * This means that the effort in the previous timestep determines the abundance value.
- * \param target_no References the target column in the control dataframe.
- * \param sim_target_no
- */
-unsigned int fwdControl::get_target_effort_timestep(unsigned int target_no, unsigned int sim_target_no) const {
-    auto target_timestep = get_target_int_col(target_no, sim_target_no, "timestep");
-    fwdControlTargetType target_type = get_target_type(target_no, sim_target_no);
-    // Is it an abundance target?
-    auto it = std::find(abundance_targets.begin(), abundance_targets.end(), target_type);
-    // If so, subtract 1
-    if (it != abundance_targets.end()){
-        target_timestep -= 1;
-    }
-    return target_timestep;
-}
 
 /*! \brief Get the target quantity from the control object
  *

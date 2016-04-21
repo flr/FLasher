@@ -53,6 +53,12 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsA
     // Then the biols
     for (int biol_no=1; biol_no <= biols_in.get_nbiols();  ++biol_no){
         std::vector<unsigned int> biol_dim = biols_in(biol_no).n().get_dim();
+
+if(biol_dim[2] > 1){
+    Rcpp::stop("Multiple units in OM not yet implemented\n");
+}
+
+
         if ((landings_dim11[1] != biol_dim[1]) | (landings_dim11[3] != biol_dim[3])){
             Rcpp::stop("In operatingModel constructor. All biols and catches must have the same year and season range.\n");
         }
@@ -395,15 +401,15 @@ FLQuantAD operatingModel::get_f(const int biol_no) const {
  * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
-FLQuantAD operatingModel::get_unit_z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if (indices_min.size() != 6 | indices_max.size() != 6){
-        Rcpp::stop("In operatingModel get_unit_z subsetter. Indices not of length 6\n");
-    }
-    FLQuantAD n = biols(biol_no).n(indices_min, indices_max);
-    FLQuantAD survivors = n * exp(-1.0 * (get_f(biol_no, indices_min, indices_max) + biols(biol_no).m(indices_min, indices_max)));
-    FLQuantAD unit_z = -1.0 * log(unit_sum(survivors) / unit_sum(n));
-    return unit_z; 
-}
+//FLQuantAD operatingModel::get_unit_z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+//    if (indices_min.size() != 6 | indices_max.size() != 6){
+//        Rcpp::stop("In operatingModel get_unit_z subsetter. Indices not of length 6\n");
+//    }
+//    FLQuantAD n = biols(biol_no).n(indices_min, indices_max);
+//    FLQuantAD survivors = n * exp(-1.0 * (get_f(biol_no, indices_min, indices_max) + biols(biol_no).m(indices_min, indices_max)));
+//    FLQuantAD unit_z = -1.0 * log(unit_sum(survivors) / unit_sum(n));
+//    return unit_z; 
+//}
 
 
 /*! \name get_unit_f
@@ -426,16 +432,16 @@ FLQuantAD operatingModel::get_unit_z(const int biol_no, const std::vector<unsign
  * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
-FLQuantAD operatingModel::get_unit_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if (indices_min.size() != 6 | indices_max.size() != 6){
-        Rcpp::stop("In operatingModel get_unit_f subsetter. Indices not of length 6\n");
-    }
-    FLQuantAD unit_catch =  unit_sum(catch_n(biol_no, indices_min, indices_max));
-    FLQuantAD unit_z = get_unit_z(biol_no, indices_min, indices_max);
-    FLQuantAD n = unit_sum(biols(biol_no).n(indices_min, indices_max));
-    FLQuantAD unit_f = (unit_catch * unit_z) / ((1.0-exp(-1.0 * unit_z)) * n);
-    return unit_f;
-}
+//FLQuantAD operatingModel::get_unit_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+//    if (indices_min.size() != 6 | indices_max.size() != 6){
+//        Rcpp::stop("In operatingModel get_unit_f subsetter. Indices not of length 6\n");
+//    }
+//    FLQuantAD unit_catch =  unit_sum(catch_n(biol_no, indices_min, indices_max));
+//    FLQuantAD unit_z = get_unit_z(biol_no, indices_min, indices_max);
+//    FLQuantAD n = unit_sum(biols(biol_no).n(indices_min, indices_max));
+//    FLQuantAD unit_f = (unit_catch * unit_z) / ((1.0-exp(-1.0 * unit_z)) * n);
+//    return unit_f;
+//}
 /*! \brief Get the fishing mortality from an individual Catch on a Biol, collapsed over the unit dimension.
  * \param fishery_no the position of the Fishery within the Fisheries (starting at 1).
  * \param catch_no the position of the Catch within the Catches (starting at 1).
@@ -443,16 +449,16 @@ FLQuantAD operatingModel::get_unit_f(const int biol_no, const std::vector<unsign
  * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
-FLQuantAD operatingModel::get_unit_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if (indices_min.size() != 6 | indices_max.size() != 6){
-        Rcpp::stop("In operatingModel get_unit_f subsetter. Indices not of length 6\n");
-    }
-    FLQuantAD unit_catch = unit_sum(fisheries(fishery_no, catch_no).catch_n(indices_min, indices_max));
-    FLQuantAD unit_z = get_unit_z(biol_no, indices_min, indices_max);
-    FLQuantAD n = unit_sum(biols(biol_no).n(indices_min, indices_max));
-    FLQuantAD unit_f = (unit_catch * unit_z) / ((1.0-exp(-1.0 * unit_z)) * n);
-    return unit_f;
-}
+//FLQuantAD operatingModel::get_unit_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+//    if (indices_min.size() != 6 | indices_max.size() != 6){
+//        Rcpp::stop("In operatingModel get_unit_f subsetter. Indices not of length 6\n");
+//    }
+//    FLQuantAD unit_catch = unit_sum(fisheries(fishery_no, catch_no).catch_n(indices_min, indices_max));
+//    FLQuantAD unit_z = get_unit_z(biol_no, indices_min, indices_max);
+//    FLQuantAD n = unit_sum(biols(biol_no).n(indices_min, indices_max));
+//    FLQuantAD unit_f = (unit_catch * unit_z) / ((1.0-exp(-1.0 * unit_z)) * n);
+//    return unit_f;
+//}
 //@}
 
 /*! \brief Project the Biols in the operatingModel by a single timestep
@@ -635,29 +641,25 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
     auto neffort = fisheries.get_nfisheries();
     Rprintf("Number of fisheries to solve effort for: %i\n", neffort);
 
-    // Update N at start of projection (minimum timestep of the first target - not effort timestep)
-    // For example, if you have a catch target in timestep y, you need to make sure that there is biol abundance in timestep y
-    // Is this always necessary? What if first target is biol in timestep y? Check this
     // The target timesteps are contiguous.
     // Update the biology in the first target timestep.
     // This ensures that we have abundance numbers in the first timestep of the projection.
+    // Is this always necessary? What if first target is biol in timestep y? Check this
     // However, this will overwrite existing abundances - do we want this?
     // Assumes that first target has a target number of 1
-    int first_target_number = 1; // Or could write routine to calculate
-    Rcpp::IntegerVector target_timestep = ctrl.get_target_int_col(first_target_number, "timestep");
-    // Get the min, as same target can have sim targets in different timesteps e.g. with SSB targets - think this through
-    auto min_target_timestep = *std::min_element(std::begin(target_timestep), std::end(target_timestep));
+    Rcpp::IntegerVector target_timesteps = ctrl.get_target_int_col(1, "timestep");
+    // Get the min - first timestep of projection
+    auto min_target_timestep = *std::min_element(std::begin(target_timesteps), std::end(target_timesteps));
     Rprintf("Min target timestep: %i\n", min_target_timestep);
     Rprintf("Projecting biols for the first timestep to update abundances\n");
     project_biols(min_target_timestep);
     // Get maximum timestep of OM. If room, we update Biol in final timestep at the end
     std::vector<unsigned int> biol1_dim = biols(1).n().get_dim();
     unsigned int max_timestep = biol1_dim[1] * biol1_dim[3];
-    // Each target is solved independently.
-    // But a target can be made up of multiple simultaneous targets
+    // Each target is solved independently (but a target can be made up of multiple simultaneous targets)
     auto ntarget = ctrl.get_ntarget();
     Rprintf("Targets to solve: %i \n", ntarget);
-    // Ntarget x iter
+    // Place to store the codes from the solver routine. One code per target per iter. Ntarget x iter
     Rcpp::IntegerMatrix solver_codes(ntarget,niter);
     // Loop over targets and solve all simultaneous targets in that target set
     // e.g. With 2 fisheries with 2 efforts, we can set 2 catch targets to be solved at the same time
@@ -667,21 +669,19 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         auto nsim_targets = ctrl.get_nsim_target(target_count);
         Rprintf("Number of simultaneous targets: %i\n", nsim_targets);
         // Timestep in which we find effort is the same for all simultaneous targets in a target set
-        // Cannot just read from the control object because the abundance (biomass, SSB etc.) is determined by effort in previous timestep - maybe
         // Get time step of first sim target and use this for all sim targets.
-        int first_sim_target_number = 1; // Or could write routine to calculate
-        unsigned int target_effort_timestep = ctrl.get_target_effort_timestep(target_count, first_sim_target_number);
+        unsigned int target_effort_timestep = ctrl.get_target_int_col(target_count, 1, "timestep");
+        Rprintf("target_effort_timestep: %i\n", target_effort_timestep);
         unsigned int target_effort_year = 0;
         unsigned int target_effort_season = 0;
         timestep_to_year_season(target_effort_timestep, biols(1).n().get_nseason(), target_effort_year, target_effort_season);
-        Rprintf("target_effort_timestep: %i\n", target_effort_timestep);
         // Get the target value based on control object and current value in the OM (if Max / Min)
         // This is not part of the operation sequence so is evaluated before we turn on the tape
         std::vector<adouble> target_value = get_target_value(target_count); // values of all sim targets for the target
-        // Turn tape on
         // Set up effort multipliers - do all efforts and iters at same time (keep timesteps, areas, units seperate)
         std::vector<adouble> effort_mult_ad(neffort * niter, effort_mult_initial);
         std::fill(effort_mult_ad.begin(), effort_mult_ad.end(), effort_mult_initial);
+        // Turn tape on
         CppAD::Independent(effort_mult_ad);
         //Rprintf("Turned on tape\n");
         //Rprintf("target_effort_year: %i\n", target_effort_year);
@@ -865,27 +865,30 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             }
             break;
         }
-////        case target_srp: {
-////            // Spawning reproductive potential
-////            Rprintf("target_srp\n");
-////            if (Rcpp::IntegerVector::is_na(biol_no)){
-////                Rcpp::stop("In operatingModel eval_om. Trying to evaluate SRP target when biol no. is NA. Problem with control object?\n");
-////            }
-////            else {
-////                out = ssb(biol_no, indices_min, indices_max);
-////            }
-////        break;
-////    }
-////        case target_biomass: {
-////            Rprintf("target_biomass\n");
-////            if (Rcpp::IntegerVector::is_na(biol_no)){
-////                Rcpp::stop("In operatingModel eval_om. Trying to evaluate biomass target when biol no. is NA. Problem with control object?\n");
-////            }
-////            else {
-////                out = biols(biol_no).biomass(indices_min, indices_max);
-////            }
-////            break;
-////        }
+        case target_srp: {
+            // Spawning reproductive potential - currently called if target is 'ssb' or 'srp'
+            Rprintf("target_srp\n");
+            if (Rcpp::IntegerVector::is_na(biol_no)){
+                Rcpp::stop("In operatingModel eval_om. Trying to evaluate SRP target when biol_no. is NA in control object.\n");
+            }
+            // Check that we have no age structure in the indices first
+            // Check dims are length 5 - no age structure
+            if (indices_min.size() != 5 | indices_max.size() != 5){
+                Rcpp::stop("In OM eval_om. Trying to get target_srp. Indices not of length 5\n");
+            }
+            out = unit_sum(srp(biol_no, indices_min, indices_max));
+        break;
+    }
+//        case target_biomass: {
+//            Rprintf("target_biomass\n");
+//            if (Rcpp::IntegerVector::is_na(biol_no)){
+//                Rcpp::stop("In operatingModel eval_om. Trying to evaluate biomass target when biol no. is NA. Problem with control object?\n");
+//            }
+//            else {
+//                out = biols(biol_no).biomass(indices_min, indices_max);
+//            }
+//            break;
+//        }
         default:
             Rcpp::stop("target_type not found in switch statement - giving up\n");
             break;
@@ -959,6 +962,44 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
             indices_min.insert(indices_min.begin(), age_range_indices[0] + 1); // +1 because accessor starts at 1 but age indices 0 - sorry
             indices_max.insert(indices_max.begin(), age_range_indices[1] + 1);
     }
+    // Special conditions for SRP + SSB targets
+    // If spwn of biol is > 0, then we get the SRP in that timestep
+    // Else we get the SRP in the following timestep (if there is room)
+    // Which results in a whole lot of faffing about!
+    if (target_type == target_srp){
+        // Just get spwn in unit 1 - what if multiple units?
+//biols(biol_no).spwn(1,year,)
+    }
+
+
+//            
+//            // Move all this to get_target_value_hat 
+//            unsigned int min_timestep = 0;
+//            unsigned int max_timestep = 0;
+//            std::vector<unsigned int> biol_dim = biols(biol_no).n().get_dim(); 
+//            year_season_to_timestep(indices_min[0], indices_min[2], biol_dim[3], min_timestep);
+//            year_season_to_timestep(indices_max[0], indices_max[2], biol_dim[3], max_timestep);
+//            // Add one because we want SRP in following timestep
+//            ++min_timestep;
+//            ++max_timestep;
+//            // Back to year / season
+//            unsigned int year_temp = 0
+//            unsigned int season_temp = 0
+//            std::vector<unsigned int> indices_min_next = indices_min;;
+//            std::vector<unsigned int> indices_max_next = indices_max;;
+//            timestep_to_year_season(min_timestep, biol_dim[3], year_temp, season_temp);
+//            indices_min_next[0] = year_temp;
+//            indices_min_next[2] = season_temp;
+//            timestep_to_year_season(max_timestep, biol_dim[3], year_temp, season_temp);
+//            indices_max_next[0] = year_temp;
+//            indices_max_next[2] = season_temp;
+//            out = srp(biol_no, indices_min_next, indices_max_next);
+
+
+
+
+
+
     // Get the current absolute values, i.e. not relative, as FLQuant
     FLQuantAD target_value = eval_om(target_type, fishery_no, catch_no, biol_no, indices_min, indices_max);
     // Are we dealing with absolute or relative values?
@@ -1116,27 +1157,6 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
 }
 //@}
 
-//// The timestep that fmult affects to calculate the target value
-//// e.g. if Biomass is target, then adjust the fmult in the previous timestep
-//// Add more target types to it
-////int operatingModel::get_target_effort_timestep(const int target_no){
-////    fwdControlTargetType target_type = ctrl.get_target_type(target_no);
-////    unsigned int target_year = ctrl.get_target_year(target_no);
-////    unsigned int target_season = ctrl.get_target_season(target_no);
-////    unsigned int target_timestep = 0;
-////    year_season_to_timestep(target_year, target_season, biols(1).n(), target_timestep);
-////    // Biomass timesteps
-////    if((target_type == target_ssb) ||
-////       (target_type == target_biomass)){
-////        target_timestep = target_timestep - 1;
-////    }
-////    return target_timestep;
-////}
-//
-//*/
-
-
-
 /*! \brief Returns the indices of the age range, starting at 0
  *
  * Returns the indices of the age dimension. These are only the same as the minAge and maxAge columns in the control object if the first age is 0.
@@ -1204,7 +1224,8 @@ std::vector<unsigned int> operatingModel::get_target_age_range_indices(const uns
 */
 FLQuantAD operatingModel::fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
     // Get the F, then mean over the first dimension
-    FLQuantAD f = get_unit_f(fishery_no, catch_no, biol_no, indices_min, indices_max); 
+    //FLQuantAD f = get_unit_f(fishery_no, catch_no, biol_no, indices_min, indices_max); 
+    FLQuantAD f = get_f(fishery_no, catch_no, biol_no, indices_min, indices_max); 
     FLQuantAD fbar = quant_mean(f);
     return fbar;
 }
@@ -1216,7 +1237,8 @@ FLQuantAD operatingModel::fbar(const int fishery_no, const int catch_no, const i
  */
 FLQuantAD operatingModel::fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
     // Get the F, then mean over the first dimension
-    FLQuantAD f = get_unit_f(biol_no, indices_min, indices_max); 
+    //FLQuantAD f = get_unit_f(biol_no, indices_min, indices_max); 
+    FLQuantAD f = get_f(biol_no, indices_min, indices_max); 
     FLQuantAD fbar = quant_mean(f);
     return fbar;
 }

@@ -103,26 +103,26 @@ FLQuantAD test_operatingModel_fbar_B(FLFisheriesAD flfs, fwdBiolsAD biols, const
 
 /*----------- unit_z and unit_f--------------*/
 
-// [[Rcpp::export]]
-FLQuantAD test_operatingModel_unit_z_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-    operatingModel om(flfs, biols, ctrl);
-    FLQuantAD z = om.get_unit_z(biol_no, indices_min, indices_max);
-    return z;
-}
+//// [[Rcpp::export]]
+//FLQuantAD test_operatingModel_unit_z_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+//    operatingModel om(flfs, biols, ctrl);
+//    FLQuantAD z = om.get_unit_z(biol_no, indices_min, indices_max);
+//    return z;
+//}
 
-// [[Rcpp::export]]
-FLQuantAD test_operatingModel_unit_f_B_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-    operatingModel om(flfs, biols, ctrl);
-    FLQuantAD f = om.get_unit_f(biol_no, indices_min, indices_max);
-    return f;
-}
+//// [[Rcpp::export]]
+//FLQuantAD test_operatingModel_unit_f_B_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+//    operatingModel om(flfs, biols, ctrl);
+//    FLQuantAD f = om.get_unit_f(biol_no, indices_min, indices_max);
+//    return f;
+//}
 
-// [[Rcpp::export]]
-FLQuantAD test_operatingModel_unit_f_FCB_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-    operatingModel om(flfs, biols, ctrl);
-    FLQuantAD f = om.get_unit_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
-    return f;
-}
+//// [[Rcpp::export]]
+//FLQuantAD test_operatingModel_unit_f_FCB_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+//    operatingModel om(flfs, biols, ctrl);
+//    FLQuantAD f = om.get_unit_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
+//    return f;
+//}
 
 /*----------- project and run methods --------------*/
 // [[Rcpp::export]]

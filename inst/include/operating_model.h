@@ -63,9 +63,9 @@ class operatingModel {
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no) const; 
         FLQuantAD get_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD get_f(const int biol_no) const;
-        FLQuantAD get_unit_z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        FLQuantAD get_unit_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        FLQuantAD get_unit_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        //FLQuantAD get_unit_z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        //FLQuantAD get_unit_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        //FLQuantAD get_unit_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         void project_biols(const int timestep); // Uses effort in previous timestep
         void project_fisheries(const int timestep); // Uses effort in that timestep
         Rcpp::IntegerMatrix run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters = 50); 
@@ -77,10 +77,6 @@ class operatingModel {
         // The target value we are trying to hit - either directly from the control object or a min / max calculation using the current OM
         std::vector<adouble> get_target_value(const int target_no) const; // All iters for all sim targets
         std::vector<adouble> get_target_value(const int target_no, const int sim_target_no) const; // All iters for a sim target
-        
-
-        // Timestep of effort which drives the target value
-        // int get_target_effort_timestep(const int target_no);
         
         // age range indices for age-based targets (e.g. fbar)
         // Returns the indices of the age range, starts at 0

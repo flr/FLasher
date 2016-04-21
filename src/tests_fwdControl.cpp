@@ -101,11 +101,6 @@ std::vector<unsigned int> test_fwdControl_get_age_range(const fwdControl control
 }
 
 // [[Rcpp::export]]
-unsigned int test_fwdControl_get_target_effort_timestep(const fwdControl control, const int target_no, const int sim_target_no){
-    return control.get_target_effort_timestep(target_no, sim_target_no);
-}
-
-// [[Rcpp::export]]
 Rcpp::IntegerMatrix test_fwdControl_get_FC(const fwdControl control, const int biol_no){
     return control.get_FC(biol_no);
 }

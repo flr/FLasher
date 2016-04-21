@@ -88,14 +88,6 @@ test_that("fwdControl accessors", {
     # age range    
     age_range <- test_fwdControl_get_age_range(fc, target_no, sim_target_no)
     expect_equal(unname(unlist( fc@target[row_no,c("minAge", "maxAge")])), age_range)
-    # effort timestep - need to be careful with this - timing of effort for certain target types
-    timestep_out <- test_fwdControl_get_target_effort_timestep(fc, target_no, sim_target_no)
-    timestep_in <- fc@target$timestep[row_no]
-    qs <- fc@target$quant[row_no]
-    if (qs %in% c("biomass", "ssb")){
-        timestep_in <- timestep_in - 1
-    }
-    expect_equal(timestep_in, timestep_out)
 })
 
 test_that("fwdControl get_FCB methods", {
