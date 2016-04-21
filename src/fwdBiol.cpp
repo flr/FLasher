@@ -287,7 +287,7 @@ unsigned int fwdBiol_base<T>::srp_timelag() const{
  */ 
 template <typename T>
 bool fwdBiol_base<T>::does_recruitment_happen(unsigned int unit, unsigned int timestep) const{
-    // Get the SR parameters at that time / unit / iter
+    // Get the SR parameters at that time / unit for the first iter
     // If first one is NA, then no recruitment
     std::vector<unsigned int> biol_dim = n_flq.get_dim();
     unsigned int year = 0;

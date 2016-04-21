@@ -499,15 +499,15 @@ void operatingModel::project_biols(const int timestep){
         //FLQuantAD z_temp(prev_indices_max[0] - prev_indices_min[0]+1, prev_indices_max[1] - prev_indices_min[1]+1, prev_indices_max[2] - prev_indices_min[2]+1, prev_indices_max[3] - prev_indices_min[3]+1, prev_indices_max[4] - prev_indices_min[4]+1, prev_indices_max[5] - prev_indices_min[5]+1, 0.0);
         FLQuantAD survivors = biols(biol_counter).n(prev_indices_min, prev_indices_max) * exp(-1.0 * z_temp);
         // Update biol in timestep by putting survivors into correct age slots
-        // Process by unit (which are effectively distinct)
+        // Process by unit (which are effectively distinct - NOT REALLY)
         for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
             // Need to know the age in which to the survivors 
             // Each unit can recruit in a different season and can only recruit in one season
             // If recruitment timestep, survivors get placed in next age i.e. it's their birthday (hooray) and they move up an age class.
             // Else, same age in next timestep
             // Determine if this is a recruitment timestep for this unit
+            // Recruitment happening is determined by NAs in SR params - NOT by spwn slot
             bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, timestep);
-            //bool recruiting_now = true;
             unsigned int age_shift = 0;
             std::vector<adouble> rec(niter, 0.0);
             if (recruiting_now){
@@ -967,39 +967,30 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     // Else we get the SRP in the following timestep (if there is room)
     // Which results in a whole lot of faffing about!
     if (target_type == target_srp){
-        // Just get spwn in unit 1 - what if multiple units?
-//biols(biol_no).spwn(1,year,)
+        Rprintf("Target type == target_srp\n");
+        // Just get first unit, area and iter
+        double spwn_ts = biols(biol_no).spwn()(1,year,1,season,1,1);
+        // If NA
+        if (Rcpp::NumericVector::is_na(spwn_ts)){
+            Rcpp::stop("In OM get_target_value_hat. Asking for SSB / SRP target but Biol.spwn in that timestep is NA\n");
+        }
+
+        if (spwn_ts > 0){
+            // All is good - get SRP in current timestep
+            Rprintf("In OM target_value_hat. Get SRP in current timestep\n");
+        }
+        else {
+            Rprintf("In OM target_value_hat. Get SRP in next timestep\n");
+            // Bump timestep by one and get SRP next timestep
+            unsigned int timestep = 0;
+            std::vector<unsigned int> biol_dim = biols(biol_no).n().get_dim(); 
+            year_season_to_timestep(indices_min[0], indices_min[2], biol_dim[3], timestep);
+            // Add one because we want SRP in following timestep and turn back
+            timestep_to_year_season(++timestep, biol_dim[3], indices_min[0], indices_min[2]);
+            indices_max[0] = indices_min[0];
+            indices_max[2] = indices_min[2];
+        }
     }
-
-
-//            
-//            // Move all this to get_target_value_hat 
-//            unsigned int min_timestep = 0;
-//            unsigned int max_timestep = 0;
-//            std::vector<unsigned int> biol_dim = biols(biol_no).n().get_dim(); 
-//            year_season_to_timestep(indices_min[0], indices_min[2], biol_dim[3], min_timestep);
-//            year_season_to_timestep(indices_max[0], indices_max[2], biol_dim[3], max_timestep);
-//            // Add one because we want SRP in following timestep
-//            ++min_timestep;
-//            ++max_timestep;
-//            // Back to year / season
-//            unsigned int year_temp = 0
-//            unsigned int season_temp = 0
-//            std::vector<unsigned int> indices_min_next = indices_min;;
-//            std::vector<unsigned int> indices_max_next = indices_max;;
-//            timestep_to_year_season(min_timestep, biol_dim[3], year_temp, season_temp);
-//            indices_min_next[0] = year_temp;
-//            indices_min_next[2] = season_temp;
-//            timestep_to_year_season(max_timestep, biol_dim[3], year_temp, season_temp);
-//            indices_max_next[0] = year_temp;
-//            indices_max_next[2] = season_temp;
-//            out = srp(biol_no, indices_min_next, indices_max_next);
-
-
-
-
-
-
     // Get the current absolute values, i.e. not relative, as FLQuant
     FLQuantAD target_value = eval_om(target_type, fishery_no, catch_no, biol_no, indices_min, indices_max);
     // Are we dealing with absolute or relative values?

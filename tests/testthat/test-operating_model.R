@@ -324,10 +324,14 @@ test_that("operatingModel f_prop_spwn methods",{
     test_FLQuant_equal(prop_in[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], prop_out)
 })
 
-test_that("operatingModel srp methods with units",{
+test_that("operatingModel SRP methods with seasons and units",{
     # Random simple OM with units - 1 biol fished by 1 catch - FIX UNITS
-    flq <- random_FLQuant_generator(min_dims=c(2,2,2,2,2,2), fixed_dims=c(NA,NA,1,rep(NA,3)))
+    flq <- random_FLQuant_generator(min_dims=c(2,2,NA,NA,NA,2), fixed_dims=c(NA,NA,1,4,1,NA))
     flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
+    # Set so only spawns in season X, other seasons have NA - no spawning
+    spwn_season <- round(runif(1,min=1,max=dim(flq)[4]))
+    not_spwn_seasons <- !((1:dim(flq)[4]) %in% spwn_season)
+    flbs[[1]][["biol"]]@spwn[1,,,not_spwn_seasons] <- NA
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=1, max_fisheries=1)
@@ -902,6 +906,13 @@ test_that("operatingModel eval_om units", {
     niters <- 10 
     flq <- random_FLQuant_generator(fixed_dims = c(5,20,nunits,4,1,niters))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
+    # Set so only spawns in season X, other seasons have NA - no spawning
+    spwn_season1 <- round(runif(1,min=1,max=dim(flq)[4]))
+    not_spwn_seasons1 <- !((1:dim(flq)[4]) %in% spwn_season)
+    flbs[[1]][["biol"]]@spwn[1,,,not_spwn_seasons1] <- NA
+    spwn_season2 <- round(runif(1,min=1,max=dim(flq)[4]))
+    not_spwn_seasons2 <- !((1:dim(flq)[4]) %in% spwn_season)
+    flbs[[2]][["biol"]]@spwn[1,,,not_spwn_seasons2] <- NA
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
@@ -915,6 +926,7 @@ test_that("operatingModel eval_om units", {
     dim_max <- dim(n(flbs[[1]][["biol"]]))
     #dim_min <- round(runif(6, min=1, max=dim_max - c(1,1,1,1,0,1))) # 1 area so 0
     dim_min <- round(runif(6, min=1, max=dim_max - c(1,1,0,1,0,1))) # 1 area and unit so 0
+    dim_min[4] <- 1 # Get all seasons
     #  Catch FC11
     cout11 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 1, 1, as.integer(NA), dim_min[-1], dim_max[-1])
     cin11 <- unitSums(catch(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
@@ -989,6 +1001,16 @@ test_that("operatingModel eval_om units", {
     foutfc21 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", 2,1,1, dim_min, dim_max)
     finfc21 <- test_operatingModel_fbar_FCB(flfs, flbs, fwc, 2,1,1, dim_min, dim_max) # Assume is correct
     test_FLQuant_equal(foutfc21,finfc21)
+    # SRP B1
+    srp_outB1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "ssb", as.integer(NA),as.integer(NA),1, dim_min[-1], dim_max[-1])
+    srp_inB1 <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fwc, 1, dim_min[-1], dim_max[-1])
+    test_FLQuant_equal(srp_outB1,srp_inB1)
+    # indices of length 6 - error
+    expect_error(test_operatingModel_eval_om(flfs, flbs, fwc, "ssb", as.integer(NA),as.integer(NA),1, dim_min, dim_max))
+    # SRP B2
+    srp_outB2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "ssb", as.integer(NA),as.integer(NA),2, dim_min[-1], dim_max[-1])
+    srp_inB2 <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fwc, 2, dim_min[-1], dim_max[-1])
+    test_FLQuant_equal(srp_outB2,srp_inB2)
 })
 
 test_that("operatingModel eval_om simple", {
@@ -1060,6 +1082,14 @@ test_that("get_target_value_hat", {
     #flq <- random_FLQuant_generator(fixed_dims = c(5,20,2,4,1,niters))
     flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
+    # Set so only spawns in season X, other seasons have NA - no spawning
+    spwn_season1 <- round(runif(1,min=1,max=dim(flq)[4]))
+    not_spwn_seasons1 <- !((1:dim(flq)[4]) %in% spwn_season)
+    flbs[[1]][["biol"]]@spwn[1,,,not_spwn_seasons1] <- NA
+    spwn_season2 <- round(runif(1,min=1,max=dim(flq)[4]))
+    not_spwn_seasons2 <- !((1:dim(flq)[4]) %in% spwn_season)
+    flbs[[2]][["biol"]]@spwn[1,,,not_spwn_seasons2] <- NA
+    flbs[[2]][["biol"]]@spwn[1,,,spwn_season2] <- 0 
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
@@ -1155,9 +1185,8 @@ test_that("get_target_value_hat", {
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 7))
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 8))
 
-    # New Control object for simplicity
     # Fbar target
-    min_age = round(runif(1,min=min(as.numeric(dimnames(flq)$age)), max=max(as.numeric(dimnames(flq)$age)))-1)
+    min_age = round(runif(1,min=min(as.numeric(dimnames(flq)$age)), max=max(as.numeric(dimnames(flq)$age))))
     max_age = round(runif(1,min=min_age, max=max(as.numeric(dimnames(flq)$age))))
     years <- rep(round(runif(1, min=1,max=dim(flq)[2])),each=2)
     seasons <- rep(round(runif(1, min=1,max=dim(flq)[4])),each=2)
@@ -1168,7 +1197,7 @@ test_that("get_target_value_hat", {
                         minAge = min_age, maxAge = max_age)
     fwc <- fwdControl(rbind(f_trgt1))
     attr(fwc, "FCB") <- FCB
-    # Target 5 - 1 sim target at a time
+    # 1 sim target at a time
     dim_min <- c(min_age, years[1], 1, seasons[1], 1, 1)
     dim_max <- c(max_age, years[1], dim(flq)[3], seasons[1], dim(flq)[5], dim(flq)[6])
     # Sim 1
@@ -1182,6 +1211,30 @@ test_that("get_target_value_hat", {
     # Both
     val_hat <- test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 1)
     expect_equal(val_hat, c(val_in1, val_in2))
+
+    # SSB target
+    #ssb_trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[9:10],
+    ssb_trgt1 <- data.frame(year = years[1:2], season = 2, timestep = timesteps[9:10],
+                        quant = c("ssb","ssb"), order = 1, 
+                        fishery = c(NA,NA), catch = c(NA,NA), biol = c(1,2),
+                        minAge = min_age, maxAge = max_age)
+    fwc <- fwdControl(rbind(ssb_trgt1))
+    attr(fwc, "FCB") <- FCB
+    # 1 sim target at a time
+    dim_min <- c(min_age, years[1], 1, seasons[1], 1, 1)
+    dim_max <- c(max_age, years[1], dim(flq)[3], seasons[1], dim(flq)[5], dim(flq)[6])
+
+    # Sim 1 - Biol 1
+    val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
+    val_in1 <- c(test_operatingModel_fbar_B(flfs, flbs, fwc, 1, dim_min, dim_max))
+
+    # Sim 2 - Biol 2
+    val_hat2 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 2)
+    # Test these
+# Biol 2 has SPWN = 0
+
+# Biol 1 SPWN > 0
+
 })
 
 # Values in control object 
