@@ -164,6 +164,15 @@ FLQuantAD test_operatingModel_eval_om(FLFisheriesAD flfs, fwdBiolsAD biols, cons
     return out;
 }
 
+// Returns whole OM to see if it has been changed
+// [[Rcpp::export]]
+operatingModel test_operatingModel_eval_om2(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const std::string strquantity, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    fwdControlTargetType quantity = ctrl.get_target_type(strquantity);
+    FLQuantAD out = om.eval_om(quantity, fishery_no, catch_no, biol_no, indices_min, indices_max);
+    return om;
+}
+
 // [[Rcpp::export]]
 std::vector<double> test_operatingModel_get_target_value_hat(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int target_no, const int sim_target_no){
     operatingModel om(flfs, biols, ctrl);

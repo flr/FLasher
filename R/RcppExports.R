@@ -1905,6 +1905,10 @@ test_operatingModel_eval_om <- function(flfs, biols, ctrl, strquantity, fishery_
     .Call('FLasher_test_operatingModel_eval_om', PACKAGE = 'FLasher', flfs, biols, ctrl, strquantity, fishery_no, catch_no, biol_no, indices_min, indices_max)
 }
 
+test_operatingModel_eval_om2 <- function(flfs, biols, ctrl, strquantity, fishery_no, catch_no, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_eval_om2', PACKAGE = 'FLasher', flfs, biols, ctrl, strquantity, fishery_no, catch_no, biol_no, indices_min, indices_max)
+}
+
 test_operatingModel_get_target_value_hat <- function(flfs, biols, ctrl, target_no, sim_target_no) {
     .Call('FLasher_test_operatingModel_get_target_value_hat', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no, sim_target_no)
 }

@@ -70,13 +70,14 @@ class operatingModel {
         void project_fisheries(const int timestep); // Uses effort in that timestep
         Rcpp::IntegerMatrix run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters = 50); 
 
-        FLQuantAD eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        // Sorting out target values - these are not const as eval_om may need to change spwn() member if SRP / SSB target 
+        FLQuantAD eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
         // The actual current target values in the OM - to be compared to the desired values
-        std::vector<adouble> get_target_value_hat(const int target_no) const; 
-        std::vector<adouble> get_target_value_hat(const int target_no, const int sim_target_no) const; 
+        std::vector<adouble> get_target_value_hat(const int target_no); 
+        std::vector<adouble> get_target_value_hat(const int target_no, const int sim_target_no); 
         // The target value we are trying to hit - either directly from the control object or a min / max calculation using the current OM
-        std::vector<adouble> get_target_value(const int target_no) const; // All iters for all sim targets
-        std::vector<adouble> get_target_value(const int target_no, const int sim_target_no) const; // All iters for a sim target
+        std::vector<adouble> get_target_value(const int target_no); // All iters for all sim targets
+        std::vector<adouble> get_target_value(const int target_no, const int sim_target_no); // All iters for a sim target
         
         // age range indices for age-based targets (e.g. fbar)
         // Returns the indices of the age range, starts at 0
