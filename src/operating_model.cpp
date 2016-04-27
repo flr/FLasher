@@ -770,8 +770,8 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
  * \param fishery_no The fishery number. 
  * \param catch_no The catch number. 
  * \param biol_no The biol number. 
- * \param indices_min The minimum range of the returned FLQuant. Of length 5 or 6 depending on the target type (F needs age, catch and effort do not).
- * \param indices_max The maximum range of the returned FLQuant. Of length 5 or 6 depending on the target type (F needs age, catch and effort do not).
+ * \param indices_min The minimum range of the returned FLQuant. Of length 6 even if target does need all of them (e.g. catch does not need the first dimension).
+ * \param indices_max The maximum range of the returned FLQuant. Of length 6 even if target does need all of them (e.g. catch does not need the first dimension).
  */
 FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) {
     // Indices must be of length 6, even if not all of them are needed
@@ -785,17 +785,19 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
     }
     FLQuantAD out;
     switch(target_type){
-       // case target_effort: {
-       //     Rprintf("target_effort\n");
-       //     // Indices should be of length 5
-       //     if (Rcpp::IntegerVector::is_na(fishery_no)){
-       //         Rcpp::stop("In operatingModel::eval_om. Asking for effort target but fishery_no has been specified.\n");
-       //     }
-       //     else {
-       //         out = fisheries(fishery_no).effort(indices_min, indices_max);
-       //     }
-       // break;
-       // }
+        case target_effort: {
+            Rprintf("target_effort\n");
+            // Indices should be of length 5
+            std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
+            std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
+            if (Rcpp::IntegerVector::is_na(fishery_no)){
+                Rcpp::stop("In operatingModel::eval_om. Asking for effort target but fishery_no has been specified.\n");
+            }
+            else {
+                out = fisheries(fishery_no).effort(indices_min5, indices_max5);
+            }
+        break;
+        }
         case target_fbar: {
             Rprintf("target_fbar\n");
             if (Rcpp::IntegerVector::is_na(biol_no)) {

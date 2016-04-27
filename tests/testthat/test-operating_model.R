@@ -1225,21 +1225,20 @@ test_that("get_target_value_hat", {
     val_hat <- test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 1)
     expect_equal(val_hat, c(val_in1, val_in2))
 
-    # Test This
     # SSB target - try each season in year 1
     years <- 1
     seasons <- c(1,1,2,2,3,3,4,4)
     timesteps <- (years-1) * dim(flq)[4] + seasons;
     ssb_trgt1 <- data.frame(year = years, season = seasons, timestep = timesteps,
-                        quant = "ssb", order = c(1,1,2,2,3,3,4,4), 
+                        quant = "ssb", order = seasons,
                         fishery = NA, catch = NA, biol = rep(c(1,2),4))
     fwc <- fwdControl(ssb_trgt1)
     attr(fwc, "FCB") <- FCB
-    # Season 1 - Biol 1
+    # Season 1 - Biol 1 - Spwn > 0
     val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
     val_in1 <- c(test_operatingModel_SRP_FLQ_subset(flfs, flbs, fwc, 1, c(years[1],1,seasons[1],1,1), c(years[1],1,seasons[1],1,niters)))
     expect_equal(val_hat1, val_in1)
-    # Season 1 - Biol 2 - Spwn is NA
+    # Season 1 - Biol 2 - Spwn is NA - error
     expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 2))
     # Seasons 2 and 4 - both Biols Spwn is NA
     expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 2, 1))
@@ -1248,23 +1247,36 @@ test_that("get_target_value_hat", {
     expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 4, 2))
     # Season 3 - Biol 1 - Spwn is NA
     expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 3, 1))
+    # Season 3 - Biol 2 - Spwn is 0 so we get the SRP at the start of season 4
     val_hat2 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 3, 2)
-                 val_hat2
+    # Spwn at start of season 4 - need to set spwn to 0 in season 4 as currently in NA
+    flbs_temp <- flbs
+    flbs_temp[[2]][["biol"]]@spwn[] <- 0.0
+    val_in2 <- c(test_operatingModel_SRP_FLQ_subset(flfs, flbs_temp, fwc, 2, c(years[1],1,seasons[6]+1,1,1), c(years[1],1,seasons[6]+1,1,niters)))
+    expect_equal(val_hat2, val_in2)
 
+    # Relative SSB target - SSB relative to year before
+    ssb_trgt2 <- data.frame(year = 2, season = 1, timestep = 5,
+                            relYear = 1, relSeason = 1,
+                        quant = "ssb", order = 1,
+                        fishery = NA, catch = NA, biol = 1,
+                        relFishery = NA, relCatch = NA, relBiol = 1)
+    fwc <- fwdControl(ssb_trgt2)
+    attr(fwc, "FCB") <- FCB
+    val_hat <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
+    val_in1 <- c(test_operatingModel_SRP_FLQ_subset(flfs, flbs, fwc, 1, c(1,1,1,1,1), c(1,1,1,1,niters)))
+    val_in2 <- c(test_operatingModel_SRP_FLQ_subset(flfs, flbs, fwc, 1, c(2,1,1,1,1), c(2,1,1,1,niters)))
+    expect_equal(val_in2 / val_in1, val_hat)
 
-    # Spwn is 0 so we actually get the SRP in the next timestep
-    val_in2 <- c(test_operatingModel_SRP_FLQ_subset(flfs, flbs, fwc, 1, c(years[1],1,seasons[6],1,1), c(years[1],1,seasons[6],1,niters)))
-    expect_equal(
-                 val_hat2
-                 val_in2
-                 1
-
-
-    # Test these
-# Biol 2 has SPWN = 0
-
-# Biol 1 SPWN > 0
-
+    # Relative SSB target - SSB relative to season before - fails
+    ssb_trgt3 <- data.frame(year = 2, season = 1, timestep = 5,
+                            relYear = 1, relSeason = 4,
+                        quant = "ssb", order = 1,
+                        fishery = NA, catch = NA, biol = 1,
+                        relFishery = NA, relCatch = NA, relBiol = 1)
+    fwc <- fwdControl(ssb_trgt3)
+    attr(fwc, "FCB") <- FCB
+    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1))
 })
 
 # Values in control object 
