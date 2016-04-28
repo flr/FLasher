@@ -640,16 +640,17 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
     // Effort multiplier is the independent value. There is one independent values for each effort, i.e. for each fishery
     auto neffort = fisheries.get_nfisheries();
     Rprintf("Number of fisheries to solve effort for: %i\n", neffort);
-
     // The target timesteps are contiguous.
     // Update the biology in the first target timestep.
     // This ensures that we have abundance numbers in the first timestep of the projection.
     // Is this always necessary? What if first target is biol in timestep y? Check this
     // However, this will overwrite existing abundances - do we want this?
     // Assumes that first target has a target number of 1
-    Rcpp::IntegerVector target_timesteps = ctrl.get_target_int_col(1, "timestep");
-    // Get the min - first timestep of projection
-    auto min_target_timestep = *std::min_element(std::begin(target_timesteps), std::end(target_timesteps));
+    // Assume that the first sim target of the first target is in the first timestep of the projection
+    unsigned int first_target_year = ctrl.get_target_int_col(1,1, "year");
+    unsigned int first_target_season = ctrl.get_target_int_col(1,1, "season");
+    unsigned int min_target_timestep = 0;
+    year_season_to_timestep(first_target_year, first_target_season, biols(1).n().get_nseason(), min_target_timestep);
     Rprintf("Min target timestep: %i\n", min_target_timestep);
     Rprintf("Projecting biols for the first timestep to update abundances\n");
     project_biols(min_target_timestep);
@@ -670,11 +671,11 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         Rprintf("Number of simultaneous targets: %i\n", nsim_targets);
         // Timestep in which we find effort is the same for all simultaneous targets in a target set
         // Get time step of first sim target and use this for all sim targets.
-        unsigned int target_effort_timestep = ctrl.get_target_int_col(target_count, 1, "timestep");
-        Rprintf("target_effort_timestep: %i\n", target_effort_timestep);
-        unsigned int target_effort_year = 0;
-        unsigned int target_effort_season = 0;
-        timestep_to_year_season(target_effort_timestep, biols(1).n().get_nseason(), target_effort_year, target_effort_season);
+        // Get Y/S from control - convert to timestep
+        unsigned int target_effort_timestep = 0;
+        unsigned int target_effort_year = ctrl.get_target_int_col(target_count, 1, "year");
+        unsigned int target_effort_season = ctrl.get_target_int_col(target_count, 1, "season");
+        year_season_to_timestep(target_effort_year, target_effort_season, biols(1).n().get_nseason(), target_effort_timestep);
         // Get the target value based on control object and current value in the OM (if Max / Min)
         // This is not part of the operation sequence so is evaluated before we turn on the tape
         std::vector<adouble> target_value = get_target_value(target_count); // values of all sim targets for the target

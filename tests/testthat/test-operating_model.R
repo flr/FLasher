@@ -1114,26 +1114,25 @@ test_that("get_target_value_hat", {
     # Two sim catch targets
     years <- rep(round(runif(4, min=1,max=dim(flq)[2])),each=2)
     seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
-    timesteps <- (years-1) * dim(flq)[4] + seasons;
-    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
+    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], 
                         quant = c("catch","catch"), order = 1, 
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
-    trgt2 <- data.frame(year = years[3:4], season = seasons[3:4], timestep = timesteps[3:4],
+    trgt2 <- data.frame(year = years[3:4], season = seasons[3:4],
                         quant = c("landings","discards"), order = 2, 
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
     rel_years <- rep(round(runif(4, min=1,max=dim(flq)[2])),each=2)
     rel_seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
-    rel_trgt1 <- data.frame(year = years[5:6], season = seasons[5:6], timestep = timesteps[5:6],
+    rel_trgt1 <- data.frame(year = years[5:6], season = seasons[5:6],
                         quant = c("catch","catch"), order = 3, 
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
                         relFishery = c(1,NA), relCatch = c(1,NA), relBiol = c(NA,2),
                         relYear = rel_years[5:6], relSeason = rel_seasons[5:6])
     # Discards relative to different catch and fishery
-    rel_trgt2 <- data.frame(year = years[7:8], season = seasons[7:8], timestep = timesteps[7:8],
+    rel_trgt2 <- data.frame(year = years[7:8], season = seasons[7:8],
                         quant = c("landings","discards"), order = 4, 
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = c(NA,2), relCatch = c(NA,1), relBiol = c(1,NA),
@@ -1182,7 +1181,7 @@ test_that("get_target_value_hat", {
     expect_equal(val_hat, c(val_in1,val_in2))
 
     # Relative targets fails due to not being set properly
-    rel_trgt3 <- data.frame(year = 1:8, season = 1, timestep = 1:8,
+    rel_trgt3 <- data.frame(year = 1:8, season = 1, 
                         quant = "catch", order = 1:8,
                         fishery = 1, catch = 1, biol = NA,
                         relFishery = c(NA,1,1,1,1,NA,NA,NA), relCatch = c(1,NA,1,1,1,NA,NA,NA), relBiol = c(NA,NA,NA,NA,NA,1,1,NA),
@@ -1203,8 +1202,7 @@ test_that("get_target_value_hat", {
     max_age <- round(runif(1,min=min_age, max=max(as.numeric(dimnames(flq)$age))))
     years <- rep(round(runif(1, min=1,max=dim(flq)[2])),each=2)
     seasons <- rep(round(runif(1, min=1,max=dim(flq)[4])),each=2)
-    timesteps <- (years-1) * dim(flq)[4] + seasons;
-    f_trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
+    f_trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], 
                         quant = c("f","f"), order = 1, 
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,1),
                         minAge = min_age, maxAge = max_age)
@@ -1228,8 +1226,7 @@ test_that("get_target_value_hat", {
     # SSB target - try each season in year 1
     years <- 1
     seasons <- c(1,1,2,2,3,3,4,4)
-    timesteps <- (years-1) * dim(flq)[4] + seasons;
-    ssb_trgt1 <- data.frame(year = years, season = seasons, timestep = timesteps,
+    ssb_trgt1 <- data.frame(year = years, season = seasons, 
                         quant = "ssb", order = seasons,
                         fishery = NA, catch = NA, biol = rep(c(1,2),4))
     fwc <- fwdControl(ssb_trgt1)
@@ -1256,7 +1253,7 @@ test_that("get_target_value_hat", {
     expect_equal(val_hat2, val_in2)
 
     # Relative SSB target - SSB relative to year before
-    ssb_trgt2 <- data.frame(year = 2, season = 1, timestep = 5,
+    ssb_trgt2 <- data.frame(year = 2, season = 1, 
                             relYear = 1, relSeason = 1,
                         quant = "ssb", order = 1,
                         fishery = NA, catch = NA, biol = 1,
@@ -1269,7 +1266,7 @@ test_that("get_target_value_hat", {
     expect_equal(val_in2 / val_in1, val_hat)
 
     # Relative SSB target - SSB relative to season before - fails
-    ssb_trgt3 <- data.frame(year = 2, season = 1, timestep = 5,
+    ssb_trgt3 <- data.frame(year = 2, season = 1, 
                             relYear = 1, relSeason = 4,
                         quant = "ssb", order = 1,
                         fishery = NA, catch = NA, biol = 1,
@@ -1297,14 +1294,13 @@ test_that("get_target_value - straight value", {
     # Two sim catch targets
     years <- sort(rep(round(runif(4, min=1,max=dim(flq)[2])),each=2))
     seasons <- sort(rep(round(runif(4, min=1,max=dim(flq)[4])),each=2))
-    timesteps <- sort((years-1) * dim(flq)[4] + seasons)
     value <- abs(rnorm(4))
     # 1 iter in control, many in OM - should blow up control iters internally
     # Simple control object
-    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
+    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], 
                         quant = c("catch","catch"), order = 1, value = value[1:2],
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2))
-    trgt2 <- data.frame(year = years[3:4], season = seasons[3:4], timestep = timesteps[3:4],
+    trgt2 <- data.frame(year = years[3:4], season = seasons[3:4], 
                         quant = c("landings","discards"), order = 2, value = value[3:4],
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA))
     fwc <- fwdControl(rbind(trgt1,trgt2))
@@ -1367,7 +1363,6 @@ test_that("get_target_value - straight value", {
     # Two sim catch targets
     years <- rep(round(runif(4, min=1,max=dim(flq)[2])),each=2)
     seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
-    timesteps <- (years-1) * dim(flq)[4] + seasons;
     niters <- 100
     fwc <- fwdControl(rbind(trgt1, trgt2), niters)
     fwc@iters[,"value",] <- abs(rnorm(4*niters))
@@ -1393,7 +1388,6 @@ test_that("get_target_value - min / max values", {
     # Two sim catch targets
     years <- rep(round(runif(4, min=1,max=dim(flq)[2])),each=2)
     seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
-    timesteps <- (years-1) * dim(flq)[4] + seasons;
     value <- abs(rnorm(4))
     # Simple control object - just catch
     # Which iters will be less (max) / greater (min) than actual catch
@@ -1410,7 +1404,7 @@ test_that("get_target_value - min / max values", {
 
     # Max only - small iters will be limited
     # Same iters in OM and control
-    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
+    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], 
                         quant = c("catch","catch"), order = 1,
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2))
     # fwdControl constructor fix
@@ -1449,7 +1443,7 @@ test_that("get_target_value - min / max values", {
     expect_equal(val_hat2[not_maxed_out2], catch2[not_maxed_out2])
 
     # Min only - iters in OM = iters in control
-    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
+    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], 
                         quant = c("catch","catch"), order = 1,
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2))
     fwc <- fwdControl(trgt1, niters)
@@ -1507,7 +1501,7 @@ test_that("get_target_value - min / max values", {
     min_catch2 <- catch2
     min_catch2[not_min_limit_iters] <- min_catch2[not_min_limit_iters] * 0.9
     min_catch2[min_limit_iters] <- min_catch2[min_limit_iters] * 1.1
-    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
+    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], 
                         quant = c("catch","catch"), order = 1, 
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2))
     fwc <- fwdControl(trgt1, niters)
@@ -1539,7 +1533,7 @@ test_that("get_target_value - min / max values", {
     min_limit_iters2 <- which(catch2 < min2)
     max_limit_iters2 <- which(catch2 > max2)
     not_limit_iters2 <- (1:niters)[!((1:niters) %in% c(min_limit_iters2, max_limit_iters2))]
-    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], timestep = timesteps[1:2],
+    trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], 
                         quant = c("catch","catch"), order= 1, 
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2))
 
@@ -1571,7 +1565,7 @@ test_that("operatingModel get_target_age_range", {
     min_age <- round(runif(1,min=ages[1],max=max(ages)))
     max_age <- round(runif(1,min=min_age, max=max(ages)))
     # With biol no
-    trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
+    trgt1 <- data.frame(year = 1, season = 1, 
                         quant = "f", order = 1,
                         fishery = NA, catch = NA, biol = 1,
                         minAge = min_age, maxAge = max_age)
@@ -1582,7 +1576,7 @@ test_that("operatingModel get_target_age_range", {
     ind_in <- c(which(ages %in% min_age), which(ages %in% max_age)) - 1
     expect_identical(ind_out, ind_in)
     # With catch no
-    trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
+    trgt1 <- data.frame(year = 1, season = 1, 
                         quant = "f", order = 1, 
                         fishery = 1, catch = 1, biol = NA,
                         minAge = min_age, maxAge = max_age)
@@ -1593,7 +1587,7 @@ test_that("operatingModel get_target_age_range", {
     ind_in <- c(which(ages %in% min_age), which(ages %in% max_age)) - 1
     expect_identical(ind_out, ind_in)
     # minAge outside age range - error
-    trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
+    trgt1 <- data.frame(year = 1, season = 1, 
                         quant = "f", order = 1, 
                         fishery = 1, catch = 1, biol = NA,
                         minAge = min_age_name - 1, maxAge = max_age)
@@ -1601,7 +1595,7 @@ test_that("operatingModel get_target_age_range", {
     attr(fwc, "FCB") <- FCB
     expect_error(test_operatingModel_get_target_age_range_indices(flfs, flbs, fwc, 1, 1))
     # maxAge outside age range - error
-    trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
+    trgt1 <- data.frame(year = 1, season = 1, 
                         quant = "f", order = 1, 
                         fishery = 1, catch = 1, biol = NA,
                         minAge = min_age, maxAge = max(as.numeric(dimnames(flq)$age))+1)
@@ -1609,7 +1603,7 @@ test_that("operatingModel get_target_age_range", {
     attr(fwc, "FCB") <- FCB
     expect_error(test_operatingModel_get_target_age_range_indices(flfs, flbs, fwc, 1, 1))
     # Without catch or biol in control - error
-    trgt1 <- data.frame(year = 1, season = 1, timestep = 1,
+    trgt1 <- data.frame(year = 1, season = 1, 
                         quant = "f", target = 1,
                         fishery = NA, catch = NA, biol = NA,
                         minAge = min_age, maxAge = max_age)
