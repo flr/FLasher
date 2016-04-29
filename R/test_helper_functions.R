@@ -386,8 +386,10 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
 
     # Order the targets
     target <- target[order(target$year, target$season),]
+
     # Add order column - should group targets with same year and season together
-    target$order <- 1:nrow(target)
+    # Make it random so that get_target_row is properly tested
+    target$order <- sample(1:nrow(target), nrow(target))
 
     # Data.frame constructor - use other constructor here?
     fwc <- fwdControl(target=target, iters=target_iters)

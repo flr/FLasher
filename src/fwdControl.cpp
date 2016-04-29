@@ -111,7 +111,7 @@ unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
     if (std::find(col_names.begin(), col_names.end(), "order") == col_names.end()){
         Rcpp::stop("In fwdControl::get_nsim_target - no order column in control dataframe\n");
     }
-    Rcpp::IntegerVector targets = target["order"];
+    std::vector<unsigned int> targets = target["order"];
     // Sort them
     std::sort(targets.begin(), targets.end());
     // [&] means capture variable, means we can get target_no
@@ -139,7 +139,7 @@ std::vector<unsigned int> fwdControl::get_target_row(unsigned int target_no) con
     if (std::find(col_names.begin(), col_names.end(), "order") == col_names.end()){
         Rcpp::stop("In fwdControl::get_target_row - no order column in control dataframe\n");
     }
-    Rcpp::IntegerVector targets = target["order"];
+    std::vector<unsigned int> targets = target["order"];
     unsigned int nsim_target = get_nsim_target(target_no);
     std::vector<unsigned int> rows(nsim_target);
     auto current_target = targets.begin();
