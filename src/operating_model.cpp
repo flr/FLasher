@@ -921,7 +921,10 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
                 // Is timestep too big for dims
                 unsigned int max_timestep = biol_dim[1] * biol_dim[3];
                 if (timestep > max_timestep){
-                    Rcpp::stop("In OM eval_om. Evaluating SRP in following timestep. Trying to get SRP outside timerange range of Biol\n");
+                    Rcpp::warning("In OM eval_om. Evaluating SRP in following timestep. Trying to get SRP outside timerange range of Biol\n");
+
+// Do something to set NAs or something which has no affect on solver - or tell solver to not go there
+
                 }
                 out = unit_sum(srp(biol_no, indices_min5, indices_max5));
                 // Reset the spwn member
@@ -1020,12 +1023,12 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     std::vector<unsigned int> age_range_indices = {0,0};
     unsigned int minAge = ctrl.get_target_int_col(target_no, sim_target_no, "minAge");
     unsigned int maxAge = ctrl.get_target_int_col(target_no, sim_target_no, "maxAge");
-    Rprintf("minAge: %i maxAge %i\n", minAge, maxAge);
+    //Rprintf("minAge: %i maxAge %i\n", minAge, maxAge);
     if(!Rcpp::IntegerVector::is_na(minAge) & !Rcpp::IntegerVector::is_na(maxAge)){
-        Rprintf("Gettig age range indices\n");
+        //Rprintf("Gettig age range indices\n");
         age_range_indices = get_target_age_range_indices(target_no, sim_target_no); // indices start at 0
     }
-    Rprintf("age_range_indices: %i %i\n", age_range_indices[0], age_range_indices[1]);
+    //Rprintf("age_range_indices: %i %i\n", age_range_indices[0], age_range_indices[1]);
     // Area
     unsigned int area = 1;
     std::vector<unsigned int> indices_min = {age_range_indices[0]+1,min_year,1,min_season,area,1};

@@ -1,28 +1,50 @@
 # Rough draft for the fwd() method.
 # To start with, just a function that is based on an FLStock.
 
+#setGeneric('getPartialFs', function(fishery, biol, FCB, ...)
+#    standardGeneric('getPartialFs'))
+#
+## Return a list (same structure as the FLFishery) of FLQuant of partial Fs
+#setMethod('getPartialFs', signature(fishery='FLFishery', biol='list', FCB='matrix'),
+#    function(fishery, biol, FCB, ...){
+#
+#})
+#
+## Return list of lists (same structure as the FLFisheries) of FLQuant of partial Fs
+#setMethod('getPartialFs', signature(fishery='FLFisheries', biol='list', FCB='matrix'),
+#    function(fishery, biol, FCB, ...){
+#
+#})
+
+# F = alpha * Biomass ^ -beta * sel * effort
+calc_F <- function(catch, biol, effort){
+    biomass <- quantSums(biol@n * biol@wt)
+    F <- (catch@catch.q['alpha',] * biomass ^ (-catch@catch.q['beta',]) * effort) %*% catch@catch.sel
+    return(F)
+}
+
 FLStock_to_FLBiolcpp_and_FLFishery <- function(fls){
     # Make the biol
     flb <- as(fls, "FLBiol")
     flb <- as(flb,"FLBiolcpp")
     # Check biol
-    expect_identical(flb@n, fls@stock.n)
-    expect_identical(flb@m, fls@m)
-    expect_identical(flb@wt, fls@stock.wt)
-    expect_identical(flb@mat, fls@mat)
-    expect_identical(flb@name, fls@name)
-    expect_identical(flb@desc, fls@desc)
-    expect_identical(flb@spwn, fls@m.spwn[1,]) # m happens continuously through year so m.spwn = spwn
+    #expect_identical(flb@n, fls@stock.n)
+    #expect_identical(flb@m, fls@m)
+    #expect_identical(flb@wt, fls@stock.wt)
+    #expect_identical(flb@mat, fls@mat)
+    #expect_identical(flb@name, fls@name)
+    #expect_identical(flb@desc, fls@desc)
+    #expect_identical(flb@spwn, fls@m.spwn[1,]) # m happens continuously through year so m.spwn = spwn
     # flb@fec and flb@range not used yet so ignore
 
     # Make the catch
     flc <- as(fls, "FLCatch")
     # Check catch
-    expect_identical(flc@landings.n, fls@landings.n)
-    expect_identical(flc@landings.wt, fls@landings.wt)
-    expect_identical(flc@discards.n, fls@discards.n)
-    expect_identical(flc@discards.wt, fls@discards.wt)
-    expect_identical(flc@catch.sel, fls@harvest %/% apply(fls@harvest, 2:6, max)) # Selectivity is harvest scaled to 1 each year
+    #expect_identical(flc@landings.n, fls@landings.n)
+    #expect_identical(flc@landings.wt, fls@landings.wt)
+    #expect_identical(flc@discards.n, fls@discards.n)
+    #expect_identical(flc@discards.wt, fls@discards.wt)
+    #expect_identical(flc@catch.sel, fls@harvest %/% apply(fls@harvest, 2:6, max)) # Selectivity is harvest scaled to 1 each year
     # Fix name and desc
     flc@name <- fls@name
     flc@desc <- fls@desc
@@ -59,7 +81,6 @@ FLStock_to_FLBiolcpp_and_FLFishery <- function(fls){
 }
 
 fwder <- function(fls,  ctrl, sr, sr.residuals = FLQuant(1, dimnames=dimnames(fls@stock)), sr.residuals.mult = TRUE){
-
     # Turn fls into an FLBiolCpp and FLFishery
     bits <- FLStock_to_FLBiolcpp_and_FLFishery(fls)
 
@@ -85,7 +106,16 @@ fwder <- function(fls,  ctrl, sr, sr.residuals = FLQuant(1, dimnames=dimnames(fl
     flfs <- FLFisheries(fishery = bits$flf)
     flfs@desc <- "Season of the Witch"
 
-    # Sort out control - add FCB
+    # Sort out control
+    # Correct years to indices
+    year_index <- ctrl@target$year - min(as.numeric(dimnames(fls@stock)$year)) + 1
+    # Add minAge and maxAge from fbar range
+    frows <- ctrl@target$quant == "f"
+    ctrl@target[frows,"minAge"] <- fls@range["minfbar"]
+    ctrl@target[frows,"maxAge"] <- fls@range["maxfbar"]
+    # add FCB
+    ctrl@target$year <- year_index
+
     FCB <- array(c(1,1,1), dim=c(1,3))
     colnames(FCB) <- c("F","C","B")
     attr(ctrl, "FCB") <- FCB
@@ -102,12 +132,13 @@ fwder <- function(fls,  ctrl, sr, sr.residuals = FLQuant(1, dimnames=dimnames(fl
     fls@discards <- discards(flc_out)
     fls@discards.n <- discards.n(flc_out)
     # wts, m, mat, *.spwn are the same
-    fls@harvest
+    # Need to calc F
+    fls@harvest <- calc_F(flc_out, out$om$biols[[1]], out$om$fisheries[[1]]@effort)
+    units(fls@harvest) <- "f"
 
     # from biol
-    fls@stock 
-    fls@stock.n 
-    
+    fls@stock.n <- out$om$biols[[1]]@n
+    fls@stock <- quantSums(fls@stock.n * fls@stock.wt)
 
     return(fls)
 }
