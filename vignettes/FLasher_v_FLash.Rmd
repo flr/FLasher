@@ -11,10 +11,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-This document compares the output of **FLash** and **FLasher** FLR packages for a series of different projections.
+This document compares the output of the the **FLash** and **FLasher** FLR packages for a series of different projections.
 The aim is to identify any differences in their output.
 
-The projections are based on a single fleet fishing a single fish stock (this is what **FLash** does).
+The projections are based on a single fleet fishing a single fish stock (this is what **FLash** does) using an *FLStock* object.
 
 ## Basic setup
 
@@ -24,6 +24,44 @@ Load the libraries.
 library(FLasher)
 library(FLash)
 library(FLAssess)
+```
+
+The outputs of **FLash** and **FLasher** will be compared using the following function.
+This compares the predicted landings, discards, F and stock abundance.
+
+```{r compfunc, echo=FALSE}
+flash_flasher_comp <- function(flash, flasher, proj_years){
+    # Compare landings.n, discards.n and catch.n
+    landingsn_diff <- mean(landings.n(flash)[,ac(proj_years)] -
+        landings.n(flasher)[,ac(proj_years)])
+    discardsn_diff <- mean(discards.n(flash)[,ac(proj_years)] -
+        discards.n(flasher)[,ac(proj_years)])
+    catchn_diff <- mean(catch.n(flash)[,ac(proj_years)] -
+        catch.n(flasher)[,ac(proj_years)])
+    # Compare landings.wt, discards.wt and catch.wt
+    landingswt_diff <- mean(landings.wt(flash)[,ac(proj_years)] -
+        landings.wt(flasher)[,ac(proj_years)])
+    discardswt_diff <- mean(discards.wt(flash)[,ac(proj_years)] -
+        discards.wt(flasher)[,ac(proj_years)])
+    catchwt_diff <- mean(catch.wt(flash)[,ac(proj_years)] -
+        catch.wt(flasher)[,ac(proj_years)])
+    # Compare landings, discards and catch
+    landings_diff <- mean(landings(flash)[,ac(proj_years)] -
+        landings(flasher)[,ac(proj_years)])
+    discards_diff <- mean(discards(flash)[,ac(proj_years)] -
+        discards(flasher)[,ac(proj_years)])
+    catch_diff <- mean(catch(flash)[,ac(proj_years)] -
+        catch(flasher)[,ac(proj_years)])
+    # F
+    f_diff <- mean((harvest(flasher) - harvest(flash))[,ac(proj_years)])
+    # N 
+    n_diff <- mean(stock.n(flash)[,ac(proj_years)] - stock.n(flasher)[,ac(proj_years)])
+    out <- signif(c(CatchN = catchn_diff, LandingsN = landingsn_diff, DiscardsN = discardsn_diff,
+            CatchWt = catchwt_diff, LandingsWt = landingswt_diff, DiscardsWt = discardswt_diff,
+            Catch = catch_diff, Landings = landings_diff, Discards = discards_diff,
+            F = f_diff, N = n_diff),3)
+    return(out)
+}
 ```
 
 The projections are based on the *ple4* data set.
@@ -41,126 +79,193 @@ ple4.sr <- fmle(as.FLSR(ple4, model=model))
 
 **FLash** uses *FLStock* objects for the projections. **FLasher** uses *FLFisheries* and *FLBiols* objects. However, the projection method for **FLasher** is able to take and return an *FLStock* making it easy to run comparisons between the packages.
 
-## Simple projections
-
-Here we run very simple projections based on catch, landings and discards targets.
-The projected objects only have 1 iteration and there is no stochasticity.
-
 We set up a projection three years into the future:
 
 ```{r landings_target}
 ple4_stf <- stf(ple4, 3)
 ```
 
-### Landings target
+## A first projection
 
-#### Running the projections
-
-In the first example we set up a 3 year projection from 2009 with a landings target.
+Here we run simple catch based projection and compare the results in detail.
 
 ```{r landings_target}
-landings_target <- seq(from=48000, to=45000, length=3)
+catch_target <- 90000
 ```
 
 The **FLash** control object is set up as:
 
-```{r simple_flash_landings_control}
+```{r simple_flash_catch_control}
 flash_ctrl_target <- data.frame(year = 2009:2011,
-			  quantity = "landings",
-			  val = landings_target)
+			  quantity = "catch",
+			  val = catch_target)
 flash_ctrl <- FLash::fwdControl(flash_ctrl_target)
 ```
 
-The **FLasher** control object is also set up. This needs slightly more work at the moment.
+The **FLasher** control object is also set up. Note that some of the arguments have different names.
 
 ```{r flasher_trgt}
-flasher_ctrl_target <- data.frame(year = 2009:2011, season = 1,
-                        quant = "landings", order = 1:3, value = landings_target,
-                        fishery = 1, catch = 1, biol = NA)
+flasher_ctrl_target <- data.frame(year = 2009:2011,
+                        quant = "catch", order = 1:3,
+                        value = catch_target)
 flasher_ctrl <- FLasher::fwdControl(flasher_ctrl_target)
 ```
 
+The messages about finding more than one class of *fwdControl* comes from having loaded both **FLasher** and **FLash** and can be ignored.
+
 We run the **FLash** projection using:
 
-```{r simple_landings_fwd, results="hide"}
+```{r simple_catch_fwd, results="hide"}
 flash_stf <- FLash::fwd(ple4_stf, flash_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
 We run the **FLasher** projection using:
 
-```{r simple_landings_FLasher_run, results="hide", message=FALSE}
+```{r simple_catch_FLasher_run, results="hide", message=FALSE}
 flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
-The message about finding more than one class of *fwdControl* comes from having loaded both **FLasher** and **FLash** and can be ignored.
-
-
-#### Comparing the outputs
-
 Have the targets been hit in the projection years 2009 to 2011?
 
-```{r compl1}
+```{r}
+catch_target
+catch(flash_stf)  [,ac(2009:2011)]
+catch(flasher_stf)[,ac(2009:2011)]
+```
+
+Both **FLasher** and **FLash** have hit the target.
+Are the returned *FLStock* objects from **FLasher** and **FLash** the same?
+
+One important difference between **FLasher** and **FLash** is how the mean catch weights are treated.
+With **FLash**, the mean catch weights are fixed when the projection is set up (here, using *stf()*).
+With **FLasher**, the mean catch weights are not fixed but are calculated from the landings and discards numbers and weights. The catch weights specified when the projection is set up is simply ignored.
+
+This means that the mean catch weights in the returned *FLStock* objects from **FLasher** and **FLash** may not be the same.
+For example, here the mean catch weights are slightly different (only the first year of the projection is shown):
+
+```{r}
+cbind(catch.wt(flash_stf)  [,ac(2009)], catch.wt(flasher_stf)[,ac(2009)])
+```
+
+We saw above that both packages hit the desired total catch target. As the mean catch weights are different, this means that the projected catch numbers are different.
+
+```{r}
+cbind(catch.n(flash_stf)  [,ac(2009)], catch.n(flasher_stf)[,ac(2009)])
+```
+
+The projected total landings and discards are also different.
+As the mean landings and discards are the same (they are fixed), it means that the projected landings and discards numbers at age are different.
+
+```{r}
 landings(flash_stf)  [,ac(2009:2011)]
 landings(flasher_stf)[,ac(2009:2011)]
+discards(flash_stf)  [,ac(2009:2011)]
+discards(flasher_stf)[,ac(2009:2011)]
 ```
 
-Is the catch information (landings and discards by age) the same? We look at the differences in the projection years.
+As we have different catch numbers but the same starting stock abundances (in 2008) the projected fishing mortality and stock abundances are also different.
 
-```{r compc1}
-landings.n(flash_stf)[,ac(2009:2011)] -
-    landings.n(flasher_stf)[,ac(2009:2011)]
-discards.n(flash_stf)[,ac(2009:2011)] -
-    discards.n(flasher_stf)[,ac(2009:2011)]
+```{r}
+fbar(flash_stf)  [,ac(2009:2011)]
+fbar(flasher_stf)[,ac(2009:2011)]
+stock(flash_stf)  [,ac(2009:2011)]
+stock(flasher_stf)[,ac(2009:2011)]
 ```
 
-When **FLash** is projecting it is attempting to find the scalar multiplier for each target that is applied to the existing values for fishing mortality (F).
-**FLasher** finds the level of effort necessary to hit the targets and F is calculated internally base on the effort and stock catchability and selectivity.
-The *fwder()* functions calculates the final F based on the estimated effort values. These should be the same as the **Flash** values.
+The projected discard ratios from the two packages are the same
 
-```{r compf1}
-harvest(flasher_stf)[,ac(2009:2011)] - harvest(flash_stf)[,ac(2009:2011)]
+```{r}
+df_flash <- discards.n(flash_stf) / (discards.n(flash_stf) + landings.n(flash_stf))
+df_flasher <- discards.n(flasher_stf) / (discards.n(flasher_stf) + landings.n(flasher_stf))
+df_flash[,ac(2009:2011)]
+df_flasher[,ac(2009:2011)]
 ```
 
-Finally, we check the stock abundances.
-The impact of the landings target is not realised in the stock abundance until the following year. However, both **FLash** and **FLasher** update the stock abundance in the
-first projection year based on the F in the previous year. 
+And this discard ratio has been applied correctly:
 
-```{r }
-stock.n(flash_stf)[,ac(2009:2011)] - stock.n(flasher_stf)[,ac(2009:2011)]
+```{r}
+(catch.n(flash_stf) * df_flash)[,ac(2009)] - discards.n(flash_stf)[,ac(2009)]
+(catch.n(flasher_stf) * df_flasher)[,ac(2009)] - discards.n(flasher_stf)[,ac(2009)]
 ```
 
-#### Summarising the comparison
+We have seen that **FLash** and **FLasher** both hit the target but they have slightly different results.
+As mentioned above, this difference is driven by **FLash** having fixed mean catch weights.
 
-```{r compfunc, echo=FALSE}
-flash_flasher_comp <- function(flash, flasher, proj_years){
-    # Compare landings.n and discards
-    landings_diff <- mean(landings.n(flash)[,ac(proj_years)] -
-        landings.n(flasher)[,ac(proj_years)])
-    discards_diff <- mean(discards.n(flash)[,ac(proj_years)] -
-        discards.n(flasher)[,ac(proj_years)])
-    # F
-    f_diff <- mean((harvest(flasher) - harvest(flash))[,ac(proj_years)])
-    # N 
-    n_diff <- mean(stock.n(flash)[,ac(proj_years)] - stock.n(flasher)[,ac(proj_years)])
-    out <- c(Landings = landings_diff, Discards = discards_diff, F = f_diff, N = n_diff)
-    return(out)
-}
+The problem with fixed mean catch weights is that it breaks the internal consistency of the *FLStock* object.
+Here we calculate the mean catch weights from both packages using the projected landings and discards numbers and (fixed) weights.
+
+```{r}
+flash_cw <- (((landings.n(flash_stf) * landings.wt(flash_stf)) + (discards.n(flash_stf) * discards.wt(flash_stf))) / (landings.n(flash_stf) + discards.n(flash_stf)))
+flash_cw[,ac(2009:2011)]
+catch.wt(flash_stf)[,ac(2009:2011)]
+
+flasher_cw <- (((landings.n(flasher_stf) * landings.wt(flasher_stf)) + (discards.n(flasher_stf) * discards.wt(flasher_stf))) / (landings.n(flasher_stf) + discards.n(flasher_stf)))
+flasher_cw[,ac(2009:2011)]
+catch.wt(flasher_stf)[,ac(2009:2011)]
 ```
 
-To summarise the differences between the results from **FLasher** and **FLash** a function has been written that returns the mean differences between the:
+The above demonstrates that the fixed mean catch weights stored in the results from **FLash** do not reflect that the actual mean catch weights when calculated using the landings and discards. This means that the projections are not internally consistent.
+The historical object (1957 to 2008) also has this problem. This reflects the inconsistency in the available data. However, the projections should not be inconsistent.
+In this respect projections with **FLasher** can be considered to be an improvement on the projections with **FLash**.
 
-* landings numbers at age
-* discards numbers at age
-* F at age
-* stock abundance at age (in projection years)
+Unfortunately it makes comparing the results tricky.
+Using the comparison function defined above gives:
 
 ```{r comp1}
 flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
 ```
 
-Using this we can run further tests on **Flasher** and **Flash** and compare the results
+We can see that the mean landings and discards weights and total catch are the same, but all other metrics have some differences.
+
+These presence of these differences differences depends on the target type.
+
+## Simple projections
+
+Here we run very simple projections based on different target types.
+The projected objects only have 1 iteration and there is no stochasticity.
+
+### Landings target
+
+```{r landings_target}
+landings_target <- seq(from=48000, to=45000, length=3)
+
+flash_ctrl_target <- data.frame(year = 2009:2011,
+			  quantity = "landings",
+			  val = landings_target)
+flash_ctrl <- FLash::fwdControl(flash_ctrl_target)
+flash_stf <- FLash::fwd(ple4_stf, flash_ctrl, sr = list(model = model, params=params(ple4.sr)))
+
+flasher_ctrl_target <- data.frame(year = 2009:2011,
+                        quant = "landings", order = 1:3,
+                        value = landings_target)
+flasher_ctrl <- FLasher::fwdControl(flasher_ctrl_target)
+flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+```
+
+Have the targets been hit in the projection years 2009 to 2011?
+
+```{r compl1}
+landings_target
+landings(flash_stf)  [,ac(2009:2011)]
+landings(flasher_stf)[,ac(2009:2011)]
+```
+
+We can compare the returned *FLStock* objects using the function defined above.
+
+```{r comp1}
+flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
+```
+
+In this example we can see that the landings, discards and catch numbers, the total landings and discards, F and stock abundances are the same.  However, the mean catch weights and the total catches are different. These differences are driven by the catch weights being fixed in the **FLash** projection.
+
+This is another illustration of the lack of internal consistency in the **FLash** projection.
+In this example, the projected total catches do not equal the sum of the projected landings and discards.
+It would of course be possible to correct the mean catch weights and total catch after the projection, so long as total catch was not the target type.
 
 ### Mixing landings, discards and catch targets
+
+In this example we set a mix of landings, discards and catch targets in the 3 projection years.
+It's a pretty useless example but serves to illustrate that **FLash** and **FLasher** produce the same output.
 
 ```{r, results='hide', message=FALSE}
 target_values <- seq(from=10000, to=16000, length=3)
@@ -170,10 +275,9 @@ flash_ctrl_target <- data.frame(year = 2009:2011,
 flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
 flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl,sr = list(model = model, params=params(ple4.sr)))
 
-flasher_ctrl_target <- data.frame(year = 2009:2011, season = 1,
+flasher_ctrl_target <- data.frame(year = 2009:2011,
                         quant = c("landings","discards","catch"),
-                        order = 1:3, value = target_values,
-                        fishery = 1, catch = 1, biol = NA)
+                        order = 1:3, value = target_values)
 flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
 flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
@@ -182,12 +286,10 @@ Have the targets been hit?
 
 ```{r }
 target_values
-c(landings(flash_stf)[,ac(2009)],
-    discards(flash_stf)[,ac(2010)],
-    catch(flash_stf)[,ac(2011)])
-c(landings(flasher_stf)[,ac(2009)],
-    discards(flasher_stf)[,ac(2010)],
-    catch(flasher_stf)[,ac(2011)])
+# FLash
+c(landings(flash_stf)[,ac(2009)], discards(flash_stf)[,ac(2010)], catch(flash_stf)[,ac(2011)])
+# FLasher
+c(landings(flasher_stf)[,ac(2009)], discards(flasher_stf)[,ac(2010)], catch(flasher_stf)[,ac(2011)])
 ```
 
 We summarise the differences between the two packages:
@@ -201,7 +303,7 @@ flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
 Here we set an F target for each year of the projection.
 
 ```{r }
-target_fbar <- 0.3
+target_fbar <- c(0.3,0.2,0.1)
 
 flash_ctrl_target <- data.frame(year = 2009:2011,
 			  quantity = "f",
@@ -209,10 +311,9 @@ flash_ctrl_target <- data.frame(year = 2009:2011,
 flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
 flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl,sr = list(model = model, params=params(ple4.sr)))
 
-flasher_ctrl_target <- data.frame(year = 2009:2011, season = 1,
+flasher_ctrl_target <- data.frame(year = 2009:2011,
                         quant = "f",
-                        order = 1:3, value = target_fbar,
-                        fishery = 1, catch = 1, biol = 1)
+                        order = 1:3, value = target_fbar)
 flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
 flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
@@ -220,11 +321,12 @@ flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=par
 Have we hit the target?
 
 ```{r }
+target_fbar
 fbar(flash_stf)[,ac(2009:2011)]
 fbar(flasher_stf)[,ac(2009:2011)]
 ```
 
-The differences:
+Any differences?
 
 ```{r }
 flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
@@ -234,72 +336,125 @@ flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
 
 SSB measures the mass of the mature stock at the time of spawning.
 With **FLash** the timing of the SSB target depends on the *harvest.spwn* slot in the *FLStock* object.
-
+Both **FLash** and **FLasher** attempt to find the level of fishing pressure (F or effort) that will hit the desired target.
 If spawning occurs during or after the fishing period, the SSB target can be hit in that year.
-However, if spawning occurs before fishing starts then changing the fishing pressure will not affect the SSB in that year and so it is not possible to hit the target in that year. Instead the target is hit in the following year.
+However, if spawning occurs before fishing starts then changing the fishing pressure will not affect the SSB in that year and so it is not possible to hit the target in that year.
+In this case the target is hit in the following year.
 
-In this first example, the *harvest.spwn* and *m.spwn* slots have a value of 0, i.e. spawning happens before any natural mortality or fishing takes place.
+#### Example when spawning occurs after the fishing period
 
+In this example, the *harvest.spwn* and *m.spwn* slots have a value of 0.5, i.e. half of years natural and fishing mortality happens before spawning takes place.
 
 ```{r }
-target_ssb <- c(180000, 150000, 150000)
+ple4_stf@harvest.spwn[] <- 0.5
+ple4_stf@m.spwn[] <- 0.5
+```
+
+We run a three year projection, trying to hit an SSB target in each year.
+
+With **FLash**:
+
+```{r }
+target_ssb <- c(180000, 170000, 160000)
+flash_ctrl_target <- data.frame(year = 2009:2011,
+			  quantity = "ssb",
+			  val = target_ssb)
+flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
+flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl,sr = list(model = model, params=params(ple4.sr)))
+
+flasher_ctrl_target <- data.frame(year = 2009:2011,
+                        quant = "ssb",
+                        order = 1:3, value = target_ssb)
+flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
+flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+```
+
+Have the targets been hit in their projection years?
+
+```{r }
+target_ssb
+ssb(flash_stf)[,ac(2009:2011)]
+ssb(flasher_stf)[,ac(2009:2011)]
+```
+
+Any differences?
+
+```{r }
+flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
+```
+
+#### Example when spawning occurs before the fishing period
+
+If the spawning occurs before the fisbing period, then changing the fishing pressure will not affect the SSB in that year.
+This means that we cannot hit the target by changing the fishing pressure in that year.
+
+In this example, the *harvest.spwn* and *m.spwn* slots have a value of 0, i.e. spawning happens before any natural mortality or fishing takes place.
+
+```{r }
 ple4_stf@harvest.spwn[] <- 0
 ple4_stf@m.spwn[] <- 0
+```
 
+First we run the **FLash** projection:
+
+```{r }
+target_ssb <- c(180000, 170000, 160000)
 flash_ctrl_target <- data.frame(year = 2009:2011,
 			  quantity = "ssb",
 			  val = target_ssb)
 flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
 flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl,sr = list(model = model, params=params(ple4.sr)))
 ```
-Here, the SSB target is hit in the following year as it is not possible to hit it in the current year.
-The SSB in the first forecast year (2009) is based on the exising F in the previous year (2008).
+
+**FLash** reports an error ("Error:LUFactorisation...") but still returns an object.
+The error is caused by trying to hit the SSB target in the 2012 which is outside the range of our object.
 
 ```{r }
-ssb(flash_stf)[,ac(2009:2011)]
-fbar(flash_stf)[,ac(2009:2011)]
-```
-
-**FLasher** has the same behaviour.
-
-```{r }
-flasher_ctrl_target <- data.frame(year = 2009:2011, season = 1,
+flasher_ctrl_target <- data.frame(year = 2009:2011,
                         quant = "ssb",
-                        order = 1:3, value = target_ssb,
-                        fishery = NA, catch = NA, biol = 1)
+                        order = 1:3, value = target_ssb)
 flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
 flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
-PROBLEM WITH TIMING - IN EVAL_OM DON'T JUST CRASH - RETIRE GRACEFULLY
+**Flasher** reports a warning about trying to calculate SRP in a timstep outside the range of your object.
+This is also caused by trying to hit the SSB target in the 2012.
+**FLasher** still returns an object.
 
-If we set the *harvest.spwn* slot to 0.25 (implying a quarter of the fishing mortality in that year happens before spawning) and the *m.spwn* slot to 0.5 (implying that spawning happens half way through the year as natural mortality is continuous all year) then we can hit the SSB target in the required year.
+Did we hit the targets?
 
 ```{r }
-ple4_stf@harvest.spwn[] <- 0.25
-ple4_stf@m.spwn[] <- 0.5
-flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl,sr = list(model = model, params=params(ple4.sr)))
+target_ssb
 ssb(flash_stf)[,ac(2009:2011)]
-fbar(flash_stf)[,ac(2009:2011)]
-```
-
-**FLasher** has the same behaviour.
-
-```{r }
-flasher_ctrl_target <- data.frame(year = 2009:2011, season = 1,
-                        quant = "ssb",
-                        order = 1:3, value = target_ssb,
-                        fishery = NA, catch = NA, biol = 1)
-flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
-flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ssb(flasher_stf)[,ac(2009:2011)]
+```
+
+Here, the first SSB target is hit in the second year of the forecast as it is not possible to hit it in the first year.
+The SSB in the first forecast year (2009) is based on the exising F in the previous year (2008).
+The second SSB target is hit in the final year of the projection.
+
+Both **FLasher** and **FLash** try to hit the final SSB target in 2012 but are unable to as the objects only go to 2011.
+There is a difference between **FLash** and **FLasher** in how they handle the attempt to hit a target beyond the range of the object.
+This can be seen in the projected Fs
+
+```{r }
+fbar(flash_stf)[,ac(2009:2011)]
 fbar(flasher_stf)[,ac(2009:2011)]
 ```
 
+In both cases all metrics that are derived from fishing pressure (e.g. landings, discards, F etc) in the final year should be ignored and only the stock abundances considered.
 
+We just compare the first two years of the projection:
 
+```{r }
+flash_flasher_comp(flash_stf, flasher_stf, 2009:2010)
+```
 
 ## Min and max targets
+
+Both **FLash** and **FLasher** can place bounds on some metrics when attempting to hit targets.
+
+### Maximum target
 
 Here we project with a landings target but with a maximum limit on discards.
 We still use a single iteration without stochasticity.
@@ -307,8 +462,8 @@ We still use a single iteration without stochasticity.
 The same target and maximum limit is applied in all years.
 
 ```{r }
-landings_target <- 90000
-discards_max <- 40000
+landings_target <- 30000
+discards_max <- 20000
 ```
 
 The **FLash** projection:
@@ -325,128 +480,201 @@ flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl, ple4.sr)
 The **FLasher** projection:
 
 ```{r, results="hide", message=FALSE}
-flasher_ctrl_target <- data.frame(year = rep(2009:2011, each=2), season = 1,
+flasher_ctrl_target <- data.frame(year = rep(2009:2011, each=2),
                         quant = rep(c("landings", "discards"), 3), order = 1:6,
                         value = rep(c(landings_target, NA), 3),
-                        max = rep(c(NA, discards_max), 3),
-                        fishery = 1, catch = 1, biol = NA)
+                        max = rep(c(NA, discards_max), 3))
 flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
 flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
 Have the targets been hit and the limits respected?
+The landings target is possible only in 2010 and 2011. In 2009 the discards limit has been reached and consequently restricts the landings.
 
 ```{r}
-landings(flasher_stf)[,ac(2009:2011)]
+landings_target
+discards_max
 landings(flash_stf)[,ac(2009:2011)]
-discards(flasher_stf)[,ac(2009:2011)]
 discards(flash_stf)[,ac(2009:2011)]
+landings(flasher_stf)[,ac(2009:2011)]
+discards(flasher_stf)[,ac(2009:2011)]
 ```
 
 Are the **FLash** and **FLasher** objects the same?
 
 ```{r}
-flash_flasher_comp(flash_ple4, flasher_ple4, 1958:1962)
+flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
+```
+
+### Minimum target
+
+Here we set a landings target with a minimum SSB restriction.
+To avoid the additional time shifting complications when spawning takes place before fishing, *harvest.spwn* and *m.spwn* will be set to 0.5.
+
+```{r }
+ple4_stf@harvest.spwn[] <- 0.5
+ple4_stf@m.spwn[] <- 0.5
+```
+
+```{r }
+landings_target <- 100000
+ssb_min<- 150000
+```
+
+The **FLash** projection:
+
+```{r }
+flash_ctrl_target <- data.frame(year = rep(2009:2011, each=2),
+			  quantity = rep(c("landings", "ssb"), 3),
+			  val = rep(c(landings_target, NA), 3),
+			  min = rep(c(NA, ssb_min), 3))
+flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
+flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl, ple4.sr)
+```
+
+The **FLasher** projection:
+
+```{r, results="hide", message=FALSE}
+flasher_ctrl_target <- data.frame(year = rep(2009:2011, each=2),
+                        quant = rep(c("landings", "ssb"), 3), order = 1:6,
+                        value = rep(c(landings_target, NA), 3),
+                        min = rep(c(NA, ssb_min), 3),
+                        fishery = NA, catch = NA, biol = 1)
+flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
+flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+```
+
+What happened?
+
+```{r }
+landings_target
+ssb_min
+landings(flash_stf)[,ac(2009:2011)]
+ssb(flash_stf)[,ac(2009:2011)]
+landings(flasher_stf)[,ac(2009:2011)]
+ssb(flasher_stf)[,ac(2009:2011)]
+```
+
+Here the SSB limit has constrained the landings in 2010 and 2011.
+
+Are the **FLash** and **FLasher** objects the same?
+
+```{r}
+flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
 ```
 
 ## Relative targets
 
+**FLash** and **FLasher** are able to set relative targets.
 In this example we set the catches to be relative to the previous year.
-The relative target is 0.9.
+
+```{r}
+relative_target <- 0.9
+```
 
 The **FLash** projection:
 
 ```{r}
-flash_ctrl_target <- data.frame(year = 1958:1962,
+flash_ctrl_target <- data.frame(year = 2009:2011,
 			  quantity = "catch",
-			  val = 0.9, rel.year = 1957:1961)
+			  val = relative_target, rel.year = 2008:2010)
 flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
-flash_ple4 <- FLash:::fwd(ple4, flash_ctrl, ple4.sr)
-
+flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl, ple4.sr)
 ```
 
 The **FLasher** projection:
 
 ```{r, results="hide"}
-flasher_ctrl_target <- data.frame(year = 2:6, season = 1, timestep = 2:6,
-                        quantity = "catch", target = 1:15,
-                        value = 0.9,
-                        fishery = 1, catch = 1, biol = NA, 
-                        relFishery = 1, relCatch = 1, relBiol = NA,
-                        relYear = 1:5, relSeason = 1)
+flasher_ctrl_target <- data.frame(year = 2009:2011,
+                        relYear = 2008:2010,
+                        quant = "catch", order = 1:3,
+                        value = relative_target)
 flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
-attr(flasher_ctrl@target, "FCB") <- FCB
-flasher_ple4 <- test_operatingModel_run(om$fisheries, om$biol, flasher_ctrl, 1, 1e9)
+flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
-Are the relative catches correct?
+
+Are the catches correctly relative?
 
 ```{r}
-catch(flash_ple4)[,ac(1958:1962)] /
-    catch(flash_ple4)[,ac(1957:1961)]
-catch(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1958:1962)] /
-    catch(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1957:1961)]
+catch(flash_stf)[,ac(2009:2011)] /
+    catch(flash_stf)[,ac(2008:2010)]
+catch(flasher_stf)[,ac(2009:2011)] /
+    catch(flasher_stf)[,ac(2008:2010)]
 ```
 
 Are the **FLash** and **FLasher** objects the same?
 
 ```{r}
-flash_flasher_comp(flash_ple4, flasher_ple4, 1958:1962)
+flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
 ```
-
 
 ## Relative targets with limits
 
+It is possible to mix relative targets and limits.
 Here we increase catches by a relative amount each year, but set a maximum discards limit.
 
 The **FLash** projection:
 
 ```{r}
 discards_max <- 10000
-
-flash_ctrl_target <- data.frame(year = rep(1958:1962, each=2),
-			  quantity = rep(c("catch", "discards"), 5),
-			  val = rep(c(0.9, NA), 5),
-			  max = rep(c(NA, discards_max), 5),
-            rel.year = c(1957, NA, 1958, NA, 1959, NA, 1960, NA, 1961, NA))
+relative_catch <- 0.9
+flash_ctrl_target <- data.frame(year = rep(2009:2011, each=2),
+			  quantity = rep(c("catch", "discards"), 3),
+			  val = rep(c(relative_catch, NA), 3),
+			  max = rep(c(NA, discards_max), 3),
+            rel.year = c(2008, NA, 2009, NA, 2010, NA))
 flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
-flash_ple4 <- FLash:::fwd(ple4, flash_ctrl, ple4.sr)
+flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl, ple4.sr)
 ```
 
-The **FLasher** projection (control object is looking quite horrible):
+The **FLasher** projection:
 
 ```{r, results='hide'}
-flasher_ctrl_target <- data.frame(year = rep(2:6, each=2), season = 1,
-                        timestep = rep(2:6, each=2),
-                        quantity = rep(c("catch", "discards"), 5), target = 1:10,
-                        value = rep(c(0.9, NA), 5),
-                        max = rep(c(NA, discards_max), 5),
-                        fishery = 1, catch = 1, biol = NA, 
-                        relFishery = rep(c(1,NA),5),
-                        relCatch = rep(c(1,NA),5),
-                        relBiol = NA,
-                        relYear = c(1,NA,2,NA,3,NA,4,NA,5,NA),
-                        relSeason = rep(c(1,NA),5))
+flasher_ctrl_target <- data.frame(year = rep(2009:2011, each=2),
+                        relYear = c(2008, NA, 2009, NA, 2010, NA),
+                        quant = rep(c("catch", "discards"), 3),
+                        value = rep(c(relative_catch, NA), 3),
+                        max = rep(c(NA, discards_max), 3),
+                        order = c(1:6))
 flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
-attr(flasher_ctrl@target, "FCB") <- FCB
-flasher_ple4 <- test_operatingModel_run(om$fisheries, om$biol, flasher_ctrl, 1, 1e9)
+flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
-Relative targets have been hit, respecting the limits.
+Relative targets have been hit, respecting the limits:
 
 ```{r}
-discards(flash_ple4)[,ac(1958:1962)]
-catch(flash_ple4)[,ac(1958:1962)] /
-    catch(flash_ple4)[,ac(1957:1961)]
+discards(flash_stf)[,ac(2009:2011)]
+catch(flash_stf)[,ac(2009:2011)]
+catch(flash_stf)[,ac(2009:2011)] /
+    catch(flash_stf)[,ac(2008:2010)]
 
-discards(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1958:1962)]
-catch(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1958:1962)] /
-    catch(flasher_ple4[["fisheries"]][[1]][[1]])[,ac(1957:1961)]
+discards(flasher_stf)[,ac(2009:2011)]
+catch(flasher_stf)[,ac(2009:2011)]
+catch(flasher_stf)[,ac(2009:2011)] /
+    catch(flasher_stf)[,ac(2008:2010)]
+
+
+
+discards(flash_stf)[,ac(2009)]
+discards(flasher_stf)[,ac(2009)]
+catch(flash_stf)[,ac(2009)]
+catch(flasher_stf)[,ac(2009)]
+catch.n(flash_stf)[,ac(2009)] - catch.n(flasher_stf)[,ac(2009)]
+catch.wt(flash_stf)[,ac(2009)] - catch.wt(flasher_stf)[,ac(2009)]
+
+quantSums(catch.n(flash_stf)[,ac(2009)] * catch.wt(flash_stf)[,ac(2009)])
+quantSums(catch.n(flasher_stf)[,ac(2009)] * catch.wt(flasher_stf)[,ac(2009)])
+
+harvest(flash_stf)[,ac(2009)]
+harvest(flasher_stf)[,ac(2009)]
+
+
 ```
 
 And the objects are the same.
 
 ```{r}
-flash_flasher_comp(flash_ple4, flasher_ple4, 1958:1962)
+flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
 ```
 
 ## Projections with stochasticity

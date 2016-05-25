@@ -107,18 +107,42 @@ fwder <- function(fls,  ctrl, sr, sr.residuals = FLQuant(1, dimnames=dimnames(fl
     flfs@desc <- "Season of the Witch"
 
     # Sort out control
+    # Overwrite fishery, catch and biol columns to reflect that we have only one biol being fished by one catch
+    # This saves having to set it in the control object before sending to fwder
+    ctrl@target$fishery <- as.integer(NA)
+    ctrl@target$catch <- as.integer(NA)
+    ctrl@target$biol <- 1L
     # Correct years to indices
     year_index <- ctrl@target$year - min(as.numeric(dimnames(fls@stock)$year)) + 1
+    ctrl@target$year <- year_index
+    # Fix seasons if necessary
+    nseason <- dim(stock(fls))[4]
+    if (nseason == 1){
+        ctrl@target$season <- 1L
+    }
+    # Fix indices of relative years and seasons
+    rel_year_index <- ctrl@target$relYear - min(as.numeric(dimnames(fls@stock)$year)) + 1
+    ctrl@target$relYear <- rel_year_index
+    rel_year_rows <- !is.na(ctrl@target$relYear)
+    if (nseason == 1){
+        ctrl@target$relSeason[rel_year_rows] <- 1L
+    }
+    # Force relFishery and relCatch to be NA and relBiol to be 1 (reflects that we have only one biol being fished by one catch)
+    ctrl@target$relFishery[rel_year_rows] <- as.integer(NA)
+    ctrl@target$relCatch[rel_year_rows] <- as.integer(NA)
+    ctrl@target$relBiol[rel_year_rows] <- 1L
     # Add minAge and maxAge from fbar range
     frows <- ctrl@target$quant == "f"
     ctrl@target[frows,"minAge"] <- fls@range["minfbar"]
     ctrl@target[frows,"maxAge"] <- fls@range["maxfbar"]
     # add FCB
-    ctrl@target$year <- year_index
-
     FCB <- array(c(1,1,1), dim=c(1,3))
     colnames(FCB) <- c("F","C","B")
     attr(ctrl, "FCB") <- FCB
+    # Reorder ctrl@target by order
+    ctrl_order <- order(ctrl@target$order)
+    ctrl@target <- ctrl@target[ctrl_order,]
+    ctrl@iters <- ctrl@iters[ctrl_order,,,drop=FALSE]
 
     # Call FLasher run()
     out <- test_operatingModel_run2(flfs, biols, ctrl, effort_mult_initial = 1.0, indep_min = 0.0, indep_max = 1e12, nr_iters = 50)
@@ -127,6 +151,7 @@ fwder <- function(fls,  ctrl, sr, sr.residuals = FLQuant(1, dimnames=dimnames(fl
     flc_out <- out$om$fisheries[[1]][[1]]
     fls@catch <- catch(flc_out)
     fls@catch.n <- catch.n(flc_out)
+    fls@catch.wt <- catch.wt(flc_out) # Needs to be updated too for internal consistency - calculated by FLasher and in FLCatch
     fls@landings <- landings(flc_out)
     fls@landings.n <- landings.n(flc_out)
     fls@discards <- discards(flc_out)
@@ -135,7 +160,6 @@ fwder <- function(fls,  ctrl, sr, sr.residuals = FLQuant(1, dimnames=dimnames(fl
     # Need to calc F
     fls@harvest <- calc_F(flc_out, out$om$biols[[1]], out$om$fisheries[[1]]@effort)
     units(fls@harvest) <- "f"
-
     # from biol
     fls@stock.n <- out$om$biols[[1]]@n
     fls@stock <- quantSums(fls@stock.n * fls@stock.wt)

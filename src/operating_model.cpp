@@ -894,7 +894,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             double spwn_ts = biols(biol_no).spwn()(1,indices_min[1],1,indices_min[3],1,1);
             // If NA
             if (Rcpp::NumericVector::is_na(spwn_ts)){
-                Rcpp::stop("In OM eval_om. Asking for SSB / SRP target but Biol.spwn in the first timestep is NA\n");
+                Rcpp::stop("In OM eval_om. Asking for SSB / SRP target but Biol.spwn is NA in the requested timestep.\n");
             }
             if (spwn_ts > 0){
                 // All is good - get SRP in current timestep
@@ -909,7 +909,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
                 }
                 // Keep a copy of the original spwn
                 FLQuant spwn_orig = biols(biol_no).spwn();
-                // Set spwn to 0 - how can we do this if const?
+                // Set spwn to 0 - this means that the eval_om method is no longer const
                 biols(biol_no).spwn().fill(0.0);
                 // Bump min and max timestep by one and get SRP next timestep - they are the same
                 unsigned int timestep = 0;
@@ -921,16 +921,17 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
                 // Is timestep too big for dims
                 unsigned int max_timestep = biol_dim[1] * biol_dim[3];
                 if (timestep > max_timestep){
-                    Rcpp::warning("In OM eval_om. Evaluating SRP in following timestep. Trying to get SRP outside timerange range of Biol\n");
-
-// Do something to set NAs or something which has no affect on solver - or tell solver to not go there
-
+                    //Rcpp::stop("In OM eval_om. Evaluating SRP in following timestep. Trying to get SRP outside timerange range of Biol. If you want to do this you need to increase the time range of your objects.\n");
+                    Rcpp::warning("In OM eval_om. Evaluating SRP in following timestep. Trying to get SRP outside timerange range of Biol. If you want to do this you need to increase the time range of your objects. Returning 0s\n");
+                    FLQuantAD out0(indices_max5[0]-indices_min5[0]+1, indices_max5[1]-indices_min5[1]+1, indices_max5[2]-indices_min5[2]+1, indices_max5[3]-indices_min5[3]+1, indices_max5[4]-indices_min5[4]+1, indices_max5[5]-indices_min5[5]+1);
+                    out0.fill(0.0);
+                    out = out0;
                 }
-                out = unit_sum(srp(biol_no, indices_min5, indices_max5));
+                else{
+                    out = unit_sum(srp(biol_no, indices_min5, indices_max5));
+                }
                 // Reset the spwn member
-                // How is method allowed to be const when I can do this?
                 biols(biol_no).spwn() = spwn_orig;
-                //biols(biol_no).spwn().fill(0.5);
             }
         break;
     }
