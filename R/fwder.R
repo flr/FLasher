@@ -88,7 +88,7 @@ fwder <- function(fls,  ctrl, sr, sr.residuals = FLQuant(1, dimnames=dimnames(fl
     # sr is a list with:
     # model = model name
     # params = FLPar of params
-    srr_params <- as.FLQuant(sr$params)
+    srr_params <- as(sr$params,"FLQuant")
     # srr residuals must have the same size as the fls (iters 1 or n)
     dms <- dimnames(fls@stock)
     sr.residuals <- window(sr.residuals, start=min(as.numeric(dms$year)), end=max(as.numeric(dms$year)))
