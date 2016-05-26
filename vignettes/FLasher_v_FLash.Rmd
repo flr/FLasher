@@ -679,7 +679,7 @@ flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
 
 ### Relative targets with relative limits
 
-In this example we attempt to decrease F by the same amount each year but we also constrain this by the amount landings is allowed to change each year by adding relative min and max limits.
+In this example we attempt to change F by a relative amount but we also constrain this through the amount landings is allowed to change each year by adding relative min and max limits.
 The relative F values are deliberately extreme to trigger the limits.
 
 
@@ -715,7 +715,8 @@ flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=par
 ```
 
 What happened?
-
+The relative F target was only hit in the second year of the projection.
+The required changes in landings with the F target were higher than the limits imposed in the first and final year.
 
 ```{r, results='hide'}
 fbar(flash_stf)[,ac(2009:2011)] / fbar(flash_stf)[,ac(2008:2010)]
@@ -723,6 +724,12 @@ landings(flash_stf)[,ac(2009:2011)] / landings(flash_stf)[,ac(2008:2010)]
 
 fbar(flasher_stf)[,ac(2009:2011)] / fbar(flasher_stf)[,ac(2008:2010)]
 landings(flasher_stf)[,ac(2009:2011)] / landings(flasher_stf)[,ac(2008:2010)]
+```
+
+The **FLash** and **FLasher** results are the same (ignoring total catch and mean catch weights).
+
+```{r}
+flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
 ```
 
 
@@ -753,17 +760,10 @@ The stock recruitment relationship is still deterministic, as are the target val
 We add stochasticity to the initial stock abundances and meand landings and discard weights. 
 
 ```{r }
-new_n <- stock.n(ple4p_stf)
-new_n <- new_n * rnorm(prod(dim(new_n)), mean=1, sd=0.1)
-stock.n(ple4p_stf) <- new_n
-
-new_wt <- landings.wt(ple4p_stf)
-new_wt <- new_wt * rnorm(prod(dim(new_wt)), mean=1, sd=0.1)
-landings.wt(ple4p_stf) <- new_wt
-
-new_wt <- discards.wt(ple4p_stf)
-new_wt <- new_wt * rnorm(prod(dim(new_wt)), mean=1, sd=0.1)
-discards.wt(ple4p_stf) <- new_wt
+stock.n(ple4_stf) <- rnorm(niters, mean=stock.n(ple4_stf), sd=100)
+stock.wt(ple4_stf) <- rnorm(niters, mean=stock.wt(ple4_stf), sd=0.01)
+landings.wt(ple4_stf) <- rnorm(niters, mean=landings.wt(ple4_stf), sd=0.01)
+discards.n(ple4_stf) <- rnorm(niters, mean=discards.wt(ple4_stf), sd=0.01)
 ```
 
 We project for 3 years with a simple landings target.
@@ -965,11 +965,75 @@ And the ouput is the same (apart from the total catch and mean catch weights).
 flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
 ```
 
-## The 'Wedding Cake' example
+## The 'Massive Cake' example
 
-This is a complicated example where we have a relative F target with a maximum allowable change in the landings.
+In this example we combine many of the above features into a longer term projection.
+The projection tries to hit a fixed F target (i.e. FMSY) but the landings are not allowed to change by more than 15% each year.
 
-all sources of stochasticity, plus
+Stochasticity is included through multiple iterations in the stock object, variability in the SRR parameters, SRR residuals and iterations in the F target values.
+
+The SRR is a Ricker (a Beverton-Holt was used in the previous projections).
+
+We start the entire process from scratch.
+
+
+Generate the first we propagate the original stock object to have multiple iterations, add noise to those iterations, then fit a separate SRR for each iteration (takes time):
+
+```{r }
+niters <- 10
+ple4p <- propagate(ple4, niters)
+stock.n(ple4p) <- rnorm(niters, mean=stock.n(ple4), sd=100)
+stock.wt(ple4p) <- rnorm(niters, mean=stock.wt(ple4), sd=0.01)
+landings.wt(ple4p) <- rnorm(niters, mean=landings.wt(ple4), sd=0.01)
+discards.wt(ple4p) <- rnorm(niters, mean=discards.wt(ple4), sd=0.01)
+# Fit the SRR - have a cup of tea while it does it...
+model <- "ricker"
+ple4.sr <- fmle(as.FLSR(ple4p, model=model), control=list(trace=0))
+residuals <- FLQuant(NA, dimnames=list(year=proj_years, iter=1:niters))
+# Need to keep iters distinct
+for (i in 1:niters){
+    iter(residuals,i)[] <- sample(c(exp(iter(residuals(ple4.sr),i))), prod(dim(iter(residuals,i))), replace=TRUE)
+}
+
+
+```
+
+Set up the stock object for the projections:
+
+```{r }
+nyears <- 12
+proj_years <- 2008 + (1:nyears)
+ple4p_mtf <- stf(ple4p, nyears)
+```
+Set up the control objects. Ideally FMSY would be calculated using FLBRP. To keep things simple here we just make up some values.
+
+```{r }
+fmsy <- rlnorm(niters, mean=log(0.2), sd=0.1)
+max_relative_landings <- 1.15
+min_relative_landings <- 0.85
+rel_years <- rep(proj_years-1,each=2)
+rel_years[c(TRUE,FALSE)] <- NA
+
+# FLash
+flash_ctrl_target <- data.frame(year = rep(proj_years, each=2),
+                    quantity = rep(c("f", "landings"), nyears),
+                    val = rep(c(fmsy[1], NA), nyears),
+                    max = rep(c(NA, max_relative_landings), nyears),
+                    min = rep(c(NA, min_relative_landings), nyears),
+                    rel.year = rel_years)
+flash_ctrl <- FLash::fwdControl(flash_ctrl_target, iters=niters)
+# This is hard work!
+new_trgtArray <- array(NA, dim=c(nyears*2,3,niters), dimnames=list(1:(nyears*2), c("min","val","max"), iter=1:niters))
+new_trgtArray[c(TRUE,FALSE),"val",] <- rep(fmsy,each=nyears)
+new_trgtArray[c(FALSE,TRUE),"min",] <- min_relative_landings
+new_trgtArray[c(FALSE,TRUE),"max",] <- max_relative_landings
+flash_ctrl@trgtArray <- new_trgtArray
+flash_mtf <- FLash::fwd(ple4p_mtf, flash_ctrl, sr = list(model = model, params=params(ple4.sr)), sr.residuals=residuals, sr.residuals.mult=TRUE)
+
+# FLasher
+
+
+```
 
 
 
