@@ -1,13 +1,15 @@
----
-title: "FLasher vs FLash"
-author: "Finlay Scott and Iago Mosqueira"
-date: "28 April, 2016"
-output: pdf_document 
----
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{Comparing FLash and FLasher outputs}
+-->
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+# FLasher vs FLash
+
+Finlay Scott and Iago Mosqueira
 
 ## Introduction
 
@@ -81,7 +83,7 @@ ple4.sr <- fmle(as.FLSR(ple4, model=model))
 
 We set up a projection three years into the future:
 
-```{r landings_target}
+```{r }
 ple4_stf <- stf(ple4, 3)
 ```
 
@@ -89,7 +91,7 @@ ple4_stf <- stf(ple4, 3)
 
 Here we run simple catch based projection and compare the results in detail.
 
-```{r landings_target}
+```{r }
 catch_target <- 90000
 ```
 
@@ -220,7 +222,7 @@ In this respect projections with **FLasher** can be considered to be an improvem
 
 Using the comparison function defined above gives:
 
-```{r comp1}
+```{r }
 flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
 ```
 We can see that the mean landings and discards weights and total catch are the same, but all other metrics have some differences.
@@ -235,7 +237,7 @@ The projected objects only have 1 iteration and there is no stochasticity.
 
 ### Landings target
 
-```{r landings_target}
+```{r }
 landings_target <- seq(from=48000, to=45000, length=3)
 
 flash_ctrl_target <- data.frame(year = 2009:2011,
@@ -261,7 +263,7 @@ landings(flasher_stf)[,ac(2009:2011)]
 
 We can compare the returned *FLStock* objects using the function defined above.
 
-```{r comp1}
+```{r }
 flash_flasher_comp(flash_stf, flasher_stf, 2009:2011)
 ```
 
@@ -980,7 +982,7 @@ We start the entire process from scratch.
 Generate the first we propagate the original stock object to have multiple iterations, add noise to those iterations, then fit a separate SRR for each iteration (takes time):
 
 ```{r }
-niters <- 10
+niters <- 250
 ple4p <- propagate(ple4, niters)
 stock.n(ple4p) <- rnorm(niters, mean=stock.n(ple4), sd=100)
 stock.wt(ple4p) <- rnorm(niters, mean=stock.wt(ple4), sd=0.01)
