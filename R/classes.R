@@ -58,7 +58,6 @@ qlevels <-  c('f', 'catch', 'ssb', 'biomass', 'landings', 'discards', 'tsb', 're
 #'
 #' show(fwe)
 
-
 setClass('fwdElement',
 
   # REPRESENTATION
