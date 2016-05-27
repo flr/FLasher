@@ -910,7 +910,7 @@ landings_target_stoch <- rnorm(niters*length(landings_target), mean=landings_tar
 flash_ctrl_target <- data.frame(year = 2009:2011,
 			  quantity = "landings",
 			  val = landings_target)
-flash_ctrl <- FLash::fwdControl(flash_ctrl_target, iters=niters)
+flash_ctrl <- FLash::fwdControl(flash_ctrl_target)
 new_trgtArray <- array(NA, dim=c(3,3,niters), dimnames=list(1:3, c("min","val","max"), iter=1:niters))
 new_trgtArray[,"val",] <- landings_target_stoch
 flash_ctrl@trgtArray <- new_trgtArray
@@ -989,22 +989,21 @@ discards.wt(ple4p) <- rnorm(niters, mean=discards.wt(ple4), sd=0.01)
 # Fit the SRR - have a cup of tea while it does it...
 model <- "ricker"
 ple4.sr <- fmle(as.FLSR(ple4p, model=model), control=list(trace=0))
+```
+
+Set up the stock object for the projections and the residuals from the SRR:
+
+```{r }
+nyears <- 22
+proj_years <- 2008 + (1:nyears)
+ple4p_mtf <- stf(ple4p, nyears)
 residuals <- FLQuant(NA, dimnames=list(year=proj_years, iter=1:niters))
 # Need to keep iters distinct
 for (i in 1:niters){
     iter(residuals,i)[] <- sample(c(exp(iter(residuals(ple4.sr),i))), prod(dim(iter(residuals,i))), replace=TRUE)
 }
-
-
 ```
 
-Set up the stock object for the projections:
-
-```{r }
-nyears <- 12
-proj_years <- 2008 + (1:nyears)
-ple4p_mtf <- stf(ple4p, nyears)
-```
 Set up the control objects. Ideally FMSY would be calculated using FLBRP. To keep things simple here we just make up some values.
 
 ```{r }
@@ -1021,21 +1020,71 @@ flash_ctrl_target <- data.frame(year = rep(proj_years, each=2),
                     max = rep(c(NA, max_relative_landings), nyears),
                     min = rep(c(NA, min_relative_landings), nyears),
                     rel.year = rel_years)
-flash_ctrl <- FLash::fwdControl(flash_ctrl_target, iters=niters)
+flash_ctrl <- FLash::fwdControl(flash_ctrl_target)
 # This is hard work!
 new_trgtArray <- array(NA, dim=c(nyears*2,3,niters), dimnames=list(1:(nyears*2), c("min","val","max"), iter=1:niters))
 new_trgtArray[c(TRUE,FALSE),"val",] <- rep(fmsy,each=nyears)
 new_trgtArray[c(FALSE,TRUE),"min",] <- min_relative_landings
 new_trgtArray[c(FALSE,TRUE),"max",] <- max_relative_landings
 flash_ctrl@trgtArray <- new_trgtArray
-flash_mtf <- FLash::fwd(ple4p_mtf, flash_ctrl, sr = list(model = model, params=params(ple4.sr)), sr.residuals=residuals, sr.residuals.mult=TRUE)
 
 # FLasher
+flasher_ctrl_target <- data.frame(year = rep(proj_years, each=2),
+                    quant = rep(c("f", "landings"), nyears),
+                    value = rep(c(fmsy[1], NA), nyears),
+                    max = rep(c(NA, max_relative_landings), nyears),
+                    min = rep(c(NA, min_relative_landings), nyears),
+                    relYear = rel_years,
+                    order = 1:(nyears*2))
+flasher_ctrl <- FLasher::fwdControl(flasher_ctrl_target, iters=niters)
 
+# Need to reorder here - should be done in constructor
+# Reorder ctrl@target by order
+ctrl_order <- order(flasher_ctrl@target$order)
+flasher_ctrl@target <- flasher_ctrl@target[ctrl_order,]
+flasher_ctrl@iters <- flasher_ctrl@iters[ctrl_order,,,drop=FALSE]
 
+flasher_ctrl@iters[c(TRUE,FALSE),"value",] <- rep(fmsy,each=nyears)
+flasher_ctrl@iters[c(FALSE,TRUE),"min",] <- min_relative_landings
+flasher_ctrl@iters[c(FALSE,TRUE),"max",] <- max_relative_landings
 ```
 
+We run the projections and time them (for interest):
 
+```{r }
+flash_time <- system.time(flash_mtf <- FLash::fwd(ple4p_mtf, flash_ctrl, sr = list(model = model, params=params(ple4.sr)), sr.residuals=residuals, sr.residuals.mult=TRUE))
+flasher_time <- system.time(flasher_mtf <- fwder(ple4p_mtf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)), sr.residuals=residuals, sr.residuals.mult=TRUE))
+```
+
+FLash is probably faster:
+
+```{r }
+print(flash_time)
+print(flasher_time)
+```
+
+Was the F target hit? Eventually, but the landings are constrained in the early years of the projection.
+
+```{r }
+FLQuant(rep(fmsy, each=nyears), dimnames=list(year=proj_years, iter=1:niters))
+fbar(flash_mtf)[,ac(proj_years)]
+fbar(flasher_mtf)[,ac(proj_years)]
+
+landings(flash_mtf)[,ac(proj_years)] / landings(flash_mtf)[,ac(proj_years-1)]
+landings(flasher_mtf)[,ac(proj_years)] / landings(flasher_mtf)[,ac(proj_years-1)]
+```
+
+Are the **FLash** and **FLasher** results the same?
+
+```{r }
+flash_flasher_comp(flash_mtf, flasher_mtf, proj_years)
+```
+
+Yes
+
+## What happens when things go wrong?
+
+A comparison of errors (F maxes out, targets not hit, etc.)
 
 
 
