@@ -24,7 +24,7 @@ fwdBiol_base<T>::fwdBiol_base(){
     srr = fwdSR_base<T>();
 }
 
-// Constructor from a SEXP S4 FLBiol
+// Constructor from a SEXP S4 FLBiolcpp
 // Does not set the SR - only the FLBiol bits
 // Used as intrusive 'as'
 template <typename T>
@@ -106,7 +106,7 @@ fwdBiol_base<T>& fwdBiol_base<T>::operator = (const fwdBiol_base<T>& fwdBiol_sou
 template <typename T>
 fwdBiol_base<T>::operator SEXP() const{
     //Rprintf("Wrapping fwdBiol_base<T>.\n");
-    Rcpp::S4 flb_s4("FLBiol");
+    Rcpp::S4 flb_s4("FLBiolcpp");
     flb_s4.slot("name") = name;
     flb_s4.slot("desc") = desc;
     flb_s4.slot("range") = range;
@@ -247,12 +247,61 @@ T& fwdBiol_base<T>::n(const unsigned int quant, const unsigned int year, const u
 
 /*! \brief The timelag between recruitment being added to the biol and the calculation of the SRP that results in that recruitment
  *
+ * If the first age is 0, and we have a seasonal model, the timelag is 1 season (i.e. the season before).
+ * If the first age is 0, and we have an model, there is no timelag (it's a strange case).
+ * If the first age is >1, the timelag is the number of timesteps to same season at 0 age (so that SRP is calculated in the same season but x years before).
  */
 template <typename T>
 unsigned int fwdBiol_base<T>::srp_timelag() const{
-    // Default return number of seasons
+    unsigned int timelag = 0;
+    auto first_age = n_flq.get_first_age();
+    if (first_age < 0){
+        Rcpp::stop("In srp_timelag. Your first age is less than 0. I don't know what to do.\n");
+    }
     auto dim = n_flq.get_dim();
-    return dim[3];
+    // First age is 0  and not a seasonal model - very strange
+    if ((dim[3] == 1) & (first_age == 0)){
+        timelag = 0;
+    }
+    // First age is 0 and a seasonal model
+    else if ((dim[3] > 1) & (first_age == 0)){
+        timelag = 1;
+    }
+    // First age > 0, return number of timesteps to age 0, same season
+    // Bit dodgy? timelag is unsigned, first_age is not. But we check at start of method so should be OK.
+    else {
+        timelag = (first_age * dim[3]);
+    }
+    return timelag;
+}
+
+//! Does recruitment happen for a unit of the fwdBiol in that timestep
+/*!
+  Each unit can recruit in a different season. Each unit can recruit only once per year.
+  The first stock-recruitment parameter is checked.
+  If it is NA, then recruitment does not happen.
+  If the parameter is not NA, then recruitment happens.
+  It is assumed that the timing pattern across iters is the same, e.g. if recruitment happens in season 1 for iter 1, it happens in season 1 for all iters.
+  \param unit The unit we are checking for recruitment
+  \param timestep The timestep we are checking for recruitment.
+ */ 
+template <typename T>
+bool fwdBiol_base<T>::does_recruitment_happen(unsigned int unit, unsigned int timestep) const{
+    // Get the SR parameters at that time / unit for the first iter
+    // If first one is NA, then no recruitment
+    std::vector<unsigned int> biol_dim = n_flq.get_dim();
+    unsigned int year = 0;
+    unsigned int season = 0;
+    timestep_to_year_season(timestep, biol_dim[3], year, season);
+    unsigned int area = 1;
+    // Just get first iter
+    std::vector<double> sr_params = srr.get_params(year, unit, season, area, 1); 
+    bool did_spawning_happen = true;
+    // Check the first parameter only
+    if (Rcpp::NumericVector::is_na(sr_params[0])){
+        did_spawning_happen = false;
+    }
+    return did_spawning_happen;
 }
 
 /*------------------------------------------------------------*/
@@ -282,15 +331,18 @@ fwdBiols_base<T>::fwdBiols_base(SEXP flbs_sexp){
 // Intrusive wrap - Just the FLBiol bits - no SRR bits
 template<typename T>
 fwdBiols_base<T>::operator SEXP() const{
-    Rcpp::S4 flbs_s4("FLBiols");
+    // Need an FLBiolcpps class - just return a list for now
+    //Rcpp::S4 flbs_s4("FLBiols");
     Rcpp::List list_out;
     // wrap of each fwdBiol is just the FLBiol part
     for (auto biol : biols){
         list_out.push_back(biol);
     }
-    flbs_s4.slot(".Data") = list_out;
-    flbs_s4.slot("names") = names;
-    return flbs_s4;
+    //flbs_s4.slot(".Data") = list_out;
+    //flbs_s4.slot("names") = names;
+    //return flbs_s4;
+    list_out.attr("names") = names;
+    return list_out;
 }
 
 // Constructor from an fwdBiol

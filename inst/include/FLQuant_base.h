@@ -69,6 +69,7 @@ class FLQuant_base {
 		unsigned int get_narea() const;
 		unsigned int get_niter() const;
 		int get_data_element(const int quant, const int year, const int unit, const int season, const int area, int iter) const;
+        int get_first_age() const;
 
 		/* Set accessors */
 		void set_data(const std::vector<T>& data_in);
@@ -76,11 +77,13 @@ class FLQuant_base {
         void set_units(const std::string& units_in);
 
         /* () get accessors - just get so const reinforced */
+        /* Get single values */
 		T operator () (const unsigned int element) const; 
 		T operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter) const; 
 		T operator () (const std::vector<unsigned int> indices) const; // For all the elements - must be of length 6 
-		FLQuant_base<T> operator () (const unsigned int quant_min, const unsigned int quant_max, const unsigned int year_min, const unsigned int year_max, const unsigned int unit_min, const unsigned int unit_max, const unsigned int season_min, const unsigned int season_max, const unsigned int area_min, const unsigned int area_max, const unsigned int iter_min, const unsigned int iter_max) const; // Subsetting
-        FLQuant_base<T> operator () (const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; // Neater subsetting
+        /* Get subset of FLQuant */
+		FLQuant_base<T> operator () (const unsigned int quant_min, const unsigned int quant_max, const unsigned int year_min, const unsigned int year_max, const unsigned int unit_min, const unsigned int unit_max, const unsigned int season_min, const unsigned int season_max, const unsigned int area_min, const unsigned int area_max, const unsigned int iter_min, const unsigned int iter_max) const;
+        FLQuant_base<T> operator () (const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 		FLQuant_base<T> operator () (const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area) const; // Access all iters
 
         /* () get and set accessors - const not reinforced */
@@ -93,6 +96,7 @@ class FLQuant_base {
         template <typename T2>
         void fill(const T2 value); // specialisation to fill FLQuantAD with double
 
+        /* Insert an entire FLQuant */
         void insert(const FLQuant_base<T> flq, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
 
         /* Mathematical operators */
@@ -318,6 +322,9 @@ FLQuant_base<T> year_sum(const FLQuant_base<T>& flq);
 template <typename T>
 FLQuant_base<T> quant_sum(const FLQuant_base<T>& flq);
 
+template <typename T>
+FLQuant_base<T> unit_sum(const FLQuant_base<T>& flq);
+
 // Means over various dimensions
 template <typename T>
 FLQuant_base<T> quant_mean(const FLQuant_base<T>& flq);  // collapse the quant dimension
@@ -328,4 +335,16 @@ FLQuant_base<T> max_quant(const FLQuant_base<T>& flq);
 // This only makes sense if all the values ae positive
 template <typename T>
 FLQuant_base<T> scale_by_max_quant(const FLQuant_base<T>& flq);
+
+// Useful methods for other classes
+// Converting timestep to year and season and vice versa
+// Several options
+template <typename T>
+void year_season_to_timestep(const unsigned int year, const unsigned int season, const FLQuant_base<T>& flq, unsigned int& timestep);
+
+template <typename T>
+void timestep_to_year_season(const unsigned int timestep, const FLQuant_base<T>& flq, unsigned int& year, unsigned int& season);
+
+void year_season_to_timestep(const unsigned int year, const unsigned int season, const unsigned int nseason, unsigned int& timestep);
+void timestep_to_year_season(const unsigned int timestep, const unsigned int nseason, unsigned int& year, unsigned int& season);
 

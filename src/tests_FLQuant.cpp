@@ -158,6 +158,12 @@ int test_FLQuant_get_niter(FLQuant flq){
 	return flq.get_niter();
 }
 
+// [[Rcpp::export]]
+int test_FLQuant_get_first_age(const FLQuant flq){
+    int out = flq.get_first_age();
+    return out;
+}
+
 //---------- () accessors -----------------
 
 // [[Rcpp::export]]
@@ -353,5 +359,62 @@ FLQuantAD test_input_subsetter_ADD(FLQuantAD flq1, FLQuant flq2, std::vector<uns
 FLQuant test_input_subsetter_DAD(FLQuant flq1, FLQuantAD flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max){
     flq1.insert(flq2, indices_min, indices_max);
     return flq1;
+}
+
+
+/* timestep convertors */
+
+// [[Rcpp::export]]
+unsigned int test_year_season_to_timestep_FLQuant_double(FLQuant flq, const unsigned int year, const unsigned int season){
+    unsigned int timestep = 0;
+    year_season_to_timestep(year, season, flq, timestep);
+    return timestep;
+}
+
+// [[Rcpp::export]]
+unsigned int test_year_season_to_timestep_FLQuant_adouble(FLQuantAD flqad, const unsigned int year, const unsigned int season){
+    unsigned int timestep = 0;
+    year_season_to_timestep(year, season, flqad, timestep);
+    return timestep;
+}
+
+// [[Rcpp::export]]
+unsigned int test_year_season_to_timestep(FLQuant flq, const int unsigned year, const int unsigned season){
+    unsigned int timestep = 0;
+    year_season_to_timestep(year, season, flq.get_nseason(), timestep);
+    return timestep;
+}
+
+// [[Rcpp::export]]
+Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_double(FLQuant flq, const unsigned int timestep){
+    unsigned int year = 0;
+    unsigned int season = 0;
+    timestep_to_year_season(timestep, flq, year, season);
+    Rcpp::IntegerVector out(2);
+    out[0] = year;
+    out[1] = season;
+    return out;
+}
+
+// [[Rcpp::export]]
+Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_adouble(FLQuantAD flqad, const unsigned int timestep){
+    unsigned int year = 0;
+    unsigned int season = 0;
+    timestep_to_year_season(timestep, flqad, year, season);
+    Rcpp::IntegerVector out(2);
+    out[0] = year;
+    out[1] = season;
+    return out;
+}
+
+// [[Rcpp::export]]
+Rcpp::IntegerVector test_timestep_to_year_season(FLQuant flq, const unsigned int timestep){
+    unsigned int year = 0;
+    unsigned int season = 0;
+    timestep_to_year_season(timestep, flq.get_nseason(), year, season);
+    Rcpp::IntegerVector out(2);
+    out[0] = year;
+    out[1] = season;
+    return out;
 }
 

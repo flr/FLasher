@@ -58,42 +58,42 @@
 \tableofcontents
 \newpage
 
-\section{Introduction}
-
-This document is the user manual for \pkg{FLasher}.
-It is structured around examples which also acts as tests.
-
-
-<<knitr_opts, echo=FALSE, message=FALSE, warning=FALSE>>=
-library(knitr)
-css = eclipse_theme(43)
-thm = knit_theme$get(css)
-knit_theme$set(thm)
-opts_chunk$set(dev='png', cache=TRUE, fig.align='center', warning=FALSE, message=FALSE, dev="png", dev.args=list(type="cairo"), dpi=96, highlight=TRUE, background='#F2F2F2', fig.lp="fig:", fig.pos="H", width=60)
-@
-
-
-<<load_libraries, message=FALSE, warning=FALSE>>=
-library(FLasher)
-@
-
-\section{Basics - what you need}
-
-FLStock
-
-FLBiol + FLFishery
-
-SRR
-
-fwdControl
-
-\section{Simple example}
-
-\section{Multi-fishery example}
-
-\section{Multi-species, multi-fishery example}
-
-\section{Example with a seasonal time step}
+%\section{Introduction}
+%
+%This document is the user manual for \pkg{FLasher}.
+%It is structured around examples which also acts as tests.
+%
+%
+%<<knitr_opts, echo=FALSE, message=FALSE, warning=FALSE>>=
+%library(knitr)
+%css = eclipse_theme(43)
+%thm = knit_theme$get(css)
+%knit_theme$set(thm)
+%opts_chunk$set(dev='png', cache=TRUE, fig.align='center', warning=FALSE, message=FALSE, dev="png", dev.args=list(type="cairo"), dpi=96, highlight=TRUE, background='#F2F2F2', fig.lp="fig:", fig.pos="H", width=60)
+%@
+%
+%
+%<<load_libraries, message=FALSE, warning=FALSE>>=
+%library(FLasher)
+%@
+%
+%\section{Basics - what you need}
+%
+%FLStock
+%
+%FLBiol + FLFishery
+%
+%SRR
+%
+%fwdControl
+%
+%\section{Simple example}
+%
+%\section{Multi-fishery example}
+%
+%\section{Multi-species, multi-fishery example}
+%
+%\section{Example with a seasonal time step}
 
 
 \end{document}

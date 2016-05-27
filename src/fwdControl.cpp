@@ -5,7 +5,7 @@
 
 #include "../../inst/include/fwdControl.h"
 
-// maps the quantity type character string to the enumerated types
+// maps the quant type character string to the enumerated types
 void fwdControl::init_target_map(){
     // Fill up the map
     target_map["f"] = target_fbar;
@@ -14,8 +14,9 @@ void fwdControl::init_target_map(){
     target_map["landings"] = target_landings;
     target_map["discards"] = target_discards;
     target_map["srp"] = target_srp;
-    target_map["ssb"] = target_srp;
+    target_map["ssb"] = target_srp; // Does the same thing as SRP at the moment
     target_map["biomass"] = target_biomass;
+    target_map["effort"] = target_effort;
     return;
 }
 
@@ -29,20 +30,17 @@ fwdControl::fwdControl(){
 // Constructor used as intrinsic 'as'
 fwdControl::fwdControl(SEXP fwd_control_sexp){
 	Rcpp::S4 fwd_control_s4 = Rcpp::as<Rcpp::S4>(fwd_control_sexp);
-	Rcpp::S4 target_s4 = fwd_control_s4.slot("target");
-    target_iters = target_s4.slot("iters");
-    target = target_s4.slot("element");
-    FCB = Rcpp::as<Rcpp::IntegerMatrix>(target_s4.slot("FCB"));
+    target_iters = fwd_control_s4.slot("iters");
+    target = fwd_control_s4.slot("target");
+    FCB = Rcpp::as<Rcpp::IntegerMatrix>(fwd_control_s4.slot("FCB"));
     init_target_map();
 }
 
-// intrinsic 'wrap' - does not return FCB as not part of class
+// Intrinsic 'wrap' - does not return FCB as not part of class
 fwdControl::operator SEXP() const{
     Rcpp::S4 fwd_control_s4("fwdControl");
-    Rcpp::S4 fwd_element_s4("fwdElement");
-    fwd_element_s4.slot("element") = target;
-    fwd_element_s4.slot("iters") = target_iters;
-    fwd_control_s4.slot("target") = fwd_element_s4;
+    fwd_control_s4.slot("target") = target;
+    fwd_control_s4.slot("iters") = target_iters;
     return Rcpp::wrap(fwd_control_s4);
 }
 
@@ -74,10 +72,10 @@ Rcpp::DataFrame fwdControl::get_target() const{
 unsigned int fwdControl::get_ntarget() const{
     // Check that the target column exists 
     std::vector<std::string> col_names = target.attr("names");
-    if (std::find(col_names.begin(), col_names.end(), "target") == col_names.end()){
-        Rcpp::stop("In fwdControl::get_ntarget - no target column in control dataframe\n");
+    if (std::find(col_names.begin(), col_names.end(), "order") == col_names.end()){
+        Rcpp::stop("In fwdControl::get_ntarget - no order column in control dataframe\n");
     }
-    std::vector<unsigned int> target_no = target["target"];
+    std::vector<unsigned int> target_no = target["order"];
     auto minmax = std::minmax_element(target_no.begin(), target_no.end());
     auto ntarget = (*minmax.second - *minmax.first + 1);
     return ntarget;
@@ -110,10 +108,10 @@ std::vector<unsigned int> fwdControl::get_age_range(const unsigned int target_no
 unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
     // Check that the target column exists 
     std::vector<std::string> col_names = target.attr("names");
-    if (std::find(col_names.begin(), col_names.end(), "target") == col_names.end()){
-        Rcpp::stop("In fwdControl::get_ntarget - no target column in control dataframe\n");
+    if (std::find(col_names.begin(), col_names.end(), "order") == col_names.end()){
+        Rcpp::stop("In fwdControl::get_nsim_target - no order column in control dataframe\n");
     }
-    Rcpp::IntegerVector targets = target["target"];
+    std::vector<unsigned int> targets = target["order"];
     // Sort them
     std::sort(targets.begin(), targets.end());
     // [&] means capture variable, means we can get target_no
@@ -122,7 +120,7 @@ unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
     // Get the position of the first target_no
     auto it_value = std::find(targets.begin(), targets.end(), target_no);
     if (it_value == targets.end()){
-        Rcpp::stop("In fwdControl::get_nsim_target. target_no not found in target column\n");
+        Rcpp::stop("In fwdControl::get_nsim_target. target_no not found in order column\n");
     }
     return it_greater - it_value;
 }
@@ -138,17 +136,17 @@ unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
 std::vector<unsigned int> fwdControl::get_target_row(unsigned int target_no) const {
     // Check that the target column exists 
     std::vector<std::string> col_names = target.attr("names");
-    if (std::find(col_names.begin(), col_names.end(), "target") == col_names.end()){
-        Rcpp::stop("In fwdControl::get_ntarget - no target column in control dataframe\n");
+    if (std::find(col_names.begin(), col_names.end(), "order") == col_names.end()){
+        Rcpp::stop("In fwdControl::get_target_row - no order column in control dataframe\n");
     }
-    Rcpp::IntegerVector targets = target["target"];
+    std::vector<unsigned int> targets = target["order"];
     unsigned int nsim_target = get_nsim_target(target_no);
     std::vector<unsigned int> rows(nsim_target);
     auto current_target = targets.begin();
     for (unsigned int target_count = 0; target_count < nsim_target; ++target_count){
         current_target = std::find(current_target, targets.end(), target_no);
         if (current_target == targets.end()){
-            Rcpp::stop("In fwdControl::get_target_row. target row not found\n");
+            Rcpp::stop("In fwdControl::get_target_row. order row not found\n");
         }
         rows[target_count] = current_target - targets.begin();
         current_target++;
@@ -226,7 +224,8 @@ std::vector<double> fwdControl::get_target_value(const int target_no, const int 
  * Rcpp::IntegerVector is used as return type as this preserves any NAs passed from R.
  * Converting to std::vector<unsigned int> does not work with is_na() (but it does compile).
  * Can be used on non-Integer columns (no check is made) but who knows what the result will be?!?!
- * \param target_no References the target column in the control dataframe.
+ * \param target_no The target number as given by the target column in the control dataframe.
+ * \param col The name of the integer column in the control dataframe.
  */
 Rcpp::IntegerVector fwdControl::get_target_int_col(const int target_no, const std::string col) const {
     // Check that column exists in data.frame
@@ -302,27 +301,6 @@ double fwdControl::get_target_num_col(const int target_no, const int sim_target_
 }
 //@}
 
-// Adjust this for biol abundance targets
-/*! \brief Get the timestep in which we must adjust effort to hit the target
- *
- * For fishery target types (catch, F) etc, the effort timestep is the same as the target timestep.
- * For biological abundance based targets (e.g. SSB and biomass), the abundance is reported at the beginning of the timestep (in line with FLR objects).
- * This means that the effort in the previous timestep determines the abundance value.
- * \param target_no References the target column in the control dataframe.
- * \param sim_target_no
- */
-unsigned int fwdControl::get_target_effort_timestep(unsigned int target_no, unsigned int sim_target_no) const {
-    auto target_timestep = get_target_int_col(target_no, sim_target_no, "timestep");
-    fwdControlTargetType target_type = get_target_type(target_no, sim_target_no);
-    // Is it an abundance target?
-    auto it = std::find(abundance_targets.begin(), abundance_targets.end(), target_type);
-    // If so, subtract 1
-    if (it != abundance_targets.end()){
-        target_timestep -= 1;
-    }
-    return target_timestep;
-}
-
 /*! \brief Get the target quantity from the control object
  *
  * 
@@ -331,7 +309,7 @@ unsigned int fwdControl::get_target_effort_timestep(unsigned int target_no, unsi
  */
 std::string fwdControl::get_target_quantity(const int target_no, const int sim_target_no) const{
     auto row = get_target_row(target_no, sim_target_no);
-    Rcpp::CharacterVector quantities = target["quantity"];
+    Rcpp::CharacterVector quantities = target["quant"];
     return Rcpp::as<std::string>(quantities[row]);
 }
 
@@ -440,6 +418,6 @@ Rcpp::NumericVector get_dataframe_value(Rcpp::DataFrame ctrl){
 
 // [[Rcpp::export]]
 Rcpp::CharacterVector get_dataframe_quantity(Rcpp::DataFrame ctrl){
-    Rcpp::CharacterVector quantity = ctrl["quantity"];
+    Rcpp::CharacterVector quantity = ctrl["quant"];
     return quantity;
 }

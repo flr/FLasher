@@ -28,11 +28,6 @@ fwdControl test_fwdControl_assignment_operator(fwdControl fc){
     return out;
 }
 
-//// [[Rcpp::export]]
-//unsigned int test_fwdControl_get_ntimestep(const fwdControl control){
-//    return control.get_ntimestep();
-//}
-
 // [[Rcpp::export]]
 Rcpp::DataFrame test_fwdControl_get_target(const fwdControl control){
     return control.get_target();
@@ -103,11 +98,6 @@ std::string test_fwdControl_get_target_quantity(const fwdControl control, const 
 // [[Rcpp::export]]
 std::vector<unsigned int> test_fwdControl_get_age_range(const fwdControl control, const int target_no, const int sim_target_no){
     return control.get_age_range(target_no, sim_target_no);
-}
-
-// [[Rcpp::export]]
-unsigned int test_fwdControl_get_target_effort_timestep(const fwdControl control, const int target_no, const int sim_target_no){
-    return control.get_target_effort_timestep(target_no, sim_target_no);
 }
 
 // [[Rcpp::export]]

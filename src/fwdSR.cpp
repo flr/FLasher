@@ -22,6 +22,12 @@ void fwdSR_base<T>::init_model_map(){
     map_model_name_to_function["Bevholt"] = &bevholt;
     map_model_name_to_function["constant"] = &constant;
     map_model_name_to_function["Constant"] = &constant;
+    map_model_name_to_function["mean"] = &constant;
+    map_model_name_to_function["Mean"] = &constant;
+    map_model_name_to_function["geomean"] = &constant;
+    map_model_name_to_function["Geomean"] = &constant;
+    map_model_name_to_function["bevholtSS3"] = &bevholtSS3;
+    map_model_name_to_function["BevholtSS3"] = &bevholtSS3;
     return;
 }
 
@@ -100,6 +106,41 @@ fwdSR_base<T>& fwdSR_base<T>::operator = (const fwdSR_base<T>& fwdSR_source){
 }
 
 
+/*! \name Get the SR parameters
+ *
+ * Given the year, unit, season, area and iter, returns the corresponding stock recruitment parameters.
+ * \param year The year of the SR parameters to use.
+ * \param unit The unit of the SR parameters to use.
+ * \param season The season of the SR parameters to use.
+ * \param area The area of the SR parameters to use.
+ * \param iter The iter of the SR parameters to use.
+ */
+template <typename T>
+std::vector<double> fwdSR_base<T>::get_params(int year, int unit, int season, int area, int iter) const{
+    const int nparams = get_nparams();
+    std::vector<double> model_params(nparams);
+    // Parameters get recycled, i.e.  if requested year is bigger than years in the params FLQuant then we just take the first one.
+    if (year > params.get_nyear()){
+        year = 1;
+    }
+    if (unit > params.get_nunit()){
+        unit = 1;
+    }
+    if (season > params.get_nseason()){
+        season = 1;
+    }
+    if (area > params.get_narea()){
+        area = 1;
+    }
+    if (iter > params.get_niter()){
+        iter = 1;
+    }
+    for (int i = 1; i <= nparams; ++i){
+        model_params[i-1] = params(i,year,unit,season,area,iter);
+    }
+    return model_params;
+}
+
 /*! \name Evaluate the SR model
  *
  * Produces a single value of recruitment given a single value of the SRP.
@@ -119,29 +160,9 @@ fwdSR_base<T>& fwdSR_base<T>::operator = (const fwdSR_base<T>& fwdSR_source){
  * \param iter The iter of the SR parameters to use.
  */
 template <typename T>
-T fwdSR_base<T>::eval_model(const T srp, int year, int unit, int season, int area, int iter) {
-    const int nparams = get_nparams();
-    std::vector<double> model_params(nparams);
-    // Sort out params - if years > no years in the params object (i.e. params are not disaggregated by time etc.) just pick the first one
-    // The real checking should be done in the R side
-    if (year > params.get_nyear()){
-        year = 1;
-    }
-    if (unit > params.get_nunit()){
-        unit = 1;
-    }
-    if (season > params.get_nseason()){
-        season = 1;
-    }
-    if (area > params.get_narea()){
-        area = 1;
-    }
-    if (iter > params.get_niter()){
-        iter = 1;
-    }
-    for (int i = 1; i <= nparams; ++i){
-        model_params[i-1] = params(i,year,unit,season,area,iter);
-    }
+T fwdSR_base<T>::eval_model(const T srp, int year, int unit, int season, int area, int iter) const{
+    // Get the parameters
+    std::vector<double> model_params = get_params(year, unit, season, area, iter);
     // Finally, evaluate the function being pointed at
     T rec = model(srp, model_params);
     return rec;
@@ -152,7 +173,7 @@ T fwdSR_base<T>::eval_model(const T srp, int year, int unit, int season, int are
  * \param params_indices The indices of the SR params (starting at 1).
  */
 template <typename T>
-T fwdSR_base<T>::eval_model(const T srp, const std::vector<unsigned int> params_indices){ 
+T fwdSR_base<T>::eval_model(const T srp, const std::vector<unsigned int> params_indices) const{ 
     // Check length of params_indices
     if (params_indices.size() != 5){
         Rcpp::stop("In fwdSR::eval_model. params_indices must be of length 5.");
@@ -164,49 +185,66 @@ T fwdSR_base<T>::eval_model(const T srp, const std::vector<unsigned int> params_
 
 /*! \brief Predict recruitment
  *
- * Calculates the recruitment from an FLQuant of SRP. The SRP can be a subset of the 'full' model SRP
+ * Calculates the recruitment from an FLQuant of SRP, including the application of residuals.
+ * The SRP can be a subset of the 'full' model SRP
  * (e.g. can be only one season out of all seasons, or several years out of all years).
- * For this reason it is necessary to also pass in a vector of indices to specify the start
- * position of the SR params and residuals, relative to the full model range. 
- * i.e. the index of the params and residuals that corresponds with the first value in the SRP vector.
- * Calls the eval() method to calculate deterministic recruitment then applies the residuals.
+ * It is therefore necessary to also pass in a vector of indices to specify the start
+ * position of the SR params and residuals because we don't know the start position of the SRP argument relative to the whole operating model. 
+ * i.e. we need to know the index of the params and residuals that correspond with the first value in the SRP vector.
+ * The parameters and residuals dimensions are in line with the recruitment.
+ * e.g. parameters in year 2, season 1 are used to calculated recruitment in year 2, season 1 given the SSB NOT applied to the SSB in year 2, season 1 to calculate recruitment the following year.
+ * Internally, the method calls the eval() method to calculate deterministic recruitment then applies the residuals.
  *
  * \param srp The spawning reproductive potential that produces the recruitment.
- * \param initial_params_indices A vector of length 5 (year, unit, ... iter) to specify the start position of the indices of the SR params relative to the 'whole' operating model (starting at 1).
+ * \param initial_params_indices A vector of length 5 (year, unit, ... iter) to specify the start position of the indices of the SR params and residuals relative to the 'whole' operating model (starting at 1).
  */
 template <typename T>
 FLQuant_base<T> fwdSR_base<T>::predict_recruitment(const FLQuant_base<T> srp, const std::vector<unsigned int> initial_params_indices){ 
-    // Check length of params_indices
     if (initial_params_indices.size() != 5){
         Rcpp::stop("In fwdSR::predict_recruitment. initial_params_indices must be of length 5.\n");
     }
     std::vector<unsigned int> srp_dim = srp.get_dim();
-    // SRP must be of length 1 in the first dimension
     if (srp_dim[0] != 1){
         Rcpp::stop("In fwdSR::predict_recruitment. srp must be of length 1 in the first dimension.\n");
+    }
+    // If residuals starting from the initial_params_indices are too small for the SRP it does not recycle = error
+    // (e.g. if you pass in subset of SRP with 10 out 20 years but the initial_params_indices has year = 15, i.e. 5 years too short in residuals)
+    // Iters are OK
+    std::vector<unsigned int> res_dim = residuals.get_dim();
+    // Distance between initial_params_indices and res_dim cannot be smaller than srp_dim
+    for (unsigned int dim_counter = 1; dim_counter <= 4; ++dim_counter){
+        if((res_dim[dim_counter] - initial_params_indices[dim_counter-1] + 1) < srp_dim[dim_counter]){
+            Rcpp::stop("In fwdSR::predict_recruitment. Initial indicies of residuals is too small to cover the SRP\n");
+        }
     }
     // Empty output object
     FLQuant_base<T> rec = srp;
     rec.fill(0.0);
-    // Going to have to loop over the dimensions - not nice
+    // Going to have to loop over the dimensions and update the params and residuals indices - not nice
     std::vector<unsigned int> params_indices = initial_params_indices;
+    //std::vector<unsigned int> residuals_indices = initial_residuals_indices;
     for (unsigned int year_counter = 1; year_counter <= srp_dim[1]; ++year_counter){
         params_indices[0] = initial_params_indices[0] + year_counter - 1;
+        //residuals_indices[0] = initial_residuals_indices[0] + year_counter - 1;
         for (unsigned int unit_counter = 1; unit_counter <= srp_dim[2]; ++unit_counter){
             params_indices[1] = initial_params_indices[1] + unit_counter - 1;
+            //residuals_indices[1] = initial_residuals_indices[1] + unit_counter - 1;
             for (unsigned int season_counter = 1; season_counter <= srp_dim[3]; ++season_counter){
                 params_indices[2] = initial_params_indices[2] + season_counter - 1;
+                //residuals_indices[2] = initial_residuals_indices[2] + season_counter - 1;
                 for (unsigned int area_counter = 1; area_counter <= srp_dim[4]; ++area_counter){
                     params_indices[3] = initial_params_indices[3] + area_counter - 1;
+                    //residuals_indices[3] = initial_residuals_indices[3] + area_counter - 1;
                     for (unsigned int iter_counter = 1; iter_counter <= srp_dim[5]; ++iter_counter){
                         params_indices[4] = initial_params_indices[4] + iter_counter - 1;
+                        //residuals_indices[4] = initial_residuals_indices[4] + iter_counter - 1;
                         T rec_temp = eval_model(srp(1, year_counter, unit_counter, season_counter, area_counter, iter_counter), params_indices);
-                            if (residuals_mult == true){
-                                rec_temp *= residuals(1, params_indices[0], params_indices[1], params_indices[2], params_indices[3], params_indices[4]);
-                            }
-                            else {
-                                rec_temp += residuals(1, params_indices[0], params_indices[1], params_indices[2], params_indices[3], params_indices[4]);
-                            }
+                        if (residuals_mult == true){
+                            rec_temp *= residuals(1, params_indices[0], params_indices[1], params_indices[2], params_indices[3], params_indices[4]);
+                        }
+                        else {
+                            rec_temp += residuals(1, params_indices[0], params_indices[1], params_indices[2], params_indices[3], params_indices[4]);
+                        }
                         rec(1, year_counter, unit_counter, season_counter, area_counter, iter_counter) = rec_temp;
                     }}}}}
     return rec;
@@ -274,6 +312,19 @@ T constant(const T srp, const std::vector<double> params){
     return rec;
 }
 
+template <typename T>
+T bevholtSS3(const T srp, const std::vector<double> params){
+    // (4 * s * R0 * ssb) / (v * (1 - s) + ssb * (5 * s - 1)) 
+    // SRP is * 0.5 for the sex ratio
+    double s = params[0];
+    double R0 = params[1];
+    double v = params[2];
+    T srp_sex = srp * 0.5;
+    T rec;
+    rec = (4.0 * s * R0 * srp_sex) / (v * (1 - s) + srp_sex * (5 * s - 1.0));
+    return rec;
+}
+
 // Instantiate functions
 template double ricker(const double ssb, const std::vector<double> params);
 template adouble ricker(const adouble ssb, const std::vector<double> params);
@@ -281,4 +332,6 @@ template double bevholt(const double ssb, const std::vector<double> params);
 template adouble bevholt(const adouble ssb, const std::vector<double> params);
 template double constant(const double srp, const std::vector<double> params);
 template adouble constant(const adouble srp, const std::vector<double> params);
+template double bevholtSS3(const double ssb, const std::vector<double> params);
+template adouble bevholtSS3(const adouble ssb, const std::vector<double> params);
 

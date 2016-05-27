@@ -635,6 +635,11 @@ FLQuantAD test_FLQuantAD_scale_by_max_quant(FLQuantAD flq){
     return flq_out;
 }
 
+// [[Rcpp::export]]
+FLQuantAD test_FLQuantAD_unit_sum(FLQuantAD flq){
+    FLQuantAD flq_out = unit_sum(flq);
+    return flq_out;
+}
 
 //-------------------------------
 // Sweep

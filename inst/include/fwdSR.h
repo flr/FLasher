@@ -30,14 +30,14 @@ class fwdSR_base {
 		fwdSR_base(const fwdSR_base& fwdSR_base_source); // copy constructor to ensure that copy is a deep copy - used when passing into functions
 		fwdSR_base& operator = (const fwdSR_base& fwdSR_base_source); // Assignment operator for a deep copy
 
+        std::vector<double> get_params(int year, int unit, int season, int area, int iter) const;
         // Evaluate the model only 1 value at a time
-        T eval_model(const T srp, int year, int unit, int season, int area, int iter);
-        T eval_model(const T srp, const std::vector<unsigned int> params_indices);
+        T eval_model(const T srp, int year, int unit, int season, int area, int iter) const;
+        T eval_model(const T srp, const std::vector<unsigned int> params_indices) const;
 
         // Predict recruitment. As eval() but also applies the residuals
         FLQuant_base<T> predict_recruitment(const FLQuant_base<T> srp, const std::vector<unsigned int> initial_params_indices);
         
-
         // Typedef for the SRR model functions
         typedef T (*srr_model_ptr)(const T, const std::vector<double>);
         typedef std::map<std::string, srr_model_ptr> model_map_type;
@@ -71,5 +71,7 @@ T bevholt(const T srp, const std::vector<double> params);
 template <typename T>
 T constant(const T srp, const std::vector<double> params);
 
+template <typename T>
+T bevholtSS3(const T srp, const std::vector<double> params);
 
 

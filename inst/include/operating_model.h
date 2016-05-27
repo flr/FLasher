@@ -30,17 +30,6 @@
 #include "fwdControl.h"
 #include "solver.h"
 
-// Converting timestep to year and season and vice versa
-// Several options
-template <typename T>
-void year_season_to_timestep(const unsigned int year, const unsigned int season, const FLQuant_base<T>& flq, unsigned int& timestep);
-
-template <typename T>
-void timestep_to_year_season(const unsigned int timestep, const FLQuant_base<T>& flq, unsigned int& year, unsigned int& season);
-
-void year_season_to_timestep(const unsigned int year, const unsigned int season, const unsigned int nseason, unsigned int& timestep);
-void timestep_to_year_season(const unsigned int timestep, const unsigned int nseason, unsigned int& year, unsigned int& season);
-
 /* Everything Louder Than Everything Else 
  * The Operating Model Class
  */
@@ -66,79 +55,51 @@ class operatingModel {
         operator SEXP() const; // Used as intrusive 'wrap' - returns a list of stuff
 
         // Methods
+        unsigned int get_niter() const;
         FLQuantAD srp(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant f_prop_spwn(const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        std::vector<adouble> calc_rec(const int biol_no, const int timestep) const;
+        std::vector<adouble> calc_rec(const unsigned int biol_no, const unsigned int unit, const unsigned int rec_timestep) const;
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no) const; 
         FLQuantAD get_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD get_f(const int biol_no) const;
+        //FLQuantAD get_unit_z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        //FLQuantAD get_unit_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        //FLQuantAD get_unit_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         void project_biols(const int timestep); // Uses effort in previous timestep
         void project_fisheries(const int timestep); // Uses effort in that timestep
-        void run(const double effort_mult_initial, const double indep_min = 0, const double indep_max = 1e9); 
+        Rcpp::IntegerMatrix run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters = 50); 
 
-        FLQuantAD eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        // Sorting out target values - these are not const as eval_om may need to change spwn() member if SRP / SSB target 
+        FLQuantAD eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
         // The actual current target values in the OM - to be compared to the desired values
-        std::vector<adouble> get_target_value_hat(const int target_no) const; 
-        std::vector<adouble> get_target_value_hat(const int target_no, const int sim_target_no) const; 
+        std::vector<adouble> get_target_value_hat(const int target_no); 
+        std::vector<adouble> get_target_value_hat(const int target_no, const int sim_target_no); 
         // The target value we are trying to hit - either directly from the control object or a min / max calculation using the current OM
-        std::vector<double> get_target_value(const int target_no) const; // All iters for all sim targets
-        std::vector<double> get_target_value(const int target_no, const int sim_target_no) const; // All iters for a sim target
+        std::vector<adouble> get_target_value(const int target_no); // All iters for all sim targets
+        std::vector<adouble> get_target_value(const int target_no, const int sim_target_no); // All iters for a sim target
         
-        // Redundant methods?
-        // Currently not using catch_q method - instead it is embedded in get_f()
-        // It could be useful if we wanted to use different catch_q methods rather than fixing it in get_f
-        //FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        //FLQuantAD catch_q(const int fishery_no, const int catch_no, const int biol_no) const;
-        //adouble catch_q(const int fishery_no, const int catch_no, const int biol_no, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, const unsigned int iter) const;
-        //FLQuantAD partial_f(const int fishery_no, const int catch_no, const int biol_no) const; 
-        //FLQuantAD partial_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; 
-        //FLQuantAD z(const int biol_no) const;
-        //FLQuantAD z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-
-        //void run_all_iters(); 
-        
-        //! Project the operating model by a single timestep
-        /*!
-            Project the operating model by a single timestep and update the abundances using the Baranov equation.
-            Fishing and natural mortality are assumed to be constant over age through the timestep.
-            Catches, landings and discards in the fisheries are calculated.
-            Population abundances in the biols in the following time step are calculated including recruitment.
-            @param timestep the timestep to project for
-        */
-        //void project_timestep(const int timestep);
-
-        // Timestep of effort which drives the target value
-        // int get_target_effort_timestep(const int target_no);
-        
-        // age range indices for the f based targets
+        // age range indices for age-based targets (e.g. fbar)
         // Returns the indices of the age range, starts at 0
-        //std::vector<unsigned int> get_target_age_range_indices(const unsigned int target_no, const unsigned int sim_target_no, const unsigned int biol_no) const; 
-
-
+        std::vector<unsigned int> get_target_age_range_indices(const unsigned int target_no, const unsigned int sim_target_no) const; 
 
         // The target value calculations
         // Partial fbar of a single catch on a single biol
-        //FLQuantAD fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         // Total fbar on a biol (possibly from multiple catches)
-        //FLQuantAD fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
-        // catches from an FLCatch and fishery on a stock 
-        //FLQuantAD catches(const int fishery_no, const int catch_no) const;
-        // Total catches / landings / discards from a biol
+        // Extract total catches / landings / discards from a biol - not calculated from effort
         FLQuantAD landings(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD discards(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD catches(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD landings_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD discards_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD catch_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
         // Total biomass from a biol
         //FLQuantAD biomass(const int biol_no) const;
 
-        // Various ways of calculating reproductive potential
-        //FLQuantAD ssb(const int biol_no) const;
-        //FLQuantAD ssb(const int biol_no, &FLQuantAD total_f, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        //FLQuantAD ssb(const int timestep, const int unit, const int area, const int biol_no) const; // all iters in a timestep, unit and area
-        //adouble ssb(const int timestep, const int unit, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
-        //adouble ssb(const int year, const int unit, const int season, const int area, const int iter, const int biol_no) const; // single iter in a timestep, unit and area
 
     private:
         FLFisheriesAD fisheries;

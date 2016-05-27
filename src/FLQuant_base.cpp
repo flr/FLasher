@@ -240,9 +240,7 @@ std::string FLQuant_base<T>::get_units() const{
 }
 
 template <typename T>
-//Rcpp::IntegerVector FLQuant_base<T>::get_dim() const{
 std::vector<unsigned int> FLQuant_base<T>::get_dim() const{
-	//return Rcpp::clone<Rcpp::IntegerVector>(dim);
     return dim;
 }
 
@@ -258,45 +256,41 @@ unsigned int FLQuant_base<T>::get_size() const{
 
 template <typename T>
 unsigned int FLQuant_base<T>::get_nquant() const{
-	//Rcpp::IntegerVector dim = get_dim();
 	return dim[0];
 }
 
 template <typename T>
 unsigned int FLQuant_base<T>::get_nyear() const{
-	//Rcpp::IntegerVector dim = get_dim();
 	return dim[1];
 }
 
 template <typename T>
 unsigned int FLQuant_base<T>::get_nunit() const{
-	//Rcpp::IntegerVector dim = get_dim();
 	return dim[2];
 }
 
 template <typename T>
 unsigned int FLQuant_base<T>::get_nseason() const{
-	//Rcpp::IntegerVector dim = get_dim();
 	return dim[3];
 }
 
 template <typename T>
 unsigned int FLQuant_base<T>::get_narea() const{
-	//Rcpp::IntegerVector dim = get_dim();
 	return dim[4];
 }
 
 template <typename T>
 unsigned int FLQuant_base<T>::get_niter() const{
-	//Rcpp::IntegerVector dim = get_dim();
 	return dim[5];
 }
 
 // Note that elements start at 1 NOT 0!
-// Remove all the calls to get_nxxxx() to speed up
 template <typename T>
 int FLQuant_base<T>::get_data_element(const int quant, const int year, const int unit, const int season, const int area, int iter) const{
-    //Rcpp::IntegerVector dim = get_dim();
+    // Check that quant etc > 0
+    if ((quant <= 0) || (year <= 0) || (unit <= 0) || (season <= 0) || (area <= 0) || (iter <= 0)){
+            Rcpp::stop("In FLQuant accessor. quant etc must be > 0\n");
+    }
     std::vector<unsigned int> dim = get_dim();
     if ((quant > dim[0]) || (year > dim[1]) || (unit > dim[2]) || (season > dim[3]) || (area > dim[4])){
             Rcpp::stop("Trying to access element outside of quant, year, unit, season or area dim range.");
@@ -318,6 +312,17 @@ int FLQuant_base<T>::get_data_element(const int quant, const int year, const int
 	return element;
 }
 
+/*! \brief Get the first age in the dimnames as an integer
+ *
+ */
+template <typename T>
+int FLQuant_base<T>::get_first_age() const{
+    //std::vector<std::string> age_names = Rcpp::as<std::vector<std::string> >(n_flq.get_dimnames()[0]);
+    //std::string first_age_str = age_names[0];
+    std::string test = (Rcpp::as<std::vector<std::string> >(get_dimnames()[0]))[0];
+    int first_age = std::stoi(test);
+    return first_age;
+}
 
 // Get only data accessor - single element - starts at 1
 template <typename T>
@@ -1366,6 +1371,33 @@ FLQuant_base<T> quant_sum(const FLQuant_base<T>& flq){
 }
 
 template <typename T>
+FLQuant_base<T> unit_sum(const FLQuant_base<T>& flq){
+    std::vector<unsigned int> dim = flq.get_dim();
+    // Make an empty FLQ with the right dim
+    FLQuant_base<T> sum_flq(dim[0], dim[1], 1, dim[3], dim[4], dim[5]);
+    //// Set dimnames and units
+    Rcpp::List dimnames = flq.get_dimnames();
+    dimnames["unit"] = Rcpp::CharacterVector::create("unique");
+    sum_flq.set_dimnames(dimnames);
+    sum_flq.set_units(flq.get_units());
+    // Old school summing - looks ugly
+    // Cannot use accumulate() as not defined for adouble
+    T sum = 0;
+    for (int iters=1; iters <= flq.get_niter(); ++iters){
+        for (int areas=1; areas <= flq.get_narea(); ++areas){
+            for (int seasons=1; seasons <= flq.get_nseason(); ++seasons){
+                for (int years=1; years <= flq.get_nyear(); ++years){
+                    for (int quants=1; quants <= flq.get_nquant(); ++quants){
+                        sum = 0;
+                        for (int units=1; units <= flq.get_nunit(); ++units){
+                            sum += flq(quants, years, units, seasons, areas, iters);
+                        }
+                        sum_flq(quants, years, 1, seasons, areas, iters) = sum;
+    }}}}}
+    return sum_flq;
+}
+
+template <typename T>
 FLQuant_base<T> quant_mean(const FLQuant_base<T>& flq){
     FLQuant_base<T> flq_mean = quant_sum(flq);
     // Divide by dim
@@ -1485,6 +1517,27 @@ FLQuant FLPar_to_FLQuant(SEXP flp) {
     return flq_out;
 }
 
+// Converting timestep to year and season and vice versa
+// These are based on INDICES, not characters
+template <typename T>
+void year_season_to_timestep(const unsigned int year, const unsigned int season, const FLQuant_base<T>& flq, unsigned int& timestep){
+    year_season_to_timestep(year, season, flq.get_nseason(), timestep);
+}
+
+template <typename T>
+void timestep_to_year_season(const unsigned int timestep, const FLQuant_base<T>& flq, unsigned int& year, unsigned int& season){
+    timestep_to_year_season(timestep, flq.get_nseason(), year, season);
+}
+
+void year_season_to_timestep(const unsigned int year, const unsigned int season, const unsigned int nseason, unsigned int& timestep){
+    timestep = (year-1) * nseason + season;
+}
+
+void timestep_to_year_season(const unsigned int timestep, const unsigned int nseason, unsigned int& year, unsigned int& season){
+    year =  (timestep-1) / nseason + 1; // integer divide - takes the floor
+    season = (timestep-1) % nseason + 1;
+}
+
 /*----------------------------------------------------*/
 /* Explicit instantiations - alternatively put all the definitions into the header file
  * This way we have more control over what types the functions work with
@@ -1564,9 +1617,18 @@ template FLQuant_base<adouble> quant_sum(const FLQuant_base<adouble>& flq);
 template FLQuant_base<double> quant_mean(const FLQuant_base<double>& flq);
 template FLQuant_base<adouble> quant_mean(const FLQuant_base<adouble>& flq);
 
+template FLQuant_base<double> unit_sum(const FLQuant_base<double>& flq);
+template FLQuant_base<adouble> unit_sum(const FLQuant_base<adouble>& flq);
+
 template FLQuant_base<double> max_quant(const FLQuant_base<double>& flq);
 template FLQuant_base<adouble> max_quant(const FLQuant_base<adouble>& flq);
 
 template FLQuant_base<double> scale_by_max_quant(const FLQuant_base<double>& flq);
 template FLQuant_base<adouble> scale_by_max_quant(const FLQuant_base<adouble>& flq);
+
+template void year_season_to_timestep(const unsigned int year, const unsigned int season, const FLQuant_base<double>& flq, unsigned int& timestep);
+template void year_season_to_timestep(const unsigned int year, const unsigned int season, const FLQuant_base<adouble>& flq, unsigned int& timestep);
+
+template void timestep_to_year_season(const unsigned int timestep, const FLQuant_base<double>& flq, unsigned int& year, unsigned int& season);
+template void timestep_to_year_season(const unsigned int timestep, const FLQuant_base<adouble>& flq, unsigned int& year, unsigned int& season);
 

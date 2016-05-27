@@ -248,6 +248,14 @@ test_that("FLQuant and FLQuantAD summary functions", {
     expect_identical(dimnames(flq_out), dimnames(flq_sum))
     expect_identical(units(flq_out), units(flq_sum))
     expect_equal(flq_out, flq_sum) 
+    # Adolc unit_sum
+    flq_out <- test_FLQuantAD_unit_sum(flq_in)
+    flq_sum <- unitSums(flq_in)
+    test_FLQuant_equal(flq_sum, flq_out)
+    expect_identical(dim(flq_out), dim(flq_sum))
+    expect_identical(dimnames(flq_out), dimnames(flq_sum))
+    expect_identical(units(flq_out), units(flq_sum))
+    expect_equal(flq_out, flq_sum) 
     # quant_mean
     flq_in <- random_FLQuant_generator()
     flq_out <- test_FLQuant_quant_mean(flq_in)

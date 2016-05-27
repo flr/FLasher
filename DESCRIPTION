@@ -1,22 +1,25 @@
 Package: FLasher
 Type: Package
-Title: What Can I Say?
-Version: 0.1.20140909
-Date: 20140909
-Authors@R: c(person(given = 'Finlay', family = 'Scott', role = c('aut', 'cre'),
+Title: Projection and Forecasting of Fish Populations, Stocks and Fleets.
+Description: Projection of future population and fishery dynamics is carried out
+  for a given set of management targets. A system of equations is solved, using
+  Automatic Differentation (AD), for the levels of effort by fishery/fleet that
+  will result in the required abundances, catches or fishing mortalities.
+Version: 0.1.20160414
+Date: 2016-04-14
+Authors@R: c(person(given = 'Finlay', family = 'Scott', role = c('aut'),
             email = 'finlay.scott@jrc.ec.europa.eu'),
 		person(given = 'Iago', family = 'Mosqueira', role = c('aut', 'cre'),
             email = 'iago.mosqueira@jrc.ec.europa.eu'))
-Author: Finlay Scott, Iago Mosqueira, EC JRC G03.
 Maintainer: Iago Mosqueira <iago.mosqueira@jrc.ec.europa.eu>
 Copyright: European Union
-Description: The very best
-Collate: classes.R generics.R accessors.R methods.R fwd.R constructors.R RcppExports.R help.R test_helper_functions.R rcpp_plugin.R
+Collate: classes.R generics.R accessors.R methods.R fwd.R constructors.R RcppExports.R help.R test_helper_functions.R rcpp_plugin.R data.R fwder.R
 Depends:
     FLCore(>= 2.5.0),
     FLFishery(>= 0.1)
 Imports: Rcpp (>= 0.12.0)
 LinkingTo: Rcpp
+Additional_repositories: http://flr-project.org/R
 Suggests: testthat, knitr
 License: file LICENSE
 VignetteBuilder: knitr

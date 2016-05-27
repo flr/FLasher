@@ -125,19 +125,23 @@ Rcpp::NumericVector test_fwdBiol_const_get_accessors(const fwdBiol fwdb,int quan
     out[1] = fwdb.m()(quant, year, unit, season, area, iter);
     out[2] = fwdb.wt()(quant, year, unit, season, area, iter);
     out[3] = fwdb.fec()(quant, year, unit, season, area, iter);
-    out[4] = fwdb.spwn()(quant, year, unit, season, area, iter);
+    out[4] = fwdb.spwn()(1, year, unit, season, area, iter);
     out[5] = fwdb.mat()(quant, year, unit, season, area, iter);
     return out;
 }
 
 // [[Rcpp::export]]
 Rcpp::List test_fwdBiol_const_get_accessors_subset(const fwdBiol fwdb, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    std::vector<unsigned int> spwn_indices_min = indices_min;
+    spwn_indices_min[0] = 1;
+    std::vector<unsigned int> spwn_indices_max = indices_max;
+    spwn_indices_max[0] = 1;
     return Rcpp::List::create(
         Rcpp::Named("n", fwdb.n(indices_min, indices_max)),
         Rcpp::Named("m", fwdb.m(indices_min, indices_max)),
         Rcpp::Named("wt", fwdb.wt(indices_min, indices_max)),
         Rcpp::Named("fec", fwdb.fec(indices_min, indices_max)),
-        Rcpp::Named("spwn", fwdb.spwn(indices_min, indices_max)),
+        Rcpp::Named("spwn", fwdb.spwn(spwn_indices_min, spwn_indices_max)),
         Rcpp::Named("mat", fwdb.mat(indices_min, indices_max)));
 }
 
@@ -149,7 +153,7 @@ Rcpp::NumericVector test_fwdBiol_get_accessors(fwdBiol fwdb,int quant, int year,
     out[1] = fwdb.m()(quant, year, unit, season, area, iter);
     out[2] = fwdb.wt()(quant, year, unit, season, area, iter);
     out[3] = fwdb.fec()(quant, year, unit, season, area, iter);
-    out[4] = fwdb.spwn()(quant, year, unit, season, area, iter);
+    out[4] = fwdb.spwn()(1, year, unit, season, area, iter);
     out[5] = fwdb.mat()(quant, year, unit, season, area, iter);
     return out;
 }
@@ -162,7 +166,7 @@ Rcpp::NumericVector test_fwdBiolAD_const_get_accessors(const fwdBiolAD fwdb,int 
     out[1] = fwdb.m()(quant, year, unit, season, area, iter);
     out[2] = fwdb.wt()(quant, year, unit, season, area, iter);
     out[3] = fwdb.fec()(quant, year, unit, season, area, iter);
-    out[4] = fwdb.spwn()(quant, year, unit, season, area, iter);
+    out[4] = fwdb.spwn()(1, year, unit, season, area, iter);
     out[5] = fwdb.mat()(quant, year, unit, season, area, iter);
     return out;
 }
@@ -175,7 +179,7 @@ Rcpp::NumericVector test_fwdBiolAD_get_accessors(fwdBiolAD fwdb,int quant, int y
     out[1] = fwdb.m()(quant, year, unit, season, area, iter);
     out[2] = fwdb.wt()(quant, year, unit, season, area, iter);
     out[3] = fwdb.fec()(quant, year, unit, season, area, iter);
-    out[4] = fwdb.spwn()(quant, year, unit, season, area, iter);
+    out[4] = fwdb.spwn()(1, year, unit, season, area, iter);
     out[5] = fwdb.mat()(quant, year, unit, season, area, iter);
     return out;
 }
@@ -186,7 +190,7 @@ fwdBiol test_fwdBiol_set_accessors(fwdBiol fwdb, int quant, int year, int unit, 
     fwdb.m()(quant, year, unit, season, area, iter) = values[1];
     fwdb.wt()(quant, year, unit, season, area, iter) = values[2];
     fwdb.fec()(quant, year, unit, season, area, iter) = values[3];
-    fwdb.spwn()(quant, year, unit, season, area, iter) = values[4];
+    fwdb.spwn()(1, year, unit, season, area, iter) = values[4];
     fwdb.mat()(quant, year, unit, season, area, iter) = values[5];
     return fwdb;
 }
@@ -198,7 +202,7 @@ fwdBiolAD test_fwdBiolAD_set_accessors(fwdBiolAD fwdb, int quant, int year, int 
     fwdb.m()(quant, year, unit, season, area, iter) = values[1];
     fwdb.wt()(quant, year, unit, season, area, iter) = values[2];
     fwdb.fec()(quant, year, unit, season, area, iter) = values[3];
-    fwdb.spwn()(quant, year, unit, season, area, iter) = values[4];
+    fwdb.spwn()(1, year, unit, season, area, iter) = values[4];
     fwdb.mat()(quant, year, unit, season, area, iter) = values[5];
     return fwdb;
 }
@@ -225,6 +229,20 @@ double test_fwdBiolAD_n_direct_get_accessor(fwdBiolAD fwdb, int quant, int year,
     double out = Value(ad_out);
     return out;
 }
+
+// [[Rcpp::export]]
+unsigned int test_fwdBiol_srp_timelag(fwdBiol fwb){
+    unsigned int out = fwb.srp_timelag();
+    return out;
+}
+
+// [[Rcpp::export]]
+bool test_fwdBiol_does_recruitment_happen(SEXP fwbin, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, unsigned int unit, unsigned int timestep){
+    fwdSR fwsr(model_name, params, residuals, residuals_mult);
+    fwdBiol fwb(fwbin, fwsr);
+    return fwb.does_recruitment_happen(unit, timestep);
+}
+
 
 /*-------------------------------------------------------*/
 

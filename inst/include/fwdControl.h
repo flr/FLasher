@@ -18,6 +18,7 @@
 // If you add something here you have to also add it to the map in control.cpp
 // Also, if it's an abundance based target, add it to operatingModel::get_target_fmult_timestep(const int target_no) and to abundance_targets below 
 enum fwdControlTargetType {
+    target_effort,
     target_fbar,
     target_catch,
     target_landings,
@@ -56,7 +57,6 @@ class fwdControl {
         std::string get_target_quantity(const int target_no, const int sim_target_no) const;
         fwdControlTargetType get_target_type(const int target_no, const int sim_target_no) const;
         fwdControlTargetType get_target_type(const std::string quantity) const;
-        unsigned int get_target_effort_timestep(unsigned int target_no, unsigned int sim_target_no) const;
         std::vector<unsigned int> get_age_range(const unsigned int target_no, const unsigned int sim_target_no) const; // Returns the age range - just the values in target no calculation
         // FCB accessors
         Rcpp::IntegerMatrix get_FCB() const;
@@ -71,6 +71,6 @@ class fwdControl {
         target_map_type target_map;
         Rcpp::IntegerMatrix FCB; // an (n x 3) matrix with columns F, C and B
         // Add more abundance target types if necessary - different timing of F in the operating model
-        std::vector<fwdControlTargetType> abundance_targets {target_srp, target_biomass};
+        //std::vector<fwdControlTargetType> abundance_targets {target_srp, target_biomass};
 };
 

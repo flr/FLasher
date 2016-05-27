@@ -82,6 +82,27 @@ test_that("get accessors",{
     expect_identical(out, flq[indices[1], indices[2], indices[3], indices[4], indices[5],])
 })
 
+test_that("get_first_age",{
+    flq <- random_FLQuant_generator()
+    out <- test_FLQuant_get_first_age(flq)
+    expect_identical(as.integer(dimnames(flq)[[1]][1]),out)
+    # Force flq dimnames to start at 0
+    first_age <- 0
+    dimnames(flq)[[1]] <- seq(from=first_age,to=first_age + dim(flq)[1] - 1,by=1)
+    out <- test_FLQuant_get_first_age(flq)
+    expect_identical(as.integer(dimnames(flq)[[1]][1]),out)
+    # Force flq dimnames to start at something > 1
+    first_age <- round(runif(1,min=2, max=5))
+    dimnames(flq)[[1]] <- seq(from=first_age,to=first_age + dim(flq)[1] - 1,by=1)
+    out <- test_FLQuant_get_first_age(flq)
+    expect_identical(as.integer(dimnames(flq)[[1]][1]),out)
+    # Force flq dimnames to start at something < 0 
+    first_age <- -2
+    dimnames(flq)[[1]] <- seq(from=first_age,to=first_age + dim(flq)[1] - 1,by=1)
+    out <- test_FLQuant_get_first_age(flq)
+    expect_identical(as.integer(dimnames(flq)[[1]][1]),out)
+})
+
 test_that("set",{
     #set_data
     flq1 <- random_FLQuant_generator()
@@ -351,3 +372,18 @@ test_that("insert", {
     # Indices not match the input
     expect_error(test_input_subsetter_ADAD(flq1, flq2, big_indices_min, big_indices_max))
 })
+
+test_that("timestep_to_year_season_conversion",{
+    flq_in <- random_FLQuant_generator()
+    year <- round(runif(1,min=1,max=dim(flq_in)[2]))
+    season <- round(runif(1,min=1,max=dim(flq_in)[4]))
+    expect_equal(test_year_season_to_timestep_FLQuant_double(flq_in, year, season), (year-1)*dim(flq_in)[4] + season)
+    expect_equal(test_year_season_to_timestep_FLQuant_adouble(flq_in, year, season), (year-1)*dim(flq_in)[4] + season)
+    expect_equal(test_year_season_to_timestep(flq_in, year, season), (year-1)*dim(flq_in)[4] + season)
+    # And the other way
+    timestep <- test_year_season_to_timestep(flq_in, year, season)
+    expect_equal(test_timestep_to_year_season_FLQuant_double(flq_in, timestep), c(year,season))
+    expect_equal(test_timestep_to_year_season_FLQuant_adouble(flq_in, timestep),c(year,season))
+    expect_equal(test_timestep_to_year_season(flq_in, timestep), c(year,season))
+})
+
