@@ -108,7 +108,7 @@ The **FLasher** control object is also set up. Note that some of the arguments h
 
 ```{r flasher_trgt}
 flasher_ctrl_target <- data.frame(year = 2009:2011,
-                        quant = "catch", order = 1:3,
+                        quant = "catch",
                         value = catch_target)
 flasher_ctrl <- FLasher::fwdControl(flasher_ctrl_target)
 ```

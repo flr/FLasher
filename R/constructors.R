@@ -1,129 +1,131 @@
-# constructors.R - Constructor methods for fwdControl
-# FLasher/R/constructors.R
+  # constructors.R - Constructor methods for fwdControl
+  # FLasher/R/constructors.R
 
-# Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later
-# Maintainer: Iago Mosqueira, JRC
-# Soundtrack:
-# Notes:
+  # Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later
+  # Maintainer: Iago Mosqueira, JRC
+  # Soundtrack:
+  # Notes:
 
-# fwdControl(target='data.frame', iters='array') {{{
-#' @rdname fwdControl
-#' @examples
-#'
-#' # Construct from data.frame and array
-#' fcn <- fwdControl(data.frame(year=2000:2005, quant='f', value=0.5))
+  # fwdControl(target='data.frame', iters='array') {{{
+  #' @rdname fwdControl
+  #' @examples
+  #'
+  #' # Construct from data.frame and array
+  #' fcn <- fwdControl(data.frame(year=2000:2005, quant='f', value=0.5))
 
-setMethod('fwdControl', signature(target='data.frame', iters='array'),
-  function(target, iters) {
-    
-    # TODO TEST dimensions
-    dtg <- dim(target)
-    dit <- dim(iters)
-    dni <- dimnames(iters)
+  setMethod('fwdControl', signature(target='data.frame', iters='array'),
+    function(target, iters) {
+      
+      # TODO TEST dimensions
+      dtg <- dim(target)
+      dit <- dim(iters)
+      dni <- dimnames(iters)
 
-    # COMPLETE df
-    trg <- new('fwdControl')@target[rep(1, nrow(target)),]
-    
-    # HACK: drop rownames
-    rownames(trg) <- NULL
-    
-    # CONVERT year to integer
-    if('year' %in% names(target))
-      target$year <- as.integer(target$year)
-    # ASSIGN to trg, DROP 'min', 'value', 'max'
-    trg[, names(target)[names(target) %in% names(trg)]] <- target
+      # COMPLETE df
+      trg <- new('fwdControl')@target[rep(1, nrow(target)),]
+      
+      # HACK: drop rownames
+      rownames(trg) <- NULL
+      
+      # CONVERT year to integer
+      if('year' %in% names(target))
+        target$year <- as.integer(target$year)
+      # ASSIGN to trg, DROP 'min', 'value', 'max'
+      trg[, names(target)[names(target) %in% names(trg)]] <- target
 
-    # HACK: reassign quant to keep factors
-    trg[,'quant']  <- factor(target$quant, levels=FLasher:::qlevels)
+      # HACK: reassign quant to keep factors
+      trg[,'quant']  <- factor(target$quant, levels=FLasher:::qlevels)
 
-    # MASTER iters
-    ite <- array(NA, dim=c(dtg[1], 3, dit[length(dit)]),
-      dimnames=list(row=seq(dtg[1]), val=c('min', 'value', 'max'), iter=seq(dit[length(dit)])))
+      # MASTER iters
+      ite <- array(NA, dim=c(dtg[1], 3, dit[length(dit)]),
+        dimnames=list(row=seq(dtg[1]), val=c('min', 'value', 'max'), iter=seq(dit[length(dit)])))
 
-    # DIMNAMES in array?
-    if(!is.null(dni)) {
-      ite[, dni[['val']], ] <- iters
+      # DIMNAMES in array?
+      if(!is.null(dni)) {
+        ite[, dni[['val']], ] <- iters
 
-    # or NOT
-    } else {
-      # 2D or dim[2] == 1, assign to 'value'
-      if(length(dit) == 2 | dit[2] == 1) {
-        ite[,'value',] <- iters
-      # 3D
+      # or NOT
       } else {
-        ite[,,] <- iters
+        # 2D or dim[2] == 1, assign to 'value'
+        if(length(dit) == 2 | dit[2] == 1) {
+          ite[,'value',] <- iters
+        # 3D
+        } else {
+          ite[,,] <- iters
+        }
       }
+
+      # REORDER by year, season, value/min-max
+      idx <- targetOrder(trg, ite)
+      trg <- trg[idx,]
+      row.names(trg) <- seq(len=nrow(trg))
+
+      ite <- ite[idx,,,drop=FALSE]
+      rownames(ite) <- seq(len=nrow(trg))
+
+      return(new('fwdControl', target=trg, iters=ite))
     }
+  ) 
+  # }}}
 
-    # ADD timestep and order
+  # fwdControl(target='data.frame', iters='numeric') {{{
+  setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
+    function(target, iters) {
 
-    res <- new('fwdControl', target=trg, iters=ite)
-    return(
-           res[targetOrder(res),]
-           )
-  }
-) 
-# }}}
+    if(length(iters) > 1)
+      stop("'iters' must be of length 1 or of class 'array'")
 
-# fwdControl(target='data.frame', iters='numeric') {{{
-setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
-  function(target, iters) {
+    # CREATE w/ empty iters
+    res <- fwdControl(target=target)
+    # then EXTEND
+    resits <- res@iters[,,rep(1, iters), drop=FALSE]
+    # HACK: fix iters dimnames$iter
+    dimnames(resits)$iter <- seq(1, iters)
+    res@iters <- resits
 
-  if(length(iters) > 1)
-    stop("'iters' must be of length 1 or of class 'array'")
+    return(res)
 
-  # CREATE w/ empty iters
-  res <- fwdControl(target=target)
-  # then EXTEND
-  resits <- res@iters[,,rep(1, iters), drop=FALSE]
-  # HACK: fix iters dimnames$iter
-  dimnames(resits)$iter <- seq(1, iters)
-  res@iters <- resits
+    }
+  ) # }}}
 
-  return(res)
+  # fwdControl(target='list', iters='missing') {{{
+  setMethod('fwdControl', signature(target='list', iters='missing'),
+    function(target) {
 
-  }
-) # }}}
+    if(is(target[[1]], 'list')) {
 
+      inp <- lapply(target, function(x) do.call('parsefwdList', x))
 
-# fwdControl(target='list', iters='missing') {{{
-setMethod('fwdControl', signature(target='list', iters='missing'),
-  function(target) {
+      # target
+      trg <- do.call('rbind', lapply(inp, '[[', 'target'))
 
-  if(is(target[[1]], 'list')) {
+      # iters
+      ites <- lapply(inp, '[[', 'iters')
+      # dim as 'val', 'iters', 'row'
+      dms <- Reduce('rbind', lapply(ites, dim))
 
-    inp <- lapply(target, function(x) do.call('parsefwdList', x))
+      # CHECK iters match (1/N)
+      its <- max(dms[,2])
 
-    # target
-    trg <- do.call('rbind', lapply(inp, '[[', 'target'))
+      if(any(dms[,2][dms[,2] > 1] != its))
+        stop(paste("Number of iterations in 'iters' must be 1 or", its))
 
-    # iters
-    ites <- lapply(inp, '[[', 'iters')
-    # dim as 'val', 'iters', 'row'
-    dms <- Reduce('rbind', lapply(ites, dim))
+      # FINAL array
+      # dim, sum over rows
+      dms <- c(3, its, sum(dms[,3]))
+      ite <- array(NA, dim=dms, dimnames=list(val=c('min', 'value', 'max'),
+        iters=seq(its), row=seq(dms[3])))
 
-    # CHECK iters match (1/N)
-    its <- max(dms[,2])
+      ite[] <- Reduce(c, lapply(ites, c))
 
-    if(any(dms[,2][dms[,2] > 1] != its))
-      stop(paste("Number of iterations in 'iters' must be 1 or", its))
+      # APERM to 'row', 'val', 'iter'
+      ite <- aperm(ite, c(3, 1, 2))
 
-    # FINAL array
-    # dim, sum over rows
-    dms <- c(3, its, sum(dms[,3]))
-    ite <- array(NA, dim=dms, dimnames=list(val=c('min', 'value', 'max'),
-      iters=seq(its), row=seq(dms[3])))
+      return(fwdControl(target=trg, iters=ite))
 
-    ite[] <- Reduce(c, lapply(ites, c))
-
-    # APERM to 'row', 'val', 'iter'
-    ite <- aperm(ite, c(3, 1, 2))
-
-    return(fwdControl(target=trg, iters=ite))
-
-  } else {
-    
-    inp <- do.call('parsefwdList', target)
+    } else {
+      
+      inp <- do.call('parsefwdList', target)
 
     return(do.call('fwdControl', inp))
   }
@@ -218,36 +220,18 @@ parsefwdList <- function(...) {
   } # }}}
 
 # targetOrder(object) {{{
-targetOrder <- function(object) {
+targetOrder <- function(target, iters) {
 
-  trg <- object@target
-  ite <- object@iters
+  # ORDER by timestep and value/minmax
+  tim <- suppressWarnings(as.integer(target$season))
+  
+  if(all(is.na(tim)))
+    tim[] <- 1
+  else if(sum(!is.na(tim)) != length(tim))
+    stop("Season names cannot be ordered")
 
-  # ORDER by timestep (year + season) ...
-  # LIMIT: can only deal with 100 seasons
-  tim <- (trg$year * 100) + ifelse(is.character(trg$season), 0, as.numeric(trg$season))
-  # ... then 'value' before 'min'/'max'
-  pre <- !is.na(ite[,'value',1])
+  idx <- order(target$year, tim, iters[,'value',])
 
-  return(order(tim, pre))
-}
-# }}}
-
-# targetNo(object) {{{
-targetNo <- function(object) {
-
-  trg <- object@target
-  ite <- object@iters
-
-  # CALCULATE step
-
-  tim <- (trg$year * 100) + as.numeric(ifelse(trg$season == 'all', 0, trg$season))
-
-  # INDEX for 'value' before 'min'/'max'
-  pre <- !is.na(ite[,'value',1])
-
-  idx <- 100 * tim + pre
-
-  return(match(idx, unique(idx)))
+  return(idx)
 }
 # }}}

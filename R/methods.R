@@ -34,7 +34,7 @@ setMethod("show", signature("fwdControl"),
             sprintf("%4.3f", median(x, na.rm=TRUE)), '(',
             sprintf("%4.3f", mad(x, na.rm=TRUE)), ')')
       )
-    print(cbind(`(step)`=targetNo(object), df), row.names=FALSE)
+    print(cbind(`(step)`=rownames(object@target), df), row.names=FALSE)
       
     if(dim(object@iters)[3] > 1) {
       cat("   iters: ", dim(object@iters)[3],"\n\n")

@@ -139,10 +139,8 @@ fwder <- function(fls,  ctrl, sr, sr.residuals = FLQuant(1, dimnames=dimnames(fl
     FCB <- array(c(1,1,1), dim=c(1,3))
     colnames(FCB) <- c("F","C","B")
     attr(ctrl, "FCB") <- FCB
-    # Reorder ctrl@target by order
-    ctrl_order <- order(ctrl@target$order)
-    ctrl@target <- ctrl@target[ctrl_order,]
-    ctrl@iters <- ctrl@iters[ctrl_order,,,drop=FALSE]
+    
+    ctrl@target$order <- seq(1, nrow(ctrl@target))
 
     # Call FLasher run()
     out <- test_operatingModel_run2(flfs, biols, ctrl, effort_mult_initial = 1.0, indep_min = 0.0, indep_max = 1e12, nr_iters = 50)
