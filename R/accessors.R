@@ -1,10 +1,10 @@
 # accessors.R - DESC
-# accessors.R
+# FLasher/R/accessors.R
 
-# Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later
-# Maintainer: Iago Mosqueira, JRC
-# Soundtrack:
-# Notes:
+# Copyright European Union, 2016
+# Author: Iago Mosqueira (EC JRC) <iago.mosqueira@jrc.ec.europa.eu>
+#
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 # target
 setMethod("target", signature(object="fwdControl"),
@@ -16,7 +16,7 @@ setMethod("target", signature(object="fwdControl"),
 # target<-
 setReplaceMethod("target", signature(object="fwdControl", value="data.frame"),
 	function(object, value) {
-		
+    object@target <- value
 		return(object)
 	}
 )
@@ -31,7 +31,7 @@ setMethod("iters", signature(object="fwdControl"),
 # iters<-
 setReplaceMethod("iters", signature(object="fwdControl", value="array"),
 	function(object, value) {
-		
+		object@iters <- value
 		return(object)
 	}
 )

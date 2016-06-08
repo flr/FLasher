@@ -14,7 +14,7 @@
   #' fcn <- fwdControl(data.frame(year=2000:2005, quant='f', value=0.5))
 
   setMethod('fwdControl', signature(target='data.frame', iters='array'),
-    function(target, iters) {
+    function(target, iters, ...) {
       
       # TODO TEST dimensions
       dtg <- dim(target)
@@ -40,10 +40,12 @@
       ite <- array(NA, dim=c(dtg[1], 3, dit[length(dit)]),
         dimnames=list(row=seq(dtg[1]), val=c('min', 'value', 'max'), iter=seq(dit[length(dit)])))
 
+      # MATCH arrays
+      if(all.equal(dim(iters), dim(ite))) {
+         ite[,,] <- iters
       # DIMNAMES in array?
-      if(!is.null(dni)) {
+      } else if(!is.null(dni)) {
         ite[, dni[['val']], ] <- iters
-
       # or NOT
       } else {
         # 2D or dim[2] == 1, assign to 'value'
@@ -87,6 +89,29 @@
 
     }
   ) # }}}
+
+# fwdControl(target='data.frame', iters='missing') {{{
+setMethod('fwdControl', signature(target='data.frame', iters='missing'),
+  function(target) {
+    
+    # CREATE iters
+    dti <- dim(target)
+
+    ite <- array(NA, dim=c(dti[1], 3, 1), dimnames=list(row=1:dti[1], 
+      val=c('min', 'value', 'max'), iter=1))
+
+    # FIND val names in target
+    vns <- c('min', 'value', 'max')
+    nms <- vns %in% colnames(target)
+    ite[, vns[nms], 1] <- unlist(c(target[,vns[nms]]))
+
+    # DROP value, min, max
+    target <- target[!colnames(target) %in% vns[nms]]
+    
+    return(fwdControl(target=target, iters=ite))
+  }
+)
+# }}}
 
   # fwdControl(target='list', iters='missing') {{{
   setMethod('fwdControl', signature(target='list', iters='missing'),
@@ -132,29 +157,6 @@
   }
 )
 
-# }}}
-
-# fwdControl(target='data.frame', iters='missing') {{{
-setMethod('fwdControl', signature(target='data.frame', iters='missing'),
-  function(target) {
-    
-    # CREATE iters
-    dti <- dim(target)
-
-    ite <- array(NA, dim=c(dti[1], 3, 1), dimnames=list(row=1:dti[1], 
-      val=c('min', 'value', 'max'), iter=1))
-
-    # FIND val names in target
-    vns <- c('min', 'value', 'max')
-    nms <- vns %in% colnames(target)
-    ite[, vns[nms], 1] <- unlist(c(target[,vns[nms]]))
-
-    # DROP value, min, max
-    target <- target[!colnames(target) %in% vns[nms]]
-    
-    return(fwdControl(target=target, iters=ite))
-  }
-)
 # }}}
 
 # fwdControl(target='missing', iters='missing') {{{
@@ -230,7 +232,7 @@ targetOrder <- function(target, iters) {
   else if(sum(!is.na(tim)) != length(tim))
     stop("Season names cannot be ordered")
 
-  idx <- order(target$year, tim, iters[,'value',])
+  idx <- order(target$year, tim)
 
   return(idx)
 }

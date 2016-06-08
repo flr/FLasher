@@ -1,5 +1,4 @@
 useDynLib(FLasher)
-exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp,
   evalCpp)
 import(FLCore)
@@ -17,3 +16,4 @@ exportMethods(
   "iters",
   "iters<-"
 	)
+exportPattern("^[[:alpha:]]+")

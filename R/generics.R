@@ -5,10 +5,12 @@
 # Maintainer: Iago Mosqueira, JRC
 # Soundtrack:
 # Notes:
-setGeneric('target<-', function(object, ..., value) standardGeneric('target<-'))
 
 # fwdControl
 setGeneric('fwdControl', function(target, iters, ...) standardGeneric("fwdControl"))
+
+# fwd
+setGeneric('fwd', function(biols, fisheries, control, residuals, ...) standardGeneric("fwd"))
 
 # target, target<-
 setGeneric('target', function(object, ...) standardGeneric('target'))

@@ -13,6 +13,10 @@ get_dataframe_quantity <- function(ctrl) {
     .Call('FLasher_get_dataframe_quantity', PACKAGE = 'FLasher', ctrl)
 }
 
+operatingModelRun <- function(flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max, nr_iters = 50L) {
+    .Call('FLasher_operatingModelRun', PACKAGE = 'FLasher', flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max, nr_iters)
+}
+
 rcpp_hello_world <- function() {
     .Call('FLasher_rcpp_hello_world', PACKAGE = 'FLasher')
 }
