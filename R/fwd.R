@@ -38,38 +38,43 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
     biolscpp[[i]][["srr_residuals"]] <- residuals[[i]]
   }
 
+  # PARSE control
   trg <- target(control)
-  ite <- iters(control)
 
   # CONVERT to numeric 'season', 'area', 'unit'
   if (!is.numeric(trg$season))
-    target(control)[,"season"] <- as.integer(match(trg[,"season"], dnb[["season"]]))
+    trg[,"season"] <- as.integer(match(trg[,"season"], dnb[["season"]]))
   if (!is.numeric(trg$unit))
-    target(control)[,"unit"] <- as.integer(match(trg[,"unit"], dnb[["unit"]]))
+    trg[,"unit"] <- as.integer(match(trg[,"unit"], dnb[["unit"]]))
   if (!is.numeric(trg$area))
-    target(control)[,"area"] <- as.integer(match(trg[,"area"], dnb[["area"]]))
+    trg[,"area"] <- as.integer(match(trg[,"area"], dnb[["area"]]))
 
   # CONVERT to numeric 'fishery', ...
   if (!is.numeric(trg$fishery))
-    target(control)[,"fishery"] <- match(trg[,"fishery"], rownames(dif))
+    trg[,"fishery"] <- match(trg[,"fishery"], rownames(dif))
   if(nrow(dif) == 1 & all(is.na(trg["fishery"])))
-    target(control)[,"fishery"] <- 1L
+    trg[,"fishery"] <- 1L
 
   # ... 'catch', ...
-  # TODO MATCH
-  #if (!is.numeric(trg$catch))
-  #  target(control)[,"catch"] <- match(trg[,"catch"], rownames(dif))
-  #if(nrow(dif) == 1 & all(is.na(trg["catch"])))
-  #  target(control)[,"catch"] <- 1L
-
+  cns <- lapply(fisheries, function(x) names(x))
+  for(i in names(cns))
+    trg[,"catch"] <- as.integer(match(trg[,"catch"], cns[[i]]))
+  
   # ... and 'biol'
   if (!is.numeric(trg$biol))
-    target(control)[,"biol"] <- match(trg[,"biol"], rownames(dib))
+    trg[,"biol"] <- match(trg[,"biol"], rownames(dib))
   if(nrow(dib) == 1 & all(is.na(trg["biol"])))
-    target(control)[,"biol"] <- 1L
+    trg[,"biol"] <- 1L
 
   # CONVERT 'years' and 'relYear' to position indices
-  target(control) <- transform(target(control), year=year - min(dib[,"minyear"]) + 1)
+  mny <- min(dib[,"minyear"]) + 1
+  trg <- transform(trg, year=year - mny)
+  trg <- transform(trg, relYear=relYear - mny)
+  
+  # ADD order column  
+  trg$order <- seq(1, nrow(trg))
+
+  target(control) <- trg
 
   # TODO CHECK rel*
 
@@ -80,9 +85,6 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
   # TODO CREATE FCB, if missing and possible
   
   # CHECK dimensions of FCB combinations
-
-  # ADD order column  
-  control@target$order <- seq(1, nrow(control@target))
 
   # CALL oMRun
   out <- operatingModelRun(fisheries, biolscpp, control,
