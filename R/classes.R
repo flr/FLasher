@@ -87,7 +87,7 @@ setClass("fwdControl",
       stringsAsFactors=FALSE),
     iters=array(NA, dimnames=list(row=1, val=c("min", "value", "max"), iter=1),
       dim=c(1,3,1)),
-    FCB=array(c(1, NA, 1), dim=c(1,3), dimnames=list(1, c("F", "C", "B")))),
+    FCB=array(c(NA), dim=c(1,3), dimnames=list(1, c("F", "C", "B")))),
 
   # VALIDITY
   validity=function(object) {

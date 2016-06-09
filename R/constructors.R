@@ -237,3 +237,73 @@ targetOrder <- function(target, iters) {
   return(idx)
 }
 # }}}
+
+# coerce(FLBiol, FLBiolcpp list) {{{
+#' summary(as(as(ple4, "FLBiol"), 'list'))
+setAs("FLBiol", "list",
+  function(from) {
+
+    list(
+      biol = as(from, "FLBiolcpp"),
+      srr_model_name = SRModelName(from@rec@model),
+      srr_params = as(from@rec@params, "FLQuant"),
+      srr_residuals = FLQuant(),
+      srr_residuals_mult = TRUE)
+  }) # }}}
+
+# FCB {{{
+
+#' fcb <- fcb(biols, fisheries)
+fcb <- function(biols, fisheries) {
+
+  # GET names
+  nmf <- names(fisheries)
+  nmc <- lapply(fisheries, names)
+  nmb <- names(biols)
+
+  fc <- do.call(rbind, lapply(names(nmc), function(x) unlist(cbind(x, nmc[[x]]))))
+  b <- nmb[match(fc[,2], nmb)]
+
+  fcb <- cbind(fc[!is.na(b),, drop=FALSE], b[!is.na(b)])
+  colnames(fcb) <- c("f", "c", "b")
+
+  return(fcb)
+}
+
+#' fcbint(biols, fisheries)
+fcbint <- function(biols, fisheries) {
+  
+  # GET names
+  nmf <- names(fisheries)
+  nmc <- lapply(fisheries, names)
+  nmb <- names(biols)
+
+  fcbint <- array(NA, dim=dim(fcb), dimnames=dimnames(fcb))
+
+  fcbint[,"f"] <- as.integer(match(fcb[,"f"], nmf))
+  fcbint[,"b"] <- as.integer(match(fcb[,"b"], nmb))
+
+  for(i in names(nmc))
+    fcbint[fcb[,"f"] == i, "c"] <- match(fcb[fcb[,"f"] == i, "c"], nmc[[i]])
+
+  return(fcbint)
+}
+
+#' fcb2int(fcb, biols, fisheries)
+fcb2int <- function(fcb, biols, fisheries) {
+  
+  # GET names
+  nmf <- names(fisheries)
+  nmc <- lapply(fisheries, names)
+  nmb <- names(biols)
+
+  fcbint <- array(NA, dim=dim(fcb), dimnames=dimnames(fcb))
+
+  fcbint[,"f"] <- as.integer(match(fcb[,"f"], nmf))
+  fcbint[,"b"] <- as.integer(match(fcb[,"b"], nmb))
+
+  for(i in names(nmc))
+    fcbint[fcb[,"f"] == i, "c"] <- match(fcb[fcb[,"f"] == i, "c"], nmc[[i]])
+
+  return(fcbint)
+} # }}}

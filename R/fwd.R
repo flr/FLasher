@@ -74,6 +74,7 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
   # ADD order column  
   trg$order <- seq(1, nrow(trg))
 
+  # REPLACE target
   target(control) <- trg
 
   # TODO CHECK rel*
@@ -86,6 +87,9 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
   
   # CHECK dimensions of FCB combinations
 
+  # Add FCB if not set
+  control@FCB <- fcbint(fcb(biols, fisheries), biols, fisheries)
+
   # CALL oMRun
   out <- operatingModelRun(fisheries, biolscpp, control,
     effort_mult_initial = 1.0, indep_min = 0.0, indep_max = 1e12, nr_iters = 50)
@@ -94,22 +98,12 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
   for(i in names(biols))
     n(biols[[i]]) <- out$om$biols[[i]]@n
 
-  # RETURN list(biols, fisheries)
-  out <- list(biols=biols, fisheries=out$om$fisheries)
+  # RETURN list(biols, fisheries, control)
+  out <- list(biols=biols, fisheries=out$om$fisheries, control=control)
+
   return(out)
   }
 
 ) # }}}
 
-
-#' summary(as(as(ple4, "FLBiol"), 'list'))
-setAs("FLBiol", "list",
-  function(from) {
-
-    list(
-      biol = as(from, "FLBiolcpp"),
-      srr_model_name = SRModelName(from@rec@model),
-      srr_params = as(from@rec@params, "FLQuant"),
-      srr_residuals = FLQuant(),
-      srr_residuals_mult = TRUE)
-  })
+# fwd(FLStock, FLSR, fwdControl, FLQuants)
