@@ -6,12 +6,13 @@
 # Soundtrack:
 # Notes:
 
-# fwd(FLBiols, FLFisheries, fwdControl, FLQuants) {{{
+# fwd(FLBiols, FLFisheries, fwdControl) {{{
 
 setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
-  control="fwdControl", residuals="FLQuants"),
+  control="fwdControl"),
   
-  function(biols, fisheries, control, residuals) {
+  function(biols, fisheries, control,
+    residuals=lapply(lapply(biols, spwn), "[<-", value=1)) {
 
   # CHECK length and names of biols and residuals
   if(!all.equal(names(biols), names(residuals)))
@@ -81,14 +82,13 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
 
   # TODO ADD minAge and maxAge from fbar range by FLB/FLC
 
-  # CHECK FCB combinations by quant
   
-  # TODO CREATE FCB, if missing and possible
+  # CREATE FCB, if missing and possible
+  if(dim(control@FCB)[1] == 1 & all(is.na(control@FCB)))
+    control@FCB <- fcb2int(fcb(biols, fisheries), biols, fisheries)
   
-  # CHECK dimensions of FCB combinations
-
-  # Add FCB if not set
-  control@FCB <- fcbint(fcb(biols, fisheries), biols, fisheries)
+  # TODO CHECK FCB combinations by quant
+  # TODO CHECK dimensions of FCB combinations
 
   # CALL oMRun
   out <- operatingModelRun(fisheries, biolscpp, control,
@@ -106,4 +106,70 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
 
 ) # }}}
 
-# fwd(FLStock, FLSR, fwdControl, FLQuants)
+# fwd(FLBiols, FLFishery, fwdControl)
+# fwd(FLBiol, FLFisheries, fwdControl)
+# fwd(FLBiol, FLFishery, fwdControl)
+# fwd(FLBiol, FLFishery, missing)
+
+# fwd(FLStock, missing, fwdControl) {{{
+
+setMethod("fwd", signature(biols="FLStock", fisheries="missing",
+  control="fwdControl"),
+  
+  function(biols, control, ..., sr=predictModel(model=rec~a, params=FLPar(a=1))) {
+
+    # biols
+    B <- as(biols, "FLBiol")
+    rec(B) <- predictModel(model=model(sr), params=params(sr))
+    Bs <- FLBiols(B=B)
+
+    # fisheries
+    F <- as(biols, 'FLFishery')
+    name(F) <- "F"
+    names(F) <- "B"
+
+    Fs <- FLFisheries(F=F)
+    Fs@desc <- "F"
+
+    # RUN
+    out <- fwd(Bs, Fs, control, ...)
+
+    # PARSE output
+    Fc <- out$fisheries[[1]][[1]]
+    eff <- out$fisheries[[1]]@effort
+    Bo <- out$biols[[1]]
+
+    # catch.n
+    biols@catch <- catch(Fc)
+    # catch.n
+    biols@catch.n <- catch.n(Fc)
+    # catch.wt
+    biols@catch.wt <- catch.wt(Fc)
+    # landings.n
+    biols@landings.n <- Fc@landings.n
+    # landings.wt
+    biols@landings.wt <- Fc@landings.wt
+    # discards.n
+    biols@discards.n <- Fc@discards.n
+    # discards.wt
+    biols@discards.wt <- Fc@discards.wt
+    # harvest (F)
+    biols@harvest <- FLasher:::calc_F(Fc, Bo, eff)
+    units(biols@harvest) <- "f"
+    # stock.n
+    biols@stock.n <- Bo@n
+    # stock
+    biols@stock <- quantSums(biols@stock.n * biols@stock.wt)
+
+    return(biols)
+  }
+) # }}}
+
+# fwd(FLStock, missing, missing)
+
+# F = alpha * Biomass ^ -beta * sel * effort
+calc_F <- function(catch, biol, effort){
+    biomass <- quantSums(biol@n * biol@wt)
+    F <- (catch@catch.q['alpha',] * biomass ^ (-catch@catch.q['beta',]) * effort) %*% catch@catch.sel
+    return(F)
+}

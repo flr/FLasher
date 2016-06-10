@@ -10,7 +10,7 @@
 setGeneric('fwdControl', function(target, iters, ...) standardGeneric("fwdControl"))
 
 # fwd
-setGeneric('fwd', function(biols, fisheries, control, residuals, ...) standardGeneric("fwd"))
+setGeneric('fwd', function(biols, fisheries, control, ...) standardGeneric("fwd"))
 
 # target, target<-
 setGeneric('target', function(object, ...) standardGeneric('target'))

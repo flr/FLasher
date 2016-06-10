@@ -8,33 +8,28 @@
 
 library(FLasher)
 library(ggplotFL)
+
+# STOCK
 data(ple4)
 
+# SR
 fsr <- fmle(as.FLSR(ple4, model="bevholt"))
 
-#
+# BIOL
 PLE=as(ple4, "FLBiol")
 rec(PLE) <- predictModel(model=model(fsr), params=params(fsr))
 
+# BIOLS
 biols <- FLBiols(PLE=PLE)
 
-#
+# FISHERY
+BT <- as(ple4, 'FLFishery')
+names(BT) <- "PLE"
 
-
-
-BTPLE=as(ple4, "FLCatch")
-name(BTPLE) <- "PLE"
-desc(BTPLE) <- "BTPLE"
-catch.q(BTPLE) <- FLPar(alpha=c(harvest(ple4)[1,1] / catch.sel(BTPLE)[1,1]), beta=0)
-
-BT=FLFishery(name="BT", desc="BT", PLE=BTPLE)
-capacity(BT)[] <- 1
-effort(BT)[] <- c((harvest(ple4) / (catch.q(BTPLE)['alpha',] * catch.sel(BTPLE)))[1,])
-hperiod(BT)[1,] <- 0
-hperiod(BT)[2,] <- 1
-
+# FISHERIES
 fisheries <- FLFisheries(BT=BT)
 fisheries@desc <- "BT"
+
 
 # HINDCASTING
 control <- fwdControl(data.frame(year=2000:2008, quant="catch", value=c(catch(ple4)[,(44:52)]),
@@ -46,7 +41,14 @@ control <- fwdControl(data.frame(year=2000:2008, quant="f", value=c(fbar(ple4)[,
 # 
 residuals <- FLQuants(PLE=window(residuals(fsr), start=1957))
 
+#
 res <- fwd(biols, fisheries, control, residuals)
+
+res <- fwd(biols, fisheries, control)
+res <- fwd(biols, fisheries, control, residuals=residuals)
+
+res <- fwd(ple4, control=control, residuals=residuals[[1]], sr=fsr)
+res <- fwd(ple4, control=control)
 
 #
 plot(FLQuants(FWD=ssb(res$biols[[1]]), PLE=ssb(ple4)))

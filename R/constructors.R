@@ -253,7 +253,7 @@ setAs("FLBiol", "list",
 
 # FCB {{{
 
-#' fcb <- fcb(biols, fisheries)
+#' FCB <- fcb(biols, fisheries)
 fcb <- function(biols, fisheries) {
 
   # GET names
@@ -268,25 +268,6 @@ fcb <- function(biols, fisheries) {
   colnames(fcb) <- c("f", "c", "b")
 
   return(fcb)
-}
-
-#' fcbint(biols, fisheries)
-fcbint <- function(biols, fisheries) {
-  
-  # GET names
-  nmf <- names(fisheries)
-  nmc <- lapply(fisheries, names)
-  nmb <- names(biols)
-
-  fcbint <- array(NA, dim=dim(fcb), dimnames=dimnames(fcb))
-
-  fcbint[,"f"] <- as.integer(match(fcb[,"f"], nmf))
-  fcbint[,"b"] <- as.integer(match(fcb[,"b"], nmb))
-
-  for(i in names(nmc))
-    fcbint[fcb[,"f"] == i, "c"] <- match(fcb[fcb[,"f"] == i, "c"], nmc[[i]])
-
-  return(fcbint)
 }
 
 #' fcb2int(fcb, biols, fisheries)
