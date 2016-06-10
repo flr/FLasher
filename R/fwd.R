@@ -1,10 +1,10 @@
 # fwd.R - DESC
 # fwd.R
 
-# Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later
-# Maintainer: Iago Mosqueira, JRC
-# Soundtrack:
-# Notes:
+# Copyright European Union, 2016
+# Author: Iago Mosqueira (EC JRC) <iago.mosqueira@jrc.ec.europa.eu>
+#
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 # fwd(FLBiols, FLFisheries, fwdControl) {{{
 
@@ -116,7 +116,8 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
 setMethod("fwd", signature(biols="FLStock", fisheries="missing",
   control="fwdControl"),
   
-  function(biols, control, ..., sr=predictModel(model=rec~a, params=FLPar(a=1))) {
+  function(biols, control, sr=predictModel(model=rec~a, params=FLPar(a=1)),
+    residuals=rec(biols)/rec(biols)) {
 
     # biols
     B <- as(biols, "FLBiol")
@@ -132,7 +133,7 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
     Fs@desc <- "F"
 
     # RUN
-    out <- fwd(Bs, Fs, control, ...)
+    out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals))
 
     # PARSE output
     Fc <- out$fisheries[[1]][[1]]
@@ -165,7 +166,35 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
   }
 ) # }}}
 
-# fwd(FLStock, missing, missing)
+# fwd(FLStock, missing, missing, ...) {{{
+
+setMethod("fwd", signature(biols="FLStock", fisheries="missing",
+  control="missing"),
+  
+  function(biols, ..., sr=predictModel(model=rec~a, params=FLPar(a=1)),
+    residuals=rec(biols)/rec(biols)) {
+    
+    # PARSE ...
+    args <- list(...)
+    
+    # Does ... exist?
+    if(length(args) < 1)
+      stop("No fwdControl provided and no FLQuant targets given, cannot do anything!")
+
+    # NAMES in qlevels?
+    if(!names(args) %in% FLasher:::qlevels)
+      stop(paste0("Names of input FLQuant(s) do not match current allowed targets: ",
+            paste(FLasher:::qlevels, collapse=", ")))
+
+    args <- FLQuants(args)
+
+    control <- as(args, "fwdControl")
+
+    out <- fwd(biols, control=control, residuals=residuals, sr=sr)
+
+    return(out)
+  }
+) # }}}
 
 # F = alpha * Biomass ^ -beta * sel * effort
 calc_F <- function(catch, biol, effort){

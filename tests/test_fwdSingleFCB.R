@@ -40,15 +40,23 @@ control <- fwdControl(data.frame(year=2000:2008, quant="f", value=c(fbar(ple4)[,
 
 # 
 residuals <- FLQuants(PLE=window(residuals(fsr), start=1957))
+residuals[[1]][,1]<-1
 
 #
 res <- fwd(biols, fisheries, control, residuals)
 
 res <- fwd(biols, fisheries, control)
+
 res <- fwd(biols, fisheries, control, residuals=residuals)
 
+
+
 res <- fwd(ple4, control=control, residuals=residuals[[1]], sr=fsr)
-res <- fwd(ple4, control=control)
+
+res <- fwd(ple4, control=control, sr=fsr)
+
+res <- fwd(ple4, sr=fsr, catch=FLQuant(1000, dimnames=list(year=1990:1995)))
+
 
 #
 plot(FLQuants(FWD=ssb(res$biols[[1]]), PLE=ssb(ple4)))
