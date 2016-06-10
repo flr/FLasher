@@ -182,9 +182,9 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
       stop("No fwdControl provided and no FLQuant targets given, cannot do anything!")
 
     # NAMES in qlevels?
-    if(!names(args) %in% FLasher:::qlevels)
+    if(!names(args) %in% qlevels)
       stop(paste0("Names of input FLQuant(s) do not match current allowed targets: ",
-            paste(FLasher:::qlevels, collapse=", ")))
+            paste(qlevels, collapse=", ")))
 
     args <- FLQuants(args)
 

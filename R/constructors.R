@@ -7,6 +7,7 @@
   # Notes:
 
   # fwdControl(target='data.frame', iters='array') {{{
+  #' @name fwdControl
   #' @rdname fwdControl
   #' @examples
   #'
@@ -41,7 +42,7 @@
         dimnames=list(row=seq(dtg[1]), val=c('min', 'value', 'max'), iter=seq(dit[length(dit)])))
 
       # MATCH arrays
-      if(all.equal(dim(iters), dim(ite))) {
+      if(identical(dim(iters), dim(ite))) {
          ite[,,] <- iters
       # DIMNAMES in array?
       } else if(!is.null(dni)) {
@@ -239,7 +240,7 @@ targetOrder <- function(target, iters) {
 # }}}
 
 # coerce(FLBiol, FLBiolcpp list) {{{
-#' summary(as(as(ple4, "FLBiol"), 'list'))
+# summary(as(as(ple4, "FLBiol"), 'list'))
 setAs("FLBiol", "list",
   function(from) {
 
@@ -253,7 +254,7 @@ setAs("FLBiol", "list",
 
 # FCB {{{
 
-#' FCB <- fcb(biols, fisheries)
+# FCB <- fcb(biols, fisheries)
 fcb <- function(biols, fisheries) {
 
   # GET names
@@ -270,7 +271,7 @@ fcb <- function(biols, fisheries) {
   return(fcb)
 }
 
-#' fcb2int(fcb, biols, fisheries)
+# fcb2int(fcb, biols, fisheries)
 fcb2int <- function(fcb, biols, fisheries) {
   
   # GET names

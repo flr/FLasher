@@ -59,11 +59,11 @@ res <- fwd(ple4, sr=fsr, catch=FLQuant(1000, dimnames=list(year=1990:1995)))
 
 
 #
-plot(FLQuants(FWD=ssb(res$biols[[1]]), PLE=ssb(ple4)))
+plot(FLQuants(FWD=ssb(res), PLE=ssb(ple4)))
 
 # DEBUG inside fwd()
-test_fwdBiols_as_wrap(biolscpp)
-test_fwdBiol_as_wrap(biolscpp[[1]]$biol)
+# test_fwdBiols_as_wrap(biolscpp)
+# test_fwdBiol_as_wrap(biolscpp[[1]]$biol)
 
 # CHECK
 test_FLCatch_as_wrap(fisheries[[1]][[1]])

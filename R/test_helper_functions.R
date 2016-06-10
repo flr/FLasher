@@ -66,7 +66,7 @@ random_FLQuant_list_generator <- function(min_elements = 1, max_elements = 10, .
 #' Used for automatic testing, particularly of the fwdBiol class in CPP.
 #' 
 #' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
-#' @params ... Other arguments to pass to random_FLQuant_generator().
+#' @param ... Other arguments to pass to random_FLQuant_generator().
 #' @export
 #' @return An FLBiolcpp
 #' @examples
