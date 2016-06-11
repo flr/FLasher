@@ -121,7 +121,12 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
 
     # biols
     B <- as(biols, "FLBiol")
-    rec(B) <- predictModel(model=model(sr), params=params(sr))
+    if(is(sr, "predictModel") | is(sr, "FLSR"))
+      rec(B) <- predictModel(model=model(sr), params=params(sr))
+    else if(is(sr, "list")) {
+      B@rec@model <- do.call(sr$model, list())[["model"]]
+      B@rec@params <- sr$params
+    }
     Bs <- FLBiols(B=B)
 
     # fisheries

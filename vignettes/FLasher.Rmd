@@ -5,7 +5,7 @@
 	IPSC - Maritime Affairs Unit G04\\
 	Ispra, Italy\\
 	\url{https://fishreg.jrc.ec.europa.eu/}} - FLR Project
-% `r format(as.Date(system("git log -1 --format=%ci FLasher.Rmd", intern=TRUE)), "%B %Y")`
+% `r format(Sys.Date(), "%d %B %Y")`
 
 <!--
 %\VignetteEngine{knitr::knitr}
