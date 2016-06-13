@@ -713,7 +713,7 @@ make_skipjack_operatingModel <- function(niters = 1000, sd = 0.1){
     # Blow up to have iters
     biol <- propagate(biol, niters)
     # Add noise to wts
-    wt(biol) <- rlnorm(wt(biol), sd=sd)
+    wt(biol) <- rlnorm(wt(biol), sd=sdlog)
     # SRR Residuals
     dim <- dim(n(biol))
     dim[1] <- 1

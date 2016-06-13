@@ -17,3 +17,19 @@
 # Setting up targets and limits
 
 ## Creating a fwdControl object
+
+# FLBiol + FLFisheries
+
+# FLStock
+
+```{r}
+data(ple4)
+
+fsr <- fmle(as.FLSR(ple4, model="bevholt"))
+
+control <- fwdControl(data.frame(year=2000:2008, quant="f", value=c(fbar(ple4)[,(44:52)]),
+  minAge=2, maxAge=6))
+
+res <- fwd(ple4, control=control, sr=fsr)
+
+```

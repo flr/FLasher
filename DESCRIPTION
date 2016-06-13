@@ -1,11 +1,11 @@
 Package: FLasher
 Type: Package
-Title: Projection and Forecasting of Fish Populations, Stocks and Fleets.
+Title: Projection and Forecasting of Fish Populations, Stocks and Fleets
 Description: Projection of future population and fishery dynamics is carried out
     for a given set of management targets. A system of equations is solved, using
     Automatic Differentation (AD), for the levels of effort by fishery/fleet that
     will result in the required abundances, catches or fishing mortalities.
-Version: 0.1.0.9008
+Version: 0.0.1
 Date: 2016-06-10
 Authors@R: c(person(given = 'Finlay', family = 'Scott', role = c('aut'),
             email = 'finlay.scott@jrc.ec.europa.eu'),
@@ -18,6 +18,7 @@ Collate:
     generics.R
     accessors.R
     methods.R
+    utilities.R
     fwd.R
     constructors.R
     RcppExports.R

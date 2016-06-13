@@ -6,7 +6,7 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
-qlevels <-  c('catch', 'landings', 'discards', 'f', 'ssb')
+.qlevels <-  c('catch', 'landings', 'discards', 'f', 'ssb')
 
 # TODO
 # qlevels <-  c('f', 'z', 'ssb', 'tsb', 'rec', 'biomass', 'catch', 'landings',
@@ -78,7 +78,7 @@ setClass("fwdControl",
   # PROTOTYPE
   # year quant season area unit relYear relSeason relFishery relCatch relBiol minAge maxAge fishery catch biol
   prototype=list(
-    target=data.frame(year=1, quant=factor(NA, levels=FLasher:::qlevels),
+    target=data.frame(year=1, quant=factor(NA, levels=.qlevels),
       season="all", area="unique", unit="unique",
       relYear=as.integer(NA), relSeason=as.integer(NA),
       relFishery=as.integer(NA), relCatch=as.integer(NA), relBiol=as.integer(NA),
@@ -114,7 +114,7 @@ setClass("fwdControl",
       return("@FCB array must have 2 dimensions")
 
     # levels in "quant"
-    if(!all(as.character(object@target$quant) %in% FLasher:::qlevels))
+    if(!all(as.character(object@target$quant) %in% .qlevels))
       return("Specified 'quant' currently not available as target in fwd")
   }
 ) # }}}

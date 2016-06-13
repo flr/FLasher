@@ -18,3 +18,6 @@ setGeneric('target<-', function(object, ..., value) standardGeneric('target<-'))
 
 # iters<-
 setGeneric('iters<-', function(object, ..., value) standardGeneric('iters<-'))
+
+# fillchar
+setGeneric("fillchar", function(object) standardGeneric("fillchar"))

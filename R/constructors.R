@@ -17,10 +17,12 @@
   setMethod('fwdControl', signature(target='data.frame', iters='array'),
     function(target, iters, ...) {
       
-      # TODO TEST dimensions
+      # dimensions
       dtg <- dim(target)
       dit <- dim(iters)
       dni <- dimnames(iters)
+      
+      # TODO TEST dimensions
 
       # COMPLETE df
       trg <- new('fwdControl')@target[rep(1, nrow(target)),]
@@ -35,11 +37,12 @@
       trg[, names(target)[names(target) %in% names(trg)]] <- target
 
       # HACK: reassign quant to keep factors
-      trg[,'quant']  <- factor(target$quant, levels=FLasher:::qlevels)
+      trg[,'quant']  <- factor(target$quant, levels=.qlevels)
 
       # MASTER iters
       ite <- array(NA, dim=c(dtg[1], 3, dit[length(dit)]),
-        dimnames=list(row=seq(dtg[1]), val=c('min', 'value', 'max'), iter=seq(dit[length(dit)])))
+        dimnames=list(row=seq(dtg[1]), val=c('min', 'value', 'max'),
+        iter=seq(dit[length(dit)])))
 
       # MATCH arrays
       if(identical(dim(iters), dim(ite))) {
@@ -57,6 +60,8 @@
           ite[,,] <- iters
         }
       }
+
+      # TODO CHECK quant ~ dims
 
       # REORDER by year, season, value/min-max
       idx <- targetOrder(trg, ite)
@@ -238,19 +243,6 @@ targetOrder <- function(target, iters) {
   return(idx)
 }
 # }}}
-
-# coerce(FLBiol, FLBiolcpp list) {{{
-# summary(as(as(ple4, "FLBiol"), 'list'))
-setAs("FLBiol", "list",
-  function(from) {
-
-    list(
-      biol = as(from, "FLBiolcpp"),
-      srr_model_name = SRModelName(from@rec@model),
-      srr_params = as(from@rec@params, "FLQuant"),
-      srr_residuals = FLQuant(),
-      srr_residuals_mult = TRUE)
-  }) # }}}
 
 # FCB {{{
 

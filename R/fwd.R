@@ -106,8 +106,42 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
 
 ) # }}}
 
-# fwd(FLBiols, FLFishery, fwdControl)
-# fwd(FLBiol, FLFisheries, fwdControl)
+# fwd(FLBiols, FLFishery, fwdControl) {{{
+
+setMethod("fwd", signature(biols="FLBiols", fisheries="FLFishery",
+  control="fwdControl"),
+  
+  function(biols, fisheries, control, ...) {
+    res <- fwd(biols=biols, fisheries=FLFisheries(F=fisheries),
+      control=control, ...)
+    res$fisheries <- res$fisheries[[1]]
+    return(res)
+  }
+) # }}}
+
+# fwd(FLBiol, FLFisheries, fwdControl) {{{
+
+setMethod("fwd", signature(biols="FLBiol", fisheries="FLFisheries",
+  control="fwdControl"),
+  
+  function(biols, fisheries, control, ...) {
+ 
+    # IF   
+    len <- unlist(lapply(fisheries, length))
+    if(any(len > 1))
+      stop("")
+    nms <- names(fisheries[[1]])[1]
+    
+    biols <- FLBiols(B=biols)
+    names(biols) <- nms
+    
+    res <- fwd(biols=biols, fisheries=fisheries,
+      control=control, ...)
+    res$biols <- res$biols[[1]]
+    return(res)
+  }
+) # }}}
+
 # fwd(FLBiol, FLFishery, fwdControl)
 # fwd(FLBiol, FLFishery, missing)
 
@@ -160,7 +194,7 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
     # discards.wt
     biols@discards.wt <- Fc@discards.wt
     # harvest (F)
-    biols@harvest <- FLasher:::calc_F(Fc, Bo, eff)
+    biols@harvest <- calc_F(Fc, Bo, eff)
     units(biols@harvest) <- "f"
     # stock.n
     biols@stock.n <- Bo@n
@@ -187,9 +221,9 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
       stop("No fwdControl provided and no FLQuant targets given, cannot do anything!")
 
     # NAMES in qlevels?
-    if(!names(args) %in% qlevels)
+    if(!names(args) %in% .qlevels)
       stop(paste0("Names of input FLQuant(s) do not match current allowed targets: ",
-            paste(qlevels, collapse=", ")))
+            paste(.qlevels, collapse=", ")))
 
     args <- FLQuants(args)
 
@@ -200,10 +234,3 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
     return(out)
   }
 ) # }}}
-
-# F = alpha * Biomass ^ -beta * sel * effort
-calc_F <- function(catch, biol, effort){
-    biomass <- quantSums(biol@n * biol@wt)
-    F <- (catch@catch.q['alpha',] * biomass ^ (-catch@catch.q['beta',]) * effort) %*% catch@catch.sel
-    return(F)
-}

@@ -105,7 +105,6 @@ target <- list(list(year=1990, quant='f', max=runif(10, 0.1, 0.2), min=NA),
 fwdControl(target)
 
 
-
 # list elements with more than one row
 
 target <- list(list(year=1990:1992, quant='f', max=rep(1, 10), min=0.05),

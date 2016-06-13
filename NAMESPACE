@@ -1,6 +1,8 @@
 useDynLib(FLasher)
 importFrom(Rcpp,
   evalCpp)
+importFrom(stats,
+  runif)
 import(FLCore)
 import(FLFishery)
 exportClasses(
