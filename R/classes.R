@@ -7,7 +7,7 @@
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 # .qlevels - available quants for fwdControl
-.qlevels <-  c('catch', 'landings', 'discards', 'f', 'ssb')
+.qlevels <-  c('catch', 'landings', 'discards', 'f', 'fbar', 'ssb')
 
 # .fcb, .vfcb - Possible fishery-catch-biol combinations in @target
 .fcb <- list(

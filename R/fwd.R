@@ -6,9 +6,6 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
-isNA <- function(x) is.na(x) | x == "NA"
-
-
 # fwd(FLBiols, FLFisheries, fwdControl) {{{
 
 setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
@@ -65,7 +62,6 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
     stop("Misspecified target(s)")
 
   # CONVERT to numeric 'fishery', ...
-
   if (!is.numeric(trg$fishery))
     trg[,"fishery"] <- match(trg[,"fishery"], rownames(dif))
   if(nrow(dif) == 1 & all(is.na(trg["fishery"])))
@@ -85,7 +81,7 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
     trg[,"biol"] <- 1L
 
   # CONVERT 'years' and 'relYear' to position indices
-  mny <- min(dib[,"minyear"]) + 1
+  mny <- min(dib[,"minyear"]) - 1
   trg <- transform(trg, year=year - mny)
   trg <- transform(trg, relYear=relYear - mny)
  
@@ -96,8 +92,6 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
 
   # ADD order column  
   trg$order <- seq(1, nrow(trg))
-
-  print(trg)
 
   # REPLACE target
   target(control) <- trg
@@ -253,8 +247,8 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
 
     # IF minAge and maxAge are NA, then range(min, max)
     arng <- control@target[,c("minAge", "maxAge")]
-    arng[,1] <- ifelse(is.na(arng[,1]), range(biols, "min"), arng[,1])
-    arng[,2] <- ifelse(is.na(arng[,2]), range(biols, "max"), arng[,2])
+    arng[,1] <- ifelse(is.na(arng[,1]), range(biols, "minfbar"), arng[,1])
+    arng[,2] <- ifelse(is.na(arng[,2]), range(biols, "maxfbar"), arng[,2])
     control@target[,c("minAge", "maxAge")] <- arng
   
     # RUN
@@ -265,16 +259,20 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
     eff <- out$fisheries[[1]]@effort
     Bo <- out$biols[[1]]
 
-    # catch.n
+    # catch
     biols@catch <- catch(Fc)
     # catch.n
     biols@catch.n <- catch.n(Fc)
     # catch.wt
     biols@catch.wt <- catch.wt(Fc)
+    # landings
+    biols@landings <- landings(Fc)
     # landings.n
     biols@landings.n <- Fc@landings.n
     # landings.wt
     biols@landings.wt <- Fc@landings.wt
+    # discards
+    biols@discards <- discards(Fc)
     # discards.n
     biols@discards.n <- Fc@discards.n
     # discards.wt
@@ -293,14 +291,25 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
 
 # fwd(FLStock, missing, missing, ...) {{{
 
-setMethod("fwd", signature(biols="FLStock", fisheries="missing",
+setMethod("fwd", signature(biols="FLStock", fisheries="ANY",
   control="missing"),
   
-  function(biols, ..., sr=predictModel(model=rec~a, params=FLPar(a=1)),
+  function(biols, fisheries=missing, ..., sr=predictModel(model=rec~a, params=FLPar(a=1)),
     residuals=rec(biols)/rec(biols)) {
     
     # PARSE ...
     args <- list(...)
+    
+    # HACK: deal with f assigned to fisheries
+    if(!missing(fisheries)) {
+
+      if(!is(fisheries, "FLQuant"))
+        stop("targets can only be of class FLQuant if no fwdControl is provided")
+      narg <- names(sys.calls()[[1]])
+      narg <- narg[!narg %in% c("", "biols", "sr")]
+
+      args[[narg]] <- fisheries
+    }
     
     # Does ... exist?
     if(length(args) < 1)
