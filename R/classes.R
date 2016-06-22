@@ -6,11 +6,24 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
+# .qlevels - available quants for fwdControl
 .qlevels <-  c('catch', 'landings', 'discards', 'f', 'ssb')
 
-# TODO
-# qlevels <-  c('f', 'z', 'ssb', 'tsb', 'rec', 'biomass', 'catch', 'landings',
-#   'discards', 'costs', 'revenue', 'profit', 'effort', 'msize')
+# .fcb, .vfcb - Possible fishery-catch-biol combinations in @target
+.fcb <- list(
+  list(quant="effort", fishery=TRUE, catch=FALSE, biol=FALSE),
+  list(quant=c("fbar", "f"), fishery=c(TRUE, FALSE), catch=c(TRUE, FALSE), biol=c(TRUE,TRUE)),
+  list(quant=c("catch", "landings", "discards"),
+    fishery=c(TRUE, FALSE),catch=c(TRUE, FALSE), biol=c(FALSE, TRUE)),
+  list(quant=c("ssb", "srp"), catch=FALSE, fishery=FALSE, biol=TRUE))
+
+foo <- function(x) {
+  fcb <- as.data.frame(x[2:4])
+  quant <- rep(x[[1]], each=nrow(fcb))
+  return(cbind(data.frame(quant=quant), fcb[rep(seq(nrow(fcb)), length(x[[1]])),]))
+}
+
+.vfcb <- do.call(rbind, c(lapply(.fcb, foo), list(make.row.names = FALSE)))
 
 # fwdControl class {{{
 
@@ -83,7 +96,7 @@ setClass("fwdControl",
       relYear=as.integer(NA), relSeason=as.integer(NA),
       relFishery=as.integer(NA), relCatch=as.integer(NA), relBiol=as.integer(NA),
       minAge=as.integer(NA), maxAge=as.integer(NA),
-      fishery="NA", catch="NA", biol="NA",
+      fishery=as.integer(NA), catch=as.integer(NA), biol=as.integer(NA),
       stringsAsFactors=FALSE),
     iters=array(NA, dimnames=list(row=1, val=c("min", "value", "max"), iter=1),
       dim=c(1,3,1)),

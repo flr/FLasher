@@ -27,6 +27,9 @@ setAs("FLQuants", "fwdControl",
 			target <- cbind(df[,c('year', 'data')], quant=quant)
 			names(target)[grep('data', names(target))] <- 'value'
 
+      target <- cbind(target, fishery=as.numeric(NA), catch=as.numeric(NA),
+        biol=1)
+
 			return(fwdControl(target))
 		} else {
 
@@ -36,6 +39,9 @@ setAs("FLQuants", "fwdControl",
 			arrt <- array(NA, dim=c(dim(target)[1], 3, dim(flq)[6]),
 				dimnames=list(seq(dim(target)[1]), c('min', 'value', 'max'), iter=dimnames(flq)$iter))
 			arrt[,'val',] <- c(flq)
+      
+      target <- cbind(target, fishery=as.numeric(NA), catch=as.numeric(NA),
+        biol=1)
 			
 			return(fwdControl(target, trgtArray=arrt))
 		}

@@ -1,100 +1,102 @@
-  # constructors.R - Constructor methods for fwdControl
-  # FLasher/R/constructors.R
+# constructors.R - Constructor methods for fwdControl
+# FLasher/R/constructors.R
 
-  # Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later
-  # Maintainer: Iago Mosqueira, JRC
-  # Soundtrack:
-  # Notes:
+# Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later
+# Maintainer: Iago Mosqueira, JRC
+# Soundtrack:
+# Notes:
 
-  # fwdControl(target='data.frame', iters='array') {{{
-  #' @name fwdControl
-  #' @rdname fwdControl
-  #' @examples
-  #'
-  #' # Construct from data.frame and array
-  #' fcn <- fwdControl(data.frame(year=2000:2005, quant='f', value=0.5))
+# fwdControl(target='data.frame', iters='array') {{{
+#' @name fwdControl
+#' @rdname fwdControl
+#' @examples
+#'
+#' # Construct from data.frame and array
+#' fcn <- fwdControl(data.frame(year=2000:2005, quant='f', value=0.5))
 
-  setMethod('fwdControl', signature(target='data.frame', iters='array'),
-    function(target, iters, ...) {
-      
-      # dimensions
-      dtg <- dim(target)
-      dit <- dim(iters)
-      dni <- dimnames(iters)
-      
-      # TODO TEST dimensions
+setMethod('fwdControl', signature(target='data.frame', iters='array'),
+  function(target, iters, ...) {
+    
+    # dimensions
+    dtg <- dim(target)
+    dit <- dim(iters)
+    dni <- dimnames(iters)
+    
+    # TODO TEST dimensions
 
-      # COMPLETE df
-      trg <- new('fwdControl')@target[rep(1, nrow(target)),]
-      
-      # HACK: drop rownames
-      rownames(trg) <- NULL
-      
-      # CONVERT year to integer
-      if('year' %in% names(target))
-        target$year <- as.integer(target$year)
-      # ASSIGN to trg, DROP 'min', 'value', 'max'
-      trg[, names(target)[names(target) %in% names(trg)]] <- target
+    # COMPLETE df
+    trg <- new('fwdControl')@target[rep(1, nrow(target)),]
+    
+    # HACK: drop rownames
+    rownames(trg) <- NULL
+    
+    # CONVERT year to integer
+    if('year' %in% names(target))
+      target$year <- as.integer(target$year)
+    # ASSIGN to trg, DROP 'min', 'value', 'max'
+    trg[, names(target)[names(target) %in% names(trg)]] <- target
 
-      # HACK: reassign quant to keep factors
-      trg[,'quant']  <- factor(target$quant, levels=.qlevels)
+    # HACK: reassign quant to keep factors
+    trg[,'quant']  <- factor(target$quant, levels=.qlevels)
 
-      # MASTER iters
-      ite <- array(NA, dim=c(dtg[1], 3, dit[length(dit)]),
-        dimnames=list(row=seq(dtg[1]), val=c('min', 'value', 'max'),
-        iter=seq(dit[length(dit)])))
+    # MASTER iters
+    ite <- array(NA, dim=c(dtg[1], 3, dit[length(dit)]),
+      dimnames=list(row=seq(dtg[1]), val=c('min', 'value', 'max'),
+      iter=seq(dit[length(dit)])))
 
-      # MATCH arrays
-      if(identical(dim(iters), dim(ite))) {
-         ite[,,] <- iters
-      # DIMNAMES in array?
-      } else if(!is.null(dni)) {
-        ite[, dni[['val']], ] <- iters
-      # or NOT
+    # MATCH arrays
+    if(identical(dim(iters), dim(ite))) {
+       ite[,,] <- iters
+    # DIMNAMES in array?
+    } else if(!is.null(dni)) {
+      ite[, dni[['val']], ] <- iters
+    # or NOT
+    } else {
+      # 2D or dim[2] == 1, assign to 'value'
+      if(length(dit) == 2 | dit[2] == 1) {
+        ite[,'value',] <- iters
+      # 3D
       } else {
-        # 2D or dim[2] == 1, assign to 'value'
-        if(length(dit) == 2 | dit[2] == 1) {
-          ite[,'value',] <- iters
-        # 3D
-        } else {
-          ite[,,] <- iters
-        }
+        ite[,,] <- iters
       }
-
-      # TODO CHECK quant ~ dims
-
-      # REORDER by year, season, value/min-max
-      idx <- targetOrder(trg, ite)
-      trg <- trg[idx,]
-      row.names(trg) <- seq(len=nrow(trg))
-
-      ite <- ite[idx,,,drop=FALSE]
-      rownames(ite) <- seq(len=nrow(trg))
-
-      return(new('fwdControl', target=trg, iters=ite))
     }
-  ) 
-  # }}}
 
-  # fwdControl(target='data.frame', iters='numeric') {{{
-  setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
-    function(target, iters) {
+    # TODO CHECK quant ~ dims
 
-    if(length(iters) > 1)
-      stop("'iters' must be of length 1 or of class 'array'")
+    # TODO Default fcb
 
-    # CREATE w/ empty iters
-    res <- fwdControl(target=target)
-    # then EXTEND
-    resits <- res@iters[,,rep(1, iters), drop=FALSE]
-    # HACK: fix iters dimnames$iter
-    dimnames(resits)$iter <- seq(1, iters)
-    res@iters <- resits
+    # REORDER by year, season, value/min-max
+    idx <- targetOrder(trg, ite)
+    trg <- trg[idx,]
+    row.names(trg) <- seq(len=nrow(trg))
 
-    return(res)
+    ite <- ite[idx,,,drop=FALSE]
+    rownames(ite) <- seq(len=nrow(trg))
 
-    }
-  ) # }}}
+    return(new('fwdControl', target=trg, iters=ite))
+  }
+) 
+# }}}
+
+# fwdControl(target='data.frame', iters='numeric') {{{
+setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
+  function(target, iters) {
+
+  if(length(iters) > 1)
+    stop("'iters' must be of length 1 or of class 'array'")
+
+  # CREATE w/ empty iters
+  res <- fwdControl(target=target)
+  # then EXTEND
+  resits <- res@iters[,,rep(1, iters), drop=FALSE]
+  # HACK: fix iters dimnames$iter
+  dimnames(resits)$iter <- seq(1, iters)
+  res@iters <- resits
+
+  return(res)
+
+  }
+) # }}}
 
 # fwdControl(target='data.frame', iters='missing') {{{
 setMethod('fwdControl', signature(target='data.frame', iters='missing'),
@@ -259,6 +261,7 @@ fcb <- function(biols, fisheries) {
 
   fcb <- cbind(fc[!is.na(b),, drop=FALSE], b[!is.na(b)])
   colnames(fcb) <- c("f", "c", "b")
+  rownames(fcb) <- seq(nrow(fcb))
 
   return(fcb)
 }

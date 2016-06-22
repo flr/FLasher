@@ -6,6 +6,9 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
+isNA <- function(x) is.na(x) | x == "NA"
+
+
 # fwd(FLBiols, FLFisheries, fwdControl) {{{
 
 setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
@@ -13,7 +16,7 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
   
   function(biols, fisheries, control,
     residuals=lapply(lapply(biols, spwn), "[<-", value=1)) {
-
+  
   # CHECK length and names of biols and residuals
   if(!all.equal(names(biols), names(residuals)))
     stop("Names of biols and residuals must match exactly")
@@ -39,6 +42,10 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
     biolscpp[[i]][["srr_residuals"]] <- residuals[[i]]
   }
 
+  # CREATE FCB, if missing and possible
+  if(dim(control@FCB)[1] == 1 & all(is.na(control@FCB)))
+    control@FCB <- fcb2int(fcb(biols, fisheries), biols, fisheries)
+
   # PARSE control
   trg <- target(control)
 
@@ -49,17 +56,27 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
     trg[,"unit"] <- as.integer(match(trg[,"unit"], dnb[["unit"]]))
   if (!is.numeric(trg$area))
     trg[,"area"] <- as.integer(match(trg[,"area"], dnb[["area"]]))
+  
+  # CHECK fcb combinations by quant
+  tfcb <- trg[,c("quant", "fishery", "catch", "biol")]
+  tfcb[,-1] <- !is.na(tfcb[,-1])
+  idx <- merge(tfcb, .vfcb)
+  if(nrow(idx) != nrow(tfcb))
+    stop("Misspecified target(s)")
 
   # CONVERT to numeric 'fishery', ...
+
   if (!is.numeric(trg$fishery))
     trg[,"fishery"] <- match(trg[,"fishery"], rownames(dif))
   if(nrow(dif) == 1 & all(is.na(trg["fishery"])))
     trg[,"fishery"] <- 1L
 
   # ... 'catch', ...
-  cns <- lapply(fisheries, function(x) names(x))
-  for(i in names(cns))
-    trg[,"catch"] <- as.integer(match(trg[,"catch"], cns[[i]]))
+  if (!is.numeric(trg$catch)) {
+    cns <- lapply(fisheries, function(x) names(x))
+    for(i in names(cns))
+      trg[,"catch"] <- as.integer(match(trg[,"catch"], cns[[i]]))
+  }
   
   # ... and 'biol'
   if (!is.numeric(trg$biol))
@@ -71,24 +88,25 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
   mny <- min(dib[,"minyear"]) + 1
   trg <- transform(trg, year=year - mny)
   trg <- transform(trg, relYear=relYear - mny)
-  
+ 
+  # TODO CHECK rel*
+  # Allow all NA
+  # IF annual model & relY, then relS == 1 A XNOR B
+  # relY AND relS? Then check relF, relC, relB as FCB
+
   # ADD order column  
   trg$order <- seq(1, nrow(trg))
+
+  print(trg)
 
   # REPLACE target
   target(control) <- trg
 
-  # TODO CHECK rel*
-
-  # TODO ADD minAge and maxAge from fbar range by FLB/FLC
-
-  
-  # CREATE FCB, if missing and possible
-  if(dim(control@FCB)[1] == 1 & all(is.na(control@FCB)))
-    control@FCB <- fcb2int(fcb(biols, fisheries), biols, fisheries)
-  
-  # TODO CHECK FCB combinations by quant
-  # TODO CHECK dimensions of FCB combinations
+  # FIX empty character slots
+  if(length(fisheries@desc) == 0)
+    fisheries@desc <- character(1)
+  if(length(biols@desc) == 0)
+    biols@desc <- character(1)
 
   # CALL oMRun
   out <- operatingModelRun(fisheries, biolscpp, control,
@@ -142,8 +160,64 @@ setMethod("fwd", signature(biols="FLBiol", fisheries="FLFisheries",
   }
 ) # }}}
 
-# fwd(FLBiol, FLFishery, fwdControl)
-# fwd(FLBiol, FLFishery, missing)
+# fwd(FLBiol, FLFishery, fwdControl) {{{
+
+setMethod("fwd", signature(biols="FLBiol", fisheries="FLFishery",
+  control="fwdControl"),
+  
+  function(biols, fisheries, control,
+    residuals=FLQuant(1, dimnames=dimnames(rec(biols)))) {
+
+    # COERCE to FLBiols and FLFisheries
+    Bs <- FLBiols(B=biols)
+    Fs <- FLFisheries(F=fisheries)
+    Fs@desc <- "F"
+
+    # SET @FCB
+    control@FCB <- matrix(1, ncol=3, nrow=1, dimnames=list(1, c("F", "C", "B")))
+
+    # SET @target[fcb]
+    control@target[c("fishery", "catch", "biol")] <- rep(c(NA, NA, 1), each=dim(control@target)[1])
+
+    # RUN
+    out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals))
+
+    # PARSE output
+    Fc <- out$fisheries[[1]][[1]]
+    Bo <- out$biols[[1]]
+
+    return(list(biols=Bo, fisheries=Fc))
+  }
+) # }}}
+
+# fwd(FLBiol, FLFishery, missing) {{{
+
+setMethod("fwd", signature(biols="FLBiol", fisheries="FLFishery",
+  control="missing"),
+  
+  function(biols, fisheries, ..., residuals=FLQuant(1, dimnames=dimnames(m(biols)))) {
+    
+    # PARSE ...
+    args <- list(...)
+    
+    # Does ... exist?
+    if(length(args) < 1)
+      stop("No fwdControl provided and no FLQuant targets given, cannot do anything!")
+
+    # NAMES in qlevels?
+    if(!names(args) %in% .qlevels)
+      stop(paste0("Names of input FLQuant(s) do not match current allowed targets: ",
+            paste(.qlevels, collapse=", ")))
+
+    args <- FLQuants(args)
+
+    control <- as(args, "fwdControl")
+
+    out <- fwd(biols, fisheries, control=control, residuals=residuals)
+
+    return(out)
+  }
+) # }}}
 
 # fwd(FLStock, missing, fwdControl) {{{
 
@@ -151,9 +225,9 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
   control="fwdControl"),
   
   function(biols, control, sr=predictModel(model=rec~a, params=FLPar(a=1)),
-    residuals=rec(biols)/rec(biols)) {
+    residuals=FLQuant(1, dimnames=dimnames(rec(biols)))) {
 
-    # biols
+    # COERCE to FLBiols
     B <- as(biols, "FLBiol")
     if(is(sr, "predictModel") | is(sr, "FLSR"))
       rec(B) <- predictModel(model=model(sr), params=params(sr))
@@ -163,7 +237,7 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
     }
     Bs <- FLBiols(B=B)
 
-    # fisheries
+    # COERCE to FLFisheries
     F <- as(biols, 'FLFishery')
     name(F) <- "F"
     names(F) <- "B"
@@ -171,6 +245,18 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
     Fs <- FLFisheries(F=F)
     Fs@desc <- "F"
 
+    # SET @FCB
+    control@FCB <- matrix(1, ncol=3, nrow=1, dimnames=list(1, c("F", "C", "B")))
+
+    # SET @target[fcb]
+    control@target[c("fishery", "catch", "biol")] <- rep(c(NA, NA, 1), each=dim(control@target)[1])
+
+    # IF minAge and maxAge are NA, then range(min, max)
+    arng <- control@target[,c("minAge", "maxAge")]
+    arng[,1] <- ifelse(is.na(arng[,1]), range(biols, "min"), arng[,1])
+    arng[,2] <- ifelse(is.na(arng[,2]), range(biols, "max"), arng[,2])
+    control@target[,c("minAge", "maxAge")] <- arng
+  
     # RUN
     out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals))
 

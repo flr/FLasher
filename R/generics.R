@@ -1,10 +1,10 @@
 # generics.R - DESC
 # generics.R
 
-# Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later
-# Maintainer: Iago Mosqueira, JRC
-# Soundtrack:
-# Notes:
+# Copyright European Union, 2016
+# Author: Iago Mosqueira (EC JRC) <iago.mosqueira@jrc.ec.europa.eu>
+#
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 # fwdControl
 setGeneric('fwdControl', function(target, iters, ...) standardGeneric("fwdControl"))
@@ -21,3 +21,6 @@ setGeneric('iters<-', function(object, ..., value) standardGeneric('iters<-'))
 
 # fillchar
 setGeneric("fillchar", function(object) standardGeneric("fillchar"))
+
+# stf
+setGeneric("stf", function(object,...) standardGeneric("stf"))

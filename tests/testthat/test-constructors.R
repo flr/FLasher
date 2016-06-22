@@ -115,7 +115,7 @@ fwdControl(target)
 #
 
 target <- list(list(year=1990, season=1:4, quant='f', max=rep(1, 10), min=0.05),
-     list(year=1993, quant='ssb', value=rnorm(10, 200)))
+     list(year=1993, quant='ssb', season=1, value=rnorm(10, 200)))
 
 fwdControl(target)
 

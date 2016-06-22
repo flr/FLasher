@@ -355,8 +355,8 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
     # Half of these are FC, the others B
     FC_targets <- sample(fish_targets, ceiling(length(fish_targets) / 2))
     B_targets <- fish_targets[!(fish_targets %in% FC_targets)]
-    target[FC_targets,c("fishery")] <- round(runif(length(FC_targets)*2, min = 1, max = 2))
-    target[FC_targets,c("catch")] <- round(runif(length(FC_targets)*2, min = 1, max = 2))
+    target[FC_targets,c("fishery")] <- round(runif(length(FC_targets), min = 1, max = 2))
+    target[FC_targets,c("catch")] <- round(runif(length(FC_targets), min = 1, max = 2))
     target[B_targets,"biol"] <- round(runif(length(B_targets), min = 1, max = 3))
     # Abundance targets are biol only
     biol_targets <- which(target$quant %in% abundance_quantities)
