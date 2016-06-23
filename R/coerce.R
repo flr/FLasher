@@ -11,26 +11,17 @@
 setAs("FLQuants", "fwdControl",
   function(from) {
 		
-		# CHECK length == 1
-		if (length(from) != 1)
-			stop("Method needs a single FLQuant")
-
-		# NAME
-		quant <- names(from)
-
 		# CONVERT
-		flq <- from[[1]]
-		df <- as.data.frame(flq)[,c('year', 'iter', 'data')]
+    target <- as.data.frame(from)[,c('year', 'iter', 'data', 'qname')]
+    names(target)[3:4] <- c('value', 'quant')
 
 		# ITERS
-		if(dim(flq)[6] == 1) {
-			target <- cbind(df[,c('year', 'data')], quant=quant)
-			names(target)[grep('data', names(target))] <- 'value'
+		if(max(as.numeric(target$iter)) == 1) {
 
-      target <- cbind(target, fishery=as.numeric(NA), catch=as.numeric(NA),
+      target <- cbind(target[,-2], fishery=as.numeric(NA), catch=as.numeric(NA),
         biol=1)
 
-			return(fwdControl(target))
+      return(fwdControl(target))
 		} else {
 
 			target <- cbind(df[df$iter == df$iter[1],][,c('year', 'data')], quant=quant)

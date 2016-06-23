@@ -295,7 +295,7 @@ setMethod("fwd", signature(biols="FLStock", fisheries="ANY",
   control="missing"),
   
   function(biols, fisheries=missing, ..., sr=predictModel(model=rec~a, params=FLPar(a=1)),
-    residuals=rec(biols)/rec(biols)) {
+    residuals=FLQuant(1, dimnames=dimnames(rec(biols)))) {
     
     # PARSE ...
     args <- list(...)
@@ -306,8 +306,8 @@ setMethod("fwd", signature(biols="FLStock", fisheries="ANY",
       if(!is(fisheries, "FLQuant"))
         stop("targets can only be of class FLQuant if no fwdControl is provided")
       narg <- names(sys.calls()[[1]])
-      narg <- narg[!narg %in% c("", "biols", "sr")]
-
+      narg <- narg[!narg %in% c("", "biols", "sr",
+        grep("^[f].*", FLasher:::.qlevels, value=TRUE, invert=TRUE))]
       args[[narg]] <- fisheries
     }
     
@@ -316,16 +316,15 @@ setMethod("fwd", signature(biols="FLStock", fisheries="ANY",
       stop("No fwdControl provided and no FLQuant targets given, cannot do anything!")
 
     # NAMES in qlevels?
-    if(!names(args) %in% .qlevels)
+    if(any(!names(args) %in% FLasher:::.qlevels))
       stop(paste0("Names of input FLQuant(s) do not match current allowed targets: ",
             paste(.qlevels, collapse=", ")))
 
     args <- FLQuants(args)
 
+    # COERCE to fwdControl
     control <- as(args, "fwdControl")
-
-    out <- fwd(biols, control=control, residuals=residuals, sr=sr)
-
-    return(out)
+browser()
+    return(fwd(biols, control=control, residuals=residuals, sr=sr))
   }
 ) # }}}
