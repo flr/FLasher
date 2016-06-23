@@ -633,13 +633,16 @@ void operatingModel::project_fisheries(const int timestep){
  * \param indep_max The maximum value of effort multipliers
  */
 Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters){
-    Rprintf("Running\n");
+
+    bool verbose = false;
+
+    if(verbose){Rprintf("Running\n");}
     // Housekeeping
     auto niter = get_niter(); // number of iters taken from effort of first fishery
-    Rprintf("Number of iterations to solve - niter: %i\n", niter);
+    if(verbose){Rprintf("Number of iterations to solve - niter: %i\n", niter);}
     // Effort multiplier is the independent value. There is one independent values for each effort, i.e. for each fishery
     auto neffort = fisheries.get_nfisheries();
-    Rprintf("Number of fisheries to solve effort for: %i\n", neffort);
+    if(verbose){Rprintf("Number of fisheries to solve effort for: %i\n", neffort);}
     // The target timesteps are contiguous.
     // Update the biology in the first target timestep.
     // This ensures that we have abundance numbers in the first timestep of the projection.
@@ -651,24 +654,24 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
     unsigned int first_target_season = ctrl.get_target_int_col(1,1, "season");
     unsigned int min_target_timestep = 0;
     year_season_to_timestep(first_target_year, first_target_season, biols(1).n().get_nseason(), min_target_timestep);
-    Rprintf("Min target timestep: %i\n", min_target_timestep);
-    Rprintf("Projecting biols for the first timestep to update abundances\n");
+    if(verbose){Rprintf("Min target timestep: %i\n", min_target_timestep);}
+    if(verbose){Rprintf("Projecting biols for the first timestep to update abundances\n");}
     project_biols(min_target_timestep);
     // Get maximum timestep of OM. If room, we update Biol in final timestep at the end
     std::vector<unsigned int> biol1_dim = biols(1).n().get_dim();
     unsigned int max_timestep = biol1_dim[1] * biol1_dim[3];
     // Each target is solved independently (but a target can be made up of multiple simultaneous targets)
     auto ntarget = ctrl.get_ntarget();
-    Rprintf("Targets to solve: %i \n", ntarget);
+    if(verbose){Rprintf("Targets to solve: %i \n", ntarget);}
     // Place to store the codes from the solver routine. One code per target per iter. Ntarget x iter
     Rcpp::IntegerMatrix solver_codes(ntarget,niter);
     // Loop over targets and solve all simultaneous targets in that target set
     // e.g. With 2 fisheries with 2 efforts, we can set 2 catch targets to be solved at the same time
     // Indexing of targets starts at 1
     for (auto target_count = 1; target_count <= ntarget; ++target_count){
-        Rprintf("\nProcessing target: %i\n", target_count);
+        if(verbose){Rprintf("\nProcessing target: %i\n", target_count);}
         auto nsim_targets = ctrl.get_nsim_target(target_count);
-        Rprintf("Number of simultaneous targets: %i\n", nsim_targets);
+        if(verbose){Rprintf("Number of simultaneous targets: %i\n", nsim_targets);}
         // Timestep in which we find effort is the same for all simultaneous targets in a target set
         // Get time step of first sim target and use this for all sim targets.
         // Get Y/S from control - convert to timestep
@@ -684,12 +687,12 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         std::fill(effort_mult_ad.begin(), effort_mult_ad.end(), effort_mult_initial);
         // Turn tape on
         CppAD::Independent(effort_mult_ad);
-        //Rprintf("Turned on tape\n");
-        //Rprintf("target_effort_year: %i\n", target_effort_year);
-        //Rprintf("target_effort_season: %i\n", target_effort_season);
+        //if(verbose){Rprintf("Turned on tape\n");}
+        //if(verbose){Rprintf("target_effort_year: %i\n", target_effort_year);}
+        //if(verbose){Rprintf("target_effort_season: %i\n", target_effort_season);}
         // Update fisheries.effort() with effort multiplier in the effort timestep (area and unit effectively ignored)
-        //Rprintf("Updating effort with multipler\n");
-        //Rprintf("Before updating effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));
+        //if(verbose){Rprintf("Updating effort with multipler\n");}
+        //if(verbose){Rprintf("Before updating effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));}
         for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
             for (int iter_count = 1; iter_count <= niter; ++ iter_count){
                 fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) = 
@@ -697,40 +700,40 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
                     effort_mult_ad[(fisheries_count - 1) * niter + iter_count - 1];
             }
         }
-        //Rprintf("After updating effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));
-        //Rprintf("Projecting\n");
+        //if(verbose){Rprintf("After updating effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));}
+        //if(verbose){Rprintf("Projecting\n");}
         // Project fisheries in the target effort timestep
         // (landings and discards are functions of effort in the effort timestep)
-        Rprintf("Projecting fisheries\n");
+        if(verbose){Rprintf("Projecting fisheries\n");}
         project_fisheries(target_effort_timestep); 
         // Project biology in the target effort timestep plus 1
         // (biology abundances are functions of effort in the previous timestep)
         // Only update if there is room
         if ((target_effort_timestep+1) <= max_timestep){
-            Rprintf("Projecting biols\n");
+            if(verbose){Rprintf("Projecting biols\n");}
             project_biols(target_effort_timestep+1); 
         }
-        //Rprintf("Back from projecting\n");
+        //if(verbose){Rprintf("Back from projecting\n");}
         // Calc error
-        //Rprintf("Getting desired target values from control object\n");
+        //if(verbose){Rprintf("Getting desired target values from control object\n");}
         //std::vector<adouble> target_value = get_target_value(target_count); // values of all sim targets for the target
-        //Rprintf("Getting current state of operating model\n");
+        //if(verbose){Rprintf("Getting current state of operating model\n");}
         // Get current state of operating model
         std::vector<adouble> target_value_hat = get_target_value_hat(target_count); 
-        //Rprintf("Back from target_value_hat\n");
-        //Rprintf("Length of target_value_hat: %i\n", target_value.size());
-        //Rprintf("Length of target_value: %i\n", target_value.size());
+        //if(verbose){Rprintf("Back from target_value_hat\n");}
+        //if(verbose){Rprintf("Length of target_value_hat: %i\n", target_value.size());}
+        //if(verbose){Rprintf("Length of target_value: %i\n", target_value.size());}
         // Check they are the same length? 
         std::vector<adouble> error(target_value_hat.size());
-        //Rprintf("Calculating error\n");
+        //if(verbose){Rprintf("Calculating error\n");}
         std::transform(target_value.begin(), target_value.end(), target_value_hat.begin(), error.begin(),
                 [](adouble x, adouble y){return x - y;});
                 //[](adouble x, adouble y){return (x - y) * (x - y);}); // squared error - not as effective
-        //Rprintf("target 1. target_value: %f target_value_hat: %f error: %f\n", Value(target_value[0]), Value(target_value_hat[0]), Value(error[0]));
-        //Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", Value(target_value[1]), Value(target_value_hat[1]), Value(error[1]));
+        //if(verbose){Rprintf("target 1. target_value: %f target_value_hat: %f error: %f\n", Value(target_value[0]), Value(target_value_hat[0]), Value(error[0]));}
+        //if(verbose){Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", Value(target_value[1]), Value(target_value_hat[1]), Value(error[1]));}
         // Stop recording
         CppAD::ADFun<double> fun(effort_mult_ad, error);
-        //Rprintf("Turned off tape\n\n");
+        //if(verbose){Rprintf("Turned off tape\n\n");}
         // Solve the target
         // double version of effort mult used in solver
         std::vector<double> effort_mult(neffort * niter, effort_mult_initial);
@@ -742,8 +745,8 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         for (auto iter_count = 0; iter_count < niter; ++iter_count){
             solver_codes(target_count - 1, iter_count) = nr_out[iter_count];
         }
-        //Rprintf("effort_mult: %f\n", effort_mult[0]);
-        //Rprintf("Updating effort with solved effort mult\n");
+        //if(verbose){Rprintf("effort_mult: %f\n", effort_mult[0]);}
+        //if(verbose){Rprintf("Updating effort with solved effort mult\n");}
         for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
             for (int iter_count = 1; iter_count <= niter; ++ iter_count){
                 fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) = 
@@ -751,15 +754,14 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
                     effort_mult[(fisheries_count - 1) * niter + iter_count - 1] / effort_mult_initial;
             }
         }
-        //Rprintf("Final effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));
-        //Rprintf("Projecting again\n");
+        //if(verbose){Rprintf("Final effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));}
+        //if(verbose){Rprintf("Projecting again\n");}
         project_fisheries(target_effort_timestep); 
         // If space, update biols too
         if ((target_effort_timestep+1) <= max_timestep){
             project_biols(target_effort_timestep+1); 
         }
     }
-    bool verbose = false ;
     if(verbose){Rprintf("Leaving run\n");}
     return solver_codes;
 }
@@ -776,6 +778,9 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
  * \param indices_max The maximum range of the returned FLQuant. Of length 6 even if target does need all of them (e.g. catch does not need the first dimension).
  */
 FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) {
+
+    bool verbose = false;
+
     // Indices must be of length 6, even if not all of them are needed
     if(indices_min.size() != 6 | indices_max.size() != 6){
         Rcpp::stop("In operatingModel eval_om. indices_min and max must be of length 6 even if not all of the dimensions are used.\n");
@@ -788,7 +793,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
     FLQuantAD out;
     switch(target_type){
         case target_effort: {
-            Rprintf("target_effort\n");
+            if(verbose){Rprintf("target_effort\n");}
             // Indices should be of length 5
             std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
             std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
@@ -801,33 +806,33 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         break;
         }
         case target_fbar: {
-            Rprintf("target_fbar\n");
+            if(verbose){Rprintf("target_fbar\n");}
             if (Rcpp::IntegerVector::is_na(biol_no)) {
                 Rcpp::stop("In operatingModel::eval_om. Asking for fbar when biol_no is NA. Not yet implemented. Please specify which Biol you mean.\n");
             }
             // Is it total fbar on a biol, or fbar of an FLCatch
             if (!Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
-                Rprintf("fbar is from FLCatch %i in FLFishery %i on biol %i\n", catch_no, fishery_no, biol_no);
+                if(verbose){Rprintf("fbar is from FLCatch %i in FLFishery %i on biol %i\n", catch_no, fishery_no, biol_no);}
                 out = fbar(fishery_no, catch_no, biol_no, indices_min, indices_max);
             }
             else {
-                Rprintf("catch_no is NA. fbar is total fbar from biol %i\n", biol_no);
+                if(verbose){Rprintf("catch_no is NA. fbar is total fbar from biol %i\n", biol_no);}
                 out = fbar(biol_no, indices_min, indices_max);
             }
             break;
         }
         case target_catch: {
-            Rprintf("target_catch\n");
+            if(verbose){Rprintf("target_catch\n");}
             // Indices should be of length 5 - lop off the first value
             std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
             std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
             // Is it total catch of a biol, or catch of an FLCatch
             if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
-                Rprintf("biol_no is NA, catch is from FLCatch %i in FLFishery %i\n", catch_no, fishery_no);
+                if(verbose){Rprintf("biol_no is NA, catch is from FLCatch %i in FLFishery %i\n", catch_no, fishery_no);}
                 out = unit_sum(fisheries(fishery_no, catch_no).catches(indices_min5, indices_max5));
             }
             else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
-                Rprintf("catch is total catch from biol %i\n", biol_no);
+                if(verbose){Rprintf("catch is total catch from biol %i\n", biol_no);}
                 out =  unit_sum(catches(biol_no, indices_min5, indices_max5));
             }
             else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
@@ -839,7 +844,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             break;
         }
         case target_landings: {
-            Rprintf("target_landings\n");
+            if(verbose){Rprintf("target_landings\n");}
             // Indices should be of length 5
             std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
             std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
@@ -847,7 +852,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
                 out = unit_sum(fisheries(fishery_no, catch_no).landings(indices_min5, indices_max5));
             }
             else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
-                Rprintf("landings are total landings from biol %i\n", biol_no);
+                if(verbose){Rprintf("landings are total landings from biol %i\n", biol_no);}
                 out = unit_sum(landings(biol_no, indices_min5, indices_max5));
             }
             else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
@@ -859,7 +864,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             break;
         }
         case target_discards: {
-            Rprintf("target_discards\n");
+            if(verbose){Rprintf("target_discards\n");}
             // Indices should be of length 5
             std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
             std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
@@ -867,7 +872,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
                 out = unit_sum(fisheries(fishery_no, catch_no).discards(indices_min5, indices_max5));
             }
             else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
-                Rprintf("discards are total discards from biol %i\n", biol_no);
+                if(verbose){Rprintf("discards are total discards from biol %i\n", biol_no);}
                 out = unit_sum(discards(biol_no, indices_min5, indices_max5));
             }
             else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
@@ -880,7 +885,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         }
         case target_srp: {
             // Spawning reproductive potential - currently called if target is 'ssb' or 'srp'
-            Rprintf("target_srp\n");
+            if(verbose){Rprintf("target_srp\n");}
             if (Rcpp::IntegerVector::is_na(biol_no)){
                 Rcpp::stop("In operatingModel eval_om. Trying to evaluate SRP target when biol_no. is NA in control object.\n");
             }
@@ -899,11 +904,11 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             }
             if (spwn_ts > 0){
                 // All is good - get SRP in current timestep
-                Rprintf("In OM eval_om. Get SRP in current timestep\n");
+                if(verbose){Rprintf("In OM eval_om. Get SRP in current timestep\n");}
                 out = unit_sum(srp(biol_no, indices_min5, indices_max5));
             }
             else {
-                Rprintf("In OM eval_om. Get SRP in next timestep\n");
+                if(verbose){Rprintf("In OM eval_om. Get SRP in next timestep\n");}
                 // This only works if a point in time - i.e. does not work over a subset as after adjusting timestep, some elements of min_indices may be greater than elements of max_indices
                 if ((indices_min5[0] != indices_max5[0]) | (indices_min5[2] != indices_max5[2])){
                     Rcpp::stop("In OM eval_om. Trying to eval SRP target in next timestep. Requested subset indices are a range in time not a single timestep.\n");
@@ -937,7 +942,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         break;
     }
 //        case target_biomass: {
-//            Rprintf("target_biomass\n");
+//            if(verbose){Rprintf("target_biomass\n");}
 //            if (Rcpp::IntegerVector::is_na(biol_no)){
 //                Rcpp::stop("In operatingModel eval_om. Trying to evaluate biomass target when biol no. is NA. Problem with control object?\n");
 //            }
@@ -985,19 +990,22 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no) {
  * \param sim_target_no References the simultaneous target in the target set. Starts at 1.
  */
 std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, const int sim_target_no) {
+
+    bool verbose = false;
+
     // Rprintf("In get_target_value_hat sim_target_no\n");
-    Rprintf("sim_target_no: %i\n", sim_target_no);
+    if(verbose){Rprintf("sim_target_no: %i\n", sim_target_no);}
     // Target information: type, fishery, catch, biol, etc
     auto niter = get_niter();
     unsigned int year = ctrl.get_target_int_col(target_no, sim_target_no, "year");
     unsigned int season = ctrl.get_target_int_col(target_no, sim_target_no, "season");
-    Rprintf("year: %i, season: %i\n", year, season);
+    if(verbose){Rprintf("year: %i, season: %i\n", year, season);}
     // Could add unit here if necessary.
     fwdControlTargetType target_type = ctrl.get_target_type(target_no, sim_target_no);
     unsigned int fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
     unsigned int catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
     unsigned int biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "biol");
-    Rprintf("fishery no: %i, catch no: %i, biol no: %i\n", fishery_no, catch_no, biol_no);
+    if(verbose){Rprintf("fishery no: %i, catch no: %i, biol no: %i\n", fishery_no, catch_no, biol_no);}
     // Set indices for subsetting the target values. We need to set indices_min and indices_max. This is passed to eval_om to eval the target over this range.
     // Get the timestep (year / season) from control object. If we want a non-point timestep, e.g. sum over a range, then additional info will need to be in the control object
     // Get all iters, units in the target object.
@@ -1025,12 +1033,12 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     std::vector<unsigned int> age_range_indices = {0,0};
     unsigned int minAge = ctrl.get_target_int_col(target_no, sim_target_no, "minAge");
     unsigned int maxAge = ctrl.get_target_int_col(target_no, sim_target_no, "maxAge");
-    //Rprintf("minAge: %i maxAge %i\n", minAge, maxAge);
+    //if(verbose){Rprintf("minAge: %i maxAge %i\n", minAge, maxAge);}
     if(!Rcpp::IntegerVector::is_na(minAge) & !Rcpp::IntegerVector::is_na(maxAge)){
-        //Rprintf("Gettig age range indices\n");
+        //if(verbose){Rprintf("Gettig age range indices\n");}
         age_range_indices = get_target_age_range_indices(target_no, sim_target_no); // indices start at 0
     }
-    //Rprintf("age_range_indices: %i %i\n", age_range_indices[0], age_range_indices[1]);
+    //if(verbose){Rprintf("age_range_indices: %i %i\n", age_range_indices[0], age_range_indices[1]);}
     // Area
     unsigned int area = 1;
     std::vector<unsigned int> indices_min = {age_range_indices[0]+1,min_year,1,min_season,area,1};
@@ -1057,7 +1065,7 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     // If any of these are not NA then we may have a relative target
     // This may need to be rethought when we start to include target values that sum over ranges
     if (!target_rel_year_na | !target_rel_season_na | !target_rel_biol_na | !target_rel_fishery_na | !target_rel_catch_na){
-        Rprintf("Relative target target\n");
+        if(verbose){Rprintf("Relative target target\n");}
         // Before we go any further, do we have sensible relative Biol, Catch and Fishery, Year and Season
         // Do we have at least at year and season
         if (target_rel_year_na | target_rel_season_na){
