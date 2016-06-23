@@ -1,10 +1,10 @@
 # methods.R - DESC
 # FLasher/R/methods.R
 
-# Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later
-# Maintainer: Iago Mosqueira, JRC
-# Soundtrack:
-# Notes:
+# Copyright European Union, 2016
+# Author: Iago Mosqueira (EC JRC) <iago.mosqueira@jrc.ec.europa.eu>
+#
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 # show {{{
 setMethod("show", signature("fwdControl"),
@@ -106,6 +106,7 @@ setMethod("[<-", signature(x="fwdControl", value="vector"),
 
 # }}}
 
+# $ {{{
 setMethod("$", signature(x="fwdControl"),
   function(x, name) {
 
@@ -114,7 +115,19 @@ setMethod("$", signature(x="fwdControl"),
     else
       return(x@target[,name])
   }
-)
+) # }}}
+
+# $<- {{{
+setMethod("$<-", signature(x="fwdControl", value="vector"),
+  function(x, name, value) {
+
+    if(name == "value")
+      x@iters[,"value",] <- value
+    else
+      x@target[,name] <- value
+    return(x)
+  }
+) # }}}
 
 # propagate {{{
 setMethod("propagate", signature(object="fwdControl"),

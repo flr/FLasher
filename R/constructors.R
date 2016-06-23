@@ -1,10 +1,10 @@
 # constructors.R - Constructor methods for fwdControl
 # FLasher/R/constructors.R
 
-# Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later
-# Maintainer: Iago Mosqueira, JRC
-# Soundtrack:
-# Notes:
+# Copyright European Union, 2016
+# Author: Iago Mosqueira (EC JRC) <iago.mosqueira@jrc.ec.europa.eu>
+#
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 # fwdControl(target='data.frame', iters='array') {{{
 #' @name fwdControl
@@ -121,35 +121,40 @@ setMethod('fwdControl', signature(target='data.frame', iters='missing'),
 )
 # }}}
 
-  # fwdControl(target='list', iters='missing') {{{
-  setMethod('fwdControl', signature(target='list', iters='missing'),
-    function(target) {
+# fwdControl(target='list', iters='missing') {{{
+setMethod('fwdControl', signature(target='list', iters='missing'),
+  function(target) {
 
+    # target is LIST of LISTS
     if(is(target[[1]], 'list')) {
-
+      
       inp <- lapply(target, function(x) do.call('parsefwdList', x))
-
+      
       # target
       trg <- do.call('rbind', lapply(inp, '[[', 'target'))
 
       # iters
       ites <- lapply(inp, '[[', 'iters')
-      # dim as 'val', 'iters', 'row'
+      
+      # dims as 'row', 'val', 'iters'
       dms <- Reduce('rbind', lapply(ites, dim))
 
       # CHECK iters match (1/N)
-      its <- max(dms[,2])
-
-      if(any(dms[,2][dms[,2] > 1] != its))
+      its <- max(dms[,3])
+      if(any(dms[,3][dms[,3] > 1] != its))
         stop(paste("Number of iterations in 'iters' must be 1 or", its))
+
+      # EXPAND to max iters
+      ites[dms[,3] != its]  <- lapply(ites[dms[,3] != its],
+        function(x) array(x, dim=c(dim(x)[-3], its)))
 
       # FINAL array
       # dim, sum over rows
-      dms <- c(3, its, sum(dms[,3]))
+      dms <- c(3, its, sum(dms[,1]))
       ite <- array(NA, dim=dms, dimnames=list(val=c('min', 'value', 'max'),
         iters=seq(its), row=seq(dms[3])))
 
-      ite[] <- Reduce(c, lapply(ites, c))
+      ite[] <- Reduce(c, lapply(ites, function(x) c(aperm(x, c(2,3,1)))))
 
       # APERM to 'row', 'val', 'iter'
       ite <- aperm(ite, c(3, 1, 2))
@@ -161,11 +166,9 @@ setMethod('fwdControl', signature(target='data.frame', iters='missing'),
       inp <- do.call('parsefwdList', target)
 
     return(do.call('fwdControl', inp))
+    }
   }
-  }
-)
-
-# }}}
+) # }}}
 
 # fwdControl(target='missing', iters='missing') {{{
 setMethod('fwdControl', signature(target='missing', iters='missing'),
@@ -222,8 +225,7 @@ parsefwdList <- function(...) {
     ite <- array(NA, dim=c(nrow(trg), 3, ncol(mat)),
       dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'), iter=seq(ncol(mat))))
 
-    ite <- aperm(ite, c(2, 3, 1))
-    ite[match(rownames(mat), dimnames(ite)$val), ,] <- c(mat)
+    ite[,match(rownames(mat), dimnames(ite)$val),] <- c(mat)
 
     # RETURNS permutated array!
     return(list(target=trg, iters=ite))

@@ -759,7 +759,8 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
             project_biols(target_effort_timestep+1); 
         }
     }
-    Rprintf("Leaving run\n");
+    bool verbose = false ;
+    if(verbose){Rprintf("Leaving run\n");}
     return solver_codes;
 }
 
