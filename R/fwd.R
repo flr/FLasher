@@ -221,6 +221,11 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
   function(biols, control, sr=predictModel(model=rec~a, params=FLPar(a=1)),
     residuals=FLQuant(1, dimnames=dimnames(rec(biols)))) {
 
+    # DEAL with iters
+    its <- dims(biols)$iter
+    if(its > 1)
+      biols <- propagate(biols, its)
+
     # COERCE to FLBiols
     B <- as(biols, "FLBiol")
     if(is(sr, "predictModel") | is(sr, "FLSR"))
@@ -259,12 +264,11 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
     eff <- out$fisheries[[1]]@effort
     Bo <- out$biols[[1]]
 
-    # catch
-    biols@catch <- catch(Fc)
-    # catch.n
-    biols@catch.n <- catch.n(Fc)
-    # catch.wt
-    biols@catch.wt <- catch.wt(Fc)
+    # PROJECTION years
+    miny <- min(control@target$year)
+    maxy <- max(control@target$year)
+    pyrs <- as.character(seq(miny, maxy))
+
     # landings
     biols@landings <- landings(Fc)
     # landings.n
@@ -277,8 +281,14 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
     biols@discards.n <- Fc@discards.n
     # discards.wt
     biols@discards.wt <- Fc@discards.wt
+    # catch
+    biols@catch <- catch(Fc)
+    # catch.n
+    biols@catch.n <- catch.n(Fc)
+    # catch.wt
+    biols@catch.wt <- catch.wt(Fc)
     # harvest (F)
-    biols@harvest <- calc_F(Fc, Bo, eff)
+    biols@harvest[, pyrs] <- calc_F(Fc, Bo, eff)[, pyrs]
     units(biols@harvest) <- "f"
     # stock.n
     biols@stock.n <- Bo@n
@@ -307,7 +317,7 @@ setMethod("fwd", signature(biols="FLStock", fisheries="ANY",
         stop("targets can only be of class FLQuant if no fwdControl is provided")
       narg <- names(sys.calls()[[1]])
       narg <- narg[!narg %in% c("", "biols", "sr",
-        grep("^[f].*", FLasher:::.qlevels, value=TRUE, invert=TRUE))]
+        grep("^[f].*", .qlevels, value=TRUE, invert=TRUE))]
       args[[narg]] <- fisheries
     }
     
@@ -316,7 +326,7 @@ setMethod("fwd", signature(biols="FLStock", fisheries="ANY",
       stop("No fwdControl provided and no FLQuant targets given, cannot do anything!")
 
     # NAMES in qlevels?
-    if(any(!names(args) %in% FLasher:::.qlevels))
+    if(any(!names(args) %in% .qlevels))
       stop(paste0("Names of input FLQuant(s) do not match current allowed targets: ",
             paste(.qlevels, collapse=", ")))
 
@@ -324,7 +334,7 @@ setMethod("fwd", signature(biols="FLStock", fisheries="ANY",
 
     # COERCE to fwdControl
     control <- as(args, "fwdControl")
-browser()
+    
     return(fwd(biols, control=control, residuals=residuals, sr=sr))
   }
 ) # }}}

@@ -106,6 +106,16 @@ setMethod("[<-", signature(x="fwdControl", value="vector"),
 
 # }}}
 
+setMethod("$", signature(x="fwdControl"),
+  function(x, name) {
+
+    if(name == "value")
+      return(x@iters[,"value"])
+    else
+      return(x@target[,name])
+  }
+)
+
 # propagate {{{
 setMethod("propagate", signature(object="fwdControl"),
   function(object, iter, fill.iter=TRUE) {
