@@ -6,10 +6,11 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
+
 # .qlevels - available quants for fwdControl
 .qlevels <-  c('catch', 'landings', 'discards', 'f', 'fbar', 'ssb')
 
-# .fcb, .vfcb - Possible fishery-catch-biol combinations in @target
+# .fcb, .vfcb - Possible fishery-catch-biol combinations in @target {{{
 .fcb <- list(
   list(quant="effort", fishery=TRUE, catch=FALSE, biol=FALSE),
   list(quant=c("fbar", "f"), fishery=c(TRUE, FALSE), catch=c(TRUE, FALSE), biol=c(TRUE,TRUE)),
@@ -24,6 +25,7 @@ foo <- function(x) {
 }
 
 .vfcb <- do.call(rbind, c(lapply(.fcb, foo), list(make.row.names = FALSE)))
+# }}}
 
 # fwdControl class {{{
 

@@ -300,7 +300,7 @@ setMethod("fwd", signature(biols="FLStock", fisheries="ANY",
     # PARSE ...
     args <- list(...)
     
-    # HACK: deal with f assigned to fisheries
+    # HACK: deal with f assigned to fisheries, might fail
     if(!missing(fisheries)) {
 
       if(!is(fisheries, "FLQuant"))

@@ -878,7 +878,7 @@ test_that("operatingModel landings, catch and discards methods",{
     catch21_n_in <- catch.n(om[["fisheries"]][[2]][[1]])
     test_FLQuant_equal((catch12_n_in+catch21_n_in)[dim_min[1]:dim_max[1], dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], catch2_n_out)
 
-    # 2 biol -> 1 catch
+    # BUG FAILS: 2 biol -> 1 catch
     # Not yet implemented for a single catch so fails
     biol_no <- 3
     expect_error(test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min[-1], dim_max[-1]))
