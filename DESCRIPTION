@@ -11,6 +11,8 @@ Authors@R: c(person(given = 'Finlay', family = 'Scott', role = c('aut'),
             email = 'finlay.scott@jrc.ec.europa.eu'),
 		person(given = 'Iago', family = 'Mosqueira', role = c('aut', 'cre'),
             email = 'iago.mosqueira@jrc.ec.europa.eu'))
+Author: Finlay Scott [aut, cre],
+    Iago Mosqueira [aut, cre]
 Maintainer: Iago Mosqueira <iago.mosqueira@jrc.ec.europa.eu>
 Copyright: European Union
 Collate:
