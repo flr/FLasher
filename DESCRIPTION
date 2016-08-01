@@ -34,6 +34,7 @@ Depends:
     FLCore(>= 2.5.0),
     FLFishery(>= 0.1)
 Imports:
+    methods,
     Rcpp (>= 0.12.0)
 LinkingTo: Rcpp
 Additional_repositories: http://flr-project.org/R
