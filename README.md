@@ -28,4 +28,18 @@ min value max
 
 target timestep
 
+# Notes for Windows installation
+
+FLasher is 64 bit only and uses features from C++11.
+
+Use latest Rtools (e.g. for R 3.3.1 use Rtools34).
+Put Rtools\bin and Rtools\mingw_64\bin in the path (e.g. add c:\Rtools\bin;c:\Rtools\mingw_64\bin to the path)
+
+Build package as normal at the command line:
+
+- RCMD build FLasher
+
+If you chose 32 bit and 64 bit options during installation of R, when you install FLasher you need to specify 64 bit only using --no-multiarch flag:
+
+- RCMD INSTALL --no-multiarch FLasher_XXX
 
