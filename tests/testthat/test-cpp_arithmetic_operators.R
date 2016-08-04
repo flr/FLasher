@@ -238,7 +238,7 @@ test_that("log and exp",{
 
 test_that("FLQuant and FLQuantAD summary functions", {
     # Test quant_sum
-    flq_in <- random_FLQuant_generator()
+    flq_in <- random_FLQuant_generator(min_dims=c(2,2,2,2,2,2))
     flq_out <- test_FLQuant_quant_sum(flq_in)
     flq_sum <- quantSums(flq_in)
     expect_identical(dim(flq_out), dim(flq_sum))

@@ -395,10 +395,10 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
     # Data.frame constructor - use other constructor here?
     fwc <- fwdControl(target=target, iters=target_iters)
 
-    # Add fake FCB array - will be constructed on R side before calling fwd()
+    # Add FCB array 
     FCB <- array(c(1,1,2,2,1,2,1,2,1,2,2,3), dim=c(4,3))
     colnames(FCB) <- c("F","C","B")
-    attr(fwc, "FCB") <- FCB
+    fwc@FCB <- FCB
     return(fwc)
 }
 
@@ -475,10 +475,10 @@ make_test_operatingModel0 <- function(niters = 1000){
     fisheries@desc <- "fisheries"
     # fwdControl
     fwc <- random_fwdControl_generator(niters=niters)
-    # Make a temporary FCB attribute - add to class later
+    # Make FCB array
     FCB <- array(c(1,1,2,2,1,2,1,2,1,2,2,3), dim=c(4,3))
     colnames(FCB) <- c("F","C","B")
-    attr(fwc@target, "FCB") <- FCB
+    fwc@FCB <- FCB
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))
 }
 
@@ -546,10 +546,10 @@ make_test_operatingModel1 <- function(niters = 1000){
     fisheries@desc <- "fisheries"
     # fwdControl
     fwc <- random_fwdControl_generator(niters=niters)
-    # Make a temporary FCB attribute - add to class later
+    # Make the FCB matrix
     FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
     colnames(FCB) <- c("F","C","B")
-    attr(fwc@target, "FCB") <- FCB
+    fwc@FCB <- FCB
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))
 }
 
@@ -617,10 +617,10 @@ make_test_operatingModel2 <- function(niters = 1000){
     fisheries@desc <- "fisheries"
     # fwdControl
     fwc <- random_fwdControl_generator(niters=niters)
-    # Make a temporary FCB attribute - add to class later
+    # Make the FCB matrix
     FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
     colnames(FCB) <- c("F","C","B")
-    attr(fwc@target, "FCB") <- FCB
+    fwc@FCB <- FCB
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))
 }
 
@@ -684,10 +684,10 @@ make_test_operatingModel3 <- function(niters = 1000, sd = 0.1){
     fisheries@desc <- "fisheries"
     # fwdControl
     fwc <- random_fwdControl_generator(niters=niters)
-    # Make a temporary FCB attribute - add to class later
+    # Make the FCB matrix
     FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
     colnames(FCB) <- c("F","C","B")
-    attr(fwc@target, "FCB") <- FCB
+    fwc@FCB <- FCB
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))
 }
 
@@ -752,10 +752,10 @@ make_skipjack_operatingModel <- function(niters = 1000, sd = 0.1){
 
     # fwdControl
     fwc <- random_fwdControl_generator(niters=niters)
-    # Make a temporary FCB attribute - add to class later
+    # Make the FCB matrix
     FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
     colnames(FCB) <- c("F","C","B")
-    attr(fwc@target, "FCB") <- FCB
+    fwc@FCB <- FCB
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))
 }
 

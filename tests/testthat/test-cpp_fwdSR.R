@@ -226,7 +226,7 @@ test_that("fwdSR predict_recruitment",{
     # Test 4: Annual timestep with subset of SRP. Iters in SRP, not residuals or params. Iters get recycled in residuals
     srp_temp <- srp_in[,year:dim(srp_in)[2],unit,season,1,]
     rec_outm <- test_fwdSR_predict_recruitment("ricker", sr_params_temp, residuals_mult[,,unit,season,1,iter], TRUE, srp_temp, c(year,1,1,1,1))
-    test_FLQuant_equal(recm[,year:dim(srp_in)[2]], rec_outm)
+    expect_FLQuant_equal(recm[,year:dim(srp_in)[2]], rec_outm)
     # Test 5: Seasonal and Unit SRP with iters. Units in params. Residuals dim match SRP (including iters)
     srp_temp <- srp_in[,,,season,]
     sr_params_temp <- sr_params[,,,season,,iter]
