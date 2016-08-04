@@ -1,4 +1,8 @@
+# Maintainer: Finlay Scott, JRC
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
+
 context("CPP implementation of FLStock")
+source("expect_funs.R")
 
 test_that("FLStock SEXP constructor",{
     data(ple4)

@@ -1,4 +1,8 @@
+# Maintainer: Finlay Scott, JRC
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
+
 context("Implementation of FLQuant7 - double and AD versions")
+source("expect_funs.R")
 
 test_that("FLQuant7 as and wrap - double",{
     flq7_in <- random_FLQuant_list_generator() 

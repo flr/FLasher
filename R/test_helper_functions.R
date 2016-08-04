@@ -713,7 +713,7 @@ make_skipjack_operatingModel <- function(niters = 1000, sd = 0.1){
     # Blow up to have iters
     biol <- propagate(biol, niters)
     # Add noise to wts
-    wt(biol) <- rlnorm(wt(biol), sd=sdlog)
+    wt(biol) <- rlnorm(wt(biol), sdlog=sd)
     # SRR Residuals
     dim <- dim(n(biol))
     dim[1] <- 1
@@ -761,37 +761,6 @@ make_skipjack_operatingModel <- function(niters = 1000, sd = 0.1){
 
 
 
-
-#' Tests if two FLFishery objects are the same
-#'
-#' Tests each component seperately - allows flexibility
-#'
-#' @export
-test_FLFishery_equal <- function(flf1, flf2){
-    expect_identical(flf1@effort, flf2@effort)
-    expect_identical(flf1@vcost, flf2@vcost)
-    expect_identical(flf1@fcost, flf2@fcost)
-    expect_identical(flf1@hperiod, flf2@hperiod)
-    expect_identical(flf1@name, flf2@name)
-    expect_identical(flf1@range, flf2@range)
-    expect_identical(flf1@.Data, flf2@.Data)
-    expect_identical(flf1@desc, flf2@desc)
-    expect_identical(flf1@names, flf2@names)
-}
-
-#' Tests if two FLFisheries objects are the same
-#'
-#' Tests each component seperately - allows flexibility
-#'
-#' @export
-test_FLFisheries_equal <- function(flfs1, flfs2){
-    expect_identical(flfs1@desc, flfs2@desc)
-    expect_identical(flfs1@names, flfs2@names)
-    for (i in 1:length(FLFisheries)){
-        test_FLFishery_equal(flfs1[[i]], flfs2[[i]])
-    }
-}
-
 #' Return 1D element index of FLQuant
 #'
 #' Given an FLQuant the indices, returns the 1D element accessor.
@@ -827,28 +796,6 @@ get_FLQuant_elements <- function(flq, indices_min, indices_max){
                             elements[element_count] = get_FLQuant_element(flq, c(qcount, ycount, ucount, scount, acount, icount))
     }}}}}}
     return(elements)
-}
-
-#' Tests if two fwdControl objects are the same
-#'
-#' Tests each component seperately - allows flexibility
-#' Avoids problems with FCB being an attribute
-#'
-#' @export
-test_fwdControl_equal <- function(fwc1, fwc2){
-    expect_identical(fwc1@target, fwc2@target)
-    expect_identical(fwc1@iters, fwc2@iters)
-}
-
-#' Tests if two fwdQuant objects are the same
-#'
-#' Tests each component seperately - allows flexibility
-#' Just checks dims and values
-#'
-#' @export
-test_FLQuant_equal <- function(flq1, flq2){
-    expect_identical(dim(flq1), dim(flq2))
-    expect_equal(c(flq1), c(flq2))
 }
 
 #' Creates an FLFisheries and biol bits for use in FLasher from an FLStock

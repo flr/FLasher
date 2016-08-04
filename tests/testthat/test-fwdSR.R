@@ -1,4 +1,8 @@
+# Maintainer: Finlay Scott, JRC
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
+
 context("Implementation of fwdSR")
+source("expect_funs.R")
 
 test_that("fwdSR constructors and wrap",{
     # Make an FLSR to help

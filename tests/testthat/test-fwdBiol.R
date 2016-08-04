@@ -1,4 +1,8 @@
+# Maintainer: Finlay Scott, JRC
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
+
 context("Implementation of fwdBiol and fwdBiols - double and AD versions")
+source("expect_funs.R")
 
 test_that("fwdBiol as and wrap",{
     flb_in <- random_FLBiolcpp_generator()

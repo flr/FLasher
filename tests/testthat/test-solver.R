@@ -1,4 +1,8 @@
+# Maintainer: Finlay Scott, JRC
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
+
 context("Test Newton Raphson functions")
+source("expect_funs.R")
 
 test_that("euclid_norm",{
     size_x <- runif(1, min=5, max = 100) 

@@ -1,4 +1,8 @@
+# Maintainer: Finlay Scott, JRC
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
+
 context("Implementation of FLCatches - double and AD versions")
+source("expect_funs.R")
 
 test_that("FLCatches as and wrap - double",{
     flcs_in <- random_FLCatches_generator() 

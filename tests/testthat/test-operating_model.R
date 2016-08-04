@@ -1,4 +1,8 @@
+# Maintainer: Finlay Scott, JRC
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
+
 context("Test operating model")
+source("expect_funs.R")
 
 test_that("operatingModel constructors",{
     # Empty constructor - just check it doesn't fail
