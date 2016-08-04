@@ -6,6 +6,9 @@
 \usage{
 make_test_operatingModel2(niters = 1000)
 }
+\arguments{
+\item{niters}{Number of iterations.}
+}
 \value{
 A list of objects for sending to C++
 }

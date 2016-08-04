@@ -2,11 +2,16 @@
 % Please edit documentation in R/test_helper_functions.R
 \name{get_FLQuant_element}
 \alias{get_FLQuant_element}
-\title{Return 1D element index of FLQuant}
+\title{Return 1D element index of an FLQuant}
 \usage{
 get_FLQuant_element(flq, indices)
 }
+\arguments{
+\item{flq}{The FLQuant}
+
+\item{indices}{The indices (integer vector, length 6)}
+}
 \description{
-Given an FLQuant the indices, returns the 1D element accessor.
+Given an FLQuant and the indices, returns the 1D element accessor.
 }
 

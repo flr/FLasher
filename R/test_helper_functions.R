@@ -12,6 +12,7 @@
 #' @param fixed_dims A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. Default value is rep(NA,6).
 #' @param min_dims A vector of length 6 with minimum size of each of the FLQuant dimensions. Default value is c(1,1,1,1,1,1).
 #' @param max_dims A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,10,5,4,4,5).
+#' @param min_age_name The name of the first age group.
 #' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
 #' @export
 #' @return An FLQuant
@@ -247,69 +248,6 @@ random_fwdBiols_list_generator <- function(min_biols = 1, max_biols = 5, ...){
     return(biols)
 }
 
-#' Simple projection with minimal checks
-#'
-#' Given FLFisheries, FLBiolcpp, FLSR, F and f.spwn, project over timesteps
-#' No dimension checks are made!
-#' Recruitment is annual only. Happens at start of the year. SSB is calculated in previous year (or years depending on recruitment age).
-#' 
-#' @param flfs FLFisheries (with a single FLFishery with a single FLCatch)
-#' @param flb FLBiolcpp
-#' @param f List of fishing mortality FLQuant objects (only a list of length 1 to start with)
-#' @param f_spwn List of fishing timing FLQuant objects (only a list of length 1 to start with) - not used at the moment - part of the SSB calculation
-#' @param sr_residuals FLQuant of residuals for the recruitment
-#' @param sr_residuals_mult Are the residuals multiplicative (TRUE)  or additive (FALSE)?
-#' @param timesteps Continuous sequence of integers (years and seasons)
-#' @export
-#' @return A list of FLFisheries and FLBiolcpp objects
-simple_fisheries_project <- function(flfs, flb, flsr, f, f_spwn, sr_residuals, sr_residuals_mult, timesteps){
-    nseason <- dim(n(flb))[4]
-    nages <- 1:dim(n(flb))[1]
-    last_age <- nages[length(nages)]
-    #timesteps <- ((years[1] - 1) * nseason + 1):(years[length(years)] * nseason)
-    nfishery <- 1
-    ncatch <- 1
-    #recruitment_timelag <- 
-    z <- f[[nfishery]] + m(flb)
-    rec_age <- as.numeric(dimnames(rec(flsr))$age) # recruitment age in years
-    for (timestep in timesteps){
-        year <- floor((timestep - 1) / nseason + 1)
-        season <- (timestep - 1) %% nseason + 1
-        next_year <- floor(((timestep+1) - 1) / nseason + 1)
-        next_season <- ((timestep+1) - 1) %% nseason + 1
-        # Update fishery
-        catch <- (f[[nfishery]] / z) * (1 - exp(-z)) * n(flb)
-        # Must calculate ln and dn before loading, OR, make a copy of discards.ratio
-        # else discards.ratio is affected by ln and dn
-        ln <- catch * (1 - discards.ratio(flfs[[nfishery]][[ncatch]]))
-        dn <- catch * (discards.ratio(flfs[[nfishery]][[ncatch]]))
-        landings.n(flfs[[nfishery]]@.Data[[ncatch]]) <- ln
-        discards.n(flfs[[nfishery]]@.Data[[ncatch]]) <- dn 
-        # Update Biol
-        # Recruitment
-        rec <- 0
-        if (season == 1){ # Recruitment happens
-            ssb_all <- quantSums(n(flb) * exp(-(f[[nfishery]] * f_spwn[[nfishery]] + m(flb) * spwn(flb))) * wt(flb) * fec(flb))
-            ssb_for_rec <- ssb_all[1,year-rec_age+1,1,season,1,] # SSB for rec in next year
-            rec <- predict(flsr,ssb=FLQuant(ssb_for_rec))
-            if (sr_residuals_mult==TRUE){
-                rec <- rec * sr_residuals[1,next_year,1,next_season,1,]
-            }
-            else{
-                rec <- rec + sr_residuals[1,next_year,1,next_season,1,]
-            }
-        }
-        #ssb(flb)[
-        n(flb)[1,next_year,1,next_season,1,] <- rec
-
-        # Abundances
-        n(flb)[nages[-1],next_year,1,next_season,1,] <- n(flb)[-last_age,year,1,season,1,] * exp(-z[-last_age,year,1,season,1,])
-        # plusgroup
-        n(flb)[last_age,next_year,1,next_season,1,] <- n(flb)[last_age,next_year,1,next_season,1,] + n(flb)[last_age,year,1,season,1,] * exp(-z[last_age,year,1,season,1,])
-    }
-    return(list(flfs = flfs, flb = flb))
-}
-
 
 #' Random fwdControl object creator
 #'
@@ -402,86 +340,18 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
     return(fwc)
 }
 
+
 #' Create a complex annual test operating model
 #'
 #' Creates a test operating model for testing FLFishery / FLCatch / FLBiolcpp interactions.
 #' Implements all possible type of FCB interactions.
 #' Two FLFishery objects with 4 FLCatch objects between them, fishing 4 FLBiolcpp objects.
+#' There is a 5th biol that is unfished.
 #' All objects are based on ple4.
+#' @param niters Number of iterations.
 #'
 #' @export
 #' @return A list of objects for sending to C++
-make_test_operatingModel0 <- function(niters = 1000){
-    # Sort out the FLBiolcpps
-    data(ple4)
-    # blow up
-    ple4_iters <- propagate(ple4, niters)
-    seed_biol <- as(ple4_iters,"FLBiol")
-    # seed_biol <- as(seed_biol,"FLBiolcpp")
-    flbiols <- list()
-    for (i in 1:5){
-        biol <- seed_biol
-        n(biol) <- n(biol) * abs(rnorm(prod(dim(n(biol))), mean = 1, sd = 0.1))
-        m(biol) <- m(biol) * abs(rnorm(prod(dim(m(biol))), mean = 1, sd = 0.1))
-        spwn(biol) <- runif(prod(dim(spwn(biol))), min=0,max=1)
-        desc(biol) <- "biol"
-        name(biol) <- "biol"
-        flbiols[[i]] <- biol
-    }
-    # Make SRRs
-    srr1 <- fmle(as.FLSR(ple4, model="bevholt"),control = list(trace=0))
-    srr2 <- fmle(as.FLSR(ple4, model="ricker"),control = list(trace=0))
-    res1 <- window(residuals(srr1), start = 1957)
-    res1[,"1957"] <- res1[,"1958"]
-    res1 <- propagate(res1, niters)
-    res1 <- res1 * abs(rnorm(prod(dim(res1)), mean = 1, sd = 0.1))
-    res2 <- window(residuals(srr2), start = 1957)
-    res2[,"1957"] <- res2[,"1958"]
-    res2 <- propagate(res2, niters)
-    res2 <- res2 * abs(rnorm(prod(dim(res2)), mean = 1, sd = 0.1))
-    # Make the lists of FLBiolcpp bits
-    biol_bits1 <- list(biol = flbiols[[1]], srr_model_name = "bevholt", srr_params = as(params(srr1), "FLQuant"), srr_residuals = res1, srr_residuals_mult = TRUE)
-    biol_bits2 <- list(biol = flbiols[[2]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_residuals_mult = TRUE)
-    biol_bits3 <- list(biol = flbiols[[3]], srr_model_name = "bevholt", srr_params = as(params(srr1), "FLQuant"), srr_residuals = res1, srr_residuals_mult = TRUE)
-    biol_bits4 <- list(biol = flbiols[[4]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_residuals_mult = TRUE)
-    biol_bits5 <- list(biol = flbiols[[5]], srr_model_name = "ricker", srr_params = as(params(srr2), "FLQuant"), srr_residuals = res2, srr_residuals_mult = TRUE)
-    biols <- list(biol1 = biol_bits1, biol2 = biol_bits2, biol3 = biol_bits3)
-    # Make the Catches
-    catch_seed <- as(ple4_iters, "FLCatch")
-    catch_list <- list()
-    for (i in 1:3){
-        catch <- catch_seed
-        name(catch) <- paste("catch",i,sep="")
-        desc(catch) <- paste("catch",i,sep="")
-        landings.n(catch) <- landings.n(catch) * abs(rnorm(prod(dim(landings.n(catch))), mean = 1, sd = 0.1))
-        discards.n(catch) <- discards.n(catch) * abs(rnorm(prod(dim(discards.n(catch))), mean = 1, sd = 0.1))
-        catch.sel(catch) <- catch.sel(catch) * abs(rnorm(prod(dim(catch.sel(catch))), mean = 1, sd = 0.1))
-        sweep(catch.sel(catch), 2:6, apply(catch.sel(catch), 2:6, max), "/")
-        catch.q(catch) <- FLPar(c(1,0.5), dimnames=list(params=c("alpha","beta"), iter = 1))
-        catch_list[[i]] <- catch
-    }
-    # Make fishery bits
-    fishery1 <- FLFishery(catch1=catch_list[[1]], catch2 = catch_list[[2]])
-    desc(fishery1) <- "fishery1"
-    effort(fishery1)[] <- 1
-    fishery1@hperiod[1,] <- runif(prod(dim(fishery1@hperiod)[2:6]),min=0, max=1)
-    fishery1@hperiod[2,] <- runif(prod(dim(fishery1@hperiod)[2:6]),min=fishery1@hperiod[1,], max=1)
-    fishery2 <- FLFishery(catch1=catch_list[[2]], catch2 = catch_list[[3]])
-    desc(fishery2) <- "fishery2"
-    effort(fishery2)[] <- 1
-    fishery2@hperiod[1,] <- runif(prod(dim(fishery2@hperiod)[2:6]),min=0, max=1)
-    fishery2@hperiod[2,] <- runif(prod(dim(fishery2@hperiod)[2:6]),min=fishery2@hperiod[1,], max=1)
-    fisheries <- FLFisheries(fishery1 = fishery1, fishery2 = fishery2)
-    fisheries@desc <- "fisheries"
-    # fwdControl
-    fwc <- random_fwdControl_generator(niters=niters)
-    # Make FCB array
-    FCB <- array(c(1,1,2,2,1,2,1,2,1,2,2,3), dim=c(4,3))
-    colnames(FCB) <- c("F","C","B")
-    fwc@FCB <- FCB
-    return(list(fisheries = fisheries, biols = biols, fwc = fwc))
-}
-
 make_test_operatingModel1 <- function(niters = 1000){
     # Sort out the FLBiolcpps
     data(ple4)
@@ -558,6 +428,7 @@ make_test_operatingModel1 <- function(niters = 1000){
 #' Creates a test operating model for testing FLFishery / FLCatch / FLBiolcpp interactions.
 #' Two FLFishery objects with 1 FLCatch objects each fishing on the same, single FLBiolcpp.
 #' All objects are based on ple4.
+#' @param niters Number of iterations.
 #'
 #' @export
 #' @return A list of objects for sending to C++
@@ -630,6 +501,8 @@ make_test_operatingModel2 <- function(niters = 1000){
 #' Creates the bits for a simple test operating model for projections.
 #' A single FLFishery object with 1 FLCatch fishing on a single FLBiolcpp.
 #' All objects are based on ple4.
+#' @param niters Number of iterations.
+#' @param sd Standard deviation for the noise.
 #'
 #' @export
 #' @return A list of objects for sending to C++
@@ -761,9 +634,11 @@ make_skipjack_operatingModel <- function(niters = 1000, sd = 0.1){
 
 
 
-#' Return 1D element index of FLQuant
+#' Return 1D element index of an FLQuant
 #'
-#' Given an FLQuant the indices, returns the 1D element accessor.
+#' Given an FLQuant and the indices, returns the 1D element accessor.
+#' @param flq The FLQuant
+#' @param indices The indices (integer vector, length 6)
 #'
 #' @export
 get_FLQuant_element <- function(flq, indices){
@@ -777,9 +652,12 @@ get_FLQuant_element <- function(flq, indices){
     return(element)
 }
 
-#' Return 1D element index of FLQuant
+#' Return 1D vector of element indices of an FLQuant
 #'
 #' Given an FLQuant and the indices range, returns the vector of indices
+#' @param flq The FLQuant
+#' @param indices_min The min indices (integer vector, length 6)
+#' @param indices_max The max indices (integer vector, length 6)
 #'
 #' @export
 get_FLQuant_elements <- function(flq, indices_min, indices_max){
@@ -796,51 +674,5 @@ get_FLQuant_elements <- function(flq, indices_min, indices_max){
                             elements[element_count] = get_FLQuant_element(flq, c(qcount, ycount, ucount, scount, acount, icount))
     }}}}}}
     return(elements)
-}
-
-#' Creates an FLFisheries and biol bits for use in FLasher from an FLStock
-#'
-#' Creates the bits needed to call FLasher from an annual FLStock.
-#' Used for testing purposes.
-#' Careful with hperiod. Not able to calculate from m.spwn and harvest.spwn slots
-#' so F is assumed to happen continuously through year (like m).
-#'
-#' @param stk An annual FLStock.
-#' @param srr_model Name of the stock-recruitmen model.
-#' @param srr_params Parameters for the SRR as an FLPar (i.e. directly from an FLSR).
-#' @param srr_residuals An FLQuant of residuals for the SRR.
-#' @param srr_residuals_mult Boolean to determine of the residuals are multiplicative or additive.
-#' @export
-#' @return A list of objects for use with FLasher.
-flasher_annual_stock_prep <- function(stk, srr_model, srr_params, srr_residuals, srr_residuals_mult, niters=1){
-    biol <- as(as(stk,"FLBiol"),"FLBiolcpp")
-    name(biol) <- "biol"
-    desc(biol) <- "biol"
-    biol <- propagate(biol, niters)
-    srr_residuals <- propagate(srr_residuals, niters)
-    biol1 <- list(biol = biol, srr_model_name = srr_model, srr_params = as(srr_params, "FLQuant"), srr_residuals = srr_residuals,  srr_residuals_mult = srr_residuals_mult)
-    biol_bits <- list(biol1 = biol1)
-    catch <- as(stk, "FLCatch")
-    catch <- propagate(catch, niters)
-    name(catch) <- "catch"
-    desc(catch) <- "catch"
-    # Set beta to 0 and alpha so that an effort of 1 gives same F as the FLStock
-    # F = alpha * biomass ^ -beta * sel * effort
-    # F = alpha * sel
-    # alpha = F / sel
-    alpha <- c((harvest(stk) / catch.sel(catch))[1,])
-    catch.q(catch) <- FLPar(NA, dimnames=list(params=c("alpha","beta"), year = dimnames(stock.n(stk))$year, iter = 1:niters))
-    catch.q(catch)['alpha',] <- alpha
-    catch.q(catch)['beta',] <- 0
-    fishery <- FLFishery(catch=catch)
-    desc(fishery) <- "fishery"
-    effort(fishery)[] <- 1
-    # Timing of fishing - cannot calculate hstart and hfinish from harvest.spwn and m.spwn - assume that F is continuous throughout time period - same as m
-    fishery@hperiod[1,] <- 0
-    fishery@hperiod[2,] <- 1
-    fisheries <- FLFisheries(fishery = fishery)
-    fisheries@desc <- "fisheries"
-    return(list(fisheries = fisheries,
-                biol = biol_bits))
 }
 

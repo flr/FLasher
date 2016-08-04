@@ -15,6 +15,8 @@ random_FLQuant_generator(fixed_dims = rep(NA, 6), min_dims = rep(1, 6),
 
 \item{max_dims}{A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,10,5,4,4,5).}
 
+\item{min_age_name}{The name of the first age group.}
+
 \item{sd}{The standard deviation of the random numbers. Passed to rnorm() Default is 100.}
 }
 \value{

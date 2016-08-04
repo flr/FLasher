@@ -6,6 +6,11 @@
 \usage{
 make_test_operatingModel3(niters = 1000, sd = 0.1)
 }
+\arguments{
+\item{niters}{Number of iterations.}
+
+\item{sd}{Standard deviation for the noise.}
+}
 \value{
 A list of objects for sending to C++
 }
