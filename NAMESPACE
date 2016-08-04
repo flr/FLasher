@@ -3,6 +3,10 @@ importFrom(Rcpp,
   evalCpp)
 importFrom(stats,
   runif)
+importFrom(utils,
+  data)
+importFrom(methods,
+  as)
 import(FLCore)
 import(FLFishery)
 exportClasses(
