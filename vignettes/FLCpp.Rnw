@@ -21,6 +21,10 @@
 \usepackage{babel}
 \usepackage{hyperref}
 \usepackage{geometry}
+\usepackage{tabularx}
+\usepackage{tabulary}
+\usepackage{tabu}
+\usepackage{multirow}
 \geometry{verbose,a4paper,tmargin=3cm,bmargin=2cm,lmargin=2cm,rmargin=3cm}
 \setlength{\parskip}{\medskipamount}
 \setlength{\parindent}{0pt}
@@ -42,266 +46,371 @@
 \newcommand{\E}[1]{\text{E}\left[#1\right]}
 \newcommand{\Var}[1]{\text{Var}\left[#1\right]}
 
+\newcolumntype{s}{>{\hsize=.5\hsize}X}
 
 %----------------------------------------------------------------------------------
 
-\begin{document}
 
 \title{FLCpp - Fisheries Library in C++}
 
-\author[1]{Finlay Scott}
-\author[1]{Iago Mosqueira}
-\affil[1]{European Commission, Joint Research Centre, IPSC / Maritime Affairs Unit, 21027 Ispra (VA), Italy}
-\affil[*]{Corresponding author \href{mailto:finlay.scott@jrc.ec.europa.eu}{finlay.scott@jrc.ec.europa.eu}}
+\author{Finlay Scott}
+\author{Iago Mosqueira}
+\affil{European Commission, DG Joint Research Centre, Directorate D - Sustainable Resources, Unit D.02 Water and Marine Resources, via Enrico Fermi 2749, 21027 Ispra (VA), Italy}
+\affil{Corresponding author: \href{mailto:finlay.scott@jrc.ec.europa.eu}{finlay.scott@jrc.ec.europa.eu}}
+%\soundtrack{Car Seat Headrest}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+%\SweaveOpts{concordance=TRUE}
 
 \maketitle
 \tableofcontents
 \newpage
 
+%--------------------------------------------------------------------
+
 \section{Introduction}
 
-%<<knitr_opts, echo=FALSE, message=FALSE, warning=FALSE>>=
-%library(knitr)
-%css = eclipse_theme(43)
-%thm = knit_theme$get(css)
-%knit_theme$set(thm)
-%opts_chunk$set(dev='png', cache=TRUE, fig.align='center', warning=FALSE, message=FALSE, dev="png", dev.args=list(type="cairo"), dpi=96, highlight=TRUE, background='#F2F2F2', fig.lp="fig:", fig.pos="H", width=60)
-%@
-%
-%This document describes the basic FLR classes that have been implemented in C++ in the \pkg{FLasher} package.
-%The classes form the basis of the \class{operatingModel} class that is responsible for mult-species, multi-fleet projections.
-%
-%These classes can also be easily used in the normal R environment through the use of the \code{cppFunction()} function and the specially written plug-in for \pkg{FLasher}.
-%
-%To begin we need to load the libraries:
-%
-%<<load_libraries, message=FALSE, warning=FALSE>>=
-%library(FLasher)
-%# Explicitly load Rcpp because we want to use cppFunction()
-%library(Rcpp)
-%# Useful library for testing stuff
-%library(testthat)
-%@
-%
-%\section{\class{FLQuant}}
-%
-%The \class{FLQuant} class is represented in C++ as a class, as called \class{FLQuant}.
-%Internally, the data member of the class is represented as \code{std::vector<T>}, i.e. it is a one dimensioal vector.
-%A range of different accessing methods are available to allow access to all 6 \class{FLQuant} dimensions. 
-%
-%T is either a \code{double} or \code{adouble} for automatic differentiation using CppAD.
-%There are \code{typedef}s called \class{FLQuant} or \class{FLQuantAD} respectively. 
-%Making the FLQuant class work for other data types, e.g. other implementations of automatic differentiation, is possible.
-%The class also has members for units, dimensions and dimension names.
-%
-%
-%\subsection{A simple example}
-%
-%A plugin has been written to allow \pkg{FLasher} to be used with the \pkg{Rcpp} \code{cppFunction()} function.
-%Additionally, dedicated \code{wrap<>} and \code{as<>} methods have been written to allow \class{FLQuant}s to be easily passed to and from C++ and R.
-%We will make use of this in this vignette.
-%
-%Here we write a simple function that takes an \class{FLQuant}, multiplies it by a \class{double} and returns the result (more on mathematical operators on C++ \class{FLQuant} objects later).
-%First we write the C++ source code.
-%
-%<<simple_example>>=
-%source = '
-%    FLQuant flq_test(FLQuant x, double mult){
-%        FLQuant y = x * mult;
-%        return y;
-%    }
-%'
-%@
-%
-%We then compile the source code specifying the \pkg{FLasher} depends and that we need to use C++11.
-%
-%<<compile_simple_example>>=
-%cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
-%@
-%
-%This makes the C++ function \code{flq\_test()} available to R. 
-%Let's test it.
-%
-%<<test_simple_example>>=
-%data(ple4)
-%mult <- 2.0
-%flq_in <- catch.n(ple4)
-%flq_out <- flq_test(flq_in, mult)
-%# What is it
-%is(flq_out)
-%# Has the multiplication worked?`
-%flq_in[1:3,"2000"]
-%flq_out[1:3,"2000"]
-%# The following test only produces output if the test fails
-%expect_that(flq_in * mult, equals(flq_out))
-%@
-%
-%\subsection{Lists of \class{FLQuant} objects: \class{FLQuant7}}
-%
-%We now have a quick detour to introduce a new class, the \class{FLQuant7}. This is just a list of \class{FLQuant} objects.
-%It should really have been called \class{FLQuants} not \class{FLQuant7} - feel free to change it if you want.
-%We introduce it here because it becomes useful in the later examples for returning multiple \class{FLQuant} objects.
-%
-%In this example we pass in two \class{FLQuant} objects, make an \class{FLQuant7} object from them and then return it.
-%<<flq7>>=
-%source = '
-%     FLQuant7 flq7_test(FLQuant x, FLQuant y){
-%         // Make the FLQuant7 by passing in one object
-%         FLQuant7 z(x);
-%         // Add another by using ()
-%         z(y);
-%         return z;
-%    }
-%'
-%
-%cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
-%@
-%
-%<<flq7_test>>=
-%flq1 <- catch.n(ple4)
-%flq2 <- stock.n(ple4)
-%flqs <- flq7_test(flq1, flq2)
-%# What is it? It's a list
-%is(flqs)
-%length(flqs)
-%expect_that(flq1, equals(flqs[[1]]))
-%expect_that(flq2, equals(flqs[[2]]))
-%@
-%
-%You can do it the other way round by passing a list of \class{FLQuant} objects.
-%To access an element in the \class{FLQuant7} (either for setting or getting) you can use the \code{()} operator and the index of the \class{FLQuant}, starting at 1.
-%
-%<<flq7_get_set>>=
-%source = '
-%     FLQuant flq7_get_test(FLQuant7 x){
-%         // Pull out the first FLQuant
-%         FLQuant y = x(1);
-%         return y;
-%    }
-%'
-%cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
-%
-%source = '
-%     FLQuant7 flq7_set_test(FLQuant7 x, FLQuant y){
-%         // Insert an FLQuant in the 2nd position
-%         x(2) = y;
-%         return x;
-%    }
-%'
-%cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
-%@
-%
-%<<flq7_get_set_test>>=
-%flq3 <- flq7_get_test(flqs)
-%expect_that(flq3, equals(flqs[[1]]))
-%flq4 <- landings.n(ple4)
-%flqs2 <- flq7_set_test(flqs, flq4)
-%expect_that(flq4, equals(flqs2[[2]]))
-%@
-%
-%You can have a list of \class{FLQuant} or \class{FLQuantAD} objects, but not a mix.
-%
-%
-%
-%\subsection{Dimension accessors}
-%
-%To get the dimensions of a \class{FLQuant} in C++ there are some accessor methods. 
-%For example, \code{get\_dim()} returns an integer vector of length 6 containing the size of each dimension.
-%In this example we use an \class{FLQuantAD} just to show it does the same thing.
-%
-%<<flq_dim_accessor>>=
-%source = '
-%     std::vector<unsigned int> flq_dim_test(FLQuantAD x){
-%        return x.get_dim();
-%    }
-%'
-%cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
-%dim(flq_in)
-%flq_dim_test(flq_in)
-%@
-%
-%The methods \code{get\_nquant()}, \code{get\_nyear()}, \code{get\_nunit()}, \code{get\_nseason()}, \code{get\_narea()}, \code{get\_niter()} return the sizes of the appropriate dimension.
-%
-%<<flq_dim_accessors>>=
-%source = '
-%    std::vector<unsigned int> flq_dims_test(FLQuant x){
-%        // Make a vector to return
-%        std::vector<unsigned int> dim_out {
-%            x.get_nquant(),
-%            x.get_nyear(),
-%            x.get_nunit(),
-%            x.get_nseason(),
-%            x.get_narea(),
-%            x.get_niter()};
-%        return dim_out;
-%    }
-%'
-%cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
-%@
-%
-%<<test_flq_dim_accessors>>=
-%dim(flq_in)
-%flq_dims_test(flq_in)
-%@
-%
-%There are also methods for pulling out the dimnames and units but these are not illustrated here.
-%
-%
-%\subsection{Accessing and subsetting data in an \class{FLQuant} in C++}
-%\label{sec:flquantaccess}
-%
-%First, ALL accessors work on indices, i.e. positions within the dimension.
-%For example, if the year range of the \class{FLQuant} is 2000 to 2010, to access year 2005, the year index is 6.
-%Names do not work, only integers.
-%
-%There are several ways of getting at the data in an \class{FLQuant} in C++.
-%
-%\begin{itemize}
-%    \item Getting at a single value by passing a single index value; 
-%    \item Getting at a single value by passing 6 index values for the 6 dimensions;
-%    \item Getting at a single value by passing an integer vector of length 6;
-%    \item Subsetting the \class{FLQuant} by passing two integer vectors of length 6 that specify the minimum and maximum indices.
-%\end{itemize}
-%
-%Of these, only the first three methods allow you to change the values in the \class{FLQuant}. 
-%The subset method is for getting the data only. It cannot be used for setting the data.
-%
-%Note that the indices for accessing the \class{FLQuant} start at 1, even though we are in C++ world (\class{std::vector<>} etc. obviously start at 0).
-%<<set_accessor>>=
-%source = '
-%    FLQuant flq_set_accessor_test(FLQuant x, unsigned int single_index,
-%                                  std::vector<unsigned int> indices1,
-%                                  std::vector<unsigned int> indices2,
-%                                  double value){
-%        x(single_index) = value;
-%        x(indices1[0], indices1[1], indices1[2], indices1[3],
-%          indices1[4], indices1[5]) = value;
-%        x(indices2) = value;
-%        return x;
-%    }
-%'
-%
-%cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
-%@
-%
-%<<test_set_accessor>>=
-%single_index <- round(runif(1, min=1, max=prod(dim(flq_in))))
-%indices1 <- round(runif(6, min=1, max=dim(flq_in)))
-%indices2 <- round(runif(6, min=1, max=dim(flq_in)))
-%value <- 666
-%flq_out <- flq_set_accessor_test(flq_in, single_index, indices1, indices2, value)
-%# And test
-%# Single index
-%c(flq_in)[single_index]
-%c(flq_out)[single_index]
-%# Six seperate integers
-%flq_in[indices1[1], indices1[2], indices1[3], indices1[4], indices1[5], indices1[6]] 
-%flq_out[indices1[1], indices1[2], indices1[3], indices1[4], indices1[5], indices1[6]] 
-%# Vector of integers
-%flq_in[indices2[1], indices2[2], indices2[3], indices2[4], indices2[5], indices2[6]] 
-%flq_out[indices2[1], indices2[2], indices2[3], indices2[4], indices2[5], indices2[6]] 
-%@
-%
+<<knitr_opts, echo=FALSE, message=FALSE, warning=FALSE>>=
+library(knitr)
+#css = eclipse_theme(43)
+#thm = knit_theme$get(css)
+#knit_theme$set(thm)
+opts_chunk$set(dev='png', cache=TRUE, fig.align='center', warning=FALSE, message=FALSE, dev="png", dev.args=list(type="cairo"), dpi=96, highlight=TRUE, background='#F2F2F2', fig.lp="fig:", fig.pos="H", width=60)
+@
+
+This document describes the FLR classes and methods that have been implemented in C++ and are currently held in the \pkg{FLasher} package.
+All classes can be used with either \class{double} or \class{CppAD::AD<double>} (defined as \class{adouble}) from the \pkg{CppAD} library.
+
+An \pkg{Rcpp} plugin has been written for \pkg{FLasher}. This allows the C++ classes and methods inside \pkg{FLasher} to be used with the \pkg{Rcpp} \code{cppFunction()} function so that they can be easily used in a live R session. We use this a lot in this vignette.
+Additionally, dedicated \code{wrap<>} and \code{as<>} methods have been written for most of the classes to allow them to be easily passed to and from C++ and R.
+We will make use of this in this vignette.
+
+To begin we need to load the libraries:
+
+<<load_libraries, message=FALSE, warning=FALSE>>=
+library(FLasher)
+# Explicitly load Rcpp because we want to use cppFunction()
+library(Rcpp)
+# Useful library for testing stuff
+library(testthat)
+@
+
+%--------------------------------------------------------------------
+
+\section{\class{FLQuant}}
+
+The C++ based \class{FLQuant} class is basically the same as the R version.
+Internally, the data member of the C++ class is represented as \code{std::vector<T>}, i.e. it is a one dimensional vector not a 6D array like the R version.
+A range of accessing methods are available that allow the C++ version to be treated as a 6D array.
+
+The C++ \class{FLQuant} has been templated, which means that it can store different types of data.
+At the moment, the data type of a C++ \class{FLQuant} (\code{T}) is either a \code{double} or \code{CppAD::AD<double>} (defined as \class{adouble}).
+The \class{adouble} type is for automatic differentiation using the \pkg{CppAD} library.
+There are \code{typedef}s for \class{FLQuant<T>}: just \class{FLQuant} for \class{double} and \class{FLQuantAD} for \class{adouble}. 
+
+Making the class{FLQuant} class work for other data types, e.g. other implementations of automatic differentiation, is possible.
+
+The C++ \class{FLQuant} also has members for units, dimensions and dimension names, like the R version.
+
+
+\subsection{Moving \class{FLQuant}s between R and C++}
+
+Here we write a simple C++ function, in an R session, that takes an \class{FLQuant}, multiplies it by a \class{double} and returns the result (more on mathematical operators on C++ \class{FLQuant} objects in Section~\ref{sec:flqmath}).
+First we write the C++ source code as a text string that we store as an R variable.
+
+<<simple_example>>=
+source <- '
+    FLQuant flq_test(FLQuant x, double mult){
+        FLQuant y = x * mult;
+        return y;
+    }
+'
+@
+
+Note that because dedicated \code{wrap<>} and \code{as<>} methods have been written, the function directly takes and returns an \pkg{FLQuant}.
+
+We then compile the source code with \code{cppFunction}, specifying the we depend on \pkg{FLasher} and that we need to use C++11.
+
+<<compile_simple_example>>=
+cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+@
+
+This makes the C++ function \code{flq\_test()} available to R. To test it we need an \class{FLQuant} in our R session. We'll use the catch numbers from the \code{ple4} data:
+
+<<get_flq>>=
+data(ple4)
+flq_in <- catch.n(ple4)
+@
+
+We can now call the \code{flq\_test()} function:
+
+<<call_flq_test>>=
+mult <- 2.0
+flq_out <- flq_test(flq_in, mult)
+@
+
+Something happened. What object was returned? We can use the \pkg{testthat} package to compare the input and output.
+
+<<examine_flq_test>>=
+# What is it
+is(flq_out)
+# Has the multiplication worked? Look at a subset
+flq_in[1:3,"2000"]
+flq_out[1:3,"2000"]
+# Use testthat
+# The following test only produces output if the test fails
+expect_equal(flq_in * mult, flq_out)
+@
+
+\subsection{Dimension accessors}
+
+To get the dimensions of a \class{FLQuant} in C++ there are some accessor methods. 
+For example, \code{get\_dim()} returns an integer vector of length 6 containing the size of each dimension.
+In this example we use an \class{FLQuantAD} just to show it does the same thing.
+
+<<flq_dim_accessor>>=
+source = '
+     std::vector<unsigned int> flq_dim_test(FLQuantAD x){
+        return x.get_dim();
+    }
+'
+cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+dim(flq_in)
+flq_dim_test(flq_in)
+@
+
+The methods \code{get\_nquant()}, \code{get\_nyear()}, \code{get\_nunit()}, \code{get\_nseason()}, \code{get\_narea()}, \code{get\_niter()} return the sizes of the appropriate dimension.
+The method \code{get\_size()} returns the size of the \class{FLQuant} as a single integer.
+
+
+<<flq_dim_accessors>>=
+source = '
+    std::vector<unsigned int> flq_dims_test(FLQuant x){
+        // Make a vector to return
+        std::vector<unsigned int> dim_out {
+            x.get_nquant(),
+            x.get_nyear(),
+            x.get_nunit(),
+            x.get_nseason(),
+            x.get_narea(),
+            x.get_niter(),
+            x.get_size()};
+        return dim_out;
+    }
+'
+cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+@
+
+<<test_flq_dim_accessors>>=
+dim(flq_in)
+flq_dims_test(flq_in)
+@
+
+There are also methods for pulling out the dimnames and units but these are not illustrated here.
+They are of limited use in C++ world.
+
+\subsection{Accessing the data in an \class{FLQuant} in C++}
+\label{sec:flquantaccess}
+
+This is the important section: how to actually get at the data in the \class{FLQuant}. It is possible to pull out the data member directly (the \code{std::vector<T>}). However, you cannot operate directly on it. You have to use the accessors. This is to ensure that the size of the vector remains correct.
+
+Note that ALL accessors work on indices, i.e. positions within the dimension, NOT dimension names.
+For example, if the year range of the \class{FLQuant} is 2000 to 2010, to access year 2005, the year index is 6.
+Names do not work with the accessors, only integers.
+
+\subsubsection{Extracting data}
+
+There are several accessor methods to get at the data. These either return single values of type \class{T} or \class{FLQuant<T>}.
+Note that the indices start at 1, not 0, which follows R but is contrary to C++.
+
+\begin{table}[H]
+    \centering
+    \begin{tabu} to \textwidth {  X[l2]  X[l5]  X[l3]  }
+        \hline
+        Method & Syntax & Notes\\  
+        \hline
+        \multirow{3}{0.2\textwidth}{Get single value (returns type \class{T}) }& \code{flq(n)} & Accesses the nth element of the data member vector, starting from 1. \\
+                                           & \code{flq(quant, year, unit, season, area, iter)} & Similar to R version. Indices start at 1.\\
+                                           & \code{flq(std::vector)} & Vector of \class{unsigned int} of length 6, corresponding to quant, year etc. \\
+        \hline
+        \multirow{3}{0.2\textwidth}{Get subset (returns type \class{FLQuant<T>})} &  \code{flq(quant\_min, quant\_max, year\_min, year\_max, ..., iter\_min, iter\_max)} & Results in long code. \\
+                                                                & \code{flq(indices\_min, indices\_max)} & \code{indices} are \class{std::vector<unsigned int>} of length 6 to specify the range. \\
+                                                                & \code{flq(quant, year, unit, season, area)} & Returns all iterations. \\
+        \hline
+    \end{tabu}
+    \caption{Available data extraction methods for C++ \class{FLQuant} objects. Note that indices start at 1, not 0, which follows R but contrary to C++.}
+    \label{tab:flqextract}
+\end{table}
+
+
+This function demonstrates ways of extracting single values:
+
+<<flq_accessors>>=
+source = '
+    std::vector<double> flq_extract1(FLQuant x, unsigned int n,
+        std::vector<unsigned int> indices){
+        std::vector<double> out {
+            // Single element accessor (starting from 1)
+            x(n),
+            // 6D index as individual arguments (starting from 1)
+            x(indices[0],indices[1],indices[2],indices[3],indices[4],indices[5]),
+            // 6D index as single vector (starting from 1)
+            x(indices)
+        };
+        return out;
+    }
+'
+cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+@
+
+<<test_flq_accessors1>>=
+n <- 20
+indices <- c(2,3,1,1,1,1)
+out <- flq_extract1(flq_in, n, indices)
+out
+# Check
+expect_equal(c(flq_in)[n], out[1])
+expect_equal(c(flq_in[indices[1], indices[2], indices[3], indices[4],
+                      indices[5], indices[6]]), out[2])
+expect_equal(c(flq_in[indices[1], indices[2], indices[3], indices[4],
+                      indices[5], indices[6]]), out[3])
+@
+
+This function demonstrates ways of extracting subsets of an \class{FLQuant}. It introduces a new class \class{FLQuant7} which is just a list of \class{FLQuant} objects (see Section~\ref{sec:flq7}):
+
+<<flq_subset_accessors>>=
+source = '
+    FLQuant7 flq_extract2(FLQuant x, std::vector<unsigned int> indices_min,
+        std::vector<unsigned int> indices_max){
+        // Empty return list
+        FLQuant7 out;
+        // Long faffy way to extract the subset
+        out(x(indices_min[0], indices_max[0], indices_min[1], indices_max[1],
+            indices_min[2], indices_max[2], indices_min[3], indices_max[3],
+            indices_min[4], indices_max[4], indices_min[5], indices_max[5]));
+        // Neater way
+        out(x(indices_min, indices_max));
+        // All iters
+        out(x(indices_min[0], indices_min[1], indices_min[2], indices_min[3], indices_min[4]));
+        return out;
+    }
+'
+cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+@
+
+<<test_flq_accessors2>>=
+# Add some iters to the flq
+flq_in <- propagate(flq_in, 20)
+# Indices for subsetting
+indices_min <- c(2,3,1,1,1,5)
+indices_max <- c(7,10,1,1,1,10)
+out <- flq_extract2(flq_in, indices_min, indices_max)
+# What is out
+is(out)
+length(out)
+# Check indices accessor
+expect_equal(flq_in[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2],
+                    indices_min[3]:indices_max[3], indices_min[4]:indices_max[4],
+                    indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], out[[1]])
+# Vector accessor
+expect_equal(flq_in[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2],
+                    indices_min[3]:indices_max[3], indices_min[4]:indices_max[4],
+                    indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], out[[2]])
+# All iters
+expect_equal(flq_in[indices_min[1], indices_min[2], indices_min[3], indices_min[4], indices_min[5], ],
+                    out[[3]])
+@
+
+\subsubsection{Inserting data}
+
+There are several ways of inserting data into an \class{FLQuant}.
+
+\begin{table}[H]
+    \centering
+    \begin{tabu} to \textwidth {  X[l2]  X[l5]  X[l3]  }
+        \hline
+        Method & Syntax & Notes\\  
+        \hline
+        \multirow{3}{0.2\textwidth}{Insert single value}& \code{flq(n)=x} & Inserts \code{x} at the the nth element of the data member vector, starting from 1. \\
+                                           & \code{flq(quant, year, unit, season, area, iter)=x} & Similar to R version. Indices start at 1.\\
+                                           & \code{flq(std::vector)=x} & Vector of \class{unsigned int} of length 6, corresponding to quant, year etc. \\
+        \hline
+        Insert an \class{FLQuant} of same or smaller dimension. & \code{flq.insert(flq\_in, indices\_min, indices\_max)} & Uses \code{insert()} method. Need to specify where \code{flq\_in} is being inserted into \code{flq}.\\
+        \hline
+        Fill an \class{FLQuant} with the same value & \code{flq.fill(x)} & \code{x} is of type \class{T}.\\
+        \hline
+    \end{tabu}
+    \caption{Available data insertion methods for C++ \class{FLQuant} objects. Note that indices start at 1, not 0, which follows R but contrary to C++.}
+    \label{tab:flqextract}
+\end{table}
+
+As mentioned above, note that the indices for inserting into and accessing the \class{FLQuant} start at 1, even though we are in C++ world (\class{std::vector<>} etc. obviously start at 0).
+
+Some examples:
+
+<<flq_subset_accessors>>=
+source = '
+    FLQuant7 flq_insert(FLQuant x, FLQuant y, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max, unsigned int n, double value){
+        // Empty return list
+        FLQuant7 out;
+        // Insert a single value
+        FLQuant x1=x;
+        x1(n) = value;
+        out(x1);
+        // Insert a single value at a position
+        FLQuant x2 = x;
+        x2(indices_min[0], indices_min[1], indices_min[2], indices_min[3], indices_min[4], indices_min[5])=value;
+        out(x2);
+        // Insert a single value at a position using a vector
+        FLQuant x3=x;
+        x3(indices_min)=value;
+        out(x3);
+        // Insert an entire FLQuant
+        FLQuant x4=x;
+        x4.insert(y, indices_min, indices_max);
+        out(x4);
+        // Fill the entire FLQuant with the the same value
+        FLQuant x5=x;
+        x5.fill(value);
+        out(x5);
+        return out;
+    }
+'
+cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+@
+
+<<test_flq_insertion>>=
+# Indices for subsetting
+indices_min <- c(2,3,1,1,1,5)
+indices_max <- c(7,10,1,1,1,10)
+# Make a mini FLQ based on stock.n
+mini_flq <- propagate(stock.n(ple4),20)
+mini_flq <- mini_flq[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2],
+                    indices_min[3]:indices_max[3], indices_min[4]:indices_max[4],
+                    indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]]
+n <- 15
+value <- 666
+out <- flq_insert(flq_in, mini_flq, indices_min, indices_max, n, value)
+# Check indices insert
+expect_equal(c(out[[1]])[n], value)
+# All dims inserter
+expect_equal(c(out[[2]][indices_min[1], indices_min[2],
+                    indices_min[3], indices_min[4],
+                    indices_min[5], indices_min[6]]), value)
+# Vector inserter
+expect_equal(c(out[[3]][indices_min[1], indices_min[2],
+                    indices_min[3], indices_min[4],
+                    indices_min[5], indices_min[6]]), value)
+# FLQuant inserter
+expect_equal(out[[4]][indices_min[1]:indices_max[1], indices_min[2]:indices_max[2],
+                    indices_min[3]:indices_max[3], indices_min[4]:indices_max[4],
+                    indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], mini_flq)
+# Fill
+expect_equal(c(out[[5]]), rep(value, prod(dim(flq_in))))
+@
+
+
 %If you try to access values that are outside of the dimension range, you get an error.
 %
 %Which is nice.
@@ -323,38 +432,9 @@
 %# Would be nice to see the error but it breaks the generation of the Vignette!
 %expect_that(flq_range_accessor_test(flq_in, indices, value), throws_error())
 %@
-%
-%In this example we extract a subset of an \class{FLQuant}. As mentioned above, this can only be used for getting data (Note: I guess you could add a method a set method for subsets if you wanted).
-%
-%<<subset_flquant>>=
-%source = '
-%    FLQuant flq_subset_test(FLQuant x, 
-%                                  std::vector<unsigned int> indices1,
-%                                  std::vector<unsigned int> indices2){
-%        // Subset using two integer vectors
-%        FLQuant y = x(indices1, indices2); 
-%        return y;
-%    }
-%'
-%
-%cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
-%@
-%
-%<<test_subset>>=
-%indices1 <- round(runif(6, min=1, max=ceiling(dim(flq_in)/2))) 
-%indices2 <- round(runif(6, min=ceiling(dim(flq_in)/2), max=dim(flq_in))) 
-%flq_out <- flq_subset_test(flq_in, indices1, indices2)
-%# Test subset is correct
-%subset_in <- flq_in[indices1[1]:indices2[1], indices1[2]:indices2[2],
-%indices1[3]:indices2[3], indices1[4]:indices2[4],
-%indices1[5]:indices2[5], indices1[6]:indices2[6]]
-%# If all this good, the test returns nothing
-%expect_that(subset_in, equals(flq_out))
-%@
-%
-%
-%\subsection{Mathematical operations}
-%
+
+\subsection{Mathematical operations}
+\label{sec:flqmath}
 %All the common mathematical operations have been defined for \class{FLQuant} in C++,
 %i.e. you can multiply and add single values to whole \class{FLQuant} objects, add
 %two \class{FLQuant} objects together and so on.
@@ -518,7 +598,76 @@
 %expect_that(flqs[[3]], equals(flq1))
 %@
 %
-%
+
+
+\section{Lists of \class{FLQuant} objects: \class{FLQuant7}}
+\label{sec:flq7}
+
+Here we introduce the class \class{FLQuant7}. This is just a list of \class{FLQuant} objects.
+It should really have been called \class{FLQuants} not \class{FLQuant7} - feel free to change it if you want.
+%We introduce it here because it becomes useful in the later examples for returning multiple \class{FLQuant} objects.
+
+In this example we pass in two \class{FLQuant} objects, make an \class{FLQuant7} object from them and then return it.
+<<flq7>>=
+source = '
+     FLQuant7 flq7_test(FLQuant x, FLQuant y){
+         // Make the FLQuant7 by passing in one object
+         FLQuant7 z(x);
+         // Add another by using ()
+         z(y);
+         return z;
+    }
+'
+
+cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+@
+
+<<flq7_test>>=
+flq1 <- catch.n(ple4)
+flq2 <- stock.n(ple4)
+flqs <- flq7_test(flq1, flq2)
+# What is it? It's a list
+is(flqs)
+length(flqs)
+expect_that(flq1, equals(flqs[[1]]))
+expect_that(flq2, equals(flqs[[2]]))
+@
+
+You can do it the other way round by passing a list of \class{FLQuant} objects.
+To access an element in the \class{FLQuant7} (either for setting or getting) you can use the \code{()} operator and the index of the \class{FLQuant}, starting at 1.
+
+<<flq7_get_set>>=
+source = '
+     FLQuant flq7_get_test(FLQuant7 x){
+         // Pull out the first FLQuant
+         FLQuant y = x(1);
+         return y;
+    }
+'
+cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+
+source = '
+     FLQuant7 flq7_set_test(FLQuant7 x, FLQuant y){
+         // Insert an FLQuant in the 2nd position
+         x(2) = y;
+         return x;
+    }
+'
+cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+@
+
+<<flq7_get_set_test>>=
+flq3 <- flq7_get_test(flqs)
+expect_that(flq3, equals(flqs[[1]]))
+flq4 <- landings.n(ple4)
+flqs2 <- flq7_set_test(flqs, flq4)
+expect_that(flq4, equals(flqs2[[2]]))
+@
+
+You can have a list of \class{FLQuant} or \class{FLQuantAD} objects, but not a mix.
+
+
+
 %\section{Stock-recruitment relationships with \class{fwdSR}}
 %
 %The \class{fwdSR} class is used to represent stock-recruitment (SR) dynamics.
