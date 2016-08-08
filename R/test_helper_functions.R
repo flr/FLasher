@@ -520,7 +520,7 @@ make_test_operatingModel3 <- function(niters = 1000, sd = 0.1){
     name(biol) <- "biol"
     # Make SRR and add noise to residuals
     srr1 <- fmle(as.FLSR(ple4, model="bevholt"),control = list(trace=0))
-    res1 <- window(residuals(srr1), start = 1957)
+    res1 <- window(exp(residuals(srr1)), start = 1957)
     res1[,"1957"] <- res1[,"1958"]
     res1 <- propagate(res1, niters)
     res1 <- res1 * abs(rnorm(prod(dim(res1)), mean = 1, sd = sd))
@@ -541,7 +541,7 @@ make_test_operatingModel3 <- function(niters = 1000, sd = 0.1){
     # Set the Catchability parameters so that an effort of 1 gives the current catch - make internally consistent
     # set beta to 0 for simplicity
     catch.q(catch) <- FLPar(c(1,0.5), dimnames=list(params=c("alpha","beta"), iter = 1))
-    catch_list[[i]] <- catch
+    catch_list <- list(catch, catch)
     # Make fishery bits
     fishery1 <- FLFishery(catch1=catch_list[[1]])
     desc(fishery1) <- "fishery1"
