@@ -24,14 +24,14 @@
 #' dim(flq)
 #' summary(flq)
 random_FLQuant_generator <- function(fixed_dims = rep(NA,6), min_dims = rep(1,6), max_dims = pmax(min_dims, c(5,10,5,4,4,5)), min_age_name = 1, sd = 100){
-    nage <- ifelse(is.na(fixed_dims[1]),round(runif(1,min=min_dims[1], max=max_dims[1])),fixed_dims[1])
-    nyear <- ifelse(is.na(fixed_dims[2]),round(runif(1,min=min_dims[2], max=max_dims[2])),fixed_dims[2])
-    nunit <- ifelse(is.na(fixed_dims[3]),round(runif(1,min=min_dims[3], max=max_dims[3])),fixed_dims[3])
-    nseason <- ifelse(is.na(fixed_dims[4]),round(runif(1,min=min_dims[4], max=max_dims[4])),fixed_dims[4])
-    narea <- ifelse(is.na(fixed_dims[5]),round(runif(1,min=min_dims[5], max=max_dims[5])),fixed_dims[5])
-    niter <- ifelse(is.na(fixed_dims[6]),round(runif(1,min=min_dims[6], max=max_dims[6])),fixed_dims[6])
-    values <- rnorm(nage*nyear*nunit*nseason*narea*niter, sd = sd)
-    flq <- FLQuant(values, dimnames = list(age = min_age_name:(min_age_name + nage - 1), year = 1:nyear, unit = 1:nunit, season = 1:nseason, area = 1:narea, iter = 1:niter))
+    flq_dims <- fixed_dims
+    for (i in 1:6){
+        if (is.na(fixed_dims[i])){
+            flq_dims[i] <- round(runif(1,min=min_dims[i], max=max_dims[i]))
+        }
+    }
+    values <- rnorm(prod(flq_dims), sd = sd)
+    flq <- FLQuant(values, dimnames = list(age = min_age_name:(min_age_name + flq_dims[1] - 1), year = 1:flq_dims[2], unit = 1:flq_dims[3], season = 1:flq_dims[4], area = 1:flq_dims[5], iter = 1:flq_dims[6]))
     units(flq) <- as.character(signif(abs(rnorm(1)),3))
     return(flq)
 }
