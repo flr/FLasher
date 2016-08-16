@@ -349,7 +349,7 @@ As mentioned above, note that the indices for inserting into and accessing the \
 
 Some examples:
 
-<<flq_subset_accessors>>=
+<<flq_insert>>=
 source = '
     FLQuant7 flq_insert(FLQuant x, FLQuant y, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max, unsigned int n, double value){
         // Empty return list
