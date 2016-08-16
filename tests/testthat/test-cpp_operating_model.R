@@ -326,6 +326,10 @@ test_that("operatingModel f_prop_spwn methods",{
     indices_min <- round(runif(6,1,indices_max))
     prop_out <- test_operatingModel_f_prop_spwn_FLQ_subset(flfs, flbs, fc, fishery_no, biol_no, indices_min[-1], indices_max[-1])
     expect_FLQuant_equal(prop_in[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], prop_out)
+    # NA in hperiod - no fishing
+    flfs[[1]]@hperiod[1, indices_min[2], indices_min[3], indices_min[4], indices_min[5], indices_min[6]] <- NA
+    prop_out <- test_operatingModel_f_prop_spwn_FLQ_subset(flfs, flbs, fc, 1, biol_no, indices_min[-1], indices_min[-1])
+    expect_that(c(prop_out), is_identical_to(0.0))
 })
 
 test_that("operatingModel SRP methods with seasons and units",{

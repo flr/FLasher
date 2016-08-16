@@ -197,6 +197,7 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
         biols(biol_no).wt(qindices_min, qindices_max) *
         biols(biol_no).mat(qindices_min, qindices_max) * exp((-1.0 * f_pre_spwn) - m_pre_spwn));
     //Rprintf("Got SRP\n");
+    // If spwn = NA, then output should be 0? - should add proper check for this - at the moment it just sort of happens
     return srp;
 }
 
@@ -209,7 +210,6 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
  * \param indices_max The maximum indices: year, unit etc (length 5)
  */
 FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
-    //Rprintf("In f_prop_spwn\n");
     // Check indices_min and indices_max are of length 5
     if (indices_min.size() != 5 | indices_max.size() != 5){
         Rcpp::stop("In operatingModel::f_prop_spwn subsetter. Indices not of length 5\n");
@@ -226,25 +226,28 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
             for (unsigned int season_count=indices_min[2]; season_count <= indices_max[2]; ++season_count){
                 for (unsigned int area_count=indices_min[3]; area_count <= indices_max[3]; ++area_count){
                     for (unsigned int iter_count=indices_min[4]; iter_count <= indices_max[4]; ++iter_count){
-                        // Fix this depending on representation of fperiod
-                        //Rprintf("year_count: %i, unit_count: %i, season_count: %i, area_count: %i, iter_count: %i\n", year_count, unit_count, season_count, area_count, iter_count);
                         // hperiod has length 1 in the unit dimension
                         double fstart = hperiod(1,year_count, 1, season_count, area_count, iter_count);
                         double fend = hperiod(2,year_count, 1, season_count, area_count, iter_count);
                         double spwn = spwn_all(1,year_count, unit_count, season_count, area_count, iter_count);
-                        if (fend < spwn){
-                            propf = 1.0;
-                        }
-                        else if (fstart > spwn){
+                        // If fstart is NA then there is no fishing in that timestep. propf is then 0 
+                        if (Rcpp::NumericVector::is_na(fstart)){
                             propf = 0.0;
                         }
                         else {
-                            propf = (spwn - fstart) / (fend - fstart);
+                            if (fend < spwn){
+                                propf = 1.0;
+                            }
+                            else if (fstart > spwn){
+                                propf = 0.0;
+                            }
+                            else {
+                                propf = (spwn - fstart) / (fend - fstart);
+                            }
                         }
             // Dump it in the right place - ugliness abounds
             propf_out(1, year_count - indices_min[0] +1, unit_count - indices_min[1] +1, season_count - indices_min[2] +1, area_count - indices_min[3] +1, iter_count - indices_min[4] +1) = propf; 
     }}}}}
-    //Rprintf("Leaving f_prop_spwn\n");
     return propf_out;
 }
 
@@ -280,8 +283,6 @@ std::vector<adouble> operatingModel::calc_rec(const unsigned int biol_no, const 
     unsigned int initial_params_season = 0;
     timestep_to_year_season(rec_timestep, biol_dim[3], initial_params_year, initial_params_season);
     std::vector<unsigned int> initial_params_indices{initial_params_year, unit, initial_params_season, area, 1};
-    // Same for the residuals
-    std::vector<unsigned int> initial_residuals_indices_min{initial_params_year, unit, initial_params_season, area, 1};
     FLQuantAD rec = biols(biol_no).srr.predict_recruitment(srpq, initial_params_indices);
     return rec.get_data();
 }
