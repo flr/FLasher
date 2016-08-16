@@ -49,7 +49,7 @@ class FLCatch_base {
         FLQuant catch_q_params() const;
         // Extra accessor for catch_q because it's really an FLPar in disguise and does not have
         // the same 'true' dimensions as the other slots
-        std::vector<double> catch_q_params(int year, int unit, int season, int area, int iter) const;
+        std::vector<double> catch_q_params(unsigned int year, unsigned int unit, unsigned int season, unsigned int area, unsigned int iter) const;
         FLQuant catch_q_params(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
         // Get and Set
