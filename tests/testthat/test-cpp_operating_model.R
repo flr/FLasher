@@ -1635,7 +1635,7 @@ test_that("operatingModel get_target_age_range", {
     expect_error(test_operatingModel_get_target_age_range_indices(flfs, flbs, fwc, 1, 1))
     # Without catch or biol in control - error
     trgt1 <- data.frame(year = 1, season = 1, 
-                        quant = "f", target = 1,
+                        quant = "f",
                         fishery = NA, catch = NA, biol = NA,
                         minAge = min_age, maxAge = max_age)
     fwc <- fwdControl(trgt1)
