@@ -57,7 +57,60 @@ Details
 
 ## Projecting the biology
 
-Details
+The biological stocks are projected one timestep by the `project_biols()` method.
+The method calculates the survivors from the previous timestep and places them in the correct position age class in the current timestep.
+Recruitment is also calculated.
+
+The stocks are processed one at a time (the order in which they appear in the `biols` method).
+The stocks are independent of each other and there is no interaction between them.
+
+The basic process is:
+
+- Calculate total mortality $z$ on the stock in the previous timestep.
+- Calculate survivors for the current timestep.
+- Calculate recruitment for the current timestep.
+- Place survivors and recruitment in the appropriate age classes in the current timestep.
+ 
+The survivors, $S$, from age, $a$, at the end of a timestep (given by year, $y$ and season, $s$) are calculated as:
+
+$S_{a,y,s} = N_{a,y,s} exp(-z_{a,y,s})$
+
+where $N$ is the population abundance. Here we calculate the survivors from the previous timestep.
+
+Where the survivors are placed in the current timestep depends on the season and the timing of recruitment.
+
+The recruitment is always added to the first age group of the stock in the timestep in which it occurred.
+As the projection progresses, the survivors are placed in the same age group until they are a year older.
+When they are a year older, the survivors are placed in the next age group.
+
+For example, say we have a projection with 4 seasons to a year and the stock only recruits once a year in season 3.
+Recruits enter the first age group in season 3.
+In year 1, season 4, the survivors from season 3 are placed in the same age group (i.e. the recruits from season 3 are moved to the first age group in season 4, less those that died).
+The same thing happens for seasons 1 and 2 in year 2.
+In season 3 in year 2, the survivors are placed in the next age group, i.e. the individuals are now a year older.
+
+### Multiple recruitment events
+
+NOT YET IMPLEMENTED
+
+Within a year a stock may recruit multiple times.
+To ensure that the growth of an individual is consistent with its recruitment season, it is necessary to account for the individuals from each recruitment seperately. 
+
+For example, consider a stock that recruits in seasons 1 and 3. The recruits from each event will be placed in the first age group. However, the individuals that were recruited in season 1 will be two seasons older than those that are recruited in season 3. Consequently, their mean mass and other metrics will be different.
+We have to keep track of the individuals recruited in season 1 and season 3 separately.
+To do this we use the *unit* dimension.
+
+The *unit* dimension is used to store information on individuals from different recruitment events.
+The individuals that results from each recruitment event in a year must be stored in a different unit.
+Each unit can only recruit once per year.
+
+SRP IS FROM ACROSS ALL UNITS
+
+
+
+
+
+
 
 # Calculating fishing mortality
 
@@ -292,6 +345,11 @@ rec_cpp(om$fisheries, om$biols, om$fwc, 10)
 The SRR parameters can vary by any of the dimensions in a FLQuant (apart from the first one, which is used to store the different parameters), e.g. by year and season to model a trend.
 
 SOMETHING ON RESIDUALS AND RECYCLING TOO
+
+
+# Recruitment in different seasons
+
+HOW ARE DIFFERENT RECRUITMENT EVENTS HANDLED
 
 # Projection targets
 

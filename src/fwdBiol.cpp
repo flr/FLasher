@@ -247,8 +247,8 @@ T& fwdBiol_base<T>::n(const unsigned int quant, const unsigned int year, const u
 
 /*! \brief The timelag between recruitment being added to the biol and the calculation of the SRP that results in that recruitment
  *
- * If the first age is 0, and we have a seasonal model, the timelag is 1 season (i.e. the season before).
- * If the first age is 0, and we have an model, there is no timelag (it's a strange case).
+ * If the first age is 0 and we have a seasonal model, the timelag is 1 season (i.e. the season before).
+ * If the first age is 0 and we have an annual model, there is no timelag (it's a strange case).
  * If the first age is >1, the timelag is the number of timesteps to same season at 0 age (so that SRP is calculated in the same season but x years before).
  */
 template <typename T>

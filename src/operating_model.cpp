@@ -191,6 +191,10 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
     std::vector<unsigned int> spwn_indices_max = qindices_max;
     spwn_indices_max[0] = 1;
     FLQuant m_pre_spwn = sweep_mult(biols(biol_no).m(qindices_min, qindices_max), biols(biol_no).spwn(qindices_min, spwn_indices_max));
+
+// Fprespwn and m*spwn will be NA when spwn is NA
+// Need to set the exp() part to 0 instead of NA
+
     // Get srp: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
     FLQuantAD srp = quant_sum(
         biols(biol_no).n(qindices_min, qindices_max) *
@@ -274,6 +278,11 @@ std::vector<adouble> operatingModel::calc_rec(const unsigned int biol_no, const 
     unsigned int area = 1;
     unsigned int niter = get_niter();
     // Get SRP for the single unit, year and season, i.e. just iters
+    //
+    // NO GET SRP OF ALL UNITS AND SUM OVER ALL UNITS
+    // BUT SRP IN SOME UNITS WILL BE 0 - SPWN IS NA
+    //
+    //
     std::vector<unsigned int> srp_indices_min{srp_year, unit, srp_season, area, 1};
     std::vector<unsigned int> srp_indices_max{srp_year, unit, srp_season, area, niter};
     FLQuantAD srpq = srp(biol_no, srp_indices_min, srp_indices_max);
