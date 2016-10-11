@@ -1,7 +1,14 @@
-<!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{Comparing FLash and FLasher outputs}
--->
+---
+title: "Comparing results of Flash and FLasher"
+author: Iago Mosqueira & Finlay Scott - European Commission Joint Research Center
+date: "`r format(as.Date(system('git log -1 --format=%ci', intern=TRUE)), '%B %Y')`"
+tags: [FLR, forecast, MSE]
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Comparing results of Flash and FLasher}
+  \usepackage[utf8]{inputenc}
+---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)

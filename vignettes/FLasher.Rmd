@@ -1,16 +1,14 @@
-% Projecting fish populations in FLR with FLasher
-% Iago Mosqueira & Finlay Scott EC JRC\protect\thanks{
-	European Commission\\
-	Joint Research Center\\
-	IPSC - Maritime Affairs Unit G04\\
-	Ispra, Italy\\
-	\url{https://fishreg.jrc.ec.europa.eu/}} - FLR Project
-% `r format(as.Date(system("git log -1 --format=%ci FLasher.Rmd", intern=TRUE)), "%B %Y")`
-
-<!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{Projecting fish populations in FLR with FLasher}
--->
+---
+title:  "Projecting fish populations in FLR with FLasher"
+author: Iago Mosqueira & Finlay Scott - European Commission Joint Research Center
+date: "`r format(as.Date(system('git log -1 --format=%ci FLasher.Rmd', intern=TRUE)), '%B %Y')`"
+tags: [FLR, forecast, MSE]
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Projecting fish populations in FLR with FLasher}
+  \usepackage[utf8]{inputenc}
+---
 
 # Projecting fish populations with FLasher
 

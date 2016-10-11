@@ -1,3 +1,4 @@
+# TODO
 
 # fwdControl
 
@@ -34,3 +35,10 @@
 # Economics
 
 - PROTOTYPE fishery feedback function, fff(fwdControl, ...)
+
+# 27.05.2016
+
+* ORDERING of targets in control object
+* FIX front of vignette
+* ADD examples to vignette
+* CHECK differences in catch numbers and weight between FLash / FLasher
