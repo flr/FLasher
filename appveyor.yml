@@ -8,8 +8,6 @@ init:
         Import-Module '..\appveyor-tool.ps1'
 
 install:
-  - ./travis-tool.sh install_github flr/FLCore
-  - ./travis-tool.sh install_github iagomosqueira/FLFishery
   ps: Bootstrap
 
 # Adapt as necessary starting from here
@@ -17,6 +15,9 @@ install:
 environment:
   global:
     WARNINGS_ARE_ERRORS: 0
+  install:
+  - ./travis-tool.sh install_github flr/FLCore
+  - ./travis-tool.sh install_github iagomosqueira/FLFishery
 
   matrix:
   - R_VERSION: devel
