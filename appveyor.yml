@@ -20,7 +20,7 @@ environment:
   matrix:
   - R_VERSION: release
     R_ARCH: x64
-    RTOOLS_VERSION: 34
+    RTOOLS_VERSION: 33
 
   - R_VERSION: devel
     R_ARCH: x64
