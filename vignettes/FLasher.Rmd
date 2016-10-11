@@ -1,5 +1,4 @@
 ---
-<<<<<<< HEAD
 title:  "Projecting fish populations in FLR with FLasher"
 author: Iago Mosqueira & Finlay Scott - European Commission Joint Research Center
 date: "`r format(as.Date(system('git log -1 --format=%ci FLasher.Rmd', intern=TRUE)), '%B %Y')`"
@@ -9,30 +8,6 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{Projecting fish populations in FLR with FLasher}
   \usepackage[utf8]{inputenc}
----
-
-# Projecting fish populations with FLasher
-=======
-title: "Projecting fish populations in FLR with FLasher"
-author: Iago Mosqueira, Finlay Scott - European Commission Joint Research Center
-date: "`r format(Sys.time(), '%d %B, %Y')`"
-documentclass: article
-header-includes: 
-  - \usepackage{float}
-  - \usepackage{microtype}
-  - \usepackage[T1]{fontenc}
-  - \usepackage[bitstream-charter]{mathdesign}
-output:
-  rmarkdown::html_vignette:
-    toc: true
-    fig_caption: yes
-  pdf_document:
-    fig_caption: yes
-    number_sections: yes
-vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{FLasher}
-tags: [FLR FLasher forecast fisheries]
 abstract:
 license: European Union Public Licence (EUPL) V.1.1
 ---
@@ -46,7 +21,6 @@ options(width=60)
 ```
 
 # Introduction
->>>>>>> 5c110a827ffc93fc4fdf9483a1db3c477d3558ea
 
 # Setting up targets and limits
 
