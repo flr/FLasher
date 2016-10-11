@@ -12,6 +12,7 @@
 #' @param fixed_dims A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. Default value is rep(NA,6).
 #' @param min_dims A vector of length 6 with minimum size of each of the FLQuant dimensions. Default value is c(1,1,1,1,1,1).
 #' @param max_dims A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,10,5,4,4,5).
+#' @param min_age_name The name of the first age group.
 #' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
 #' @export
 #' @return An FLQuant
@@ -23,14 +24,14 @@
 #' dim(flq)
 #' summary(flq)
 random_FLQuant_generator <- function(fixed_dims = rep(NA,6), min_dims = rep(1,6), max_dims = pmax(min_dims, c(5,10,5,4,4,5)), min_age_name = 1, sd = 100){
-    nage <- ifelse(is.na(fixed_dims[1]),round(runif(1,min=min_dims[1], max=max_dims[1])),fixed_dims[1])
-    nyear <- ifelse(is.na(fixed_dims[2]),round(runif(1,min=min_dims[2], max=max_dims[2])),fixed_dims[2])
-    nunit <- ifelse(is.na(fixed_dims[3]),round(runif(1,min=min_dims[3], max=max_dims[3])),fixed_dims[3])
-    nseason <- ifelse(is.na(fixed_dims[4]),round(runif(1,min=min_dims[4], max=max_dims[4])),fixed_dims[4])
-    narea <- ifelse(is.na(fixed_dims[5]),round(runif(1,min=min_dims[5], max=max_dims[5])),fixed_dims[5])
-    niter <- ifelse(is.na(fixed_dims[6]),round(runif(1,min=min_dims[6], max=max_dims[6])),fixed_dims[6])
-    values <- rnorm(nage*nyear*nunit*nseason*narea*niter, sd = sd)
-    flq <- FLQuant(values, dimnames = list(age = min_age_name:(min_age_name + nage - 1), year = 1:nyear, unit = 1:nunit, season = 1:nseason, area = 1:narea, iter = 1:niter))
+    flq_dims <- fixed_dims
+    for (i in 1:6){
+        if (is.na(fixed_dims[i])){
+            flq_dims[i] <- round(runif(1,min=min_dims[i], max=max_dims[i]))
+        }
+    }
+    values <- rnorm(prod(flq_dims), sd = sd)
+    flq <- FLQuant(values, dimnames = list(age = min_age_name:(min_age_name + flq_dims[1] - 1), year = 1:flq_dims[2], unit = 1:flq_dims[3], season = 1:flq_dims[4], area = 1:flq_dims[5], iter = 1:flq_dims[6]))
     units(flq) <- as.character(signif(abs(rnorm(1)),3))
     return(flq)
 }
@@ -66,7 +67,7 @@ random_FLQuant_list_generator <- function(min_elements = 1, max_elements = 10, .
 #' Used for automatic testing, particularly of the fwdBiol class in CPP.
 #' 
 #' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
-#' @params ... Other arguments to pass to random_FLQuant_generator().
+#' @param ... Other arguments to pass to random_FLQuant_generator().
 #' @export
 #' @return An FLBiolcpp
 #' @examples
@@ -247,69 +248,6 @@ random_fwdBiols_list_generator <- function(min_biols = 1, max_biols = 5, ...){
     return(biols)
 }
 
-#' Simple projection with minimal checks
-#'
-#' Given FLFisheries, FLBiolcpp, FLSR, F and f.spwn, project over timesteps
-#' No dimension checks are made!
-#' Recruitment is annual only. Happens at start of the year. SSB is calculated in previous year (or years depending on recruitment age).
-#' 
-#' @param flfs FLFisheries (with a single FLFishery with a single FLCatch)
-#' @param flb FLBiolcpp
-#' @param f List of fishing mortality FLQuant objects (only a list of length 1 to start with)
-#' @param f_spwn List of fishing timing FLQuant objects (only a list of length 1 to start with) - not used at the moment - part of the SSB calculation
-#' @param sr_residuals FLQuant of residuals for the recruitment
-#' @param sr_residuals_mult Are the residuals multiplicative (TRUE)  or additive (FALSE)?
-#' @param timesteps Continuous sequence of integers (years and seasons)
-#' @export
-#' @return A list of FLFisheries and FLBiolcpp objects
-simple_fisheries_project <- function(flfs, flb, flsr, f, f_spwn, sr_residuals, sr_residuals_mult, timesteps){
-    nseason <- dim(n(flb))[4]
-    nages <- 1:dim(n(flb))[1]
-    last_age <- nages[length(nages)]
-    #timesteps <- ((years[1] - 1) * nseason + 1):(years[length(years)] * nseason)
-    nfishery <- 1
-    ncatch <- 1
-    #recruitment_timelag <- 
-    z <- f[[nfishery]] + m(flb)
-    rec_age <- as.numeric(dimnames(rec(flsr))$age) # recruitment age in years
-    for (timestep in timesteps){
-        year <- floor((timestep - 1) / nseason + 1)
-        season <- (timestep - 1) %% nseason + 1
-        next_year <- floor(((timestep+1) - 1) / nseason + 1)
-        next_season <- ((timestep+1) - 1) %% nseason + 1
-        # Update fishery
-        catch <- (f[[nfishery]] / z) * (1 - exp(-z)) * n(flb)
-        # Must calculate ln and dn before loading, OR, make a copy of discards.ratio
-        # else discards.ratio is affected by ln and dn
-        ln <- catch * (1 - discards.ratio(flfs[[nfishery]][[ncatch]]))
-        dn <- catch * (discards.ratio(flfs[[nfishery]][[ncatch]]))
-        landings.n(flfs[[nfishery]]@.Data[[ncatch]]) <- ln
-        discards.n(flfs[[nfishery]]@.Data[[ncatch]]) <- dn 
-        # Update Biol
-        # Recruitment
-        rec <- 0
-        if (season == 1){ # Recruitment happens
-            ssb_all <- quantSums(n(flb) * exp(-(f[[nfishery]] * f_spwn[[nfishery]] + m(flb) * spwn(flb))) * wt(flb) * fec(flb))
-            ssb_for_rec <- ssb_all[1,year-rec_age+1,1,season,1,] # SSB for rec in next year
-            rec <- predict(flsr,ssb=FLQuant(ssb_for_rec))
-            if (sr_residuals_mult==TRUE){
-                rec <- rec * sr_residuals[1,next_year,1,next_season,1,]
-            }
-            else{
-                rec <- rec + sr_residuals[1,next_year,1,next_season,1,]
-            }
-        }
-        #ssb(flb)[
-        n(flb)[1,next_year,1,next_season,1,] <- rec
-
-        # Abundances
-        n(flb)[nages[-1],next_year,1,next_season,1,] <- n(flb)[-last_age,year,1,season,1,] * exp(-z[-last_age,year,1,season,1,])
-        # plusgroup
-        n(flb)[last_age,next_year,1,next_season,1,] <- n(flb)[last_age,next_year,1,next_season,1,] + n(flb)[last_age,year,1,season,1,] * exp(-z[last_age,year,1,season,1,])
-    }
-    return(list(flfs = flfs, flb = flb))
-}
-
 
 #' Random fwdControl object creator
 #'
@@ -355,16 +293,17 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
     # Half of these are FC, the others B
     FC_targets <- sample(fish_targets, ceiling(length(fish_targets) / 2))
     B_targets <- fish_targets[!(fish_targets %in% FC_targets)]
-    target[FC_targets,c("fishery","catch")] <- round(runif(length(FC_targets)*2, min = 1, max = 4))
-    target[B_targets,"biol"] <- round(runif(length(B_targets), min = 1, max = 4))
+    target[FC_targets,c("fishery")] <- round(runif(length(FC_targets), min = 1, max = 2))
+    target[FC_targets,c("catch")] <- round(runif(length(FC_targets), min = 1, max = 2))
+    target[B_targets,"biol"] <- round(runif(length(B_targets), min = 1, max = 3))
     # Abundance targets are biol only
     biol_targets <- which(target$quant %in% abundance_quantities)
-    target[biol_targets, "biol"] <- round(runif(length(biol_targets), min = 1, max = 4))
+    target[biol_targets, "biol"] <- round(runif(length(biol_targets), min = 1, max = 3))
     # Fix f targets, either B, or FCB
     f_targets <- which(target$quant %in% f_quantities)
     f_FCB_targets <- sample(f_targets, ceiling(length(f_targets) / 2))
     if (length(f_FCB_targets > 0)){
-        target[f_FCB_targets,c("fishery","catch")] <- round(runif(length(f_FCB_targets)*2, min = 1, max = 4))
+        target[f_FCB_targets,c("fishery","catch")] <- round(runif(length(f_FCB_targets)*2, min = 1, max = 3))
     }
     # Force integers - should be done in fwd() dispatch or constructor
     target$fishery <- as.integer(target$fishery)
@@ -379,34 +318,37 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
     max_row <- min_max_row[!(min_max_row %in% min_row)]
     value_row <- which(!( (1:nrow(target)) %in% min_max_row))
     # Make iter values - better creator than this too
-    target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(row=1:nrow(target), c("min","value","max"), iter=1:niters))
+    target_iters <- array(NA, dim=c(nrow(target),3,niters), dimnames=list(row=1:nrow(target), val=c("min","value","max"), iter=1:niters))
     target_iters[value_row,"value",] <- runif(niters, min=0.3, max=0.4)
     target_iters[min_row,"min",] <- runif(niters, min=0.3, max=0.4)
     target_iters[max_row,"max",] <- runif(niters, min=0.3, max=0.4)
 
     # Order the targets
-    target <- target[order(target$year, target$season),]
+    #target <- target[order(target$year, target$season),]
 
     # Add order column - should group targets with same year and season together
     # Make it random so that get_target_row is properly tested
-    target$order <- sample(1:nrow(target), nrow(target))
+    #target$order <- sample(1:nrow(target), nrow(target))
 
     # Data.frame constructor - use other constructor here?
     fwc <- fwdControl(target=target, iters=target_iters)
 
-    # Add fake FCB array - will be constructed on R side before calling fwd()
-    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+    # Add FCB array 
+    FCB <- array(c(1,1,2,2,1,2,1,2,1,2,2,3), dim=c(4,3))
     colnames(FCB) <- c("F","C","B")
-    attr(fwc, "FCB") <- FCB
+    fwc@FCB <- FCB
     return(fwc)
 }
+
 
 #' Create a complex annual test operating model
 #'
 #' Creates a test operating model for testing FLFishery / FLCatch / FLBiolcpp interactions.
 #' Implements all possible type of FCB interactions.
 #' Two FLFishery objects with 4 FLCatch objects between them, fishing 4 FLBiolcpp objects.
+#' There is a 5th biol that is unfished.
 #' All objects are based on ple4.
+#' @param niters Number of iterations.
 #'
 #' @export
 #' @return A list of objects for sending to C++
@@ -474,10 +416,10 @@ make_test_operatingModel1 <- function(niters = 1000){
     fisheries@desc <- "fisheries"
     # fwdControl
     fwc <- random_fwdControl_generator(niters=niters)
-    # Make a temporary FCB attribute - add to class later
+    # Make the FCB matrix
     FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
     colnames(FCB) <- c("F","C","B")
-    attr(fwc@target, "FCB") <- FCB
+    fwc@FCB <- FCB
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))
 }
 
@@ -486,6 +428,7 @@ make_test_operatingModel1 <- function(niters = 1000){
 #' Creates a test operating model for testing FLFishery / FLCatch / FLBiolcpp interactions.
 #' Two FLFishery objects with 1 FLCatch objects each fishing on the same, single FLBiolcpp.
 #' All objects are based on ple4.
+#' @param niters Number of iterations.
 #'
 #' @export
 #' @return A list of objects for sending to C++
@@ -545,10 +488,10 @@ make_test_operatingModel2 <- function(niters = 1000){
     fisheries@desc <- "fisheries"
     # fwdControl
     fwc <- random_fwdControl_generator(niters=niters)
-    # Make a temporary FCB attribute - add to class later
+    # Make the FCB matrix
     FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
     colnames(FCB) <- c("F","C","B")
-    attr(fwc@target, "FCB") <- FCB
+    fwc@FCB <- FCB
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))
 }
 
@@ -558,6 +501,8 @@ make_test_operatingModel2 <- function(niters = 1000){
 #' Creates the bits for a simple test operating model for projections.
 #' A single FLFishery object with 1 FLCatch fishing on a single FLBiolcpp.
 #' All objects are based on ple4.
+#' @param niters Number of iterations.
+#' @param sd Standard deviation for the noise.
 #'
 #' @export
 #' @return A list of objects for sending to C++
@@ -575,7 +520,7 @@ make_test_operatingModel3 <- function(niters = 1000, sd = 0.1){
     name(biol) <- "biol"
     # Make SRR and add noise to residuals
     srr1 <- fmle(as.FLSR(ple4, model="bevholt"),control = list(trace=0))
-    res1 <- window(residuals(srr1), start = 1957)
+    res1 <- window(exp(residuals(srr1)), start = 1957)
     res1[,"1957"] <- res1[,"1958"]
     res1 <- propagate(res1, niters)
     res1 <- res1 * abs(rnorm(prod(dim(res1)), mean = 1, sd = sd))
@@ -596,7 +541,7 @@ make_test_operatingModel3 <- function(niters = 1000, sd = 0.1){
     # Set the Catchability parameters so that an effort of 1 gives the current catch - make internally consistent
     # set beta to 0 for simplicity
     catch.q(catch) <- FLPar(c(1,0.5), dimnames=list(params=c("alpha","beta"), iter = 1))
-    catch_list[[i]] <- catch
+    catch_list <- list(catch, catch)
     # Make fishery bits
     fishery1 <- FLFishery(catch1=catch_list[[1]])
     desc(fishery1) <- "fishery1"
@@ -612,10 +557,10 @@ make_test_operatingModel3 <- function(niters = 1000, sd = 0.1){
     fisheries@desc <- "fisheries"
     # fwdControl
     fwc <- random_fwdControl_generator(niters=niters)
-    # Make a temporary FCB attribute - add to class later
+    # Make the FCB matrix
     FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
     colnames(FCB) <- c("F","C","B")
-    attr(fwc@target, "FCB") <- FCB
+    fwc@FCB <- FCB
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))
 }
 
@@ -641,7 +586,7 @@ make_skipjack_operatingModel <- function(niters = 1000, sd = 0.1){
     # Blow up to have iters
     biol <- propagate(biol, niters)
     # Add noise to wts
-    wt(biol) <- rlnorm(wt(biol), sd=sd)
+    wt(biol) <- rlnorm(wt(biol), sdlog=sd)
     # SRR Residuals
     dim <- dim(n(biol))
     dim[1] <- 1
@@ -680,49 +625,20 @@ make_skipjack_operatingModel <- function(niters = 1000, sd = 0.1){
 
     # fwdControl
     fwc <- random_fwdControl_generator(niters=niters)
-    # Make a temporary FCB attribute - add to class later
+    # Make the FCB matrix
     FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
     colnames(FCB) <- c("F","C","B")
-    attr(fwc@target, "FCB") <- FCB
+    fwc@FCB <- FCB
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))
 }
 
 
 
-
-#' Tests if two FLFishery objects are the same
+#' Return 1D element index of an FLQuant
 #'
-#' Tests each component seperately - allows flexibility
-#'
-#' @export
-test_FLFishery_equal <- function(flf1, flf2){
-    expect_identical(flf1@effort, flf2@effort)
-    expect_identical(flf1@vcost, flf2@vcost)
-    expect_identical(flf1@fcost, flf2@fcost)
-    expect_identical(flf1@hperiod, flf2@hperiod)
-    expect_identical(flf1@name, flf2@name)
-    expect_identical(flf1@range, flf2@range)
-    expect_identical(flf1@.Data, flf2@.Data)
-    expect_identical(flf1@desc, flf2@desc)
-    expect_identical(flf1@names, flf2@names)
-}
-
-#' Tests if two FLFisheries objects are the same
-#'
-#' Tests each component seperately - allows flexibility
-#'
-#' @export
-test_FLFisheries_equal <- function(flfs1, flfs2){
-    expect_identical(flfs1@desc, flfs2@desc)
-    expect_identical(flfs1@names, flfs2@names)
-    for (i in 1:length(FLFisheries)){
-        test_FLFishery_equal(flfs1[[i]], flfs2[[i]])
-    }
-}
-
-#' Return 1D element index of FLQuant
-#'
-#' Given an FLQuant the indices, returns the 1D element accessor.
+#' Given an FLQuant and the indices, returns the 1D element accessor.
+#' @param flq The FLQuant
+#' @param indices The indices (integer vector, length 6)
 #'
 #' @export
 get_FLQuant_element <- function(flq, indices){
@@ -736,9 +652,12 @@ get_FLQuant_element <- function(flq, indices){
     return(element)
 }
 
-#' Return 1D element index of FLQuant
+#' Return 1D vector of element indices of an FLQuant
 #'
 #' Given an FLQuant and the indices range, returns the vector of indices
+#' @param flq The FLQuant
+#' @param indices_min The min indices (integer vector, length 6)
+#' @param indices_max The max indices (integer vector, length 6)
 #'
 #' @export
 get_FLQuant_elements <- function(flq, indices_min, indices_max){
@@ -755,73 +674,5 @@ get_FLQuant_elements <- function(flq, indices_min, indices_max){
                             elements[element_count] = get_FLQuant_element(flq, c(qcount, ycount, ucount, scount, acount, icount))
     }}}}}}
     return(elements)
-}
-
-#' Tests if two fwdControl objects are the same
-#'
-#' Tests each component seperately - allows flexibility
-#' Avoids problems with FCB being an attribute
-#'
-#' @export
-test_fwdControl_equal <- function(fwc1, fwc2){
-    expect_identical(fwc1@target, fwc2@target)
-    expect_identical(fwc1@iters, fwc2@iters)
-}
-
-#' Tests if two fwdQuant objects are the same
-#'
-#' Tests each component seperately - allows flexibility
-#' Just checks dims and values
-#'
-#' @export
-test_FLQuant_equal <- function(flq1, flq2){
-    expect_identical(dim(flq1), dim(flq2))
-    expect_equal(c(flq1), c(flq2))
-}
-
-#' Creates an FLFisheries and biol bits for use in FLasher from an FLStock
-#'
-#' Creates the bits needed to call FLasher from an annual FLStock.
-#' Used for testing purposes.
-#' Careful with hperiod. Not able to calculate from m.spwn and harvest.spwn slots
-#' so F is assumed to happen continuously through year (like m).
-#'
-#' @param stk An annual FLStock.
-#' @param srr_model Name of the stock-recruitmen model.
-#' @param srr_params Parameters for the SRR as an FLPar (i.e. directly from an FLSR).
-#' @param srr_residuals An FLQuant of residuals for the SRR.
-#' @param srr_residuals_mult Boolean to determine of the residuals are multiplicative or additive.
-#' @export
-#' @return A list of objects for use with FLasher.
-flasher_annual_stock_prep <- function(stk, srr_model, srr_params, srr_residuals, srr_residuals_mult, niters=1){
-    biol <- as(as(stk,"FLBiol"),"FLBiolcpp")
-    name(biol) <- "biol"
-    desc(biol) <- "biol"
-    biol <- propagate(biol, niters)
-    srr_residuals <- propagate(srr_residuals, niters)
-    biol1 <- list(biol = biol, srr_model_name = srr_model, srr_params = as(srr_params, "FLQuant"), srr_residuals = srr_residuals,  srr_residuals_mult = srr_residuals_mult)
-    biol_bits <- list(biol1 = biol1)
-    catch <- as(stk, "FLCatch")
-    catch <- propagate(catch, niters)
-    name(catch) <- "catch"
-    desc(catch) <- "catch"
-    # Set beta to 0 and alpha so that an effort of 1 gives same F as the FLStock
-    # F = alpha * biomass ^ -beta * sel * effort
-    # F = alpha * sel
-    # alpha = F / sel
-    alpha <- c((harvest(stk) / catch.sel(catch))[1,])
-    catch.q(catch) <- FLPar(NA, dimnames=list(params=c("alpha","beta"), year = dimnames(stock.n(stk))$year, iter = 1:niters))
-    catch.q(catch)['alpha',] <- alpha
-    catch.q(catch)['beta',] <- 0
-    fishery <- FLFishery(catch=catch)
-    desc(fishery) <- "fishery"
-    effort(fishery)[] <- 1
-    # Timing of fishing - cannot calculate hstart and hfinish from harvest.spwn and m.spwn - assume that F is continuous throughout time period - same as m
-    fishery@hperiod[1,] <- 0
-    fishery@hperiod[2,] <- 1
-    fisheries <- FLFisheries(fishery = fishery)
-    fisheries@desc <- "fisheries"
-    return(list(fisheries = fisheries,
-                biol = biol_bits))
 }
 

@@ -1,9 +1,8 @@
-# 
-# Copyright 2014 FLR Team. Distributed under the GPL 2 or later
 # Maintainer: Finlay Scott, JRC
-#
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 context("Implementation of FLCatch - double and AD versions")
+source("expect_funs.R")
 
 test_that("FLCatch as and wrap",{
     flc_in <- random_FLCatch_generator()
@@ -293,58 +292,58 @@ test_that("FLCatch methods", {
     # landings
     l_in <- landings(flc_in)
     l_out <- test_FLCatch_landings(flc_in)
-    test_FLQuant_equal(l_in, l_out)
+    expect_FLQuant_equal(l_in, l_out)
     l_out <- test_FLCatchAD_landings(flc_in)
-    test_FLQuant_equal(l_in, l_out)
+    expect_FLQuant_equal(l_in, l_out)
 
     # discards
     d_in <- discards(flc_in)
     d_out <- test_FLCatch_discards(flc_in)
-    test_FLQuant_equal(d_in, d_out)
+    expect_FLQuant_equal(d_in, d_out)
     d_out <- test_FLCatchAD_discards(flc_in)
-    test_FLQuant_equal(d_in, d_out)
+    expect_FLQuant_equal(d_in, d_out)
 
     # catch_n
     cn_in <- catch.n(flc_in)
     cn_out <- test_FLCatch_catch_n(flc_in)
-    test_FLQuant_equal(cn_in, cn_out)
+    expect_FLQuant_equal(cn_in, cn_out)
     cn_out <- test_FLCatchAD_catch_n(flc_in)
-    test_FLQuant_equal(cn_in, cn_out)
+    expect_FLQuant_equal(cn_in, cn_out)
 
     # catches
     c_in <- catch(flc_in)
     c_out <- test_FLCatch_catches(flc_in)
-    test_FLQuant_equal(c_in, c_out)
+    expect_FLQuant_equal(c_in, c_out)
     c_out <- test_FLCatchAD_catches(flc_in)
-    test_FLQuant_equal(c_in, c_out)
+    expect_FLQuant_equal(c_in, c_out)
 
     # catch weight
     cw_in <- catch.wt(flc_in)
     cw_out <- test_FLCatch_catch_wt(flc_in)
-    test_FLQuant_equal(cw_in, cw_out)
+    expect_FLQuant_equal(cw_in, cw_out)
     cw_out <- test_FLCatchAD_catch_wt(flc_in)
-    test_FLQuant_equal(cw_in, cw_out)
+    expect_FLQuant_equal(cw_in, cw_out)
 
     # discards ratio
     dr_in <- discards.ratio(flc_in)
     dr_out <- test_FLCatch_discards_ratio(flc_in)
-    test_FLQuant_equal(dr_in, dr_out)
+    expect_FLQuant_equal(dr_in, dr_out)
     dr_out <- test_FLCatchAD_discards_ratio(flc_in)
-    test_FLQuant_equal(dr_in, dr_out)
+    expect_FLQuant_equal(dr_in, dr_out)
 
     # landings_sel
     ls_in <- landings.sel(flc_in)
     ls_out <- test_FLCatch_landings_sel(flc_in)
-    test_FLQuant_equal(ls_in, ls_out)
+    expect_FLQuant_equal(ls_in, ls_out)
     ls_out <- test_FLCatchAD_landings_sel(flc_in)
-    test_FLQuant_equal(ls_in, ls_out)
+    expect_FLQuant_equal(ls_in, ls_out)
 
     # discards_sel
     ds_in <- discards.sel(flc_in)
     ds_out <- test_FLCatch_discards_sel(flc_in)
-    test_FLQuant_equal(ds_in, ds_out)
+    expect_FLQuant_equal(ds_in, ds_out)
     ds_out <- test_FLCatchAD_discards_sel(flc_in)
-    test_FLQuant_equal(ds_in, ds_out)
+    expect_FLQuant_equal(ds_in, ds_out)
 })
 
 

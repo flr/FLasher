@@ -1,9 +1,13 @@
+# Maintainer: Finlay Scott, JRC
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
+
 context("Implementation of fwdControl")
+source("expect_funs.R")
 
 test_that("fwdControl as and wrap",{
     fc_in <- random_fwdControl_generator(years = 1:10, niters = 10)
     fc_out <- test_as_wrap_fwdControl(fc_in)
-    test_fwdControl_equal(fc_in, fc_out)
+    expect_fwdControl_equal(fc_in, fc_out)
 })
 
 test_that("fwdControl copy constructor and assignment operator", {
@@ -13,18 +17,26 @@ test_that("fwdControl copy constructor and assignment operator", {
     fcs <- test_fwdControl_copy_constructor(fc_in)
     # Assignment
     fc_out <- test_fwdControl_assignment_operator(fc_in)
-    test_fwdControl_equal(fc_in, fcs[["fc1"]])
-    test_fwdControl_equal(fc_in, fcs[["fc2"]])
-    test_fwdControl_equal(fc_in, fc_out)
+    expect_fwdControl_equal(fc_in, fcs[["fc1"]])
+    expect_fwdControl_equal(fc_in, fcs[["fc2"]])
+    expect_fwdControl_equal(fc_in, fc_out)
 })
 
 test_that("fwdControl accessors", {
     fc <- random_fwdControl_generator()
+    # But no order column in the fwdControl constructor - it is added by fwd().
+    # So we add one here for testing.
+    # Make it random so that get_target_row is properly tested
+    fc@target$order <- sample(1:nrow(fc@target), nrow(fc@target))
+
     # Get target - just the data.frame
     target <- test_fwdControl_get_target(fc)
     expect_identical(target, fc@target)
     # get ntarget
     # If no order column - fail
+
+
+
     fc2 <- fc
     fc2@target <- fc2@target[,colnames(fc2@target) != "order"]
     expect_error(test_fwdControl_get_ntarget(fc2))

@@ -1,4 +1,8 @@
+# Maintainer: Finlay Scott, JRC
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
+
 context("Implementation of FLFishery - double and AD versions")
+source("expect_funs.R")
 
 test_that("FLFishery constructors - double",{
     flf_in <- random_FLFishery_generator() 
@@ -7,27 +11,27 @@ test_that("FLFishery constructors - double",{
     expect_identical(test_simple_FLFishery_sexp_constructor(flf_in), as.integer(0))
     # SEXP constructor with wrap
     flf_out <- test_FLFishery_sexp_constructor(flf_in)
-    test_FLFishery_equal(flf_in, flf_out)
+    expect_FLFishery_equal(flf_in, flf_out)
     # as - wrap
     flf_out <- test_FLFishery_as_wrap(flf_in)
-    test_FLFishery_equal(flf_in, flf_out)
+    expect_FLFishery_equal(flf_in, flf_out)
     # Copy constructor
     flf_out <- test_FLFishery_copy_constructor(flf_in)
-    test_FLFishery_equal(flf_in, flf_out)
+    expect_FLFishery_equal(flf_in, flf_out)
     # Copy constructor2 - checking for deep copy
     flf_in <- random_FLFishery_generator() 
     element <- round(runif(1,min=1, max = length(flf_in)))
     indices <- round(runif(6,min=1, max = dim(landings.n(flf_in[[element]]))))
     value <- rnorm(1)
     flfs <- test_FLFishery_copy_constructor2(flf_in, element, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
-    test_FLFishery_equal(flf_in, flfs[["flf1"]])
+    expect_FLFishery_equal(flf_in, flfs[["flf1"]])
     expect_identical(c(landings.n(flfs[["flf2"]][[element]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
     # Assignment operator
     flf_out <- test_FLFishery_assignment_operator(flf_in)
-    test_FLFishery_equal(flf_in, flf_out)
+    expect_FLFishery_equal(flf_in, flf_out)
     # Assignment operator2
     flfs <- test_FLFishery_assignment_operator2(flf_in, element, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
-    test_FLFishery_equal(flf_in, flfs[["flf1"]])
+    expect_FLFishery_equal(flf_in, flfs[["flf1"]])
     expect_identical(c(landings.n(flfs[["flf2"]][[element]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
 })
 
@@ -114,27 +118,27 @@ test_that("FLFishery constructors - double",{
     expect_identical(test_simple_FLFisheryAD_sexp_constructor(flf_in), as.integer(0))
     # SEXP constructor with wrap
     flf_out <- test_FLFisheryAD_sexp_constructor(flf_in)
-    test_FLFishery_equal(flf_in, flf_out)
+    expect_FLFishery_equal(flf_in, flf_out)
     # as - wrap
     flf_out <- test_FLFisheryAD_as_wrap(flf_in)
-    test_FLFishery_equal(flf_in, flf_out)
+    expect_FLFishery_equal(flf_in, flf_out)
     # Copy constructor
     flf_out <- test_FLFisheryAD_copy_constructor(flf_in)
-    test_FLFishery_equal(flf_in, flf_out)
+    expect_FLFishery_equal(flf_in, flf_out)
     # Copy constructor2 - checking for deep copy
     flf_in <- random_FLFishery_generator() 
     element <- round(runif(1,min=1, max = length(flf_in)))
     indices <- round(runif(6,min=1, max = dim(landings.n(flf_in[[element]]))))
     value <- rnorm(1)
     flfs <- test_FLFisheryAD_copy_constructor2(flf_in, element, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
-    test_FLFishery_equal(flf_in, flfs[["flf1"]])
+    expect_FLFishery_equal(flf_in, flfs[["flf1"]])
     expect_identical(c(landings.n(flfs[["flf2"]][[element]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
     # Assignment operator
     flf_out <- test_FLFisheryAD_assignment_operator(flf_in)
-    test_FLFishery_equal(flf_in, flf_out)
+    expect_FLFishery_equal(flf_in, flf_out)
     # Assignment operator2
     flfs <- test_FLFisheryAD_assignment_operator2(flf_in, element, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
-    test_FLFishery_equal(flf_in, flfs[["flf1"]])
+    expect_FLFishery_equal(flf_in, flfs[["flf1"]])
     expect_identical(c(landings.n(flfs[["flf2"]][[element]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
 })
 

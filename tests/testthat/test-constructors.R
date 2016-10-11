@@ -1,5 +1,5 @@
 # test-constructors.R - DESC
-# /test-constructors.R
+# FLasher/tests/testthat/test-constructors.R
 
 # Copyright European Union, 2016
 # Author: Iago Mosqueira (EC JRC) <iago.mosqueira@jrc.ec.europa.eu>
@@ -85,8 +85,24 @@ fwdControl(target)
 
 #
 
+target <- list(list(year=1990:1992, quant='f', value=0.1),
+     list(year=1993, quant='ssb', value=2000))
+
+fwdControl(target)
+
+
+
+#
+
 target <- list(list(year=1990, quant='f', value=runif(10, 0.1, 0.2)),
      list(year=1991, quant='ssb', value=rnorm(10, 2000)))
+
+fwdControl(target)
+
+#
+
+target <- list(list(year=1990:1992, quant='f', value=runif(10, 0.1, 0.2)),
+     list(year=1993, quant='ssb', value=rnorm(10, 2000)))
 
 fwdControl(target)
 
@@ -105,7 +121,6 @@ target <- list(list(year=1990, quant='f', max=runif(10, 0.1, 0.2), min=NA),
 fwdControl(target)
 
 
-
 # list elements with more than one row
 
 target <- list(list(year=1990:1992, quant='f', max=rep(1, 10), min=0.05),
@@ -116,7 +131,7 @@ fwdControl(target)
 #
 
 target <- list(list(year=1990, season=1:4, quant='f', max=rep(1, 10), min=0.05),
-     list(year=1993, quant='ssb', value=rnorm(10, 200)))
+     list(year=1993, quant='ssb', season=1, value=rnorm(10, 200)))
 
 fwdControl(target)
 

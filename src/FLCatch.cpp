@@ -183,18 +183,18 @@ FLQuant FLCatch_base<T>::catch_q_params() const {
 template <typename T>
 FLQuant FLCatch_base<T>::catch_q_params(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
     // Check dims are length 6
-    if (indices_min.size() != 6 | indices_max.size() != 6){
+    if ((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In FLCatch catch_q_params subsetter. Indices not of length 6\n");
     }
     // Checking first dimension (parameter) range
     std::vector<unsigned int> qdims = catch_q_flq.get_dim();
-    if (indices_min[0] < 1 | indices_max[0] > qdims[0]){
+    if ((indices_min[0] < 1) | (indices_max[0] > qdims[0])){
         Rcpp::stop("In FLCatch catch_q_params subsetter. Outside first dimension range. Possibly asking for too many catchability parameters.\n");
     }
     // Indices_min must be between 1 and max for dims 2:6
     std::vector<unsigned int> ndims = landings_n_flq.get_dim();
     for (unsigned int i = 1; i < indices_min.size(); ++i){
-        if (indices_min[i] < 1 | indices_min[i] > ndims[i] | indices_max[i] > ndims[i]){
+        if ((indices_min[i] < 1) | (indices_min[i] > ndims[i]) | (indices_max[i] > ndims[i])){
             Rcpp::stop("In FLCatch catch_q_params subsetter. indices_min and indices_max dims 2-6 must be within range of FLCatch FLQuant members.\n");
         }
     }
@@ -232,7 +232,7 @@ FLQuant FLCatch_base<T>::catch_q_params(const std::vector<unsigned int> indices_
 // catch_q_flq is a little different as it checks if unit / season / etc are > 1
 // parameters are stored in the first dimension
 template <typename T>
-std::vector<double> FLCatch_base<T>::catch_q_params(int year, int unit, int season, int area, int iter) const {
+std::vector<double> FLCatch_base<T>::catch_q_params(unsigned int year, unsigned int unit, unsigned int season, unsigned int area, unsigned int iter) const {
     std::vector<unsigned int> dims = catch_q_flq.get_dim();
     std::vector<double> q_out (dims[0],0.0);
     // Sort out dims - if years > no years in the catch_q_flq object (i.e. catch_q_flq are not disaggregated by time etc.) just pick the first 
@@ -252,7 +252,7 @@ std::vector<double> FLCatch_base<T>::catch_q_params(int year, int unit, int seas
     if (iter > dims[5]){
         iter = 1;
     }
-    for (int i = 1; i <= dims[0]; ++i){
+    for (unsigned int i = 1; i <= dims[0]; ++i){
         q_out[i-1] = catch_q_flq(i,year,unit,season,area,iter);
     }
     return q_out;
@@ -306,7 +306,7 @@ FLQuant_base<T> FLCatch_base<T>::landings() const {
 
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::landings(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 5 | indices_max.size() != 5){
+    if((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In FLCatch landings indices subsetter. indices_min and max must be of length 5\n");
     }
     std::vector<unsigned int> quant_indices_min = indices_min;
@@ -328,7 +328,7 @@ FLQuant_base<T> FLCatch_base<T>::discards() const {
 
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::discards(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 5 | indices_max.size() != 5){
+    if((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In FLCatch discards indices subsetter. indices_min and max must be of length 5\n");
     }
     std::vector<unsigned int> quant_indices_min = indices_min;
@@ -363,7 +363,7 @@ FLQuant_base<T> FLCatch_base<T>::catches() const {
 
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::catches(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 5 | indices_max.size() != 5){
+    if((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In FLCatch catches indices subsetter. indices_min and max must be of length 5\n");
     }
     std::vector<unsigned int> quant_indices_min = indices_min;

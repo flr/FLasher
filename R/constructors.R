@@ -1,12 +1,13 @@
 # constructors.R - Constructor methods for fwdControl
 # FLasher/R/constructors.R
 
-# Copyright 2003-2014 FLR Team. Distributed under the GPL 2 or later
-# Maintainer: Iago Mosqueira, JRC
-# Soundtrack:
-# Notes:
+# Copyright European Union, 2016
+# Author: Iago Mosqueira (EC JRC) <iago.mosqueira@jrc.ec.europa.eu>
+#
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 # fwdControl(target='data.frame', iters='array') {{{
+#' @name fwdControl
 #' @rdname fwdControl
 #' @examples
 #'
@@ -14,12 +15,14 @@
 #' fcn <- fwdControl(data.frame(year=2000:2005, quant='f', value=0.5))
 
 setMethod('fwdControl', signature(target='data.frame', iters='array'),
-  function(target, iters) {
+  function(target, iters, ...) {
     
-    # TODO TEST dimensions
+    # dimensions
     dtg <- dim(target)
     dit <- dim(iters)
     dni <- dimnames(iters)
+    
+    # TODO TEST dimensions
 
     # COMPLETE df
     trg <- new('fwdControl')@target[rep(1, nrow(target)),]
@@ -34,16 +37,19 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
     trg[, names(target)[names(target) %in% names(trg)]] <- target
 
     # HACK: reassign quant to keep factors
-    trg[,'quant']  <- factor(target$quant, levels=FLasher:::qlevels)
+    trg[,'quant']  <- factor(target$quant, levels=.qlevels)
 
     # MASTER iters
     ite <- array(NA, dim=c(dtg[1], 3, dit[length(dit)]),
-      dimnames=list(row=seq(dtg[1]), val=c('min', 'value', 'max'), iter=seq(dit[length(dit)])))
+      dimnames=list(row=seq(dtg[1]), val=c('min', 'value', 'max'),
+      iter=seq(dit[length(dit)])))
 
+    # MATCH arrays
+    if(identical(dim(iters), dim(ite))) {
+       ite[,,] <- iters
     # DIMNAMES in array?
-    if(!is.null(dni)) {
+    } else if(!is.null(dni)) {
       ite[, dni[['val']], ] <- iters
-
     # or NOT
     } else {
       # 2D or dim[2] == 1, assign to 'value'
@@ -55,12 +61,19 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
       }
     }
 
-    # ADD timestep and order
+    # TODO CHECK quant ~ dims
 
-    res <- new('fwdControl', target=trg, iters=ite)
-    return(
-           res[targetOrder(res),]
-           )
+    # TODO Default fcb
+
+    # REORDER by year, season, value/min-max
+    idx <- targetOrder(trg, ite)
+    trg <- trg[idx,]
+    row.names(trg) <- seq(len=nrow(trg))
+
+    ite <- ite[idx,,,drop=FALSE]
+    rownames(ite) <- seq(len=nrow(trg))
+
+    return(new('fwdControl', target=trg, iters=ite))
   }
 ) 
 # }}}
@@ -85,53 +98,6 @@ setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
   }
 ) # }}}
 
-
-# fwdControl(target='list', iters='missing') {{{
-setMethod('fwdControl', signature(target='list', iters='missing'),
-  function(target) {
-
-  if(is(target[[1]], 'list')) {
-
-    inp <- lapply(target, function(x) do.call('parsefwdList', x))
-
-    # target
-    trg <- do.call('rbind', lapply(inp, '[[', 'target'))
-
-    # iters
-    ites <- lapply(inp, '[[', 'iters')
-    # dim as 'val', 'iters', 'row'
-    dms <- Reduce('rbind', lapply(ites, dim))
-
-    # CHECK iters match (1/N)
-    its <- max(dms[,2])
-
-    if(any(dms[,2][dms[,2] > 1] != its))
-      stop(paste("Number of iterations in 'iters' must be 1 or", its))
-
-    # FINAL array
-    # dim, sum over rows
-    dms <- c(3, its, sum(dms[,3]))
-    ite <- array(NA, dim=dms, dimnames=list(val=c('min', 'value', 'max'),
-      iters=seq(its), row=seq(dms[3])))
-
-    ite[] <- Reduce(c, lapply(ites, c))
-
-    # APERM to 'row', 'val', 'iter'
-    ite <- aperm(ite, c(3, 1, 2))
-
-    return(fwdControl(target=trg, iters=ite))
-
-  } else {
-    
-    inp <- do.call('parsefwdList', target)
-
-    return(do.call('fwdControl', inp))
-  }
-  }
-)
-
-# }}}
-
 # fwdControl(target='data.frame', iters='missing') {{{
 setMethod('fwdControl', signature(target='data.frame', iters='missing'),
   function(target) {
@@ -154,6 +120,55 @@ setMethod('fwdControl', signature(target='data.frame', iters='missing'),
   }
 )
 # }}}
+
+# fwdControl(target='list', iters='missing') {{{
+setMethod('fwdControl', signature(target='list', iters='missing'),
+  function(target) {
+
+    # target is LIST of LISTS
+    if(is(target[[1]], 'list')) {
+      
+      inp <- lapply(target, function(x) do.call('parsefwdList', x))
+      
+      # target
+      trg <- do.call('rbind', lapply(inp, '[[', 'target'))
+
+      # iters
+      ites <- lapply(inp, '[[', 'iters')
+      
+      # dims as 'row', 'val', 'iters'
+      dms <- Reduce('rbind', lapply(ites, dim))
+
+      # CHECK iters match (1/N)
+      its <- max(dms[,3])
+      if(any(dms[,3][dms[,3] > 1] != its))
+        stop(paste("Number of iterations in 'iters' must be 1 or", its))
+
+      # EXPAND to max iters
+      ites[dms[,3] != its]  <- lapply(ites[dms[,3] != its],
+        function(x) array(x, dim=c(dim(x)[-3], its)))
+
+      # FINAL array
+      # dim, sum over rows
+      dms <- c(3, its, sum(dms[,1]))
+      ite <- array(NA, dim=dms, dimnames=list(val=c('min', 'value', 'max'),
+        iters=seq(its), row=seq(dms[3])))
+
+      ite[] <- Reduce(c, lapply(ites, function(x) c(aperm(x, c(2,3,1)))))
+
+      # APERM to 'row', 'val', 'iter'
+      ite <- aperm(ite, c(3, 1, 2))
+
+      return(fwdControl(target=trg, iters=ite))
+
+    } else {
+      
+      inp <- do.call('parsefwdList', target)
+
+    return(do.call('fwdControl', inp))
+    }
+  }
+) # }}}
 
 # fwdControl(target='missing', iters='missing') {{{
 setMethod('fwdControl', signature(target='missing', iters='missing'),
@@ -210,44 +225,64 @@ parsefwdList <- function(...) {
     ite <- array(NA, dim=c(nrow(trg), 3, ncol(mat)),
       dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'), iter=seq(ncol(mat))))
 
-    ite <- aperm(ite, c(2, 3, 1))
-    ite[match(rownames(mat), dimnames(ite)$val), ,] <- c(mat)
+    ite[,match(rownames(mat), dimnames(ite)$val),] <- c(mat)
 
     # RETURNS permutated array!
     return(list(target=trg, iters=ite))
   } # }}}
 
 # targetOrder(object) {{{
-targetOrder <- function(object) {
+targetOrder <- function(target, iters) {
 
-  trg <- object@target
-  ite <- object@iters
+  # ORDER by timestep and value/minmax
+  tim <- suppressWarnings(as.integer(target$season))
+  
+  if(all(is.na(tim)))
+    tim[] <- 1
+  else if(sum(!is.na(tim)) != length(tim))
+    stop("Season names cannot be ordered")
 
-  # ORDER by timestep (year + season) ...
-  # LIMIT: can only deal with 100 seasons
-  tim <- (trg$year * 100) + ifelse(is.character(trg$season), 0, as.numeric(trg$season))
-  # ... then 'value' before 'min'/'max'
-  pre <- !is.na(ite[,'value',1])
+  idx <- order(target$year, tim)
 
-  return(order(tim, pre))
+  return(idx)
 }
 # }}}
 
-# targetNo(object) {{{
-targetNo <- function(object) {
+# FCB {{{
 
-  trg <- object@target
-  ite <- object@iters
+# FCB <- fcb(biols, fisheries)
+fcb <- function(biols, fisheries) {
 
-  # CALCULATE step
+  # GET names
+  nmf <- names(fisheries)
+  nmc <- lapply(fisheries, names)
+  nmb <- names(biols)
 
-  tim <- (trg$year * 100) + as.numeric(ifelse(trg$season == 'all', 0, trg$season))
+  fc <- do.call(rbind, lapply(names(nmc), function(x) unlist(cbind(x, nmc[[x]]))))
+  b <- nmb[match(fc[,2], nmb)]
 
-  # INDEX for 'value' before 'min'/'max'
-  pre <- !is.na(ite[,'value',1])
+  fcb <- cbind(fc[!is.na(b),, drop=FALSE], b[!is.na(b)])
+  colnames(fcb) <- c("f", "c", "b")
+  rownames(fcb) <- seq(nrow(fcb))
 
-  idx <- 100 * tim + pre
-
-  return(match(idx, unique(idx)))
+  return(fcb)
 }
-# }}}
+
+# fcb2int(fcb, biols, fisheries)
+fcb2int <- function(fcb, biols, fisheries) {
+  
+  # GET names
+  nmf <- names(fisheries)
+  nmc <- lapply(fisheries, names)
+  nmb <- names(biols)
+
+  fcbint <- array(NA, dim=dim(fcb), dimnames=dimnames(fcb))
+
+  fcbint[,"f"] <- as.integer(match(fcb[,"f"], nmf))
+  fcbint[,"b"] <- as.integer(match(fcb[,"b"], nmb))
+
+  for(i in names(nmc))
+    fcbint[fcb[,"f"] == i, "c"] <- match(fcb[fcb[,"f"] == i, "c"], nmc[[i]])
+
+  return(fcbint)
+} # }}}

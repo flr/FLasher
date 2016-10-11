@@ -1,0 +1,360 @@
+---
+title: "FLasher reference manual"
+author: Finlay Scott, Iago Mosqueira - European Commission Joint Research Center
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+documentclass: article
+header-includes: 
+  - \usepackage{float}
+  - \usepackage{microtype}
+  - \usepackage[T1]{fontenc}
+  - \usepackage[bitstream-charter]{mathdesign}
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    fig_caption: yes
+  pdf_document:
+    fig_caption: yes
+    number_sections: yes
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{FLasher}
+tags: [FLR FLasher forecast fisheries]
+abstract:
+license: European Union Public Licence (EUPL) V.1.1
+---
+
+```{r, pkgs, echo=FALSE, message=FALSE}
+library(Rcpp)
+library(FLasher)
+library(ggplotFL)
+library(knitr)
+opts_chunk$set(dev='png', cache=FALSE, fig.width=5, fig.height=4.5, tidy=TRUE, dpi=300)
+options(width=60)
+```
+
+[//]: # COMMENT
+
+# Introduction
+
+This document focuses on the details of the projection methods of the *FLasher* package. These are implemented in C++.
+Particular attention is paid to the `operatingModel` class, and how the components of the `operatingModel` (`FLFisheries`, `fwdBiols` etc.) interact.
+
+Details on how the basic C++ classes are implemented and used can be found in the *FLCpp* vignette.
+
+# The `operatingModel` class
+
+# The projection cycle
+
+Each timestep of a projection is handled independently.
+
+The projection is driven by the effort in the `FLFisheries` at that timestep.
+
+The projection is split into two stages: projecting the fisheries and projecting the biology.
+
+## Projecting the fisheries
+
+Details
+
+## Projecting the biology
+
+The biological stocks are projected one timestep by the `project_biols()` method.
+The method calculates the survivors from the previous timestep and places them in the correct position age class in the current timestep.
+Recruitment is also calculated.
+
+The stocks are processed one at a time (the order in which they appear in the `biols` method).
+The stocks are independent of each other and there is no interaction between them.
+
+The basic process is:
+
+- Calculate total mortality $z$ on the stock in the previous timestep.
+- Calculate survivors for the current timestep.
+- Calculate recruitment for the current timestep.
+- Place survivors and recruitment in the appropriate age classes in the current timestep.
+ 
+The survivors, $S$, from age, $a$, at the end of a timestep (given by year, $y$ and season, $s$) are calculated as:
+
+$S_{a,y,s} = N_{a,y,s} exp(-z_{a,y,s})$
+
+where $N$ is the population abundance. Here we calculate the survivors from the previous timestep.
+
+Where the survivors are placed in the current timestep depends on the season and the timing of recruitment.
+
+The recruitment is always added to the first age group of the stock in the timestep in which it occurred.
+As the projection progresses, the survivors are placed in the same age group until they are a year older.
+When they are a year older, the survivors are placed in the next age group.
+
+For example, say we have a projection with 4 seasons to a year and the stock only recruits once a year in season 3.
+Recruits enter the first age group in season 3.
+In year 1, season 4, the survivors from season 3 are placed in the same age group (i.e. the recruits from season 3 are moved to the first age group in season 4, less those that died).
+The same thing happens for seasons 1 and 2 in year 2.
+In season 3 in year 2, the survivors are placed in the next age group, i.e. the individuals are now a year older.
+
+### Multiple recruitment events
+
+NOT YET IMPLEMENTED
+
+Within a year a stock may recruit multiple times.
+To ensure that the growth of an individual is consistent with its recruitment season, it is necessary to account for the individuals from each recruitment seperately. 
+
+For example, consider a stock that recruits in seasons 1 and 3. The recruits from each event will be placed in the first age group. However, the individuals that were recruited in season 1 will be two seasons older than those that are recruited in season 3. Consequently, their mean mass and other metrics will be different.
+We have to keep track of the individuals recruited in season 1 and season 3 separately.
+To do this we use the *unit* dimension.
+
+The *unit* dimension is used to store information on individuals from different recruitment events.
+The individuals that results from each recruitment event in a year must be stored in a different unit.
+Each unit can only recruit once per year.
+
+SRP IS FROM ACROSS ALL UNITS
+
+
+
+
+
+
+
+# Calculating fishing mortality
+
+Fishing mortality (F) is an age-structured metric that represents the impact of fishing on the stock.
+Inside *FLasher* it is the result of the interaction between an `FLCatch` and an `fwdBiol`.
+A `fwdBiol` can be fished by multiple `FLCatch`es and the total F on a `fwdBiol` is the sum of the Fs from each interaction.
+
+The F on a `fwdBiol` from each `FLCatch` is calculated using the following equation:
+
+$F_{a,c,b} = \alpha_{c} B_{b}^{-\beta_{c}} S_{a,c} E_{c}$
+
+where $a$ is age, $c$ the `FLCatch`, $b$ the `fwdBiol`, $F$ is the fishing mortality, $\alpha$ and $\beta$ are the catchability parameters, $B$ is the total biomass, $S$ is the gear selectivity and $E$ is the fishing effort. Note that fishing effort is set at the `FLFishery` level and each `FLCatch` of an `FLFishery` has the same fishing effort.
+
+NOTE: THIS RELATIONSHIP IS ABOUT TO CHANGE AND INCLUDE AN ADDITIONAL $\gamma$ term.
+
+ADD MORE DETAILS ABOUT WHERE THE PARAMS ARE HELD AND RECYCLING ETC
+
+# Recruitment
+
+Recruitment is calculated as part of the biology projection.
+The calculated recruitment is placed into the first age group of the `fwdBiol`.
+Recruitment is calculated in every timestep. If there is no recruitment in that timestep the calculated recruitment is 0.
+
+The main method is `calc_rec()` which takes the `fwdBiol` number and the `timestep`.
+AT THE MOMENT ALSO TAKES UNIT NUMBER, i.e. RECRUITMENT FOR EACH UNIT IS CALCED SEPARATELY - NEED TO FIX THIS
+
+Recruitment is a function of the spawning reproductive potential (SRP) of the stock.
+
+## SRP time lag
+
+Given that the age structure of the stock may not start at age 0, it necessary to calculate the SRP at the appropriate time that lead to the current recruitment.
+For example, if the first age of the stock is 1, then the current recruitment is a function of the SRP one year ago.
+The method `srp_timelag()' (a member of the `fwdBiol` class) calculates the lag between the current timestep and the timestep of the appropriate SRP.
+The returned SRP timelag depends on the first age of the stock and whether the model is seasonal:
+
+- If the first age is 0 and the model has a seasonal timestep, the timelag is 1 season i.e. the SRP comes from the previous season.
+- If the first age is 0 and the model has an annual timestep, the timelag is 0, i.e. there is no timelag and the SRP is calculated in the current timestep (it's a strange case).
+- If the first age is >1, the timelag is the product of the first age and the number of seasons in the model, i.e. the difference between the first age and age 0 in the same season (the time of spawning). Note that if the model is annual, there is 1 season.
+
+## The SRP calculation
+
+SPAWNING IS ASSUMED TO BE AN INSTANTANEOUS EVENT THAT HAPPENS AT A POINT DURING THE TIMESTEP
+
+The SRP at the appropriate timestep is calculated using the `srp()` method, a member of the `operatingModel` class.
+
+The SRP calculation is built around 3 parameters that are members of the `fwdBiol` class (and the `FLBiolCpp` class in R):
+
+- `spwn` - the proportion of the time through the timestep when spawning occurs (0 the start, 1 the end, NA no spawning happens). e.g. if `spwn` = 0.5 then spawning happens halfway through the timestep.
+- `fec` - the fecundity of the stock - MEANING WHAT
+- `mat` - the proportion mature in each age group.
+
+CHECK THE 'SPWN = NA' thing, RESULTING SSB CURRENTLY NA BUT SHOULD BE 0.0.
+BUT WHAT IS RESULTING RECRUITMENT
+
+SRP can be calculated in many different ways. For example, total egg production (TEP) and spawning stock biomass (SSB)
+At the moment, only SSB is available.
+
+### SSB
+
+The SSB in a timestep is calculated as:
+
+$SSB =  \sum_{a=age1}^{max~age} N_{a} Wt_{a} Mat_{a} exp(-Z_{prespawn,a})$
+
+where $a$ is the age, $N$ is the abundance, $Wt$ the average individual mass, $Mat$ the proportion mature and $Z_{prespawn}$ is the total mortality that occurs before spawning in that timestep.
+$Z$ is the sum of $F$ and natural mortality, $M$ i.e.:
+
+$Z_{prespawn, a} = F_{prespawn, a}$ and $M_{prespawn, a}$
+
+where $F_{prespawn}$ and $M_{prespawn}$ are the fishing mortality and natural mortality that occur before spawning in that timestep respectively.
+$M_{prespawn, a}$ is relatively simple to calculate:
+
+$M_{prespawn, a} = Spwn * M_{a}$
+
+where $Spwn$ is `spwn` as described above.
+
+$F_{prespawn, a}$ is more complicated as it needs to take it into account when fishing occurs during the timestep:
+
+$F_{prespawn, a} = F_{a} F_{prop~prespawn}$
+
+where $F_{prop~prespawn}$ is the proportion of fishing that occurs before spawning and is dependent on the time of spawning, $Spwn$, and the timing of fishing.
+The timing of fishing is given by two parameters $F_{start}$ and $F_{end}$ which give the proportion through the timestep.
+This information is stored at the `FLFishery` level in the member `hperiod`. The timing of fishing activity is not structured by age (*quant*) or *unit*, but can change over time (*year* and *season*), *area* and *iter*.
+
+WHAT HAPPENS IF THESE ARE NA? DOES IT MEAN NO FISHING? SAME AS EFFORT = 0? OR AN ERROR? PropF should = 0, i.e. it should not affect SSB calc.
+
+
+$F_{prop~prespawn}$ is calculated by the `f_prop_spwn()` method, a member of the `operatingModel` class. It evaluates three possibilities:
+
+- If $F_{end} < Spwn$ then $F_{prop~prespawn} = 1.0$,  i.e. all fishing takes place before spawning.
+- If $F_{start} > Spwn$ then $F_{prop~prespawn} = 0.0$, i.e. all fishing takes place after spawning.
+- Else $F_{prop~prespawn} = (Spwn - F_{start}) / (F_{end} - F_{start})$, i.e. spawning happens at some point during the fishing period. 
+
+When the stock is fished by multiple ``FLCatch``es, the $F$ parts from each ``FLCatch`` are summed.
+
+HOW ARE UNITS DEALT WITH?
+
+## Recruitment prediction
+
+Following the calculation of the SRP, the `predict_recruitment()` method is called, taking the SRP and the recruitment timestep.
+This method calculates the recruitment based on the SRP and the SRR parameters at the recruitment timestep,
+It then applies the residuals to the calculated recruitment.
+
+The SRR parameters can be disaggregated by the *year*, *unit*, *season*, *area* and *iter* dimensions.
+In this way trends and uncertainty etc. can be added to the parameters.
+
+If the parameters are not disaggregated then they are recycled where necessary. For example, if we are running a multi year projection but the SRR parameters are not disaggregated by year, the same values are used for each year.
+
+Internally, the residuals are the same size as the rest of the operating model apart from along the first dimension (which is always 1 - there is no age structure to the residuals) and the *iter* dimension which must be 1 or the same as the *iter* dimension in the operating model. The residuals are recycled along the *iter* dimension if necessary.
+For example, if the number of iterations in the operating model is 1000 and there is only iteration in the residuals, the residuals are recycled over the operating model iterations.
+
+## Examples
+
+We can use the built in `make_test_operatingModel3()` function to create the elements needed for a simple operating model with one fishery fishing on a single stock (all based on the `ple4` data set).
+
+```{r makeOM3}
+niters <- 10
+om <- make_test_operatingModel3(niters=niters)
+```
+
+### SSB calculation
+
+At the moment the `srp()` method calculates the SSB.
+Here we define a function in C++ that exposes this method to R and compile using `cppFunction()` from *Rcpp*.
+
+```{r makeSRPtestfunc}
+source <- '
+FLQuantAD ssb_cpp(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    return om.srp(1, indices_min, indices_max);
+}
+'
+cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+```
+
+We calculate the SSB with differing values in the `spwn` and `hperiod` slots to demonstrate the impact of the timing of fishing and the timing of spawning.
+
+For demonstration purposes, we only calculate the SSB for the first year and iteration.
+
+In this first example, all the fishing occurs after spawning has occured. We set the `spwn` slot to 0 (so spawning occurs at the beginning of the timestep) and the `hperiod` to 1.0 (a pulse fishery at the end of the timestep).
+
+```{r spwn_before_fish}
+spwn(om$biols[[1]][[1]])[] <- 0.0
+hperiod(om$fisheries[[1]])["start",] <- 1.0
+hperiod(om$fisheries[[1]])["end",] <- 1.0
+ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
+```
+
+If spawning happens after the fishing has occured, we get a lower SSB (the stock will also have experienced a whole timesteps worth of natural mortality too):
+```{r spwn_after_fish}
+spwn(om$biols[[1]][[1]])[] <- 1.0
+hperiod(om$fisheries[[1]])["start",] <- 0.0
+hperiod(om$fisheries[[1]])["end",] <- 0.0
+ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
+```
+
+If spawning happens during the fishing period, the result is somewhere in between:
+```{r spwn_during_fish}
+spwn(om$biols[[1]][[1]])[] <- 0.5 
+hperiod(om$fisheries[[1]])["start",] <- 0.3
+hperiod(om$fisheries[[1]])["end",] <- 0.6
+ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
+```
+If no spawning happens in that timestep we set the `spwn` slot to NA.
+This results in a SSB of NA:
+SHOULD BE 0?
+
+```{r NAspwn}
+spwn(om$biols[[1]][[1]])[] <- NA
+ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
+```
+
+### Calculating recruitment
+
+Here we demonstrate how the recruitment is calculated.
+We again use the simple operating model with a single catch and fishery.
+The operating model has iterations but as we set the `sd`argument to 0, each iteration is the same.
+
+```{r makeOM3_again}
+niters <- 10
+om <- make_test_operatingModel3(niters=niters, sd = 0.0)
+```
+
+FIX THIS WHEN SPWN = NA
+
+To keep things simple, we set spawning to occur at the start of the timestep, before the fishing period.
+
+```{r spwn_before_fish_again}
+spwn(om$biols[[1]][[1]])[] <- 0.0 
+# spwn(om$biols[[1]][[1]])[] <- NA 
+hperiod(om$fisheries[[1]])["start",] <- 1.0 
+hperiod(om$fisheries[[1]])["end",] <- 1.0
+```
+
+We write a function that exposes the C++ ``calc_rec()`` method to R:
+
+```{r makeRectestfunc}
+source <- '
+std::vector<double> rec_cpp(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, unsigned int timestep){
+    operatingModel om(flfs, biols, ctrl);
+    std::vector<adouble> rec_ad = om.calc_rec(1, 1, timestep);
+    std::vector<double> rec(rec_ad.size());
+    std::transform(rec_ad.begin(), rec_ad.end(), rec.begin(), [](adouble x) {return Value(x);});
+    return rec;
+}
+'
+cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+```
+
+In the default example the SRR parameters do not have a time structure, the values are recycled and the same value is used for all years and seasons.
+Similarly, here there are also no iterations and the values are recycled over all iterations.
+
+```{r srr_params}
+om$biols[[1]]$srr_params
+```
+
+We calculate the recruitment in year 10. We have iterations but as the iterations are all the same, there is no variability in the calculated recruitment:
+
+```{r rec1}
+year <- 10
+rec_cpp(om$fisheries, om$biols, om$fwc, 10)
+```
+
+We can add iterations to the SRR paramers. Here we just add some random noise. This results in random noise in the predicted recruitment:
+
+```{r srr_params_iters}
+srp <- propagate(om$biols[[1]]$srr_params, niters)
+srp <- srp * rlnorm(srp, mean=0, sd = 0.1)
+om$biols[[1]]$srr_params <- srp
+rec_cpp(om$fisheries, om$biols, om$fwc, 10)
+```
+
+The SRR parameters can vary by any of the dimensions in a FLQuant (apart from the first one, which is used to store the different parameters), e.g. by year and season to model a trend.
+
+SOMETHING ON RESIDUALS AND RECYCLING TOO
+
+
+# Recruitment in different seasons
+
+HOW ARE DIFFERENT RECRUITMENT EVENTS HANDLED
+
+# Projection targets
+
+WHAT HAPPENS WITH SRP AS A TARGET - TIMELAGS
+
+
+# References
+

@@ -47,7 +47,7 @@ install: ../$(PKGNAME)_$(PKGVERS).tar.gz
 
 check: buildNV
 	cd ..;\
-	R CMD check $(PKGNAME)_$(PKGVERS).tar.gz --as-cran 
+	R CMD check $(PKGNAME)_$(PKGVERS).tar.gz # --as-cran 
 
 clean:
 	cd ..;\

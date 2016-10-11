@@ -1,7 +1,12 @@
 useDynLib(FLasher)
-exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp,
   evalCpp)
+importFrom(stats,
+  runif)
+importFrom(utils,
+  data)
+importFrom(methods,
+  as)
 import(FLCore)
 import(FLFishery)
 exportClasses(
@@ -17,3 +22,4 @@ exportMethods(
   "iters",
   "iters<-"
 	)
+exportPattern("^[[:alpha:]]+")
