@@ -115,7 +115,7 @@ The **FLasher** control object is also set up. Note that some of the arguments h
 
 ```{r flasher_trgt}
 flasher_ctrl_target <- data.frame(year = 2009:2011,
-                        quant = "catch", order = 1:3,
+                        quant = "catch",
                         value = catch_target)
 flasher_ctrl <- FLasher::fwdControl(flasher_ctrl_target)
 ```
@@ -131,7 +131,7 @@ flash_stf <- FLash::fwd(ple4_stf, flash_ctrl, sr = list(model = model, params=pa
 We run the **FLasher** projection using:
 
 ```{r simple_catch_FLasher_run, results="hide", message=FALSE}
-flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+flasher_stf <- FLasher::fwd(ple4_stf, control=flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
 Have the targets been hit in the projection years 2009 to 2011?
@@ -254,10 +254,10 @@ flash_ctrl <- FLash::fwdControl(flash_ctrl_target)
 flash_stf <- FLash::fwd(ple4_stf, flash_ctrl, sr = list(model = model, params=params(ple4.sr)))
 
 flasher_ctrl_target <- data.frame(year = 2009:2011,
-                        quant = "landings", order = 1:3,
+                        quant = "landings",
                         value = landings_target)
 flasher_ctrl <- FLasher::fwdControl(flasher_ctrl_target)
-flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+flasher_stf <- FLasher::fwd(ple4_stf, control=flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
 Have the targets been hit in the projection years 2009 to 2011?
@@ -295,9 +295,9 @@ flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl,sr = list(model = model, params=pa
 
 flasher_ctrl_target <- data.frame(year = 2009:2011,
                         quant = c("landings","landings","discards"),
-                        order = 1:3, value = target_values)
+                        value = target_values)
 flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
-flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+flasher_stf <- FLasher::fwd(ple4_stf, control=flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
 Have the targets been hit?
@@ -333,9 +333,9 @@ flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl,sr = list(model = model, params=pa
 
 flasher_ctrl_target <- data.frame(year = 2009:2011,
                         quant = "f",
-                        order = 1:3, value = target_fbar)
+                        value = target_fbar)
 flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
-flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+flasher_stf <- FLasher::fwd(ple4_stf, control=flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
 Have we hit the target?
@@ -386,9 +386,9 @@ flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl,sr = list(model = model, params=pa
 
 flasher_ctrl_target <- data.frame(year = 2009:2011,
                         quant = "ssb",
-                        order = 1:3, value = target_ssb)
+                        value = target_ssb)
 flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
-flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+flasher_stf <- FLasher::fwd(ple4_stf, control=flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
 Have the targets been hit in their projection years?
@@ -436,9 +436,9 @@ The error is caused by trying to hit the SSB target in the 2012 which is outside
 ```{r }
 flasher_ctrl_target <- data.frame(year = 2009:2011,
                         quant = "ssb",
-                        order = 1:3, value = target_ssb)
+                        value = target_ssb)
 flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
-flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+flasher_stf <- FLasher::fwd(ple4_stf, control=flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
 **Flasher** reports a warning about trying to calculate SRP in a timstep outside the range of your object.
@@ -499,27 +499,26 @@ flash_ctrl_target <- data.frame(year = rep(2009:2011, each=2),
 			  quantity = rep(c("landings", "discards"), 3),
 			  val = rep(c(landings_target, NA), 3),
 			  max = rep(c(NA, discards_max), 3))
-flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
-flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl, ple4.sr)
+flash_ctrl <- FLash::fwdControl(flash_ctrl_target)
+flash_stf <- FLash::fwd(ple4_stf, flash_ctrl, ple4.sr)
 ```
 
 The **FLasher** projection:
 
 ```{r, results="hide", message=FALSE}
 flasher_ctrl_target <- data.frame(year = rep(2009:2011, each=2),
-                        quant = rep(c("landings", "discards"), 3), order = 1:6,
+                        quant = rep(c("landings", "discards"), 3),
                         value = rep(c(landings_target, NA), 3),
                         max = rep(c(NA, discards_max), 3))
-flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
-flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+flasher_ctrl <- FLasher::fwdControl(flasher_ctrl_target)
+flasher_stf <- FLasher::fwd(ple4_stf, control=flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
 Have the targets been hit and the limits respected?
 The landings target is possible only in 2010 and 2011. In 2009 the discards limit has been reached and consequently restricts the landings.
 
 ```{r}
-landings_target
-discards_max
+c(landings_target, discards_max)
 landings(flash_stf)[,ac(2009:2011)]
 discards(flash_stf)[,ac(2009:2011)]
 landings(flasher_stf)[,ac(2009:2011)]
@@ -556,20 +555,20 @@ flash_ctrl_target <- data.frame(year = rep(2009:2011, each=2),
 			  quantity = rep(c("landings", "ssb"), 3),
 			  val = rep(c(landings_target, NA), 3),
 			  min = rep(c(NA, ssb_min), 3))
-flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
-flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl, ple4.sr)
+flash_ctrl <- FLash::fwdControl(flash_ctrl_target)
+flash_stf <- FLash::fwd(ple4_stf, flash_ctrl, ple4.sr)
 ```
 
 The **FLasher** projection:
 
 ```{r, results="hide", message=FALSE}
 flasher_ctrl_target <- data.frame(year = rep(2009:2011, each=2),
-                        quant = rep(c("landings", "ssb"), 3), order = 1:6,
+                        quant = rep(c("landings", "ssb"), 3),
                         value = rep(c(landings_target, NA), 3),
                         min = rep(c(NA, ssb_min), 3),
                         fishery = NA, catch = NA, biol = 1)
-flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
-flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+flasher_ctrl <- FLasher::fwdControl(flasher_ctrl_target)
+flasher_stf <- FLasher::fwd(ple4_stf, control=flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
 What happened?
@@ -608,19 +607,20 @@ The **FLash** projection:
 flash_ctrl_target <- data.frame(year = 2009:2011,
 			  quantity = "f",
 			  val = relative_target, rel.year = 2008:2010)
-flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
-flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl, ple4.sr)
+flash_ctrl <- FLash::fwdControl(flash_ctrl_target)
+flash_stf <- FLash::fwd(ple4_stf, flash_ctrl, ple4.sr)
 ```
 
 The **FLasher** projection:
 
 ```{r, results="hide"}
 flasher_ctrl_target <- data.frame(year = 2009:2011,
-                        relYear = 2008:2010,
-                        quant = "f", order = 1:3,
-                        value = relative_target)
-flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
-flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+                        relYear = 2008:2010, relSeason=1,
+                        quant = "f",
+                        value = relative_target,
+                        relBiol=1)
+flasher_ctrl <- FLasher::fwdControl(flasher_ctrl_target)
+flasher_stf <- FLasher::fwd(ple4_stf, control=flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
 Is the F correctly relative?
@@ -653,8 +653,8 @@ flash_ctrl_target <- data.frame(year = rep(2009:2011, each=2),
 			  val = rep(c(relative_landings, NA), 3),
 			  max = rep(c(NA, discards_max), 3),
             rel.year = c(2008, NA, 2009, NA, 2010, NA))
-flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
-flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl, ple4.sr)
+flash_ctrl <- FLash::fwdControl(flash_ctrl_target)
+flash_stf <- FLash::fwd(ple4_stf, flash_ctrl, ple4.sr)
 ```
 
 The **FLasher** projection:
@@ -662,12 +662,13 @@ The **FLasher** projection:
 ```{r, results='hide'}
 flasher_ctrl_target <- data.frame(year = rep(2009:2011, each=2),
                         relYear = c(2008, NA, 2009, NA, 2010, NA),
+                        relSeason = c(1, NA, 1, NA, 1, NA),
+                        relBiol = c(1, NA, 1, NA, 1, NA),
                         quant = rep(c("landings", "discards"), 3),
                         value = rep(c(relative_landings, NA), 3),
-                        max = rep(c(NA, discards_max), 3),
-                        order = c(1:6))
-flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
-flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+                        max = rep(c(NA, discards_max), 3))
+flasher_ctrl <- FLasher::fwdControl(flasher_ctrl_target)
+flasher_stf <- FLasher::fwd(ple4_stf, control=flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
 Relative targets have been hit, respecting the limits:
@@ -705,8 +706,8 @@ flash_ctrl_target <- data.frame(year = rep(2009:2011, each=2),
                     max = rep(c(NA, max_relative_landings), 3),
                     min = rep(c(NA, min_relative_landings), 3),
                     rel.year = rep(2008:2010, each=2))
-flash_ctrl <- FLash:::fwdControl(flash_ctrl_target)
-flash_stf <- FLash:::fwd(ple4_stf, flash_ctrl, ple4.sr)
+flash_ctrl <- FLash::fwdControl(flash_ctrl_target)
+flash_stf <- FLash::fwd(ple4_stf, flash_ctrl, ple4.sr)
 ```
 
 The **FLasher** projection:
@@ -714,13 +715,14 @@ The **FLasher** projection:
 ```{r, results='hide'}
 flasher_ctrl_target <- data.frame(year = rep(2009:2011, each=2),
                         relYear = rep(2008:2010, each=2),
+                        relSeason = 1,
+                        relBiol = 1,
                         quant = rep(c("f", "landings"), 3),
                         value = c(relative_F[1], NA, relative_F[2], NA, relative_F[3], NA),
                         max = rep(c(NA, max_relative_landings), 3),
-                        min = rep(c(NA, min_relative_landings), 3),
-                        order = c(1:6))
+                        min = rep(c(NA, min_relative_landings), 3))
 flasher_ctrl <- FLasher:::fwdControl(flasher_ctrl_target)
-flasher_stf <- fwder(ple4_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+flasher_stf <- FLasher::fwd(ple4_stf, control=flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
 What happened?
@@ -769,10 +771,10 @@ The stock recruitment relationship is still deterministic, as are the target val
 We add stochasticity to the initial stock abundances and meand landings and discard weights. 
 
 ```{r }
-stock.n(ple4_stf) <- rnorm(niters, mean=stock.n(ple4_stf), sd=100)
-stock.wt(ple4_stf) <- rnorm(niters, mean=stock.wt(ple4_stf), sd=0.01)
-landings.wt(ple4_stf) <- rnorm(niters, mean=landings.wt(ple4_stf), sd=0.01)
-discards.n(ple4_stf) <- rnorm(niters, mean=discards.wt(ple4_stf), sd=0.01)
+stock.n(ple4p_stf) <- rnorm(niters, mean=stock.n(ple4_stf), sd=100)
+stock.wt(ple4p_stf) <- rnorm(niters, mean=stock.wt(ple4_stf), sd=0.01)
+landings.wt(ple4p_stf) <- rnorm(niters, mean=landings.wt(ple4_stf), sd=0.01)
+discards.n(ple4p_stf) <- rnorm(niters, mean=discards.wt(ple4_stf), sd=0.01)
 ```
 
 We project for 3 years with a simple landings target.
@@ -787,10 +789,10 @@ flash_ctrl <- FLash::fwdControl(flash_ctrl_target)
 flash_stf <- FLash::fwd(ple4p_stf, flash_ctrl, sr = list(model = model, params=params(ple4.sr)))
 
 flasher_ctrl_target <- data.frame(year = 2009:2011,
-                        quant = "landings", order = 1:3,
+                        quant = "landings",
                         value = landings_target)
 flasher_ctrl <- FLasher::fwdControl(flasher_ctrl_target)
-flasher_stf <- fwder(ple4p_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
+flasher_stf <- FLasher::fwd(ple4p_stf, control=flasher_ctrl, sr = list(model = model, params=params(ple4.sr)))
 ```
 
 Have the targets been hit in the projection years 2009 to 2011?
@@ -800,6 +802,14 @@ landings_target
 landings(flash_stf)  [,ac(2009:2011)]
 landings(flasher_stf)[,ac(2009:2011)]
 ```
+
+There is stochasticity in the projected abundances:
+
+```{r }
+ssb(flash_stf)  [,ac(2009:2011)]
+ssb(flasher_stf)[,ac(2009:2011)]
+```
+
 And the ouput is the same (apart from the total catch and mean catch weights).
 
 ```{r }
@@ -823,7 +833,7 @@ To project with **FLash** and **FLasher** we pass in the residuals that contains
 
 ```{r }
 flash_stf <- FLash::fwd(ple4p_stf, flash_ctrl, sr = list(model = model, params=params(ple4.sr)), sr.residuals=residuals, sr.residuals.mult=TRUE)
-flasher_stf <- fwder(ple4p_stf, flasher_ctrl, sr = list(model = model, params=params(ple4.sr)), sr.residuals=residuals, sr.residuals.mult=TRUE)
+flasher_stf <- FLasher::fwd(ple4p_stf, control=flasher_ctrl, sr = list(model = model, params=params(ple4.sr)), residuals=residuals)
 ```
 
 Have the targets been hit in the projection years 2009 to 2011?
