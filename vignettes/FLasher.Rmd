@@ -99,8 +99,8 @@ names(BT) <- "PLE"
 fisheries <- FLFisheries(BT=BT)
 
 # HINDCASTING
-control <- fwdControl(data.frame(year=2000:2008, quant="catch", value=c(catch(ple4)[,(44:52)]),
-  minAge=2, maxAge=6))
+control <- fwdControl(data.frame(year=2000:2008, quant="catch", value=c(catch(ple4)[,(44:52)])))
+
 
 control <- fwdControl(data.frame(year=2000:2008, quant="f", value=c(fbar(ple4)[,(44:52)]),
   minAge=2, maxAge=6))
@@ -108,6 +108,11 @@ control <- fwdControl(data.frame(year=2000:2008, quant="f", value=c(fbar(ple4)[,
 # 
 residuals <- FLQuants(PLE=window(residuals(fsr), start=1957))
 residuals[[1]][,1]<-1
+
+
+target <- data.frame(year=2009:2019, quant="catch", value=12000)
+control <- fwdControl(target=target)
+
 
 # FLB + FLF
 res <- fwd(biols, fisheries, control, residuals)

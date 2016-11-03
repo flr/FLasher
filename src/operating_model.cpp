@@ -645,14 +645,19 @@ void operatingModel::project_fisheries(const int timestep){
 Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters){
 
     bool verbose = false;
-
-    if(verbose){Rprintf("Running\n");}
+    if(verbose){
+        Rprintf("Running\n");
+    }
     // Housekeeping
     auto niter = get_niter(); // number of iters taken from effort of first fishery
-    if(verbose){Rprintf("Number of iterations to solve - niter: %i\n", niter);}
+    if(verbose){
+        Rprintf("Number of iterations to solve - niter: %i\n", niter);
+    }
     // Effort multiplier is the independent value. There is one independent values for each effort, i.e. for each fishery
     auto neffort = fisheries.get_nfisheries();
-    if(verbose){Rprintf("Number of fisheries to solve effort for: %i\n", neffort);}
+    if(verbose){
+        Rprintf("Number of fisheries to solve effort for: %i\n", neffort);
+    }
     // The target timesteps are contiguous.
     // Update the biology in the first target timestep.
     // This ensures that we have abundance numbers in the first timestep of the projection.
@@ -664,24 +669,34 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
     unsigned int first_target_season = ctrl.get_target_int_col(1,1, "season");
     unsigned int min_target_timestep = 0;
     year_season_to_timestep(first_target_year, first_target_season, biols(1).n().get_nseason(), min_target_timestep);
-    if(verbose){Rprintf("Min target timestep: %i\n", min_target_timestep);}
-    if(verbose){Rprintf("Projecting biols for the first timestep to update abundances\n");}
+    if(verbose){
+        Rprintf("Min target timestep: %i\n", min_target_timestep);
+    }
+    if(verbose){
+        Rprintf("Projecting biols for the first timestep to update abundances\n");
+    }
     project_biols(min_target_timestep);
     // Get maximum timestep of OM. If room, we update Biol in final timestep at the end
     std::vector<unsigned int> biol1_dim = biols(1).n().get_dim();
     unsigned int max_timestep = biol1_dim[1] * biol1_dim[3];
     // Each target is solved independently (but a target can be made up of multiple simultaneous targets)
     auto ntarget = ctrl.get_ntarget();
-    if(verbose){Rprintf("Targets to solve: %i \n", ntarget);}
+    if(verbose){
+        Rprintf("Targets to solve: %i \n", ntarget);
+    }
     // Place to store the codes from the solver routine. One code per target per iter. Ntarget x iter
     Rcpp::IntegerMatrix solver_codes(ntarget,niter);
     // Loop over targets and solve all simultaneous targets in that target set
     // e.g. With 2 fisheries with 2 efforts, we can set 2 catch targets to be solved at the same time
     // Indexing of targets starts at 1
     for (auto target_count = 1; target_count <= ntarget; ++target_count){
-        if(verbose){Rprintf("\nProcessing target: %i\n", target_count);}
+        if(verbose){
+            Rprintf("\nProcessing target: %i\n", target_count);
+        }
         auto nsim_targets = ctrl.get_nsim_target(target_count);
-        if(verbose){Rprintf("Number of simultaneous targets: %i\n", nsim_targets);}
+        if(verbose){
+            Rprintf("Number of simultaneous targets: %i\n", nsim_targets);
+        }
         // Timestep in which we find effort is the same for all simultaneous targets in a target set
         // Get time step of first sim target and use this for all sim targets.
         // Get Y/S from control - convert to timestep
@@ -1171,7 +1186,7 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
         std::vector<adouble> current_value = get_target_value_hat(target_no, sim_target_no);
         value = current_value;
         if(!max_na){
-            Rprintf("Max target\n");
+            //Rprintf("Max target\n");
             std::vector<double> ctrl_value = ctrl.get_target_value(target_no, sim_target_no, 3);
             // In case of only 1 ctrl iter we need to blow up niter
             std::vector<adouble> ctrl_value_long(niter);
@@ -1185,7 +1200,7 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no, const
             std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::min(x, y);});
         }
         if(!min_na){
-            Rprintf("Min target\n");
+            //Rprintf("Min target\n");
             std::vector<double> ctrl_value = ctrl.get_target_value(target_no, sim_target_no, 1);
             // In case of only 1 ctrl iter we need to blow up niter
             std::vector<adouble> ctrl_value_long(niter);
