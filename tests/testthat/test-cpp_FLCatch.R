@@ -74,6 +74,7 @@ test_that("FLCatch get and set data accessors", {
     expect_equal(out[["discards_n"]], discards.n(flc_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]]) 
     expect_equal(out[["landings_wt"]], landings.wt(flc_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]]) 
     expect_equal(out[["discards_wt"]], discards.wt(flc_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]]) 
+    expect_equal(out[["price"]], price(flc_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]]) 
     expect_equal(out[["catch_sel"]], catch.sel(flc_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])
     expect_equal(unname(out[["catch_wt"]]@.Data), unname(catch.wt(flc_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]]@.Data))
     expect_equal(out[["catch_n"]], catch.n(flc_in)[dims_min[1]:dims_max[1], dims_min[2]:dims_max[2], dims_min[3]:dims_max[3], dims_min[4]:dims_max[4], dims_min[5]:dims_max[5], dims_min[6]:dims_max[6]])
@@ -344,6 +345,11 @@ test_that("FLCatch methods", {
     expect_FLQuant_equal(ds_in, ds_out)
     ds_out <- test_FLCatchAD_discards_sel(flc_in)
     expect_FLQuant_equal(ds_in, ds_out)
+
+    # revenue
+    rev_in <- quantSums(price(flc_in) * landings.n(flc_in) * landings.wt(flc_in))
+    rev_out <- test_FLCatch_revenue(flc_in)
+    expect_FLQuant_equal(rev_in, rev_out)
 })
 
 

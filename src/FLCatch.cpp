@@ -158,6 +158,12 @@ FLQuant FLCatch_base<T>::price() const {
 }
 
 template <typename T>
+FLQuant FLCatch_base<T>::price(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    return price_flq(indices_min, indices_max);
+}
+
+
+template <typename T>
 FLQuant_base<T> FLCatch_base<T>::discards_ratio() const {
     return discards_ratio_flq;
 }
@@ -295,6 +301,20 @@ FLQuant& FLCatch_base<T>::catch_q_params() {
 }
 
 // Methods
+template <typename T>
+FLQuant_base<T> FLCatch_base<T>::revenue() const {
+    std::vector<unsigned int> indices_min {1,1,1,1,1,1};
+    std::vector<unsigned int> indices_max = landings_n_flq.get_dim();
+    return revenue(indices_min, indices_max);
+}
+
+template <typename T>
+FLQuant_base<T> FLCatch_base<T>::revenue(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    // Price is age structured
+    // price * landings.n * landings.wt
+    FLQuant_base<T> revenue = quant_sum(price(indices_min, indices_max) * landings_n(indices_min, indices_max) * landings_wt(indices_min, indices_max));
+    return revenue;
+}
 
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::landings() const {

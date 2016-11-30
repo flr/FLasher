@@ -17,6 +17,7 @@ void fwdControl::init_target_map(){
     target_map["ssb"] = target_srp; // Does the same thing as SRP at the moment
     target_map["biomass"] = target_biomass;
     target_map["effort"] = target_effort;
+    target_map["revenue"] = target_revenue;
     return;
 }
 
@@ -106,7 +107,7 @@ std::vector<unsigned int> fwdControl::get_age_range(const unsigned int target_no
  * \param target_no References the target column in the control dataframe.
  */
 unsigned int fwdControl::get_nsim_target(unsigned int target_no) const{
-    // Check that the target column exists 
+    // Check that the order column exists 
     std::vector<std::string> col_names = target.attr("names");
     if (std::find(col_names.begin(), col_names.end(), "order") == col_names.end()){
         Rcpp::stop("In fwdControl::get_nsim_target - no order column in control dataframe\n");

@@ -1588,6 +1588,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// test_FLCatch_revenue
+FLQuant test_FLCatch_revenue(const FLCatch flc);
+RcppExport SEXP FLasher_test_FLCatch_revenue(SEXP flcSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_FLCatch_revenue(flc));
+    return rcpp_result_gen;
+END_RCPP
+}
 // test_FLCatch_landings
 FLQuant test_FLCatch_landings(const FLCatch flc);
 RcppExport SEXP FLasher_test_FLCatch_landings(SEXP flcSEXP) {

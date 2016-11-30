@@ -120,6 +120,7 @@ Rcpp::List test_FLCatch_const_get_accessors_subset(const FLCatch flc, const std:
         Rcpp::Named("discards_ratio", flc.discards_ratio(indices_min, indices_max)),
         Rcpp::Named("catch_wt", flc.catch_wt(indices_min, indices_max)),
         Rcpp::Named("catch_n", flc.catch_n(indices_min, indices_max)),
+        Rcpp::Named("price", flc.price(indices_min, indices_max)),
         Rcpp::Named("landings", flc.landings(short_indices_min, short_indices_max)),
         Rcpp::Named("discards", flc.discards(short_indices_min, short_indices_max)),
         Rcpp::Named("catches", flc.catches(short_indices_min, short_indices_max)));
@@ -188,6 +189,11 @@ FLCatchAD test_FLCatchAD_set_accessors(FLCatchAD flc, int quant, int year, int u
     flc.catch_sel()(quant, year, unit, season, area, iter) = values[4];
     flc.price()(quant, year, unit, season, area, iter) = values[5];
     return flc;
+}
+
+// [[Rcpp::export]]
+FLQuant test_FLCatch_revenue(const FLCatch flc){
+    return flc.revenue();
 }
 
 // [[Rcpp::export]]

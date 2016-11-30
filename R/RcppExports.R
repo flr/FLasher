@@ -517,6 +517,10 @@ test_FLCatchAD_set_accessors <- function(flc, quant, year, unit, season, area, i
     .Call('FLasher_test_FLCatchAD_set_accessors', PACKAGE = 'FLasher', flc, quant, year, unit, season, area, iter, values)
 }
 
+test_FLCatch_revenue <- function(flc) {
+    .Call('FLasher_test_FLCatch_revenue', PACKAGE = 'FLasher', flc)
+}
+
 test_FLCatch_landings <- function(flc) {
     .Call('FLasher_test_FLCatch_landings', PACKAGE = 'FLasher', flc)
 }
