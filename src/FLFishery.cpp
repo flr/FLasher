@@ -34,8 +34,8 @@ FLFishery_base<T>::FLFishery_base(SEXP flf_sexp) : FLCatches_base<T>(flf_sexp){ 
 // Returns an FLFishery
 template <typename T>
 FLFishery_base<T>::operator SEXP() const{
-    //Rprintf("Wrapping FLFishery_base<T>.\n");
-    Rcpp::S4 flf_s4("FLFishery");
+    //printf("Wrapping FLFishery_base<T>.\n");
+    Rcpp::S4 flf_s4("FLFisherycpp");
     flf_s4.slot("name") = name;
     flf_s4.slot("effort") = effort_flq;
     flf_s4.slot("vcost") = vcost_flq;
@@ -131,6 +131,32 @@ template <typename T>
 FLQuant& FLFishery_base<T>::hperiod() {
     return hperiod_flq;
 }
+
+// Methods
+template <typename T>
+FLQuant_base<T> FLFishery_base<T>::revenue() const {
+    std::vector<unsigned int> indices_min {1,1,1,1,1};
+    // Get full dimension and knock the first one (age) off
+    std::vector<unsigned int> indices_max = (*this)(1).landings_wt().get_dim();
+    indices_max.erase(indices_max.begin());
+    return revenue(indices_min, indices_max);
+}
+
+template <typename T>
+FLQuant_base<T> FLFishery_base<T>::revenue(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    //indices_min and max are 5d
+    // Revenue is not age structured
+    if((indices_min.size() != 5) | (indices_max.size() != 5)){
+        Rcpp::stop("In FLFishery revenue indices subsetter. indices_min and max must be of length 5\n");
+    }
+    // Revenue had no age or unit structure
+    FLQuant revenue(1,indices_max[0]-indices_min[0]+1, 1, indices_max[2]-indices_min[2]+1, indices_max[3]-indices_min[3]+1, indices_max[4]-indices_min[4]+1, 0.0);
+    for (const auto& it : (*this)){
+        revenue = revenue + it.revenue(indices_min, indices_max);
+    }
+    return revenue;
+}
+
 
 template class FLFishery_base<double>;
 template class FLFishery_base<adouble>;

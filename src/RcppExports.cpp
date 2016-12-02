@@ -2899,6 +2899,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// test_FLFishery_revenue
+FLQuant test_FLFishery_revenue(const FLFishery flf);
+RcppExport SEXP FLasher_test_FLFishery_revenue(SEXP flfSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const FLFishery >::type flf(flfSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_FLFishery_revenue(flf));
+    return rcpp_result_gen;
+END_RCPP
+}
 // test_FLFisheriesAD_sexp_constructor
 FLFisheriesAD test_FLFisheriesAD_sexp_constructor(SEXP flfs_sexp1);
 RcppExport SEXP FLasher_test_FLFisheriesAD_sexp_constructor(SEXP flfs_sexp1SEXP) {

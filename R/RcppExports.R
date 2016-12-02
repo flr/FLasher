@@ -905,6 +905,10 @@ test_FLFisheries_set_double <- function(flfs, fishery, catches, indices, value) 
     .Call('FLasher_test_FLFisheries_set_double', PACKAGE = 'FLasher', flfs, fishery, catches, indices, value)
 }
 
+test_FLFishery_revenue <- function(flf) {
+    .Call('FLasher_test_FLFishery_revenue', PACKAGE = 'FLasher', flf)
+}
+
 test_FLFisheriesAD_sexp_constructor <- function(flfs_sexp1) {
     .Call('FLasher_test_FLFisheriesAD_sexp_constructor', PACKAGE = 'FLasher', flfs_sexp1)
 }

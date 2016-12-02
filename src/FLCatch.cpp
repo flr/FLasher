@@ -303,16 +303,27 @@ FLQuant& FLCatch_base<T>::catch_q_params() {
 // Methods
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::revenue() const {
-    std::vector<unsigned int> indices_min {1,1,1,1,1,1};
-    std::vector<unsigned int> indices_max = landings_n_flq.get_dim();
+    // Call to revenue has indices only 5 long - no age
+    std::vector<unsigned int> indices_min {1,1,1,1,1};
+    std::vector<unsigned int> indices_max = landings_wt_flq.get_dim();
+    indices_max.erase(indices_max.begin());
     return revenue(indices_min, indices_max);
 }
 
 template <typename T>
 FLQuant_base<T> FLCatch_base<T>::revenue(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    // Price is age structured
-    // price * landings.n * landings.wt
-    FLQuant_base<T> revenue = quant_sum(price(indices_min, indices_max) * landings_n(indices_min, indices_max) * landings_wt(indices_min, indices_max));
+    // Revenue is not age structured
+    if((indices_min.size() != 5) | (indices_max.size() != 5)){
+        Rcpp::stop("In FLCatch revenue indices subsetter. indices_min and max must be of length 5\n");
+    }
+    // price * landings.n * landings.wt are all age structured so need to add age dim to indices_min and max
+    std::vector<unsigned int> quant_indices_min = indices_min;
+    quant_indices_min.insert(quant_indices_min.begin(), 1);
+    std::vector<unsigned int> quant_indices_max = indices_max;
+    std::vector<unsigned int> dims = landings_wt_flq.get_dim();
+    quant_indices_max.insert(quant_indices_max.begin(), dims[0]);
+    // Summed over ages and units
+    FLQuant_base<T> revenue = unit_sum(quant_sum(price(quant_indices_min, quant_indices_max) * landings_n(quant_indices_min, quant_indices_max) * landings_wt(quant_indices_min, quant_indices_max)));
     return revenue;
 }
 

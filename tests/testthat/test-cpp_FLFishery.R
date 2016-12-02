@@ -226,3 +226,13 @@ test_that("FLFisheryAD iterators",{
     }
 })
 
+test_that("FLFishery indicators",{
+    fishery <- random_FLFishery_generator(min_catches = 2, max_catches = 5)
+    rev_out <- test_FLFishery_revenue(fishery)
+    rev_in <- lapply(fishery, function(x) {
+        return(unitSums(quantSums(price(x) * landings.n(x) * landings.wt(x))))
+    })
+    rev_in <- Reduce("+",rev_in)
+    expect_FLQuant_equal(rev_in, rev_out)
+})
+

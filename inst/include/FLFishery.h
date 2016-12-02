@@ -56,6 +56,11 @@ class FLFishery_base : public FLCatches_base<T> {
         FLQuant& vcost();
         FLQuant& fcost();
         FLQuant& hperiod();
+
+        // Methods
+        FLQuant_base<T> revenue() const;
+        FLQuant_base<T> revenue(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+
     private:
         std::string name;
         Rcpp::NumericVector range;

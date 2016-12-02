@@ -347,7 +347,7 @@ test_that("FLCatch methods", {
     expect_FLQuant_equal(ds_in, ds_out)
 
     # revenue
-    rev_in <- quantSums(price(flc_in) * landings.n(flc_in) * landings.wt(flc_in))
+    rev_in <- unitSums(quantSums(price(flc_in) * landings.n(flc_in) * landings.wt(flc_in)))
     rev_out <- test_FLCatch_revenue(flc_in)
     expect_FLQuant_equal(rev_in, rev_out)
 })

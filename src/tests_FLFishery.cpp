@@ -443,6 +443,11 @@ FLFisheries test_FLFisheries_set_double(FLFisheries flfs, const int fishery, con
     return flfs;
 }
 
+// [[Rcpp::export]]
+FLQuant test_FLFishery_revenue(const FLFishery flf){
+    return flf.revenue();
+}
+
 //---------------------------------------------------------------------------
 // FLFisheries - adouble
 
