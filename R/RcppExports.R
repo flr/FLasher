@@ -517,6 +517,10 @@ test_FLCatchAD_set_accessors <- function(flc, quant, year, unit, season, area, i
     .Call('FLasher_test_FLCatchAD_set_accessors', PACKAGE = 'FLasher', flc, quant, year, unit, season, area, iter, values)
 }
 
+test_FLCatch_revenue_subset <- function(flc, indices_min, indices_max) {
+    .Call('FLasher_test_FLCatch_revenue_subset', PACKAGE = 'FLasher', flc, indices_min, indices_max)
+}
+
 test_FLCatch_revenue <- function(flc) {
     .Call('FLasher_test_FLCatch_revenue', PACKAGE = 'FLasher', flc)
 }
@@ -907,6 +911,10 @@ test_FLFisheries_set_double <- function(flfs, fishery, catches, indices, value) 
 
 test_FLFishery_revenue <- function(flf) {
     .Call('FLasher_test_FLFishery_revenue', PACKAGE = 'FLasher', flf)
+}
+
+test_FLFishery_revenue_subset <- function(flf, indices_min, indices_max) {
+    .Call('FLasher_test_FLFishery_revenue_subset', PACKAGE = 'FLasher', flf, indices_min, indices_max)
 }
 
 test_FLFisheriesAD_sexp_constructor <- function(flfs_sexp1) {

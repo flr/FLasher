@@ -1588,6 +1588,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// test_FLCatch_revenue_subset
+FLQuant test_FLCatch_revenue_subset(const FLCatch flc, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_FLCatch_revenue_subset(SEXP flcSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const FLCatch >::type flc(flcSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_FLCatch_revenue_subset(flc, indices_min, indices_max));
+    return rcpp_result_gen;
+END_RCPP
+}
 // test_FLCatch_revenue
 FLQuant test_FLCatch_revenue(const FLCatch flc);
 RcppExport SEXP FLasher_test_FLCatch_revenue(SEXP flcSEXP) {
@@ -2907,6 +2920,19 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const FLFishery >::type flf(flfSEXP);
     rcpp_result_gen = Rcpp::wrap(test_FLFishery_revenue(flf));
+    return rcpp_result_gen;
+END_RCPP
+}
+// test_FLFishery_revenue_subset
+FLQuant test_FLFishery_revenue_subset(const FLFishery flf, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_FLFishery_revenue_subset(SEXP flfSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const FLFishery >::type flf(flfSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_FLFishery_revenue_subset(flf, indices_min, indices_max));
     return rcpp_result_gen;
 END_RCPP
 }

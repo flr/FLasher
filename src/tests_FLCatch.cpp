@@ -192,6 +192,11 @@ FLCatchAD test_FLCatchAD_set_accessors(FLCatchAD flc, int quant, int year, int u
 }
 
 // [[Rcpp::export]]
+FLQuant test_FLCatch_revenue_subset(const FLCatch flc, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    return flc.revenue(indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
 FLQuant test_FLCatch_revenue(const FLCatch flc){
     return flc.revenue();
 }

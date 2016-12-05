@@ -1033,6 +1033,31 @@ test_that("operatingModel eval_om units", {
     # But spwn in returned object should be same as orig
     om_out <- test_operatingModel_eval_om2(flfs, flbs, fwc, "ssb", as.integer(NA),as.integer(NA),2, dim_min, dim_max)
     expect_FLQuant_equal(om_out[["biols"]][[2]]@spwn, flbs[[2]][["biol"]]@spwn)
+
+    # Economic indicators
+    for (fishery_no in 1:length(flfs)){
+        dim_max <- dim(landings.wt(flfs[[fishery_no]][[1]]))
+        dim_min <- round(runif(6,min=1,max=dim_max))
+        # Revenue at catch level
+        for(catch_no in 1:length(flfs[[fishery_no]])){
+            rev_out <- test_operatingModel_eval_om(flfs, flbs, fwc, "revenue", fishery_no,catch_no,as.integer(NA), dim_min, dim_max)
+            rev_in2 <- test_FLCatch_revenue_subset(flfs[[fishery_no]][[catch_no]], dim_min[-1], dim_max[-1])
+            rev_in <- unitSums(quantSums((landings.n(flfs[[fishery_no]][[catch_no]]) * landings.wt(flfs[[fishery_no]][[catch_no]]) * price(flfs[[fishery_no]][[catch_no]]))[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]))
+            expect_FLQuant_equal(rev_in, rev_out)
+            expect_FLQuant_equal(rev_in2, rev_out)
+        }
+        # Revenue from fishery
+        rev_out <- test_operatingModel_eval_om(flfs, flbs, fwc, "revenue", fishery_no, as.integer(NA),as.integer(NA), dim_min, dim_max)
+        rev_in2 <- test_FLFishery_revenue_subset(flfs[[fishery_no]], dim_min[-1], dim_max[-1])
+        rev_in <- lapply(flfs[[fishery_no]], function(x){return(unitSums(quantSums((landings.n(x) * landings.wt(x) * price(x))[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])))})
+        rev_in <- Reduce("+",rev_in)
+        expect_FLQuant_equal(rev_in, rev_out)
+        expect_FLQuant_equal(rev_in2, rev_out)
+        # Effort from fishery
+        eff_out <- test_operatingModel_eval_om(flfs, flbs, fwc, "effort", fishery_no, as.integer(NA),as.integer(NA), dim_min, dim_max)
+        eff_in <- flfs[[fishery_no]]@effort[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]
+        expect_FLQuant_equal(eff_in, eff_out)
+    }
 })
 
 test_that("operatingModel eval_om simple", {

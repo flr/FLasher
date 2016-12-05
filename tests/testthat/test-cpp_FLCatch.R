@@ -346,7 +346,21 @@ test_that("FLCatch methods", {
     ds_out <- test_FLCatchAD_discards_sel(flc_in)
     expect_FLQuant_equal(ds_in, ds_out)
 
-    # revenue
+})
+
+
+
+test_that("FLCatch economic methods", {
+    flc_in <- random_FLCatch_generator()
+    # revenue subset
+    dimc <- dim(landings.wt(flc_in))
+    indices_max <- round(runif(5, min=1, max=dimc[2:6]))
+    indices_min <- round(runif(5, min=1, max=indices_max))
+    rev_out <- test_FLCatch_revenue_subset(flc_in, indices_min, indices_max)
+    rev_in <- unitSums(quantSums((price(flc_in) * landings.n(flc_in) * landings.wt(flc_in))[,indices_min[1]:indices_max[1],indices_min[2]:indices_max[2],indices_min[3]:indices_max[3], indices_min[4]: indices_max[4], indices_min[5]:indices_max[5]]))
+    expect_FLQuant_equal(rev_in, rev_out)
+
+    # revenue full range
     rev_in <- unitSums(quantSums(price(flc_in) * landings.n(flc_in) * landings.wt(flc_in)))
     rev_out <- test_FLCatch_revenue(flc_in)
     expect_FLQuant_equal(rev_in, rev_out)

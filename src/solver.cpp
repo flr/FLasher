@@ -48,8 +48,9 @@ double euclid_norm(std::vector<double> x){
  */
 std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const int niter, const int nsim_targets, const double indep_min, const double indep_max, const int max_iters, const double tolerance){
     
-    bool verbose = false ;
+    bool verbose = false;
 
+    Rprintf("indep.size(): %i niter: %i, nsim_targets: %i\n",indep.size(), niter, nsim_targets);
     if(verbose){Rprintf("\nIn Newton Raphson\n");}
     // Check that product of niter and nsim_targets = length of indep (otherwise something has gone wrong)
     if (indep.size() != (niter * nsim_targets)){
@@ -74,14 +75,14 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
     // Keep looping until all sim_targets have been solved, or number of iterations (NR iterations, not FLR iterations) has been hit
     while((std::accumulate(iter_solved.begin(), iter_solved.end(), 0) < niter) & (nr_count < max_iters)){ 
         ++nr_count;
-        //if(verbose){Rprintf("nr_count: %i\n", nr_count);}
+        if(verbose){Rprintf("nr_count: %i\n", nr_count);}
         // Get y = f(x0)
         //if(verbose){Rprintf("Forward\n");}
         //if(verbose){Rprintf("indep1: %f\n", indep[0]);}
         y = fun.Forward(0, indep); 
-        //if(verbose){Rprintf("indep1: %f\n", indep[0]);}
+        if(verbose){Rprintf("indep1: %f\n", indep[0]);}
         //if(verbose){Rprintf("indep2: %f\n", indep[1]);}
-        //if(verbose){Rprintf("error: %f\n", y[0]);}
+        if(verbose){Rprintf("y0: %f\n", y[0]);}
         //if(verbose){Rprintf("y: %f\n", y[1]);}
         // Get f'(x0) -  gets Jacobian for all simultaneous targets
         //if(verbose){Rprintf("Getting SparseJacobian\n");}

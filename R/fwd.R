@@ -90,17 +90,20 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
   # IF annual model & relY, then relS == 1 A XNOR B
   # relY AND relS? Then check relF, relC, relB as FCB
 
-  # ADD order column  
-  trg$order <- seq(1, nrow(trg))
-
   # REPLACE target
   target(control) <- trg
+
+  # If order is not specified, attempt to sort it out
+  if(!(any(colnames(control@target) %in% "order"))){
+      control <- add_target_order(control)
+  }
 
   # FIX empty character slots
   if(length(fisheries@desc) == 0)
     fisheries@desc <- character(1)
   if(length(biols@desc) == 0)
     biols@desc <- character(1)
+
 
   # CALL oMRun
   out <- operatingModelRun(fisheries, biolscpp, control,
@@ -338,3 +341,41 @@ setMethod("fwd", signature(biols="FLStock", fisheries="ANY",
     return(fwd(biols, control=control, residuals=residuals, sr=sr))
   }
 ) # }}}
+
+
+#' Add the order column to the control target
+#'
+#' Add the order column to the control target data.frame so that targets are processed in the correct order.
+#'
+#' It is important that the targets in the control object are processed in the correct order.
+#' Targets can happen simultaneously. For example, if there are multiple FLFishery objects in
+#' operating model each will need to have a target to solve for at the same time as the others.
+#' The targets are processed in a time ordered sequence (year / season).
+#' However, within the same year and season it is necessary for the min and max targets to be processed
+#' separatley and after the other targets.
+#'
+#' @param control A fwdControl object
+#' @return A fwdControl object with an order column.
+#' @export
+add_target_order <- function(control){
+    # Add temporary original order column - order gets messed about with merge
+    control@target$orig_order <- 1:nrow(control@target)
+    # Add temporary minmax column
+    control@target$minmax <- is.na(control@iters[,"value",1])
+    sim_targets <- unique(control@target[,c("year","season","minmax")])
+    # Order by year / season / minmax
+    sim_targets <- sim_targets[order(sim_targets$year, sim_targets$season, sim_targets$minmax),]
+    sim_targets$order <- 1:nrow(sim_targets)
+    # Problem - merge reorders by order column
+    control@target <- merge(control@target, sim_targets) # order should be the same
+    # Reorder by original order so that target and iters slots are consistent
+    control@target <- control@target[order(control@target$orig_order),]
+    # Reorder target and iters slots by new order
+    new_order <- order(control@target$order, control@target$fishery, control@target$catch, control@target$biol)
+    control@target <- control@target[new_order,]
+    control@iters <- control@iters[new_order,,,drop=FALSE]
+    # Remove minmax and orig_order columns
+    control@target <- control@target[,colnames(control@target) != "minmax"]
+    control@target <- control@target[,colnames(control@target) != "orig_order"]
+    return(control)
+}

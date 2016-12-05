@@ -644,7 +644,7 @@ void operatingModel::project_fisheries(const int timestep){
  */
 Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters){
 
-    bool verbose = false;
+    bool verbose = true;
     if(verbose){
         Rprintf("Running\n");
     }
@@ -754,7 +754,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         std::transform(target_value.begin(), target_value.end(), target_value_hat.begin(), error.begin(),
                 [](adouble x, adouble y){return x - y;});
                 //[](adouble x, adouble y){return (x - y) * (x - y);}); // squared error - not as effective
-        //if(verbose){Rprintf("target 1. target_value: %f target_value_hat: %f error: %f\n", Value(target_value[0]), Value(target_value_hat[0]), Value(error[0]));}
+        if(verbose){Rprintf("target 1. target_value: %f target_value_hat: %f error: %f\n", Value(target_value[0]), Value(target_value_hat[0]), Value(error[0]));}
         //if(verbose){Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", Value(target_value[1]), Value(target_value_hat[1]), Value(error[1]));}
         // Stop recording
         CppAD::ADFun<double> fun(effort_mult_ad, error);
@@ -803,9 +803,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
  * \param indices_max The maximum range of the returned FLQuant. Of length 6 even if target does need all of them (e.g. catch does not need the first dimension).
  */
 FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) {
-
-    bool verbose = false;
-
+    bool verbose = true;
     // Indices must be of length 6, even if not all of them are needed
     if(indices_min.size() != 6 | indices_max.size() != 6){
         Rcpp::stop("In operatingModel eval_om. indices_min and max must be of length 6 even if not all of the dimensions are used.\n");
@@ -817,6 +815,26 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
     }
     FLQuantAD out;
     switch(target_type){
+        case target_revenue: {
+            // Revenue is not age structured - sums over all ages
+            if(verbose){Rprintf("target_revenue\n");}
+            std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
+            std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
+            // Revenue can come from an FLFishery or a single FLCatch (in which case the FLFishery must be specified)
+            if (Rcpp::IntegerVector::is_na(fishery_no)){
+                Rcpp::stop("In operatingModel::eval_om. Asking for revenue target but fishery_no has not been specified.\n");
+            }
+            // Get revenue from a FLFishery (needs only FLFishery)
+            if (Rcpp::IntegerVector::is_na(catch_no)){
+                Rprintf("Revenue from a FLFishery\n");
+                out = fisheries(fishery_no).revenue(indices_min5, indices_max5);
+            }
+            else {
+                Rprintf("Revenue from an FLCatch\n");
+                out = fisheries(fishery_no, catch_no).revenue(indices_min5, indices_max5);
+            }
+        break;
+        }
         case target_effort: {
             if(verbose){Rprintf("target_effort\n");}
             // Indices should be of length 5

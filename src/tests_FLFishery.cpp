@@ -448,6 +448,11 @@ FLQuant test_FLFishery_revenue(const FLFishery flf){
     return flf.revenue();
 }
 
+// [[Rcpp::export]]
+FLQuant test_FLFishery_revenue_subset(const FLFishery flf, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    return flf.revenue(indices_min, indices_max);
+}
+
 //---------------------------------------------------------------------------
 // FLFisheries - adouble
 
