@@ -13,7 +13,7 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
   
   function(biols, fisheries, control,
     residuals=lapply(lapply(biols, spwn), "[<-", value=1)) {
-  
+
   # CHECK length and names of biols and residuals
   if(!all.equal(names(biols), names(residuals)))
     stop("Names of biols and residuals must match exactly")
@@ -77,8 +77,9 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
   # ... and 'biol'
   if (!is.numeric(trg$biol))
     trg[,"biol"] <- match(trg[,"biol"], rownames(dib))
-  if(nrow(dib) == 1 & all(is.na(trg["biol"])))
-    trg[,"biol"] <- 1L
+  # If we have 2 fisheries on 1 catch, catch target is set through catch / fishery only, not biol AND catch / fishery
+  #if(nrow(dib) == 1 & all(is.na(trg["biol"])))
+  #  trg[,"biol"] <- 1L
 
   # CONVERT 'years' and 'relYear' to position indices
   mny <- min(dib[,"minyear"]) - 1
