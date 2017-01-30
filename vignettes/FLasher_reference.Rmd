@@ -9,10 +9,8 @@ header-includes:
   - \usepackage[T1]{fontenc}
   - \usepackage[bitstream-charter]{mathdesign}
 output:
-  rmarkdown::html_vignette:
-    toc: true
-    fig_caption: yes
   pdf_document:
+    toc: true
     fig_caption: yes
     number_sections: yes
 vignette: >
@@ -58,30 +56,22 @@ DIAGRAM?
 ## The fisheries
 
 The fisheries are represented by an object of class `FLFisheries`. This is a list of `FLFishery` objects, each of which represents an individual fishery.
-A fishery is made up of a series of catches, each one is represented by an object of class `FLCatch`. It is possible for a fishery to have only a single catch.
-Fishing effort is defined at the level of the fishery so that all catches inside the same fishery have the same effort.
+An `FLFishery` is a fleet (set of vessels) that has the same metier or gear type, e.g. beam trawlers or long lines.
+A fishery is made up of a series of catches, each one is represented by an object of class `FLCatch`.
+Each `FLCatch` object represents the catch from a fish stock (usually from a single biological stock - mixing catches from more than one stock is a special case where multiple biological stocks are represented as catches from a single stock).
+It is possible for a fishery to have only a single catch, i.e. it only catches from one biological stock.
+Multiple catches inside a fishery cannot catch from the same biological stock, i.e. a fishery can only catch once from a biological stock.
 
 The `FLCatch` object contains the landing and discard numbers and weights along with the selectivity and catchability parameters.
 They interact with the biological stocks by imposing fishing mortality.
+Fishing effort is defined at the level of the fishery so that all catches inside the same fishery have the same effort.
 
-An `FLCatch` represents catches from a single species (usually from a single biological stock - mixing catches from more than one stock is a special case where multiple biological stocks are represented as catches from a single stock).
 For example if a fishery catches plaice and sole, there would be two `FLCatch` objects: one for plaice and one for sole. Each one would have different landing and discards weights, selectivity and catchability. However, they have the effort as fishing effort is defined at the fishery level not the catch level.
 
-Multiple catches inside a fishery cannot catch from the same biological stock, i.e. a fishery can only catch once from a biological stock.
-IS THIS RIGHT?
-EFFORT SHARE?
-WHAT ABOUT MULTIPLE PASSIVE GEARS DEPLOYED IN PARALLEL?
 
-Costs are at vessel level (fixed costs) but what about vessels that use multiple gears.
-During a year each gear does not use the same effort. But effort is defined at the fishery level.
-So we consider each gear as a seperate fishery? But then your costs are split between two fishery objects for same vessel.
-
-Or is fishery 'fishing activity' - so a fishing activity can catch multiple species.
-But then how do we get economics in there - can get costs and revenues from an activity - but only at activity level
-
-An `FLCatch` can be used to represent fishing activity at different levels of disaggregation.
-For example, it can be used to represent the activity of a specifc metier or gear, or an aggregations of metiers or gears.
-
+<!--
+Costs are at vessel level (fixed costs) but what about vessels that use multiple gears.  During a year each gear does not use the same effort. But effort is defined at the fishery level.  So we consider each gear as a seperate fishery? But then your costs are split between two fishery objects for same vessel.
+-->
 
 DIAGRAM
 
@@ -92,69 +82,131 @@ The simplest operating model is one which has a single fishery with a single cat
 A mixed fishery is one with technical interactions (i.e. a stock may be caught by more than fishery or type of gear).
 Simple example: two fisheries on one stock.
 
-
 # The projection process
 
 Each timestep of a projection is handled independently.
-
 The projection is driven by the effort in the `FLFisheries` at that timestep (i.e. the effort in each 'FLFishery' in the operating model).
 
 The projection is split into two stages: projecting the fisheries (to calculate the current catches based on the effort and biological abundance in the current time step) and projecting the biology (to calculate the biological abundance in the next timestep).
 
-## Calculating the fishing mortality
+In both of these steps fishing mortality is the key metric that drives removals resulting in the catches and changes in the biological stock abundance.
+
+# Calculating the fishing mortality
 
 Fishing effort drives the catches and biological stock abundance through fishing mortality.
 As such, it is a key metric of the model.
 
 Fishing mortality (F) is an age-structured metric that represents the impact of fishing on the stock.
 Inside *FLasher* it is the result of the interaction between an `FLCatch` and an `fwdBiol` object.
-A `fwdBiol` can be fished by multiple `FLCatch`es and the total F on a `fwdBiol` is the sum of the Fs from each interaction.
 
-The F on a `fwdBiol` from each `FLCatch` is calculated using the following equation:
+A `fwdBiol` can be fished by multiple `FLCatch`es.
+INSERT DIAGRAM OF MULTIPLE CATCHES ON A STOCK
 
+The fishing mortality imposed on a `fwdBiol` from a single `FLCatch` is known as the partial fishing mortality.
+The partial fishing mortality is calculated as:
+
+$pF_{a,c,b} = \alpha_{c} Sel_{a,c} E_{f}$
+
+where $a$ is age, $b$ the `fwdBiol`, $c$ the `FLCatch`, $f$ is the `FLFishery` that contains the `FLCatch`, $pF$ is the partial fishing mortality, $\alpha$ is the catchability scaling parameter, $Sel$ is the gear selectivity and $E$ is the fishing effort.
+$\alpha$ can be set so that a particular effort and selectivity result in the desired F.
+Note that fishing effort is set at the `FLFishery` level and each `FLCatch` of an `FLFishery` has the same fishing effort.
+
+The total fishing mortality imposed on a stock from all the `FLCatches` that fish it is the sum of the partial fishing mortality.
+
+$F_{a,b} = pF_{a,b,c1} + pF_{a,b,c2} + ...$
+
+where $cx$ is the index of the `FLCatch`es fishing the stock, $F$ is the total fishing mortality and $pF$ is the partial fishing mortality.
+
+<!-- OLD
 $F_{a,c,b} = \alpha_{c} B_{b}^{-\beta_{c}} S_{a,c} E_{c}$
-
 where $a$ is age, $c$ the `FLCatch`, $b$ the `fwdBiol`, $F$ is the fishing mortality, $\alpha$ and $\beta$ are the catchability parameters, $B$ is the total biomass, $S$ is the gear selectivity and $E$ is the fishing effort. Note that fishing effort is set at the `FLFishery` level and each `FLCatch` of an `FLFishery` has the same fishing effort.
+-->
 
+<!--
 NOTE: THIS RELATIONSHIP IS ABOUT TO CHANGE AND INCLUDE AN ADDITIONAL $\gamma$ term.
+-->
 
-### Internal structure
+Internally, the catchability parameter, $\alpha$, is stored in the `FLCatch` object as an `FLQuant`. This means that it can vary over the year, unit, season, area and iter dimension (the first dimension is not used). For example, $\alpha$ could increase over time to represent technological creep.
+The value of $\alpha$ is recycled over the dimensions over which it does not change.
+THIS CHANGE NEEDS TO BE AFFECTED IN THE CODE
 
+The selectivity is also stored in the `FLCatch` object as an age-structured `FLQuant`.  This means that it can vary over the year, unit, season, area and iter dimension. The selectivity should be scaled between 0 and 1.
+The selectivity `FLQuant` needs to be the correct dimensions for the whole projection, i.e. there is no recycling apart from the iter dimension.
 
+Effort is stored at the `FLFishery` level so that the same effort is used for all the `FLCatch` objects in the fishery.
+It is stored as an `FLQuant` but the first dimension is not used.
+The effort`FLQuant` needs to be the correct dimensions for the whole projection, i.e. there is no recycling apart from the iter dimension.
 
+# Projecting the fisheries
 
-ADD MORE DETAILS ABOUT WHERE THE PARAMS ARE HELD AND RECYCLING ETC
+In each time step of the projection, the landings and discards numbers are updated in the `FLCatch`es of the `FLFishery` objects.
+The projection is carried out using the `project_fisheries()` method.
+Catch numbers at age in each time step are calculated for each of the `FLCatch` objects inside each of the `FLFishery` using the Baranov equation (REF).
 
+A biological stock may be fished by more than one `FLCatch`.
+The catch of one `FLCatch` from a biological stock is known as the partial catch.
+The total catch of a biological stock equals the sum of the partial catches from that stock.
 
-## Projecting the fisheries
+$C_{a,b} = pC_{a,b,c1} + pC_{a,b,c2} + ...$
 
+where $cx$ the `FLCatch`, $C$ is the total catch and $pC$ is the partial catch from each `FLCatch`. 
+Where a stock is only fished by a single `FLCatch`, the partial catch is equal to the total catch.
 
+The partial catch of a `FLCatch` from a biological stock is given as:
 
-### Calculating catches
+$pC_{a,b,c} = (pF_{a,b,c} / Z_{a,b}) * (1 - exp(-Z_{a,b})) * N_{a,b}$
 
-## Projecting the biology
+where $a$ is age, $b$ the `fwdBiol`, $c$ the `FLCatch`, $pC$ is the partial catch, $pF$ is the partial fishing mortality, $Z$ is the total mortality of the biological stock being fished (total fishing mortality of the stock plus natural mortality) and $N$ is abundance of the biological stock being fished.
 
-The biological stocks are projected one timestep by the `project_biols()` method.
-The method calculates the survivors from the previous timestep and places them in the correct position age class in the current timestep.
-Recruitment is also calculated.
+The total mortality is given as:
 
-The stocks are processed one at a time (the order in which they appear in the `biols` method).
+$Z_{a,b} = F_{a,b} + m_{a,b}$
+
+where $m$ is the natural mortality of the biological stock.
+
+$N$ and $m$ are stored in the corresponding `fwdBiol` object.
+
+Landings and discards numbers are calculated by splitting the catch numbers using the discard ratio.
+When the `FLFishery` is created in C++ from the R objects, the discard ratio is calculated from the existing landings and discards numbers in the R-based object, i.e. the future discard ratio can be set up by entering the appropriate values in the future landings and discards numbers. These values are then written over with the actual landings and discards during the projection.
+
+$DR_{a,c} = D_{a,c} / / (D_{a,c} + L_{a,c})$
+
+where $DR$ is the discard rate, $D$ is the discard numbers and $L$ is the landings numbers.
+
+In C++, the discard ratio is stored as an `FLQuant` of the `FLCatch` object.
+During a projection it is used to split the calculated catch numbers into landings and discards:
+
+$L_{a,c} = pC_{a,c} * (1 - DR_{a,c})$
+$D_{a,c} = pC_{a,c} * DR_{a,c}$
+
+There is a special case where a single `FLCatch` may catch from more than one stock (for example, where two biological stocks are considered to be a single stock by the management regime).
+In this special case the sum of the landings and discard numbers from each stock are in the `FLCatch`.
+
+# Projecting the biology
+
+The biological stocks are projected one timestep at a time by the `project_biols()` method.
+The method calculates the survivors from the previous timestep and places them in the current timestep.
+Recruitment in the current timestep is also calculated.
+
+The stocks are processed one at a time (the order in which they appear in the `biols` member).
 The stocks are independent of each other and there is no interaction between them.
 
 The basic process is:
 
-- Calculate total mortality $z$ on the stock in the previous timestep.
-- Calculate survivors for the current timestep.
+- Calculate total mortality ($Z$) on the stock in the previous timestep (see above).
+- Calculate survivors ($S$) for the current timestep.
 - Calculate recruitment for the current timestep.
 - Place survivors and recruitment in the appropriate age classes in the current timestep.
+
+## Calculating survivors
  
 The survivors, $S$, from age, $a$, at the end of a timestep (given by year, $y$ and season, $s$) are calculated as:
 
-$S_{a,y,s} = N_{a,y,s} exp(-z_{a,y,s})$
+$S_{a,y,s} = N_{a,y,s} exp(-Z_{a,y,s})$
 
-where $N$ is the population abundance. Here we calculate the survivors from the previous timestep.
+where $N$ is the population abundance.
 
-Where the survivors are placed in the current timestep depends on the season and the timing of recruitment.
+Where the survivors from the previous timestep are placed in the current timestep depends on the season and the timing of recruitment (see next section).
 
 The recruitment is always added to the first age group of the stock in the timestep in which it occurred.
 As the projection progresses, the survivors are placed in the same age group until they are a year older.
@@ -163,9 +215,13 @@ When they are a year older, the survivors are placed in the next age group.
 For example, say we have a projection with 4 seasons to a year and the stock only recruits once a year in season 3.
 Recruits enter the first age group in season 3.
 In year 1, season 4, the survivors from season 3 are placed in the same age group (i.e. the recruits from season 3 are moved to the first age group in season 4, less those that died).
-The same thing happens for seasons 1 and 2 in year 2.
-In season 3 in year 2, the survivors are placed in the next age group, i.e. the individuals are now a year older.
+The same thing happens for year 2 in seasons 1 and 2. 
+In year 2, season 3 (the recruitment season) the survivors are placed in the next age group, i.e. the individuals are now a year older.
 
+EXAMPLE?
+
+
+<!--
 ### Multiple recruitment events
 
 NOT YET IMPLEMENTED
@@ -182,25 +238,49 @@ The individuals that results from each recruitment event in a year must be store
 Each unit can only recruit once per year.
 
 SRP IS FROM ACROSS ALL UNITS
+-->
 
+## Recruitment
 
-
-
-
-
-
-# Recruitment
-
-Recruitment is calculated as part of the biology projection.
-The calculated recruitment is placed into the first age group of the `fwdBiol`.
+A stock may recruit in any timestep.
 Recruitment is calculated in every timestep. If there is no recruitment in that timestep the calculated recruitment is 0.
+The calculated recruitment is placed into the first age group of the `fwdBiol`.
+
+Recruitment is a function of the spawning reproductive potential (SRP) of the stock and a stock-recruitment function.
+The stock recruitment function and the parameters are stored in an object of class of`fwdSR`. Each `fwdBiol` has a `fwdSR`.
+
+### Stock recruitment parameters
+
+Internally, the stock recruitment parameters are stored as an `FLQuant` along the first dimension. 
+This means that the SRR parameters can be disaggregated by the *year*, *unit*, *season*, *area* and *iter* dimensions.
+In this way trends and uncertainty etc. can be added to the parameters.
+
+If the parameters are not disaggregated then they are recycled where necessary. For example, if we are running a multi year projection but the SRR parameters are not disaggregated by year, the same values are used for each year.
+
+EXAMPLE 
+
+Because of this recycling, we need to be careful to set the stock recruitment parameters to NA for the timesteps and units in which recruitment does not occur.
+For example, if we are running a model with 4 seasons in which the stock only recruits once per year, in season 2, we need to ensure that the parameters have seasons and that in seasons 1, 3 and 4 the values are set to NA.
+
+
+
+
+### Timing of recruitment
+
+The timing of recruitment is important. For example, in determining the correct age group in which to place survivors.
+The timing is determined by the stock recruitment parameters. If the value of the first parameter in a particular timestep is NA then recruitment does not happen in that timestep and the calculated recruitment value is 0.
+
+`does_recruitment_happen()`
+
+
+
+
 
 The main method is `calc_rec()` which takes the `fwdBiol` number and the `timestep`.
 AT THE MOMENT ALSO TAKES UNIT NUMBER, i.e. RECRUITMENT FOR EACH UNIT IS CALCED SEPARATELY - NEED TO FIX THIS
 
-Recruitment is a function of the spawning reproductive potential (SRP) of the stock.
+### SRP
 
-## SRP time lag
 
 Given that the age structure of the stock may not start at age 0, it necessary to calculate the SRP at the appropriate time that lead to the current recruitment.
 For example, if the first age of the stock is 1, then the current recruitment is a function of the SRP one year ago.
@@ -210,8 +290,6 @@ The returned SRP timelag depends on the first age of the stock and whether the m
 - If the first age is 0 and the model has a seasonal timestep, the timelag is 1 season i.e. the SRP comes from the previous season.
 - If the first age is 0 and the model has an annual timestep, the timelag is 0, i.e. there is no timelag and the SRP is calculated in the current timestep (it's a strange case).
 - If the first age is >1, the timelag is the product of the first age and the number of seasons in the model, i.e. the difference between the first age and age 0 in the same season (the time of spawning). Note that if the model is annual, there is 1 season.
-
-## The SRP calculation
 
 SPAWNING IS ASSUMED TO BE AN INSTANTANEOUS EVENT THAT HAPPENS AT A POINT DURING THE TIMESTEP
 
@@ -229,7 +307,7 @@ BUT WHAT IS RESULTING RECRUITMENT
 SRP can be calculated in many different ways. For example, total egg production (TEP) and spawning stock biomass (SSB)
 At the moment, only SSB is available.
 
-### SSB
+###### SSB calculation
 
 The SSB in a timestep is calculated as:
 
@@ -268,20 +346,17 @@ When the stock is fished by multiple ``FLCatch``es, the $F$ parts from each ``FL
 
 HOW ARE UNITS DEALT WITH?
 
-## Recruitment prediction
+#### Recruitment prediction
 
 Following the calculation of the SRP, the `predict_recruitment()` method is called, taking the SRP and the recruitment timestep.
 This method calculates the recruitment based on the SRP and the SRR parameters at the recruitment timestep,
 It then applies the residuals to the calculated recruitment.
 
-The SRR parameters can be disaggregated by the *year*, *unit*, *season*, *area* and *iter* dimensions.
-In this way trends and uncertainty etc. can be added to the parameters.
-
-If the parameters are not disaggregated then they are recycled where necessary. For example, if we are running a multi year projection but the SRR parameters are not disaggregated by year, the same values are used for each year.
 
 Internally, the residuals are the same size as the rest of the operating model apart from along the first dimension (which is always 1 - there is no age structure to the residuals) and the *iter* dimension which must be 1 or the same as the *iter* dimension in the operating model. The residuals are recycled along the *iter* dimension if necessary.
 For example, if the number of iterations in the operating model is 1000 and there is only iteration in the residuals, the residuals are recycled over the operating model iterations.
 
+<!--
 ## Examples
 
 We can use the built in `make_test_operatingModel3()` function to create the elements needed for a simple operating model with one fishery fishing on a single stock (all based on the `ple4` data set).
@@ -406,6 +481,8 @@ rec_cpp(om$fisheries, om$biols, om$fwc, 10)
 The SRR parameters can vary by any of the dimensions in a FLQuant (apart from the first one, which is used to store the different parameters), e.g. by year and season to model a trend.
 
 SOMETHING ON RESIDUALS AND RECYCLING TOO
+
+-->
 
 
 # Recruitment in different seasons
