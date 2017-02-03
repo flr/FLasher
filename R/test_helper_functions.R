@@ -540,25 +540,20 @@ make_test_operatingModel3 <- function(niters = 1000, sd = 0.1){
     catch.sel(catch) <- catch.sel(catch) * abs(rnorm(prod(dim(catch.sel(catch))), mean = 1, sd = sd))
     # Set the Catchability parameters so that an effort of 1 gives the current catch - make internally consistent
     # set beta to 0 for simplicity
-    catch.q(catch) <- FLPar(c(1,0.5), dimnames=list(params=c("alpha","beta"), iter = 1))
-    catch_list <- list(catch, catch)
+    #catch.q(catch) <- FLPar(c(1,0.5), dimnames=list(params=c("alpha","beta"), iter = 1))
+    catch.q(catch) <- FLPar(c(1), dimnames=list(params=c("alpha"), iter = 1))
     # Make fishery bits
-    fishery1 <- FLFishery(catch1=catch_list[[1]])
-    desc(fishery1) <- "fishery1"
-    effort(fishery1)[] <- 1
-    fishery1@hperiod[1,] <- runif(prod(dim(fishery1@hperiod)[2:6]),min=0, max=1)
-    fishery1@hperiod[2,] <- runif(prod(dim(fishery1@hperiod)[2:6]),min=fishery1@hperiod[1,], max=1)
-    fishery2 <- FLFishery(catch1=catch_list[[2]])
-    desc(fishery2) <- "fishery2"
-    effort(fishery2)[] <- 1
-    fishery2@hperiod[1,] <- runif(prod(dim(fishery2@hperiod)[2:6]),min=0, max=1)
-    fishery2@hperiod[2,] <- runif(prod(dim(fishery2@hperiod)[2:6]),min=fishery2@hperiod[1,], max=1)
-    fisheries <- FLFisheries(fishery1 = fishery1, fishery2 = fishery2)
+    fishery <- FLFishery(catch=catch)
+    desc(fishery) <- "fishery"
+    effort(fishery)[] <- 1
+    fishery@hperiod[1,] <- runif(prod(dim(fishery@hperiod)[2:6]),min=0, max=1)
+    fishery@hperiod[2,] <- runif(prod(dim(fishery@hperiod)[2:6]),min=fishery@hperiod[1,], max=1)
+    fisheries <- FLFisheries(fishery = fishery)
     fisheries@desc <- "fisheries"
     # fwdControl
     fwc <- random_fwdControl_generator(niters=niters)
     # Make the FCB matrix
-    FCB <- array(c(1,2,1,1,1,1), dim=c(2,3))
+    FCB <- array(c(1,1,1), dim=c(1,3))
     colnames(FCB) <- c("F","C","B")
     fwc@FCB <- FCB
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))

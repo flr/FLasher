@@ -30,7 +30,6 @@ opts_chunk$set(dev='png', cache=FALSE, fig.width=5, fig.height=4.5, tidy=TRUE, d
 options(width=60)
 ```
 
-[//]: # COMMENT
 
 # Introduction
 
@@ -38,6 +37,18 @@ This document focuses on the details of the projection methods of the *FLasher* 
 Particular attention is paid to the `operatingModel` class, and how the components of an `operatingModel` object (`FLFisheries`, `fwdBiols` etc.) interact.
 
 Details on how the basic C++ classes are implemented and used can be found in the *FLCpp* vignette.
+
+# Example objects
+
+We need some simple objects to demonstrate the functionality.
+
+MOVE DOWN TO WHERE FIRST USED
+
+```{r, demoobjects}
+
+# A simple operating model
+om3 <- make_test_operatingModel3(niters = 100, sd = 0.1)
+```
 
 # The `operatingModel` class
 
@@ -99,7 +110,7 @@ As such, it is a key metric of the model.
 Fishing mortality (F) is an age-structured metric that represents the impact of fishing on the stock.
 Inside *FLasher* it is the result of the interaction between an `FLCatch` and an `fwdBiol` object.
 
-A `fwdBiol` can be fished by multiple `FLCatch`es.
+As mentioned above, a `fwdBiol` can be fished by multiple `FLCatch`es.
 INSERT DIAGRAM OF MULTIPLE CATCHES ON A STOCK
 
 The fishing mortality imposed on a `fwdBiol` from a single `FLCatch` is known as the partial fishing mortality.
@@ -111,7 +122,9 @@ where $a$ is age, $b$ the `fwdBiol`, $c$ the `FLCatch`, $f$ is the `FLFishery` t
 $\alpha$ can be set so that a particular effort and selectivity result in the desired F.
 Note that fishing effort is set at the `FLFishery` level and each `FLCatch` of an `FLFishery` has the same fishing effort.
 
-The total fishing mortality imposed on a stock from all the `FLCatches` that fish it is the sum of the partial fishing mortality.
+THIS CHANGE NEEDS TO BE AFFECTED IN THE CODE
+
+The total fishing mortality imposed on a stock from all the `FLCatches` that fish it is the sum of the partial fishing mortalities:
 
 $F_{a,b} = pF_{a,b,c1} + pF_{a,b,c2} + ...$
 
@@ -127,8 +140,7 @@ NOTE: THIS RELATIONSHIP IS ABOUT TO CHANGE AND INCLUDE AN ADDITIONAL $\gamma$ te
 -->
 
 Internally, the catchability parameter, $\alpha$, is stored in the `FLCatch` object as an `FLQuant`. This means that it can vary over the year, unit, season, area and iter dimension (the first dimension is not used). For example, $\alpha$ could increase over time to represent technological creep.
-The value of $\alpha$ is recycled over the dimensions over which it does not change.
-THIS CHANGE NEEDS TO BE AFFECTED IN THE CODE
+The value of $\alpha$ is recycled over the dimensions over which it does not change i.e. if $\alpha$ does not change over any dimension then it is only necessary to set a single value in the `FLQuant`(see example in section \ref{sec:recycle_q}).
 
 The selectivity is also stored in the `FLCatch` object as an age-structured `FLQuant`.  This means that it can vary over the year, unit, season, area and iter dimension. The selectivity should be scaled between 0 and 1.
 The selectivity `FLQuant` needs to be the correct dimensions for the whole projection, i.e. there is no recycling apart from the iter dimension.
@@ -240,6 +252,31 @@ Each unit can only recruit once per year.
 SRP IS FROM ACROSS ALL UNITS
 -->
 
+
+# Examples
+
+## Recycling catchability parameter $\alpha$
+\label{sec:recycle_q}
+
+In this example we show how the catchability is recycled in the FLasher C++ code.
+An example `FLCatch` object is made with a single value of $\alpha$.
+Internally, this single value is recycled over all dimensions as necessary.
+
+```{r, recycle_alpha}
+# Get an FLCatch from the simple operating model
+catch1 <- om3$fisheries[["fishery"]][["catch"]]
+# Look at the catchability parameters
+catch.q(catch1)
+dim(catch.q(catch1))
+# Call the C++ method to access years 1 to 4 and iters 1 to 5 of alpha
+recycled_q <- test_FLCatchAD_catch_q_params_subset(catch1, c(1,1,1,1,1,1), c(1,4,1,1,1,5))
+is(recycled_q)
+dim(recycled_q)
+# Note that dimnames have not been set - that is OK as it is used internally
+recycled_q
+```
+
+<!--
 ## Recruitment
 
 A stock may recruit in any timestep.
@@ -357,28 +394,30 @@ Internally, the residuals are the same size as the rest of the operating model a
 For example, if the number of iterations in the operating model is 1000 and there is only iteration in the residuals, the residuals are recycled over the operating model iterations.
 
 <!--
-## Examples
-
-We can use the built in `make_test_operatingModel3()` function to create the elements needed for a simple operating model with one fishery fishing on a single stock (all based on the `ple4` data set).
-
-```{r makeOM3}
-niters <- 10
-om <- make_test_operatingModel3(niters=niters)
-```
-
+### Examples
+#
+#We can use the built in `make_test_operatingModel3()` function to create the elements needed for a simple operating model with one fishery fishing on a single stock (all based on the `ple4` data set).
+#
+#```{r makeOM3}
+#niters <- 10
+#om <- make_test_operatingModel3(niters=niters)
+#```
+#
 ### SSB calculation
+
+<!--
 
 At the moment the `srp()` method calculates the SSB.
 Here we define a function in C++ that exposes this method to R and compile using `cppFunction()` from *Rcpp*.
 
 ```{r makeSRPtestfunc}
-source <- '
-FLQuantAD ssb_cpp(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-    operatingModel om(flfs, biols, ctrl);
-    return om.srp(1, indices_min, indices_max);
-}
-'
-cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+#source <- '
+#FLQuantAD ssb_cpp(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+#    operatingModel om(flfs, biols, ctrl);
+#    return om.srp(1, indices_min, indices_max);
+#}
+#'
+#cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
 ```
 
 We calculate the SSB with differing values in the `spwn` and `hperiod` slots to demonstrate the impact of the timing of fishing and the timing of spawning.
@@ -388,36 +427,38 @@ For demonstration purposes, we only calculate the SSB for the first year and ite
 In this first example, all the fishing occurs after spawning has occured. We set the `spwn` slot to 0 (so spawning occurs at the beginning of the timestep) and the `hperiod` to 1.0 (a pulse fishery at the end of the timestep).
 
 ```{r spwn_before_fish}
-spwn(om$biols[[1]][[1]])[] <- 0.0
-hperiod(om$fisheries[[1]])["start",] <- 1.0
-hperiod(om$fisheries[[1]])["end",] <- 1.0
-ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
+#spwn(om$biols[[1]][[1]])[] <- 0.0
+#hperiod(om$fisheries[[1]])["start",] <- 1.0
+#hperiod(om$fisheries[[1]])["end",] <- 1.0
+#ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
 ```
 
 If spawning happens after the fishing has occured, we get a lower SSB (the stock will also have experienced a whole timesteps worth of natural mortality too):
 ```{r spwn_after_fish}
-spwn(om$biols[[1]][[1]])[] <- 1.0
-hperiod(om$fisheries[[1]])["start",] <- 0.0
-hperiod(om$fisheries[[1]])["end",] <- 0.0
-ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
+#spwn(om$biols[[1]][[1]])[] <- 1.0
+#hperiod(om$fisheries[[1]])["start",] <- 0.0
+#hperiod(om$fisheries[[1]])["end",] <- 0.0
+#ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
 ```
 
 If spawning happens during the fishing period, the result is somewhere in between:
 ```{r spwn_during_fish}
-spwn(om$biols[[1]][[1]])[] <- 0.5 
-hperiod(om$fisheries[[1]])["start",] <- 0.3
-hperiod(om$fisheries[[1]])["end",] <- 0.6
-ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
+#spwn(om$biols[[1]][[1]])[] <- 0.5 
+#hperiod(om$fisheries[[1]])["start",] <- 0.3
+#hperiod(om$fisheries[[1]])["end",] <- 0.6
+#ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
 ```
 If no spawning happens in that timestep we set the `spwn` slot to NA.
 This results in a SSB of NA:
 SHOULD BE 0?
 
 ```{r NAspwn}
-spwn(om$biols[[1]][[1]])[] <- NA
-ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
+#spwn(om$biols[[1]][[1]])[] <- NA
+#ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
 ```
+-->
 
+<!--
 ### Calculating recruitment
 
 Here we demonstrate how the recruitment is calculated.
@@ -425,8 +466,8 @@ We again use the simple operating model with a single catch and fishery.
 The operating model has iterations but as we set the `sd`argument to 0, each iteration is the same.
 
 ```{r makeOM3_again}
-niters <- 10
-om <- make_test_operatingModel3(niters=niters, sd = 0.0)
+#niters <- 10
+#om <- make_test_operatingModel3(niters=niters, sd = 0.0)
 ```
 
 FIX THIS WHEN SPWN = NA
@@ -434,48 +475,48 @@ FIX THIS WHEN SPWN = NA
 To keep things simple, we set spawning to occur at the start of the timestep, before the fishing period.
 
 ```{r spwn_before_fish_again}
-spwn(om$biols[[1]][[1]])[] <- 0.0 
-# spwn(om$biols[[1]][[1]])[] <- NA 
-hperiod(om$fisheries[[1]])["start",] <- 1.0 
-hperiod(om$fisheries[[1]])["end",] <- 1.0
+#spwn(om$biols[[1]][[1]])[] <- 0.0 
+## spwn(om$biols[[1]][[1]])[] <- NA 
+#hperiod(om$fisheries[[1]])["start",] <- 1.0 
+#hperiod(om$fisheries[[1]])["end",] <- 1.0
 ```
 
 We write a function that exposes the C++ ``calc_rec()`` method to R:
 
 ```{r makeRectestfunc}
-source <- '
-std::vector<double> rec_cpp(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, unsigned int timestep){
-    operatingModel om(flfs, biols, ctrl);
-    std::vector<adouble> rec_ad = om.calc_rec(1, 1, timestep);
-    std::vector<double> rec(rec_ad.size());
-    std::transform(rec_ad.begin(), rec_ad.end(), rec.begin(), [](adouble x) {return Value(x);});
-    return rec;
-}
-'
-cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+#source <- '
+#std::vector<double> rec_cpp(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, unsigned int timestep){
+#    operatingModel om(flfs, biols, ctrl);
+#    std::vector<adouble> rec_ad = om.calc_rec(1, 1, timestep);
+#    std::vector<double> rec(rec_ad.size());
+#    std::transform(rec_ad.begin(), rec_ad.end(), rec.begin(), [](adouble x) {return Value(x);});
+#    return rec;
+#}
+#'
+#cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
 ```
 
 In the default example the SRR parameters do not have a time structure, the values are recycled and the same value is used for all years and seasons.
 Similarly, here there are also no iterations and the values are recycled over all iterations.
 
 ```{r srr_params}
-om$biols[[1]]$srr_params
+#om$biols[[1]]$srr_params
 ```
 
 We calculate the recruitment in year 10. We have iterations but as the iterations are all the same, there is no variability in the calculated recruitment:
 
 ```{r rec1}
-year <- 10
-rec_cpp(om$fisheries, om$biols, om$fwc, 10)
+#year <- 10
+#rec_cpp(om$fisheries, om$biols, om$fwc, 10)
 ```
 
 We can add iterations to the SRR paramers. Here we just add some random noise. This results in random noise in the predicted recruitment:
 
 ```{r srr_params_iters}
-srp <- propagate(om$biols[[1]]$srr_params, niters)
-srp <- srp * rlnorm(srp, mean=0, sd = 0.1)
-om$biols[[1]]$srr_params <- srp
-rec_cpp(om$fisheries, om$biols, om$fwc, 10)
+#srp <- propagate(om$biols[[1]]$srr_params, niters)
+#srp <- srp * rlnorm(srp, mean=0, sd = 0.1)
+#om$biols[[1]]$srr_params <- srp
+#rec_cpp(om$fisheries, om$biols, om$fwc, 10)
 ```
 
 The SRR parameters can vary by any of the dimensions in a FLQuant (apart from the first one, which is used to store the different parameters), e.g. by year and season to model a trend.
