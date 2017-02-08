@@ -57,7 +57,7 @@ FLQuant_base<T>::FLQuant_base(SEXP flq_sexp){
 template <typename T>
 //FLQuant_base<T>::FLQuant_base(const unsigned int nquant, const unsigned int nyear, const unsigned int nunit, const unsigned int nseason, const unsigned int narea, const unsigned int niter, const T value){
 FLQuant_base<T>::FLQuant_base(const unsigned int nquant, const unsigned int nyear, const unsigned int nunit, const unsigned int nseason, const unsigned int narea, const unsigned int niter, const T value) : FLQuant_base<T>({nquant, nyear, nunit, nseason, narea, niter}, value) {
-    Rprintf("In 6 int constructor\n");
+    // Nothing to do
 }
 
 /*! \brief Creates an FLQuant of a certain size filled with 0
@@ -69,44 +69,26 @@ FLQuant_base<T>::FLQuant_base(const unsigned int nquant, const unsigned int nyea
 template <typename T>
 //FLQuant_base<T>::FLQuant_base(const std::vector<unsigned int> dims, const T value) : FLQuant_base<T>(dims[0], dims[1], dims[2], dims[3], dims[4], dims[5], value) { // Call other constructor
 FLQuant_base<T>::FLQuant_base(const std::vector<unsigned int> dims, const T value) { // Call other constructor
-
-    Rprintf("In vector constructor\n");
-
     if (dims.size() != 6){
         Rprintf("Problem\n");
         Rcpp::stop("In FLQuant integer vector constructor. Vector not of length 6.\n");
     }
 
 	units = std::string(); // Empty string - just ""
-
-//    //dim = {dims[0], nyear, nunit, nseason, narea, niter};
-//    dim = dims;
-//    data = std::vector<T>(dims[0] * dims[1] * dims[2] * dims[3] * dims[4] * dims[5], value);
-//    // How to fill dimnames up appropriately?
-//    // Just of the right size at the moment.
-//    // Could use ::create to pass in actual characters, but then do we want just 1:nage, 1:nyear etc?
-//    dimnames = Rcpp::List::create(
-//            Rcpp::Named("quant", Rcpp::CharacterVector(dims[0])),
-//            Rcpp::Named("year", Rcpp::CharacterVector(dims[1])),
-//            Rcpp::Named("unit", Rcpp::CharacterVector(dims[2])),
-//            Rcpp::Named("season", Rcpp::CharacterVector(dims[3])),
-//            Rcpp::Named("area", Rcpp::CharacterVector(dims[4])),
-//            Rcpp::Named("iter", Rcpp::CharacterVector(dims[5])));
-
-
-    dim = {1, 1, 1, 1, 1, 1};
-    data = std::vector<T>(1, value);
+    //dim = {dims[0], nyear, nunit, nseason, narea, niter};
+    
+    dim = dims;
+    data = std::vector<T>(dims[0] * dims[1] * dims[2] * dims[3] * dims[4] * dims[5], value);
+    // How to fill dimnames up appropriately?
+    // Just of the right size at the moment.
+    // Could use ::create to pass in actual characters, but then do we want just 1:nage, 1:nyear etc?
     dimnames = Rcpp::List::create(
-            Rcpp::Named("quant", Rcpp::CharacterVector(1)),
-            Rcpp::Named("year", Rcpp::CharacterVector(1)),
-            Rcpp::Named("unit", Rcpp::CharacterVector(1)),
-            Rcpp::Named("season", Rcpp::CharacterVector(1)),
-            Rcpp::Named("area", Rcpp::CharacterVector(1)),
-            Rcpp::Named("iter", Rcpp::CharacterVector(1)));
-
-
-
-
+            Rcpp::Named("quant", Rcpp::CharacterVector(dims[0])),
+            Rcpp::Named("year", Rcpp::CharacterVector(dims[1])),
+            Rcpp::Named("unit", Rcpp::CharacterVector(dims[2])),
+            Rcpp::Named("season", Rcpp::CharacterVector(dims[3])),
+            Rcpp::Named("area", Rcpp::CharacterVector(dims[4])),
+            Rcpp::Named("iter", Rcpp::CharacterVector(dims[5])));
 }
 
 /*! \brief Used as generic intrusive wrap to return FLQuant to R
