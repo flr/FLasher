@@ -194,6 +194,17 @@ $D_{a,c} = pC_{a,c} * DR_{a,c}$
 There is a special case where a single `FLCatch` may catch from more than one stock (for example, where two biological stocks are considered to be a single stock by the management regime).
 In this special case the sum of the landings and discard numbers from each stock are in the `FLCatch`.
 
+## Differences with FLash concerning catch weights at age
+
+There is a difference between *FLasher* and *FLash* concerning the calculation of total catch biomass.
+In *FLasher* and *FLash* catch numbers at age are the sum of the landing and discards numbers at age.
+In *FLash* the mean catch weights at age are fixed in advance in using the `catch.wt` slot.
+In *FLasher* the mean catch weights at age are calculated using the landings and discards numbers and weights at age.
+This means the that mean catch weights at age in *FLasher* are not fixed in advance but will change according to the projected landings and discards numbers.
+The result is that the mean catch weights at age will differ between *FLash* and *FLasher*.
+This difference is most noticeable when a total catch is set as a target. Both *FLash* and *FLasher* will hit the same total catch weight target but because the mean catch weights at age are different, the catch numbers at age will be different.
+
+
 # Projecting the biology
 
 The biological stocks are projected one timestep at a time by the `project_biols()` method.
@@ -212,21 +223,22 @@ The basic process is:
 
 ## Calculating survivors
  
-The survivors, $S$, from age, $a$, at the end of a timestep (given by year, $y$ and season, $s$) are calculated as:
+The abundances in a `fwdBiol` class represent the abundance at the start of a timestep.
+The survivors at the end of a timestep, $S$, from age, $a$, at the end of a timestep (given by year, $y$ and season, $s$) are calculated as:
 
 $S_{a,y,s} = N_{a,y,s} exp(-Z_{a,y,s})$
 
 where $N$ is the population abundance.
 
-Where the survivors from the previous timestep are placed in the current timestep depends on the season and the timing of recruitment (see next section).
-
+The survivors are put into the abundances in the next timestep.
+The age group that survivors are placed in depends on the timestep and the timing of recruitment.
 The recruitment is always added to the first age group of the stock in the timestep in which it occurred.
-As the projection progresses, the survivors are placed in the same age group until they are a year older.
+As the projection progresses, the survivors at the end of a timestep are placed in the same age group in the next timestep until they are a year older.
 When they are a year older, the survivors are placed in the next age group.
 
 For example, say we have a projection with 4 seasons to a year and the stock only recruits once a year in season 3.
 Recruits enter the first age group in season 3.
-In year 1, season 4, the survivors from season 3 are placed in the same age group (i.e. the recruits from season 3 are moved to the first age group in season 4, less those that died).
+In year 1, season 4, the survivors from season 3 are placed in the same age group (e.g. the recruits from season 3 are moved to the first age group in season 4, less those that died).
 The same thing happens for year 2 in seasons 1 and 2. 
 In year 2, season 3 (the recruitment season) the survivors are placed in the next age group, i.e. the individuals are now a year older.
 
