@@ -644,7 +644,7 @@ void operatingModel::project_fisheries(const int timestep){
  */
 Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters){
 
-    bool verbose = true;
+    bool verbose = false;
     if(verbose){
         Rprintf("Running\n");
     }
@@ -803,7 +803,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
  * \param indices_max The maximum range of the returned FLQuant. Of length 6 even if target does need all of them (e.g. catch does not need the first dimension).
  */
 FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) {
-    bool verbose = true;
+    bool verbose = false;
     // Indices must be of length 6, even if not all of them are needed
     if(indices_min.size() != 6 | indices_max.size() != 6){
         Rcpp::stop("In operatingModel eval_om. indices_min and max must be of length 6 even if not all of the dimensions are used.\n");
@@ -814,6 +814,8 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         Rcpp::stop("In operatingModel::eval_om. If you specify a catch_no, you must also specify a fishery_no.\n");
     }
     FLQuantAD out;
+    //Rprintf("In eval_om. fishery_no: %i, catch_no: %i, biol_no: %i\n", fishery_no, catch_no, biol_no);
+
     switch(target_type){
         case target_revenue: {
             // Revenue is not age structured - sums over all ages
@@ -826,11 +828,11 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             }
             // Get revenue from a FLFishery (needs only FLFishery)
             if (Rcpp::IntegerVector::is_na(catch_no)){
-                Rprintf("Revenue from a FLFishery\n");
+                //Rprintf("Revenue from a FLFishery\n");
                 out = fisheries(fishery_no).revenue(indices_min5, indices_max5);
             }
             else {
-                Rprintf("Revenue from an FLCatch\n");
+                //Rprintf("Revenue from an FLCatch\n");
                 out = fisheries(fishery_no, catch_no).revenue(indices_min5, indices_max5);
             }
         break;

@@ -50,7 +50,7 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
     
     bool verbose = false;
 
-    Rprintf("indep.size(): %i niter: %i, nsim_targets: %i\n",indep.size(), niter, nsim_targets);
+    //Rprintf("indep.size(): %i niter: %i, nsim_targets: %i\n",indep.size(), niter, nsim_targets);
     if(verbose){Rprintf("\nIn Newton Raphson\n");}
     // Check that product of niter and nsim_targets = length of indep (otherwise something has gone wrong)
     if (indep.size() != (niter * nsim_targets)){
