@@ -5,6 +5,7 @@
 
 #include "../inst/include/fwdBiol.h"
 
+
 /*-------------------------------------------------*/
 // Templated class
 
