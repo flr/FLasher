@@ -70,13 +70,9 @@ template <typename T>
 //FLQuant_base<T>::FLQuant_base(const std::vector<unsigned int> dims, const T value) : FLQuant_base<T>(dims[0], dims[1], dims[2], dims[3], dims[4], dims[5], value) { // Call other constructor
 FLQuant_base<T>::FLQuant_base(const std::vector<unsigned int> dims, const T value) { // Call other constructor
     if (dims.size() != 6){
-        Rprintf("Problem\n");
         Rcpp::stop("In FLQuant integer vector constructor. Vector not of length 6.\n");
     }
-
 	units = std::string(); // Empty string - just ""
-    //dim = {dims[0], nyear, nunit, nseason, narea, niter};
-    
     dim = dims;
     data = std::vector<T>(dims[0] * dims[1] * dims[2] * dims[3] * dims[4] * dims[5], value);
     // How to fill dimnames up appropriately?
