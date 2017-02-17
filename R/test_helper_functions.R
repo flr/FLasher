@@ -425,7 +425,7 @@ make_test_operatingModel1 <- function(niters = 1000){
 
 #' Create a simple annual test operating model
 #'
-#' Creates a test operating model for testing FLFishery / FLCatch / FLBiolcpp interactions.
+#' Creates an annual test operating model for testing FLFishery / FLCatch / FLBiolcpp interactions.
 #' Two FLFishery objects with 1 FLCatch objects each fishing on the same, single FLBiolcpp.
 #' All objects are based on ple4.
 #' @param niters Number of iterations.
@@ -557,6 +557,115 @@ make_test_operatingModel3 <- function(niters = 1000, sd = 0.1){
     colnames(FCB) <- c("F","C","B")
     fwc@FCB <- FCB
     return(list(fisheries = fisheries, biols = biols, fwc = fwc))
+}
+
+#' Make a test operating model
+#'
+#' Number of fisheries, catches and biols are taken from the FCB argument.
+#' All objects based on ple4 FLStock object.
+#' @param FCB The FCB matrix
+#' @param nseasons The number of seasons
+#' @param spawning_seasons A vector of seasons in which spawning occurs (1 - 4)
+#' @param recruitment_age The age of recruitment to the fishery
+#' @param niters The number of iterations. 
+#' @param sd The standard deviation when applying random lognormal noise to some of the slots.
+#'
+#' @export
+#' @return A list of objects for sending to C++
+make_test_operatingModel <- function(FCB, nseasons = 1, spawning_seasons = 1, recruitment_age = 1, niters = 1000, sd = 0.1){
+
+#FCB <- matrix(1, nrow=1, ncol=3, dimnames=list(link=1, object = c("F", "C", "B")))
+#
+#FCB <- matrix(c(1,1,1,2,1,2), nrow=2, ncol=3,  dimnames=list(link=1:2, object = c("F", "C", "B")))
+
+    # Interrogate FCB to get number of biols, fisheries and catches
+    nbiols <- max(FCB[,"B"])
+    nfisheries <- max(FCB[,"F"])
+
+    # Get the right dimensions for the FLQuant slots
+    data(ple4)
+    # Could base all this on LH: pass in Linf / K / t0 and LW (a and b) to get weights and m
+    dmns <- dimnames(stock.n(ple4))
+    dmns$season <- 1:nseasons
+    dmns$unit <- 1:spawning_seasons # Each spawning season gets its own unit
+    dmns$age <- as.character(recruitment_age:(recruitment_age + length(dmns$age) - 1))
+    dmns$iter <- niters
+    seed_flq <- FLQuant(NA, dimnames=dmns)
+
+    # Make the biols
+    # Same SRR for all
+    srr <- fmle(as.FLSR(ple4, model="bevholt"),control = list(trace=0))
+    res <- window(exp(residuals(srr)), start = 1957)
+    res[,"1957"] <- res[,"1958"]
+    res <- propagate(res, niters)
+    biols <- list()
+    for (bno in 1:nbiols){
+        newb <- FLBiol(n=seed_flq)
+        n(newb)[] <- stock.n(ple4)
+        n(newb) <- n(newb) * abs(rnorm(prod(dim(n(newb))), mean = 1, sd = sd))
+        m(newb)[] <- m(ple4)
+        m(newb) <- m(newb) * abs(rnorm(prod(dim(m(newb))), mean = 1, sd = sd))
+        wt(newb) <- stock.wt(ple4)
+        wt(newb) <- wt(newb) * abs(rnorm(prod(dim(wt(newb))), mean = 1, sd = sd))
+        mat(newb) <- mat(ple4)
+        # fec - what does this do?
+        # spwn - spawns at beginning of the season
+        spwn(newb)[,,,spawning_seasons,] <- 0
+        newb <- as(newb, "FLBiolcpp")
+        name(newb) <- paste("biol", bno, sep="")
+        desc(newb) <- paste("biol", bno, sep="")
+        # Add noise to residuals
+        res_temp <- res * abs(rnorm(prod(dim(res)), mean = 1, sd = sd))
+        # Make the list of FLBiolcpp bits
+        biol_bits <- list(biol = newb, srr_model_name = "bevholt", srr_params = as(params(srr), "FLQuant"), srr_residuals = res_temp, srr_residuals_mult = TRUE)
+        biols[[paste("biol", bno, sep="")]] <- biol_bits
+    }
+
+    # Make the fisheries
+    for (fno in 1:nfisheries){
+        # Make the catches of the fishery
+        ncatches <- max(FCB[FCB[,"F"]==1,"C"]) 
+        catches <- list()
+        for (cno in 1:ncatches){
+            newc <- FLCatch(landings.n=seed_flq)
+            name(newc) <- paste("catch", fno, cno, sep="")
+            desc(newc) <- paste("catch", fno, cno, sep="")
+            landings.n(newc)[] <- landings.n(ple4)
+            landings.n(newc) <- landings.n(newc) * abs(rnorm(prod(dim(landings.n(newc))), mean = 1, sd = sd))
+            landings.wt(newc)[] <- landings.wt(ple4)
+            landings.wt(newc) <- landings.wt(newc) * abs(rnorm(prod(dim(landings.wt(newc))), mean = 1, sd = sd))
+            discards.n(newc)[] <- discards.n(ple4)
+            discards.n(newc) <- discards.n(newc) * abs(rnorm(prod(dim(discards.n(newc))), mean = 1, sd = sd))
+            discards.wt(newc)[] <- discards.wt(ple4)
+            discards.wt(newc) <- discards.wt(newc) * abs(rnorm(prod(dim(discards.wt(newc))), mean = 1, sd = sd))
+            # selectivity based on harvest then scaled so max is 1
+            catch.sel(newc)[] <- harvest(ple4)
+            catch.sel(newc) <- catch.sel(newc) * abs(rnorm(prod(dim(catch.sel(newc))), mean = 1, sd = sd))
+            catch.sel(newc)[] <-
+               test <-  apply(catch.sel(newc), 2:6, function(x) x / max(x))
+            # no beta parameter atm
+            catch.q(newc) <- FLPar(c(1), dimnames=list(params=c("alpha"), iter = 1))
+            # price?
+            catches[[paste("catch", cno, sep="")]] <- newc
+        }
+
+
+
+
+
+#    # Make fishery bits
+#    fishery <- FLFishery(catch=catch)
+#    desc(fishery) <- "fishery"
+#    effort(fishery)[] <- 1
+#    fishery@hperiod[1,] <- runif(prod(dim(fishery@hperiod)[2:6]),min=0, max=1)
+#    fishery@hperiod[2,] <- runif(prod(dim(fishery@hperiod)[2:6]),min=fishery@hperiod[1,], max=1)
+#    fisheries <- FLFisheries(fishery = fishery)
+#    fisheries@desc <- "fisheries"
+
+    }
+
+
+
 }
 
 #' Create an operating model based on Indian Ocean skipjack tuna
