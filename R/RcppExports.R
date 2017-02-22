@@ -1877,6 +1877,10 @@ test_operatingModel_SRP_FLQ_subset <- function(flfs, biols, ctrl, biol_no, indic
     .Call('FLasher_test_operatingModel_SRP_FLQ_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
 }
 
+test_operatingModel_total_SRP_FLQ_subset <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_total_SRP_FLQ_subset', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
 test_operatingModel_calc_rec <- function(flfs, biols, ctrl, biol_no, unit, rec_timestep) {
     .Call('FLasher_test_operatingModel_calc_rec', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, unit, rec_timestep)
 }

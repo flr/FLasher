@@ -44,6 +44,12 @@ FLQuantAD test_operatingModel_SRP_FLQ_subset(FLFisheriesAD flfs, fwdBiolsAD biol
 }
 
 // [[Rcpp::export]]
+FLQuantAD test_operatingModel_total_SRP_FLQ_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    return om.total_srp(biol_no, indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
 std::vector<double> test_operatingModel_calc_rec(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const int unit, const int rec_timestep){
     operatingModel om(flfs, biols, ctrl);
     std::vector<adouble> out_ad = om.calc_rec(biol_no, unit, rec_timestep);

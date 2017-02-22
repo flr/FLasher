@@ -149,17 +149,37 @@ unsigned int operatingModel::get_niter() const{
     return fisheries(1).effort().get_niter();
 }
 
-/*! \brief Calculates the spawning recruitment potential of a biol at the time of spawning
+/*! \brief Calculates the total spawning recruitment potential of a biol at the time of spawning
  *
  * Calculated as SSB: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
  * where the natural mortality m is assumed to be constant over the timestep
- * and Fprespwn is how much fishing mortality happened before spawning
+ * and Fprespwn is how much fishing mortality happened before spawning.
+ * The SRP is summed over all units 
+ * \param biol_no The position of the biol in the biols list (starting at 1)
+ * \param indices_min The minimum indices: year, unit, season, area, iter (length 5).
+ * \param indices_max The maximum indices: year, unit, season, area, iter (length 5).
+ */
+FLQuantAD operatingModel::total_srp(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+    if (indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel::total_srp subsetter. Indices not of length 5 (no age index)\n");
+    }
+    FLQuantAD usrp = srp(biol_no, indices_min, indices_max);
+    // Sum over units
+    FLQuantAD total_srp = unit_sum(usrp);
+    return total_srp;
+}
+
+/*! \brief Calculates the spawning recruitment potential of each unit a biol at the time of spawning
+ *
+ * Calculated as SSB: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
+ * where the natural mortality m is assumed to be constant over the timestep
+ * and Fprespwn is how much fishing mortality happened before spawning.
+ * Each unit is kept separate.
  * \param biol_no The position of the biol in the biols list (starting at 1)
  * \param indices_min The minimum indices: year, unit etc (length 5)
  * \param indices_max The maximum indices: year, unit etc (length 5)
  */
 FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
-    //Rprintf("Getting SRP\n");
     // Check indices_min and indices_max are of length 5
     if (indices_min.size() != 5 | indices_max.size() != 5){
         Rcpp::stop("In operatingModel::srp subsetter. Indices not of length 5\n");

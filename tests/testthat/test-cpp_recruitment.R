@@ -98,6 +98,12 @@ test_that("operatingModel disaggregated srp methods",{
     indices_min <- round(runif(6,1,indices_max))
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
     expect_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
+    # Total full
+    srp_out <- test_operatingModel_total_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, f_indices_min[-1], f_indices_max[-1])
+    expect_FLQuant_equal(apply(srp_in, c(1,2,4,5,6), sum, na.rm=TRUE), srp_out)
+    # Total subset
+    srp_out <- test_operatingModel_total_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
+    expect_FLQuant_equal(apply(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], c(1,2,4,5,6), sum, na.rm=TRUE), srp_out)
 
     # Biol 2 - fished by two fisheries
     biol_no <- 2
@@ -122,6 +128,12 @@ test_that("operatingModel disaggregated srp methods",{
     indices_min <- round(runif(6,1,indices_max))
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
     expect_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
+    # Total full
+    srp_out <- test_operatingModel_total_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, f_indices_min[-1], f_indices_max[-1])
+    expect_FLQuant_equal(apply(srp_in, c(1,2,4,5,6), sum, na.rm=TRUE), srp_out)
+    # Total subset
+    srp_out <- test_operatingModel_total_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
+    expect_FLQuant_equal(apply(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], c(1,2,4,5,6), sum, na.rm=TRUE), srp_out)
 
     # Biol 3
     biol_no <- 3
@@ -143,6 +155,13 @@ test_that("operatingModel disaggregated srp methods",{
     indices_min <- round(runif(6,1,indices_max))
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
     expect_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
+    # Total full
+    srp_out <- test_operatingModel_total_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, f_indices_min[-1], f_indices_max[-1])
+    expect_FLQuant_equal(apply(srp_in, c(1,2,4,5,6), sum, na.rm=TRUE), srp_out)
+    # Total subset
+    srp_out <- test_operatingModel_total_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
+    expect_FLQuant_equal(apply(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], c(1,2,4,5,6), sum, na.rm=TRUE), srp_out)
+
     # Biol 4
     biol_no <- 4
     fishery_no <- 2
@@ -163,6 +182,13 @@ test_that("operatingModel disaggregated srp methods",{
     indices_min <- round(runif(6,1,indices_max))
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
     expect_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
+    # Total full
+    srp_out <- test_operatingModel_total_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, f_indices_min[-1], f_indices_max[-1])
+    expect_FLQuant_equal(apply(srp_in, c(1,2,4,5,6), sum, na.rm=TRUE), srp_out)
+    # Total subset
+    srp_out <- test_operatingModel_total_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
+    expect_FLQuant_equal(apply(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], c(1,2,4,5,6), sum, na.rm=TRUE), srp_out)
+
     # Biol 5 - no fishing
     biol_no <- 5
     dim <- dim(om[["biols"]][[biol_no]][["biol"]]@n)
@@ -179,6 +205,12 @@ test_that("operatingModel disaggregated srp methods",{
     indices_min <- round(runif(6,1,indices_max))
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
     expect_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
+    # Total full
+    srp_out <- test_operatingModel_total_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, f_indices_min[-1], f_indices_max[-1])
+    expect_FLQuant_equal(apply(srp_in, c(1,2,4,5,6), sum, na.rm=TRUE), srp_out)
+    # Total subset
+    srp_out <- test_operatingModel_total_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
+    expect_FLQuant_equal(apply(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], c(1,2,4,5,6), sum, na.rm=TRUE), srp_out)
 })
 
 
