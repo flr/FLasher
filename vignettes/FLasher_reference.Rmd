@@ -244,6 +244,84 @@ In year 2, season 3 (the recruitment season) the survivors are placed in the nex
 
 EXAMPLE?
 
+# Recruitment
+
+Recruitment is one of the most important processes in the dynamics of the biology as it drives the productivity.
+It is also a source of great uncertainty and can be strongly affected by external drivers such as environmental conditions.
+
+In *Flasher*, calculating recruitment has two main stages:
+
+1. Calculating the Stock Recruitment Potential (SRP)
+2. Calculating the recruitment from the SRP: $R = f(SRP)$
+
+The recruitment of each unit of a `fwdBiol` is calculated separately and may have different stock recruitment parameters.
+However, the SRP that results in the recruitment is the total SRP across all units, i.e. the SRP of each individual unit is not considered only the total.
+
+## SRP
+
+The SRP represents the total spawning potential of the stock at the time of spawning.
+
+The total SRP of a `fwdBiol` in a timestep is given by the sum of the SRPs of each unit.
+
+$SRP_{y,s} = \sum_{u=1}^{U}SRP_{y,s,u}$
+
+where $u$ is the unit where $U$ the total number of units.
+
+There are several possible ways of calculating SRP, e.g. spawning stock biomass (SSB), egg production etc.
+At the moment *Flasher* only uses SSB but it may be possible to include others in the future.
+
+The SSB of a unit in a timestep is given by:
+
+$SSB_{y,s,u} = \sum_{a=1}^{A} N_{a,y,s,u} Mat_{a,y,s,u} Wt_{a,y,s,u} exp(-Zprespwn_{a,y,s,u})$
+
+Where $A$ is the number of ages in the stock, $Mat$ is the proportion mature (the `mat` slot of an *FLBiol*), $Wt$ is the mean weights at age (the `wt` slot of an *FLBiol*) and $Zprespwn$ is the amount of mortality (fishing and natural) experienced by the stock before spawning occurs in that timestep.
+
+### The timing of spawning
+
+We need to take a closer look at $Zprespwn$.
+
+$Zprespwn = Fprespwn + Mprespwn$
+
+Where $Fprespwn$ and $Mprespwn$ are the amount of fishing and natural mortality experienced by the stock before spawning in a timestep respectively.
+$Zprespwn$ is used to handle the timing of spawning in a timestep.
+Although, with a seasonal model, spawning will probably happen at the start of a timestep, with an annual model this may not be the case. EXAMPLE.
+If spawning happens part way through a timestep, by the time the population spawns it will have experienced natural mortality and possiby fishing mortality.
+This means that the abundance at the time of spawning will be lower than at the start of the timestep.
+In *FLasher* the abundances in a timestep are the abundances at the start of that timestep.
+Consequently, we need to calculate the population abundance at the time of spawning, not at the start of the timestep.
+For example, if spawning occurs midway through the year for an annual model, we need to calculate the abundance midway through the year, after some of the natural and fishing mortality have taken place.
+
+The calculation of $Zprespwn$ depends on the timing of spawning, the timing of natural mortality and the timing of the fishing period within each timestep.
+A stock can be fished by more than one fishery.
+
+In R, the timing of spawning is handled by the `spwn` slot of the *FLBiol* (in C++ it is the `spwn` member of the *fwdBiol*).
+`spwn` is an *FLQuant* with a length of one in the first dimension (i.e. no age structure). It takes a value of 0 - 1 which describes the point in the timestep when spawning happens.
+For example, a value of 0 means that spawning happens at the start of the timestep, a value of 0.5 is halfway through the timestep, a value of 1 is the end of the timestep and so on.
+Importantly, a value of NA means that there is no spawning in that timestep.
+
+Natural mortality is assumed to happen continuously throughout the year.
+
+The timing of fishing is controlled by the `hperiod` slot of the *FLFishery* (so that each *FLCatch* of a fishery has the same timing).
+`hperiod` is an *FLQuant* with length two in the first dimension. It is not age structured but have dimension names `start` and `end` to hold the start and end times of the fishing period in that timestep. The values are between 0 and 1 in the same way as the `spwn` slot of the *FLBiol*.
+
+For each fishery that fishes on the stock, it is necessary to calculate how much fishing has occured before spawning in a timestep. If fishing starts after spawning ($start > spwn$) then the population abundance at spawning time is unaffected by fishing.
+If fishing finishes before spawning ($end < spwn$) then the population abundance at spawning is reduced by the total fishing mortality in that timestep.
+If `spwn` falls in between `start` and `end` then it is necessary to calulate how much fishing has occured before spawning.
+This calculation is handled by the `f_prop_spwn()' method (a member of the *operatingModel* class).
+
+EXAMPLE
+
+
+## Recruitment
+
+Timing of SRP and SRR params
+
+THESE EQUATIONS IGNORE TIMING
+
+
+$R_{y,s,u} = f(SRP_{y,s})$
+
+
 
 <!--
 ### Multiple recruitment events
@@ -287,6 +365,7 @@ dim(recycled_q)
 # Note that dimnames have not been set - that is OK as it is used internally
 recycled_q
 ```
+
 
 <!--
 ## Recruitment
