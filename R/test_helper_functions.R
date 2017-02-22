@@ -7,7 +7,6 @@
 #'
 #' Generate a randomly or fixed sized FLQuant filled with normally distributed random numbers with a mean of 0.
 #' Used for automatic testing.
-#' All dimensions have at least length 2.
 #' 
 #' @param fixed_dims A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. Default value is rep(NA,6).
 #' @param min_dims A vector of length 6 with minimum size of each of the FLQuant dimensions. Default value is c(1,1,1,1,1,1).
@@ -116,6 +115,7 @@ random_FLCatch_generator <- function(sd=100, ...){
     catch.sel(catch)[] <- abs(rnorm(prod(dim(flq)),sd=sd))
     price(catch)[] <- abs(rnorm(prod(dim(flq)),sd=sd))
     catch.q(catch) <- FLPar(abs(rnorm(2 * dim(flq)[6])), dimnames = list(params = c("alpha","beta"), iter = 1:dim(flq)[6]))
+    catch.q(catch)["beta",] <- 0.0
     name(catch) <- as.character(signif(rnorm(1)*1000,3))
     desc(catch) <- as.character(signif(rnorm(1)*1000,3))
     # set the units to something sensible
@@ -399,6 +399,7 @@ make_test_operatingModel1 <- function(niters = 1000){
         catch.sel(catch) <- catch.sel(catch) * abs(rnorm(prod(dim(catch.sel(catch))), mean = 1, sd = 0.1))
         sweep(catch.sel(catch), 2:6, apply(catch.sel(catch), 2:6, max), "/")
         catch.q(catch) <- FLPar(c(1,0.5), dimnames=list(params=c("alpha","beta"), iter = 1))
+        catch.q(catch)["beta",] <- 0.0
         catch_list[[i]] <- catch
     }
     # Make fishery bits
@@ -471,6 +472,7 @@ make_test_operatingModel2 <- function(niters = 1000){
         catch.sel(catch) <- catch.sel(catch) * abs(rnorm(prod(dim(catch.sel(catch))), mean = 1, sd = 0.1))
         sweep(catch.sel(catch), 2:6, apply(catch.sel(catch), 2:6, max), "/")
         catch.q(catch) <- FLPar(c(1,0.5), dimnames=list(params=c("alpha","beta"), iter = 1))
+        catch.q(catch)["beta",] <- 0.0
         catch_list[[i]] <- catch
     }
     # Make fishery bits
@@ -540,8 +542,8 @@ make_test_operatingModel3 <- function(niters = 1000, sd = 0.1){
     catch.sel(catch) <- catch.sel(catch) * abs(rnorm(prod(dim(catch.sel(catch))), mean = 1, sd = sd))
     # Set the Catchability parameters so that an effort of 1 gives the current catch - make internally consistent
     # set beta to 0 for simplicity
-    #catch.q(catch) <- FLPar(c(1,0.5), dimnames=list(params=c("alpha","beta"), iter = 1))
-    catch.q(catch) <- FLPar(c(1), dimnames=list(params=c("alpha"), iter = 1))
+    catch.q(catch) <- FLPar(c(1), dimnames=list(params=c("alpha", "beta"), iter = 1))
+    catch.q(catch)["beta",] <- 0.0
     # Make fishery bits
     fishery <- FLFishery(catch=catch)
     desc(fishery) <- "fishery"
@@ -572,7 +574,7 @@ make_test_operatingModel3 <- function(niters = 1000, sd = 0.1){
 #'
 #' @export
 #' @return A list of objects for sending to C++
-make_test_operatingModel <- function(fls, FCB, nseasons = 1, spawning_seasons = 1, recruitment_age = 1, niters = 1000, sd = 0.1){
+make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons = 1, recruitment_age = 1, niters = 1000, sd = 0.1){
     # Interrogate FCB to get number of biols, fisheries and catches
     nbiols <- max(FCB[,"B"])
     nfisheries <- max(FCB[,"F"])
@@ -580,7 +582,7 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, spawning_seasons = 
     # Could base all this on LH: pass in Linf / K / t0 and LW (a and b) to get weights and m
     dmns <- dimnames(stock.n(fls))
     dmns$season <- 1:nseasons
-    dmns$unit <- 1:spawning_seasons # Each spawning season gets its own unit
+    dmns$unit <- 1:recruitment_seasons # Each spawning season gets its own unit
     dmns$age <- as.character(recruitment_age:(recruitment_age + length(dmns$age) - 1))
     dmns$iter <- as.character(1:niters)
     seed_flq <- FLQuant(NA, dimnames=dmns)
@@ -597,11 +599,16 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, spawning_seasons = 
         n(newb) <- n(newb) * abs(rnorm(prod(dim(n(newb))), mean = 1, sd = sd))
         m(newb)[] <- m(fls)
         m(newb) <- m(newb) * abs(rnorm(prod(dim(m(newb))), mean = 1, sd = sd))
-        wt(newb) <- stock.wt(fls)
+        wt(newb)[] <- stock.wt(fls)
         wt(newb) <- wt(newb) * abs(rnorm(prod(dim(wt(newb))), mean = 1, sd = sd))
-        mat(newb) <- mat(fls)
+        mat(newb)[] <- mat(fls)
+        mat(newb) <- mat(newb) * abs(rnorm(prod(dim(mat(newb))), mean = 1, sd = sd))
         # fec - what does this do?
-        # spwn - spawns at beginning of the season
+        # Spawning occurs in timestep before - this may be a whole year if annual
+        spawning_seasons <- recruitment_seasons - 1
+        # If less than 1, then it's the max season in last year
+        spawning_seasons[spawning_seasons < 1] <- nseasons
+        # spwn - if it spawns then it does so at beginning of the season
         spwn(newb)[,,,spawning_seasons,] <- 0
         newb <- as(newb, "FLBiolcpp")
         name(newb) <- paste("biol", bno, sep="")
@@ -635,7 +642,8 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, spawning_seasons = 
             catch.sel(newc) <- catch.sel(newc) * abs(rnorm(prod(dim(catch.sel(newc))), mean = 1, sd = sd))
             catch.sel(newc)[] <- c(apply(catch.sel(newc), 2:6, function(x) x / max(x))) # Weird apply bug
             # no beta parameter atm
-            catch.q(newc) <- FLPar(c(1), dimnames=list(params=c("alpha"), iter = 1))
+            catch.q(newc) <- FLPar(c(1.0), dimnames=list(params=c("alpha", "beta"), iter = 1))
+            catch.q(newc)["beta",] <- 0.0 # Fix F calculation in code
             # price?
             catches[[paste("catch", cno, sep="")]] <- newc
         }
@@ -650,7 +658,10 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, spawning_seasons = 
     }
     fisheries <- FLFisheries(flfs)
     fisheries@desc <- "fisheries"
-    return(list(fisheries = fisheries, biols=biols))
+    # Add a random control for completeness
+    fwc <- random_fwdControl_generator(niters=20)
+    fwc@FCB <- FCB
+    return(list(fisheries = fisheries, biols=biols, fwc=fwc))
 }
 
 #' Create an operating model based on Indian Ocean skipjack tuna
@@ -692,6 +703,7 @@ make_skipjack_operatingModel <- function(niters = 1000, sd = 0.1){
     sel <- 1 / (1 + exp(-0.5 * (1:10 - 5))) # logisitic
     catch.sel(catch1)[] <- sel # Ideally based on F
     catch.q(catch1) <- FLPar(alpha = 1, beta=0.1) # Same catchability on both units
+    catch.q(catch1)["beta",] <- 0.0
     fishery1 <- FLFishery(skj = catch1, name="Cork Ball Dub", desc="Brute Dub")
     # Force effort to have 1 unit
     dmns <- dimnames(effort(fishery1))
@@ -703,6 +715,7 @@ make_skipjack_operatingModel <- function(niters = 1000, sd = 0.1){
     sel <- 1 / (1 + exp(-1 * (1:10 - 5))) # logisitic
     catch.sel(catch2)[] <- sel # Ideally based on F
     catch.q(catch2) <- FLPar(alpha = 1.5, beta=0.05)
+    catch.q(catch2)["beta",] <- 0.0
     fishery2 <- FLFishery(skj = catch2, name="Torah Dub", desc="Devil Dub")
     # Force effort to have 1 unit
     dmns <- dimnames(effort(fishery2))

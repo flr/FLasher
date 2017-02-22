@@ -155,17 +155,11 @@ test_that("operatingModel get_f method for FCB with random OM objects - just par
 test_that("get_f for biols with example operatingModel1 - total Fs from multiple FLFishery objects",{
     # Get the total Fs on Biols
     # Uses the FCB slot
-    om <- make_test_operatingModel1(20)
-
-
-#    data(ple4)
-#    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
-#    colnames(FCB) <- c("F","C","B")
-#    om <- make_test_operatingModel(ple4, FCB, nseasons = 1, spawning_seasons = 1, recruitment_age = 1, niters = 20, sd = 0.1)
-#    om[["fwc"]] <- random_fwdControl_generator(niters=20)
-
-
-
+    #om <- make_test_operatingModel1(20)
+    data(ple4)
+    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+    colnames(FCB) <- c("F","C","B")
+    om <- make_test_operatingModel(ple4, FCB, nseasons = 1, recruitment_seasons = 1, recruitment_age = 1, niters = 20, sd = 0.1)
     flfs <- om[["fisheries"]]
     flbs_in <- lapply(om[["biols"]], function(x) return(x[["biol"]]))
     nbiols <- length(om[["biols"]])
@@ -224,43 +218,6 @@ test_that("operatingModel fbar methods",{
     expect_FLQuant_equal(fbar_in, fbar_out)
 })
 
-test_that("operatingModel f_prop_spwn methods",{
-    # Random OM with units - NOT ANY MORE
-    flq <- random_FLQuant_generator(fixed_dims=c(NA,NA,1,rep(NA,3)))
-    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
-    # Pull out just FLBiols for testing
-    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
-    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
-    fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
-    # Random fishery and biol
-    biol_no <- round(runif(1, min=1, max=length(flbs)))
-    fishery_no <- round(runif(1, min=1, max=length(flfs)))
-    # Get full FLQ
-    indices_min <- rep(1,6)
-    indices_max <- dim(n(flbs_in[[biol_no]]))
-    prop_in <- (spwn(flbs_in[[biol_no]])[1,] %-% flfs[[fishery_no]]@hperiod[1,]) %/% (flfs[[fishery_no]]@hperiod[2,] - flfs[[fishery_no]]@hperiod[1,])
-    # If hperiod1 > spwn, prop = 1
-    # If hperiod2 < spwn, prop = 0
-    nunit <- dim(flq)[3]
-    for (i in 1:nunit){
-        prop_in_temp <- prop_in[,,i,]
-        prop_in_temp@.Data[flfs[[fishery_no]]@hperiod[1,,1] >= spwn(flbs_in[[biol_no]])[1,,i] ] <- 0
-        prop_in_temp@.Data[flfs[[fishery_no]]@hperiod[2,,1] <= spwn(flbs_in[[biol_no]])[1,,i] ] <- 1
-        prop_in[,,i,] <- prop_in_temp
-    }
-    prop_out <- test_operatingModel_f_prop_spwn_FLQ_subset(flfs, flbs, fc, fishery_no, biol_no, indices_min[-1], indices_max[-1])
-    expect_FLQuant_equal(prop_in, prop_out) 
-    # Subset of f
-    indices_max <- round(runif(6,1,dim(prop_in)))
-    indices_min <- round(runif(6,1,indices_max))
-    prop_out <- test_operatingModel_f_prop_spwn_FLQ_subset(flfs, flbs, fc, fishery_no, biol_no, indices_min[-1], indices_max[-1])
-    expect_FLQuant_equal(prop_in[indices_min[1]:indices_max[1], indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], prop_out)
-    # NA in hperiod - no fishing
-    flfs[[1]]@hperiod[1, indices_min[2], indices_min[3], indices_min[4], indices_min[5], indices_min[6]] <- NA
-    prop_out <- test_operatingModel_f_prop_spwn_FLQ_subset(flfs, flbs, fc, 1, biol_no, indices_min[-1], indices_min[-1])
-    expect_that(c(prop_out), is_identical_to(0.0))
-})
-
 test_that("operatingModel SRP methods with seasons and units",{
     # Random simple OM with units - 1 biol fished by 1 catch - FIX UNITS
     flq <- random_FLQuant_generator(min_dims=c(2,2,NA,NA,NA,2), fixed_dims=c(NA,NA,1,4,1,NA))
@@ -299,7 +256,13 @@ test_that("operatingModel SRP methods with seasons and units",{
 test_that("operatingModel srp methods with annual OM",{
     # Assumes that f_prop_spwn and f is working correctly
     # Calculated as SSB: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
-    om <- make_test_operatingModel1(niters = 100)
+    #om <- make_test_operatingModel1(niters = 100)
+    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+    colnames(FCB) <- c("F","C","B")
+    data(ple4)
+    om <- make_test_operatingModel(ple4, FCB, nseasons = 1, recruitment_seasons = 1, recruitment_age = 1, niters = 20, sd = 0.1)
+    # Add unfished biol
+    om[["biols"]][[5]] <- om[["biols"]][[1]]
     flbs_in <- lapply(om$biols, function(x) return(x[["biol"]]))
     # Biol 1
     biol_no <- 1
@@ -368,7 +331,6 @@ test_that("operatingModel srp methods with annual OM",{
     srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-(f_in %*% prop_in) - (flbs_in[[biol_no]]@m %*% flbs_in[[biol_no]]@spwn[1,])))
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min[-1], indices_max[-1])
     expect_FLQuant_equal(srp_in[,indices_min[2]:indices_max[2], indices_min[3]:indices_max[3], indices_min[4]:indices_max[4], indices_min[5]:indices_max[5], indices_min[6]:indices_max[6]], srp_out)
-
     # Biol 5 - no fishing
     biol_no <- 5
     dim <- dim(om[["biols"]][[biol_no]][["biol"]]@n)
@@ -384,69 +346,64 @@ test_that("operatingModel srp methods with annual OM",{
 })
 
 test_that("operatingModel calc_rec simple OM", {
-    # Testing with a simple annual model
-    # Params have no structure (recycle)
-    om <- make_test_operatingModel1(niters = 100)
-    # With Bevholt
-    biol_no <- 1 
-    flq <- n(om[["biols"]][[biol_no]][["biol"]])
-    rec_year <- round(runif(1,min=2,max=dim(flq)[2]))
-    rec_season <- 1
-    # Here SRP timing is 1 year behind the rec timestep but the same season
-    srp_indices_min <- c(rec_year-1,1,1,1,1)
-    srp_indices_max <- c(rec_year-1,1,1,1,dim(flq)[6])
-    # Assume SRP calc works
-    srp_in <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, srp_indices_min, srp_indices_max)
-    # It's a Bevholt model
-    a <- c(om[["biols"]][[biol_no]][["srr_params"]]['a',])
-    b <- c(om[["biols"]][[biol_no]][["srr_params"]]['b',])
-    rec_in_det <- (a * srp_in) / (b + srp_in)
-    # Apply the residuals - multiplicative
-    om[["biols"]][[biol_no]][["srr_residuals"]] <- exp(om[["biols"]][[biol_no]][["srr_residuals"]])
-    om[["biols"]][[biol_no]][["srr_residuals_mult"]] <- TRUE
-    rec_in_mult <- rec_in_det * om[["biols"]][[biol_no]][["srr_residuals"]][,rec_year,]
-    rec_out_mult <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, 1, rec_year)
-    expect_equal(c(rec_in_mult), rec_out_mult)
-    # Additive residuals
-    om[["biols"]][[biol_no]][["srr_residuals"]] <- log(om[["biols"]][[biol_no]][["srr_residuals"]])
-    om[["biols"]][[biol_no]][["srr_residuals_mult"]] <- FALSE
-    rec_in_add <- rec_in_det + om[["biols"]][[biol_no]][["srr_residuals"]][,rec_year,1,rec_season,1,]
-    rec_out_add <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, 1, rec_year)
-    expect_equal(c(rec_in_add), rec_out_add)
-    # With Ricker
-    biol_no <- 2 
-    flq <- n(om[["biols"]][[biol_no]][["biol"]])
-    rec_year <- round(runif(1,min=2,max=dim(flq)[2]))
-    # Here SRP timing is 1 year behind the rec timestep but the same season
-    srp_indices_min <- c(rec_year-1,1,1,1,1)
-    srp_indices_max <- c(rec_year-1,1,1,1,dim(flq)[6])
-    srp_in <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, srp_indices_min, srp_indices_max)
-    # It's a Ricker model
-    a <- c(om[["biols"]][[biol_no]][["srr_params"]]['a',])
-    b <- c(om[["biols"]][[biol_no]][["srr_params"]]['b',])
-    rec_in_det <- a * srp_in * exp(-b * srp_in)
-    # Apply the residuals - multiplicative
-    om[["biols"]][[biol_no]][["srr_residuals"]] <- exp(om[["biols"]][[biol_no]][["srr_residuals"]])
-    om[["biols"]][[biol_no]][["srr_residuals_mult"]] <- TRUE
-    rec_in_mult <- rec_in_det * om[["biols"]][[biol_no]][["srr_residuals"]][,rec_year,]
-    rec_out_mult <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, 1, rec_year)
-    expect_equal(c(rec_in_mult), rec_out_mult)
-    # Additive residuals
-    om[["biols"]][[biol_no]][["srr_residuals"]] <- log(om[["biols"]][[biol_no]][["srr_residuals"]])
-    om[["biols"]][[biol_no]][["srr_residuals_mult"]] <- FALSE
-    rec_in_add <- rec_in_det + om[["biols"]][[biol_no]][["srr_residuals"]][,rec_year,1,rec_season,1,]
-    rec_out_add <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, 1, rec_year)
-    expect_equal(c(rec_in_add), rec_out_add)
+    # We've already tested the SRP calculation above
+    # Testing with a simple annual model with different age structures
+    FCB <- array(c(1,1,1), dim=c(1,3))
+    colnames(FCB) <- c("F","C","B")
+    data(ple4)
+    # Check that the recruitment age thing works
+    for (recruitment_age in c(0,1,2,3)){
+        recruitment_age <- 0
+        om <- make_test_operatingModel(ple4, FCB, nseasons = 1, recruitment_seasons = 1, recruitment_age = recruitment_age, niters = 20, sd = 0.1)
+        # With Bevholt
+        biol_no <- 1 
+        flq <- n(om[["biols"]][[biol_no]][["biol"]])
+        rec_year <- round(runif(1,min=5,max=dim(flq)[2]))
+        rec_season <- 1
+        # Here SRP timing is 1 year behind the rec timestep but the same season
+        srp_indices_min <- c(rec_year-recruitment_age,1,1,1,1)
+        srp_indices_max <- c(rec_year-recruitment_age,1,1,1,dim(flq)[6])
+        # Assume SRP calc works
+        srp_in <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, srp_indices_min, srp_indices_max)
+        # It's a Bevholt model
+        a <- c(om[["biols"]][[biol_no]][["srr_params"]]['a',])
+        b <- c(om[["biols"]][[biol_no]][["srr_params"]]['b',])
+        rec_in_det <- (a * srp_in) / (b + srp_in)
+        # Apply the residuals - multiplicative
+        om[["biols"]][[biol_no]][["srr_residuals"]] <- exp(om[["biols"]][[biol_no]][["srr_residuals"]])
+        om[["biols"]][[biol_no]][["srr_residuals_mult"]] <- TRUE
+        rec_in_mult <- rec_in_det * om[["biols"]][[biol_no]][["srr_residuals"]][,rec_year,]
+        rec_out_mult <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, 1, rec_year)
+        expect_equal(c(rec_in_mult), rec_out_mult)
+        # Additive residuals
+        om[["biols"]][[biol_no]][["srr_residuals"]] <- log(om[["biols"]][[biol_no]][["srr_residuals"]])
+        om[["biols"]][[biol_no]][["srr_residuals_mult"]] <- FALSE
+        rec_in_add <- rec_in_det + om[["biols"]][[biol_no]][["srr_residuals"]][,rec_year,1,rec_season,1,]
+        rec_out_add <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, 1, rec_year)
+        expect_equal(c(rec_in_add), rec_out_add)
+    }
 })
 
-test_that("operatingModel calc_rec complex OM", {
-    # Biol with 4 seasons and 4 units, fished by 1 fishery and 1 catch
-    # FIX UNITS
+test_that("operatingModel calc_rec seasonal OM", {
+    # Biol with 4 seasons and 1 spawning season (1 unit), fished by 1 fishery and 1 catch
+    data(ple4)
+    FCB <- array(c(1,1,1), dim=c(1,3))
+    colnames(FCB) <- c("F","C","B")
+    recruitment_age <- 1 # change
+    recruitment_seasons <- 1 # change
+    om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = 1, recruitment_age = recruitment_age, niters = 20, sd = 0.1)
+
+#om[["biols"]][[1]][["biol"]]@spwn
+om[["biols"]][[1]][["srr_params"]] # No seasonal breakdown - but there could be
+
+
     # First age = 0, SRP lag = 1 timestep
     min_age_name <- 0
     #flq <- random_FLQuant_generator(fixed_dims = c(5,6,4,4,1,10))
     flq <- random_FLQuant_generator(fixed_dims = c(5,6,1,4,1,10), min_age_name = min_age_name)
     flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq), min_age_name = min_age_name)
+
+
     # Set SR params - same every year but broken down by unit and season - necessary
     # Units 1 and 2 recruit in season 1
     # Units 3 and 4 recruit in season 3
@@ -467,6 +424,9 @@ test_that("operatingModel calc_rec complex OM", {
     FCB <- array(NA, dim=c(1,3))
     FCB[1,] <- c(1,1,1)
     fc@FCB <- FCB
+
+
+
     # Rec in season 1
     rec_year <- round(runif(1,min=2,max=dim(flq)[2]))
     rec_season <- 1
