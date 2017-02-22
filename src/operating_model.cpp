@@ -54,10 +54,10 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsA
     for (int biol_no=1; biol_no <= biols_in.get_nbiols();  ++biol_no){
         std::vector<unsigned int> biol_dim = biols_in(biol_no).n().get_dim();
 
-if(biol_dim[2] > 1){
-    Rcpp::stop("Multiple units in OM not yet implemented\n");
-}
-
+        // Yeah they are!
+        //if(biol_dim[2] > 1){
+        //    Rcpp::stop("Multiple units in OM not yet implemented\n");
+        //}
 
         if ((landings_dim11[1] != biol_dim[1]) | (landings_dim11[3] != biol_dim[3])){
             Rcpp::stop("In operatingModel constructor. All biols and catches must have the same year and season range.\n");
@@ -192,16 +192,16 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
     spwn_indices_max[0] = 1;
     FLQuant m_pre_spwn = sweep_mult(biols(biol_no).m(qindices_min, qindices_max), biols(biol_no).spwn(qindices_min, spwn_indices_max));
 
-// Fprespwn and m*spwn will be NA when spwn is NA
-// Need to set the exp() part to 0 instead of NA
-
     // Get srp: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
     FLQuantAD srp = quant_sum(
         biols(biol_no).n(qindices_min, qindices_max) *
         biols(biol_no).wt(qindices_min, qindices_max) *
         biols(biol_no).mat(qindices_min, qindices_max) * exp((-1.0 * f_pre_spwn) - m_pre_spwn));
-    //Rprintf("Got SRP\n");
-    // If spwn = NA, then output should be 0? - should add proper check for this - at the moment it just sort of happens
+
+    // If spwn in biol is NA, then SRP is 0
+    // Find and replace
+    // Hacky - but spwn is not age structured and 
+
     return srp;
 }
 

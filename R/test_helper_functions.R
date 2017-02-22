@@ -582,16 +582,21 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
     # Could base all this on LH: pass in Linf / K / t0 and LW (a and b) to get weights and m
     dmns <- dimnames(stock.n(fls))
     dmns$season <- 1:nseasons
-    dmns$unit <- 1:recruitment_seasons # Each spawning season gets its own unit
+    dmns$unit <- 1:length(recruitment_seasons) # Each spawning season gets its own unit
     dmns$age <- as.character(recruitment_age:(recruitment_age + length(dmns$age) - 1))
     dmns$iter <- as.character(1:niters)
     seed_flq <- FLQuant(NA, dimnames=dmns)
     # Make the biols
     # Same SRR for all
     srr <- fmle(as.FLSR(fls, model="bevholt"),control = list(trace=0))
-    res <- window(exp(residuals(srr)), start = 1957)
-    res[,"1957"] <- res[,"1958"]
-    res <- propagate(res, niters)
+    res_temp <- window(exp(residuals(srr)), start = 1957)
+    res_temp[,"1957"] <- res_temp[,"1958"]
+    res_temp <- propagate(res_temp, niters)
+    res_dmns <- dmns
+    res_dmns$age <- "all"
+    res <- FLQuant(NA, dimnames = res_dmns)
+    res[] <- res_temp
+    res <- res * abs(rnorm(prod(dim(res)), mean = 1, sd = sd))
     biols <- list()
     for (bno in 1:nbiols){
         newb <- FLBiol(n=seed_flq)
@@ -609,7 +614,9 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
         # If less than 1, then it's the max season in last year
         spawning_seasons[spawning_seasons < 1] <- nseasons
         # spwn - if it spawns then it does so at beginning of the season
-        spwn(newb)[,,,spawning_seasons,] <- 0
+        for (unit in 1:length(spawning_seasons)){
+            spwn(newb)[,,unit,spawning_seasons[unit],] <- 0
+        }
         newb <- as(newb, "FLBiolcpp")
         name(newb) <- paste("biol", bno, sep="")
         desc(newb) <- paste("biol", bno, sep="")
