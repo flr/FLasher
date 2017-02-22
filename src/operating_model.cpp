@@ -192,15 +192,31 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
     spwn_indices_max[0] = 1;
     FLQuant m_pre_spwn = sweep_mult(biols(biol_no).m(qindices_min, qindices_max), biols(biol_no).spwn(qindices_min, spwn_indices_max));
 
+    // If spwn in biol is NA, then SRP is 0
+    // Without the following chunk of code we get SRP = NA when spwn is NA. We want 0.0
+    // Here we replace exp(-Fprespwn - Mprespwn) with 0.0
+    FLQuantAD exp_z_pre_spwn = exp((-1.0 * f_pre_spwn) - m_pre_spwn);
+    // Find NA in spwn and replace in exp_z with 0.0
+    FLQuant spwn_temp = biols(biol_no).spwn(qindices_min, spwn_indices_max);
+    // Hacky because exp_z is age structured and spwn is not
+    for (auto iter_count = 1; iter_count <= qdim[5]; ++iter_count){
+        for (auto area_count = 1; area_count <= qdim[4]; ++area_count){
+            for (auto season_count = 1; season_count <= qdim[3]; ++season_count){
+                for (auto unit_count = 1; unit_count <= qdim[2]; ++unit_count){
+                    for (auto year_count = 1; year_count <= qdim[1]; ++year_count){
+                        // If spwn is NA set all ages of pre_spwn to 0.0
+                        if (Rcpp::NumericVector::is_na(spwn_temp(1,year_count, unit_count, season_count, area_count, iter_count))){
+                            for (auto age_count = 1; age_count <= qdim[0]; ++age_count){
+                                exp_z_pre_spwn(age_count, year_count, unit_count, season_count, area_count, iter_count) = 0.0;
+                            }
+                        }
+    }}}}}
+
     // Get srp: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
     FLQuantAD srp = quant_sum(
         biols(biol_no).n(qindices_min, qindices_max) *
         biols(biol_no).wt(qindices_min, qindices_max) *
-        biols(biol_no).mat(qindices_min, qindices_max) * exp((-1.0 * f_pre_spwn) - m_pre_spwn));
-
-    // If spwn in biol is NA, then SRP is 0
-    // Find and replace
-    // Hacky - but spwn is not age structured and 
+        biols(biol_no).mat(qindices_min, qindices_max) * exp_z_pre_spwn);
 
     return srp;
 }

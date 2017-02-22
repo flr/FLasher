@@ -90,6 +90,7 @@ test_that("operatingModel disaggregated srp methods",{
     prop_in <- test_operatingModel_f_prop_spwn_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, biol_no, f_indices_min[-1], f_indices_max[-1])
     f_in <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, f_indices_min, f_indices_max)
     srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-(f_in %*% prop_in) - (flbs_in[[biol_no]]@m %*% flbs_in[[biol_no]]@spwn[1,])))
+    srp_in[is.na(srp_in)] <- 0.0 # replace NA with 0
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, f_indices_min[-1], f_indices_max[-1])
     expect_FLQuant_equal(srp_in, srp_out)
     # Subset the full range
@@ -113,6 +114,7 @@ test_that("operatingModel disaggregated srp methods",{
     f_in2 <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 1, biol_no, f_indices_min, f_indices_max)
     f_prop <- (f_in1 %*% prop_in1) + (f_in2 %*% prop_in2)
     srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-f_prop - (flbs_in[[biol_no]]@m %*% flbs_in[[biol_no]]@spwn[1,])))
+    srp_in[is.na(srp_in)] <- 0.0 # replace NA with 0
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, f_indices_min[-1], f_indices_max[-1])
     expect_FLQuant_equal(srp_in, srp_out)
     # Subset the full range
@@ -133,6 +135,7 @@ test_that("operatingModel disaggregated srp methods",{
     prop_in <- test_operatingModel_f_prop_spwn_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, biol_no, f_indices_min[-1], f_indices_max[-1])
     f_in <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, f_indices_min, f_indices_max)
     srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-(f_in %*% prop_in) - (flbs_in[[biol_no]]@m %*% flbs_in[[biol_no]]@spwn[1,])))
+    srp_in[is.na(srp_in)] <- 0.0 # replace NA with 0
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, f_indices_min[-1], f_indices_max[-1])
     expect_FLQuant_equal(srp_in, srp_out)
     # Subset the full range
@@ -152,6 +155,7 @@ test_that("operatingModel disaggregated srp methods",{
     prop_in <- test_operatingModel_f_prop_spwn_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, biol_no, f_indices_min[-1], f_indices_max[-1])
     f_in <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, f_indices_min, f_indices_max)
     srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-(f_in %*% prop_in) - (flbs_in[[biol_no]]@m %*% flbs_in[[biol_no]]@spwn[1,])))
+    srp_in[is.na(srp_in)] <- 0.0 # replace NA with 0
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, f_indices_min[-1], f_indices_max[-1])
     expect_FLQuant_equal(srp_in, srp_out)
     # Subset the full range
@@ -167,6 +171,7 @@ test_that("operatingModel disaggregated srp methods",{
     f_indices_min <- rep(1,6)
     f_indices_max <- dim(om[["biols"]][[biol_no]][["biol"]]@n)
     srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-sweep(flbs_in[[biol_no]]@m, 2:6, flbs_in[[biol_no]]@spwn[1,], "*")))
+    srp_in[is.na(srp_in)] <- 0.0 # replace NA with 0
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, f_indices_min[-1], f_indices_max[-1])
     expect_FLQuant_equal(srp_in, srp_out)
     # Subset the full range
