@@ -353,7 +353,47 @@ total_srp <- test_operatingModel_total_SRP_FLQ_subset(om[["fisheries"]], om[["bi
 total_srp
 ```
 
+## Timing of SRP and recruitment
 
+Spawning is assumed to result in recruitment at age 0. However, the first age of the model is not necessarily 0.
+Therefore, When calculating recruitment it is necessary to use the SRP in the appropriate timestep.
+For example, if the first age of the stock is 1, then the current recruitment is a function of the SRP one year ago.
+The method `srp_timelag()' (a member of the `fwdBiol` class) calculates the lag between the current timestep and the timestep of the corresponding SRP.
+The returned timelag depends on the first age of the stock and whether the model is seasonal:
+
+- If the first age is 0 and the model has a seasonal timestep, the timelag is 1 season i.e. the SRP comes from the previous season.
+- If the first age is 0 and the model has an annual timestep, the timelag is 0, i.e. there is no timelag and the SRP is calculated in the current timestep (it's a strange case).
+- If the first age is >= 1, the timelag is the product of the first age and the number of seasons in the model, i.e. the number of timesteps between the first age and age 0 in the same season. Note that if the model is annual, there is 1 effectively season.
+
+For example, if the model is annual and the first age is 2, recruitment is a function of the SRP 2 years ago, which is 2 timesteps.
+If the model has 4 seasons and the first age is 2, recruitment is a function of the SRP 2 years ago, which is 8 timesteps.
+
+### Examples of timing of SRP and recruitment
+
+Here we show a few examples of calculating the timelag between SRP and recruitment.
+
+```{r, srp_timelag}
+# Annual model with first age 0
+# timelag of 0 (SRP and recruitment in same year)
+biol1 <- random_FLBiolcpp_generator(fixed_dims = c(5,5,1,1,1,1), min_age_name = 0)
+test_fwdBiol_srp_timelag(biol1)
+# Annual model with first age 2
+# timelag of 2 (SRP from 2 years ago)
+biol1 <- random_FLBiolcpp_generator(fixed_dims = c(5,5,1,1,1,1), min_age_name = 2)
+test_fwdBiol_srp_timelag(biol1)
+# Seasonal model (12 seasons) with first age 0
+# timelag of 1 - SRP comes from previous timestep
+biol1 <- random_FLBiolcpp_generator(fixed_dims = c(5,5,1,12,1,1), min_age_name = 0)
+test_fwdBiol_srp_timelag(biol1)
+# Seasonal model (12 seasons) with first age 2
+# timelag of 24 - SRP comes from same season, but 2 years ago 
+biol1 <- random_FLBiolcpp_generator(fixed_dims = c(5,5,1,12,1,1), min_age_name = 2)
+test_fwdBiol_srp_timelag(biol1)
+```
+
+## SRR parameters
+
+SOMETHING ON RECYCLING OF PARAMETERS AND HOW THEY ARE CALLED
 
 ## Recruitment
 
