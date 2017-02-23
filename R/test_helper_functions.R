@@ -613,10 +613,8 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
         spawning_seasons <- recruitment_seasons - 1
         # If less than 1, then it's the max season in last year
         spawning_seasons[spawning_seasons < 1] <- nseasons
-        # spwn - if it spawns then it does so at beginning of the season
-        for (unit in 1:length(spawning_seasons)){
-            spwn(newb)[,,unit,spawning_seasons[unit],] <- 0
-        }
+        # spwn - if it spawns then it does so at beginning of the season - all units set to the same
+        spwn(newb)[,,,spawning_seasons,] <- 0
         newb <- as(newb, "FLBiolcpp")
         name(newb) <- paste("biol", bno, sep="")
         desc(newb) <- paste("biol", bno, sep="")
