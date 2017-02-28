@@ -8,20 +8,20 @@
 
 # fwd(FLBiols, FLFisheries, fwdControl) {{{
 
-setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
+setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   control="fwdControl"),
   
-  function(biols, fisheries, control,
-    residuals=lapply(lapply(biols, spwn), "[<-", value=1)) {
+  function(object, fishery, control,
+    residuals=lapply(lapply(biobject, spwn), "[<-", value=1)) {
 
   # CHECK length and names of biols and residuals
-  if(!all.equal(names(biols), names(residuals)))
+  if(!all.equal(names(object), names(residuals)))
     stop("Names of biols and residuals must match exactly")
 
   # CHECK years and dimensions match
-  dib <- do.call(rbind, lapply(biols, function(x) as.data.frame(dims(x))))
-  dif <- do.call(rbind, lapply(fisheries, function(x) as.data.frame(dims(x))))
-  dnb <- dimnames(n(biols[[1]]))
+  dib <- do.call(rbind, lapply(object, function(x) as.data.frame(dims(x))))
+  dif <- do.call(rbind, lapply(fishery, function(x) as.data.frame(dims(x))))
+  dnb <- dimnames(n(object[[1]]))
   
   # ERROR if seasons are different in FLBiols or FLFisheries
   if(!all(c(dib$season, dif$season) == dib$season[1]))
@@ -31,8 +31,8 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
   if(max(dib$area) > 1 | max(dif$area > 1))
     stop("fwd() cannot deal (yet) with multiple areas")
 
-  # CONVERT biols to list(list(biols, name, params, residuals, mult))
-  biolscpp <- lapply(biols, as, "list")
+  # CONVERT biols to list(list(object, name, params, residuals, mult))
+  biolscpp <- lapply(object, as, "list")
 
   # ADD residuals
   for(i in names(biolscpp)) {
@@ -41,7 +41,7 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
 
   # CREATE FCB, if missing and possible
   if(dim(control@FCB)[1] == 1 & all(is.na(control@FCB)))
-    control@FCB <- fcb2int(fcb(biols, fisheries), biols, fisheries)
+    control@FCB <- fcb2int(fcb(object, fishery), object, fishery)
 
   # PARSE control
   trg <- target(control)
@@ -69,7 +69,7 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
 
   # ... 'catch', ...
   if (!is.numeric(trg$catch)) {
-    cns <- lapply(fisheries, function(x) names(x))
+    cns <- lapply(fishery, function(x) names(x))
     for(i in names(cns))
       trg[,"catch"] <- as.integer(match(trg[,"catch"], cns[[i]]))
   }
@@ -95,7 +95,7 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
     # If so, check relSeason is NA or 1
     # If not -> error
     # If NA -> 1
-    annual_model <- dim(n(biols[[1]]))[4] == 1
+    annual_model <- dim(n(object[[1]]))[4] == 1
     if (any(!is.na(trg$relYear)) & annual_model) {
         relYear_rows <- !is.na(trg$relYear)
         # If relSeason is not NA or 1 throw an error
@@ -138,22 +138,22 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
   }
 
   # FIX empty character slots
-  if(length(fisheries@desc) == 0)
-    fisheries@desc <- character(1)
-  if(length(biols@desc) == 0)
-    biols@desc <- character(1)
+  if(length(fishery@desc) == 0)
+    fishery@desc <- character(1)
+  if(length(object@desc) == 0)
+    object@desc <- character(1)
 
 
   # CALL oMRun
-  out <- operatingModelRun(fisheries, biolscpp, control,
+  out <- operatingModelRun(fishery, biolscpp, control,
     effort_mult_initial = 1.0, indep_min = 0.0, indep_max = 1e12, nr_iters = 50)
 
-  # UPDATE biols w/ new biolscpp@n
-  for(i in names(biols))
-    n(biols[[i]]) <- out$om$biols[[i]]@n
+  # UPDATE object w/ new biolscpp@n
+  for(i in names(object))
+    n(object[[i]]) <- out$om$biols[[i]]@n
 
-  # RETURN list(biols, fisheries, control)
-  out <- list(biols=biols, fisheries=out$om$fisheries, control=control)
+  # RETURN list(object, fishery, control)
+  out <- list(biols=object, fisheries=out$om$fisheries, control=control)
 
   return(out)
   }
@@ -162,11 +162,11 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFisheries",
 
 # fwd(FLBiols, FLFishery, fwdControl) {{{
 
-setMethod("fwd", signature(biols="FLBiols", fisheries="FLFishery",
+setMethod("fwd", signature(object="FLBiols", fishery="FLFishery",
   control="fwdControl"),
   
-  function(biols, fisheries, control, ...) {
-    res <- fwd(biols=biols, fisheries=FLFisheries(F=fisheries),
+  function(object, fishery, control, ...) {
+    res <- fwd(object=object, fishery=FLFisheries(F=fishery),
       control=control, ...)
     res$fisheries <- res$fisheries[[1]]
     return(res)
@@ -175,21 +175,21 @@ setMethod("fwd", signature(biols="FLBiols", fisheries="FLFishery",
 
 # fwd(FLBiol, FLFisheries, fwdControl) {{{
 
-setMethod("fwd", signature(biols="FLBiol", fisheries="FLFisheries",
+setMethod("fwd", signature(object="FLBiol", fishery="FLFisheries",
   control="fwdControl"),
   
-  function(biols, fisheries, control, ...) {
+  function(object, fishery, control, ...) {
  
     # IF   
-    len <- unlist(lapply(fisheries, length))
+    len <- unlist(lapply(fishery, length))
     if(any(len > 1))
       stop("")
-    nms <- names(fisheries[[1]])[1]
+    nms <- names(fishery[[1]])[1]
     
-    biols <- FLBiols(B=biols)
-    names(biols) <- nms
+    object <- FLBiols(B=object)
+    names(object) <- nms
     
-    res <- fwd(biols=biols, fisheries=fisheries,
+    res <- fwd(object=object, fishery=fishery,
       control=control, ...)
     res$biols <- res$biols[[1]]
     return(res)
@@ -198,15 +198,15 @@ setMethod("fwd", signature(biols="FLBiol", fisheries="FLFisheries",
 
 # fwd(FLBiol, FLFishery, fwdControl) {{{
 
-setMethod("fwd", signature(biols="FLBiol", fisheries="FLFishery",
+setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
   control="fwdControl"),
   
-  function(biols, fisheries, control,
-    residuals=FLQuant(1, dimnames=dimnames(rec(biols)))) {
+  function(object, fishery, control,
+    residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {
 
     # COERCE to FLBiols and FLFisheries
-    Bs <- FLBiols(B=biols)
-    Fs <- FLFisheries(F=fisheries)
+    Bs <- FLBiols(B=object)
+    Fs <- FLFisheries(F=fishery)
     Fs@desc <- "F"
 
     # SET @FCB
@@ -228,10 +228,10 @@ setMethod("fwd", signature(biols="FLBiol", fisheries="FLFishery",
 
 # fwd(FLBiol, FLFishery, missing) {{{
 
-setMethod("fwd", signature(biols="FLBiol", fisheries="FLFishery",
+setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
   control="missing"),
   
-  function(biols, fisheries, ..., residuals=FLQuant(1, dimnames=dimnames(m(biols)))) {
+  function(object, fishery, ..., residuals=FLQuant(1, dimnames=dimnames(m(object)))) {
     
     # PARSE ...
     args <- list(...)
@@ -249,7 +249,7 @@ setMethod("fwd", signature(biols="FLBiol", fisheries="FLFishery",
 
     control <- as(args, "fwdControl")
 
-    out <- fwd(biols, fisheries, control=control, residuals=residuals)
+    out <- fwd(object, fishery, control=control, residuals=residuals)
 
     return(out)
   }
@@ -257,19 +257,19 @@ setMethod("fwd", signature(biols="FLBiol", fisheries="FLFishery",
 
 # fwd(FLStock, missing, fwdControl) {{{
 
-setMethod("fwd", signature(biols="FLStock", fisheries="missing",
+setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
-  function(biols, control, sr=predictModel(model=rec~a, params=FLPar(a=1)),
-    residuals=FLQuant(1, dimnames=dimnames(rec(biols)))) {
+  function(object, control, sr=predictModel(model=rec~a, params=FLPar(a=1)),
+    residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {
 
     # DEAL with iters
-    its <- dims(biols)$iter
+    its <- dims(object)$iter
     if(its > 1)
-      biols <- propagate(biols, its)
+      object <- propagate(object, its)
 
     # COERCE to FLBiols
-    B <- as(biols, "FLBiol")
+    B <- as(object, "FLBiol")
     if(is(sr, "predictModel") | is(sr, "FLSR"))
       rec(B) <- predictModel(model=model(sr), params=params(sr))
     else if(is(sr, "list")) {
@@ -279,7 +279,7 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
     Bs <- FLBiols(B=B)
 
     # COERCE to FLFisheries
-    F <- as(biols, 'FLFishery')
+    F <- as(object, 'FLFishery')
     name(F) <- "F"
     names(F) <- "B"
 
@@ -294,8 +294,8 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
 
     # IF minAge and maxAge are NA, then range(min, max)
     arng <- control@target[,c("minAge", "maxAge")]
-    arng[,1] <- ifelse(is.na(arng[,1]), range(biols, "minfbar"), arng[,1])
-    arng[,2] <- ifelse(is.na(arng[,2]), range(biols, "maxfbar"), arng[,2])
+    arng[,1] <- ifelse(is.na(arng[,1]), range(object, "minfbar"), arng[,1])
+    arng[,2] <- ifelse(is.na(arng[,2]), range(object, "maxfbar"), arng[,2])
     control@target[,c("minAge", "maxAge")] <- arng
 
     # If relative targets (relYear) then we must also have relBiol (all FLStock targets can be related directly to the biol)
@@ -318,55 +318,55 @@ setMethod("fwd", signature(biols="FLStock", fisheries="missing",
     pyrs <- as.character(seq(miny, maxy))
 
     # landings
-    biols@landings <- landings(Fc)
+    object@landings <- landings(Fc)
     # landings.n
-    biols@landings.n <- Fc@landings.n
+    object@landings.n <- Fc@landings.n
     # landings.wt
-    biols@landings.wt <- Fc@landings.wt
+    object@landings.wt <- Fc@landings.wt
     # discards
-    biols@discards <- discards(Fc)
+    object@discards <- discards(Fc)
     # discards.n
-    biols@discards.n <- Fc@discards.n
+    object@discards.n <- Fc@discards.n
     # discards.wt
-    biols@discards.wt <- Fc@discards.wt
+    object@discards.wt <- Fc@discards.wt
     # catch
-    biols@catch <- catch(Fc)
+    object@catch <- catch(Fc)
     # catch.n
-    biols@catch.n <- catch.n(Fc)
+    object@catch.n <- catch.n(Fc)
     # catch.wt
-    biols@catch.wt <- catch.wt(Fc)
+    object@catch.wt <- catch.wt(Fc)
     # harvest (F)
-    biols@harvest[, pyrs] <- calc_F(Fc, Bo, eff)[, pyrs]
-    units(biols@harvest) <- "f"
+    object@harvest[, pyrs] <- calc_F(Fc, Bo, eff)[, pyrs]
+    units(object@harvest) <- "f"
     # stock.n
-    biols@stock.n <- Bo@n
+    object@stock.n <- Bo@n
     # stock
-    biols@stock <- quantSums(biols@stock.n * biols@stock.wt)
+    object@stock <- quantSums(object@stock.n * object@stock.wt)
 
-    return(biols)
+    return(object)
   }
 ) # }}}
 
 # fwd(FLStock, missing, missing, ...) {{{
 
-setMethod("fwd", signature(biols="FLStock", fisheries="ANY",
+setMethod("fwd", signature(object="FLStock", fishery="ANY",
   control="missing"),
   
-  function(biols, fisheries=missing, ..., sr=predictModel(model=rec~a, params=FLPar(a=1)),
-    residuals=FLQuant(1, dimnames=dimnames(rec(biols)))) {
+  function(object, fishery=missing, ..., sr=predictModel(model=rec~a, params=FLPar(a=1)),
+    residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {
     
     # PARSE ...
     args <- list(...)
     
-    # HACK: deal with f assigned to fisheries, might fail
-    if(!missing(fisheries)) {
+    # HACK: deal with f assigned to fishery, might fail
+    if(!missing(fishery)) {
 
-      if(!is(fisheries, "FLQuant"))
+      if(!is(fishery, "FLQuant"))
         stop("targets can only be of class FLQuant if no fwdControl is provided")
-      narg <- names(sys.calls()[[1]])
-      narg <- narg[!narg %in% c("", "biols", "sr",
+      narg <- names(sys.calls()[[length(sys.calls())-1]])
+      narg <- narg[!narg %in% c("", "object", "sr",
         grep("^[f].*", .qlevels, value=TRUE, invert=TRUE))]
-      args[[narg]] <- fisheries
+      args[[narg]] <- fishery
     }
     
     # Does ... exist?
@@ -383,11 +383,11 @@ setMethod("fwd", signature(biols="FLStock", fisheries="ANY",
     # COERCE to fwdControl
     control <- as(args, "fwdControl")
     
-    return(fwd(biols, control=control, residuals=residuals, sr=sr))
+    return(fwd(object=object, control=control, residuals=residuals, sr=sr))
   }
 ) # }}}
 
-
+# add_target_order {{{
 #' Add the order column to the control target
 #'
 #' Add the order column to the control target data.frame so that targets are processed in the correct order.
@@ -423,4 +423,4 @@ add_target_order <- function(control){
     control@target <- control@target[,colnames(control@target) != "minmax"]
     control@target <- control@target[,colnames(control@target) != "orig_order"]
     return(control)
-}
+} # }}}
