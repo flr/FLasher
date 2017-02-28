@@ -77,7 +77,6 @@ class fwdBiol_base {
         FLQuant_base<T> biomass() const;
         FLQuant_base<T> biomass(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; // subsetting
         unsigned int srp_timelag() const;
-        bool does_recruitment_happen(unsigned int unit, unsigned int timestep) const;
 
         // Added a friend so that operating model can access the SRR
         friend class operatingModel;

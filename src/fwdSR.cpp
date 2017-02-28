@@ -277,6 +277,30 @@ bool fwdSR_base<T>::get_residuals_mult() const{
     return residuals_mult;
 }
 
+
+//! Does recruitment happen for a unit in that timestep
+/*!
+  Each unit can recruit in a different season. Each unit can recruit only once per year.
+  The first stock-recruitment parameter is checked.
+  If it is NA, then recruitment does not happen.
+  If the parameter is not NA, then recruitment happens.
+  It is assumed that the timing pattern across iters is the same, e.g. if recruitment happens in season 1 for iter 1, it happens in season 1 for all iters.
+  \param unit The unit we are checking for recruitment
+  \param timestep The timestep we are checking for recruitment.
+ */ 
+template <typename T>
+bool fwdSR_base<T>::does_recruitment_happen(unsigned int unit, unsigned int year, unsigned int season) const{
+    unsigned int area = 1;
+    // Just get first iter
+    std::vector<double> sr_params = get_params(year, unit, season, area, 1); 
+    bool did_spawning_happen = true;
+    // Check the first parameter only
+    if (Rcpp::NumericVector::is_na(sr_params[0])){
+        did_spawning_happen = false;
+    }
+    return did_spawning_happen;
+}
+
 // Explicit instantiation of class
 template class fwdSR_base<double>;
 template class fwdSR_base<adouble>;

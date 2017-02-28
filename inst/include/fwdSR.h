@@ -47,6 +47,8 @@ class fwdSR_base {
         FLQuant_base<double> get_residuals() const;
         bool get_residuals_mult() const;
 
+        bool does_recruitment_happen(unsigned int unit, unsigned int year, unsigned int season) const;
+
     private:
         T (*model) (const T, const std::vector<double>); // Pointer to SRR function
         FLQuant_base<double> params;

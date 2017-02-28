@@ -5474,23 +5474,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// test_fwdBiol_does_recruitment_happen
-bool test_fwdBiol_does_recruitment_happen(SEXP fwbin, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, unsigned int unit, unsigned int timestep);
-RcppExport SEXP FLasher_test_fwdBiol_does_recruitment_happen(SEXP fwbinSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP unitSEXP, SEXP timestepSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type fwbin(fwbinSEXP);
-    Rcpp::traits::input_parameter< const std::string >::type model_name(model_nameSEXP);
-    Rcpp::traits::input_parameter< const FLQuant >::type params(paramsSEXP);
-    Rcpp::traits::input_parameter< const FLQuant >::type residuals(residualsSEXP);
-    Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type unit(unitSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type timestep(timestepSEXP);
-    rcpp_result_gen = Rcpp::wrap(test_fwdBiol_does_recruitment_happen(fwbin, model_name, params, residuals, residuals_mult, unit, timestep));
-    return rcpp_result_gen;
-END_RCPP
-}
 // test_fwdBiols_as_wrap
 fwdBiols test_fwdBiols_as_wrap(const fwdBiols biols_in);
 RcppExport SEXP FLasher_test_fwdBiols_as_wrap(SEXP biols_inSEXP) {
@@ -6052,6 +6035,23 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const FLQuant >::type srp(srpSEXP);
     Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type initial_params_indices(initial_params_indicesSEXP);
     rcpp_result_gen = Rcpp::wrap(test_fwdSR_predict_recruitment(model_name, params, residuals, residuals_mult, srp, initial_params_indices));
+    return rcpp_result_gen;
+END_RCPP
+}
+// test_fwdSR_does_recruitment_happen
+bool test_fwdSR_does_recruitment_happen(const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, unsigned int unit, unsigned int year, unsigned int season);
+RcppExport SEXP FLasher_test_fwdSR_does_recruitment_happen(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP unitSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string >::type model_name(model_nameSEXP);
+    Rcpp::traits::input_parameter< const FLQuant >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< const FLQuant >::type residuals(residualsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type unit(unitSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type year(yearSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type season(seasonSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_fwdSR_does_recruitment_happen(model_name, params, residuals, residuals_mult, unit, year, season));
     return rcpp_result_gen;
 END_RCPP
 }

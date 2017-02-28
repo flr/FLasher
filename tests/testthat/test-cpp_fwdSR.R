@@ -246,4 +246,43 @@ test_that("fwdSR predict_recruitment",{
     expect_equal(c(rec_outm), c(recm))
 })
 
+test_that("fwdBiol does_recruitment_happen",{
+    nyears <- 10
+    niters <- 100
+    flq_in <- FLQuant(NA, dimnames=list(age=0:5, unit=1:4, year=1:nyears, season=1:4,iter=niters))
+    residuals <- FLQuant(rnorm(100), dimnames = list(year = 1:nyears, unit=1:4, season=1:4, iter = 1:niters))
+    residuals_mult <- TRUE
+    # With 4 Seasons and 4 Units
+    # Units 1 and 2 are M/F recruiting in Season 1
+    # Units 3 and 4 are M/F recruiting in Season 3
+    # No recruitment in seaons 2 and 4
+    sr_params <- FLQuant(NA, dim=c(2,1,4,4,1,1)) 
+    sr_params[,,c(1,2),1,] <- rnorm(4)
+    sr_params[,,c(3,4),3,] <- rnorm(4)
+    # Random years - recycled internally
+    season1_years <- seq(from = 1, to=nyears)
+    season2_years <- seq(from = 1, to=nyears)
+    season3_years <- seq(from = 1, to=nyears)
+    season4_years <- seq(from = 1, to=nyears)
+    # Season 1
+    expect_true(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 1, sample(season1_years, 1), 1))
+    expect_true(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 2, sample(season2_years, 1), 1))
+    expect_false(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 3, sample(season3_years, 1), 1))
+    expect_false(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 4, sample(season4_years, 1), 1))
+    # Season 2
+    expect_false(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 1, sample(season1_years, 1), 2))
+    expect_false(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 2, sample(season2_years, 1), 2))
+    expect_false(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 3, sample(season3_years, 1), 2))
+    expect_false(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 4, sample(season4_years, 1), 2))
+    # Season 3
+    expect_false(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 1, sample(season1_years, 1), 3))
+    expect_false(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 2, sample(season2_years, 1), 3))
+    expect_true(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 3, sample(season3_years, 1), 3))
+    expect_true(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 4, sample(season4_years, 1), 3))
+    # Season 4
+    expect_false(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 1, sample(season1_years, 1), 4))
+    expect_false(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 2, sample(season2_years, 1), 4))
+    expect_false(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 3, sample(season3_years, 1), 4))
+    expect_false(test_fwdSR_does_recruitment_happen("Ricker", sr_params, residuals, residuals_mult, 4, sample(season4_years, 1), 4))
+})
 

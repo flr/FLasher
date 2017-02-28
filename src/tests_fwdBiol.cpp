@@ -236,14 +236,6 @@ unsigned int test_fwdBiol_srp_timelag(fwdBiol fwb){
     return out;
 }
 
-// [[Rcpp::export]]
-bool test_fwdBiol_does_recruitment_happen(SEXP fwbin, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, unsigned int unit, unsigned int timestep){
-    fwdSR fwsr(model_name, params, residuals, residuals_mult);
-    fwdBiol fwb(fwbin, fwsr);
-    return fwb.does_recruitment_happen(unit, timestep);
-}
-
-
 /*-------------------------------------------------------*/
 
 // fwdBiols constructors

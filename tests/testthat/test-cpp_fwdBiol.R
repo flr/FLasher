@@ -251,50 +251,6 @@ test_that("fwdBiol srp_timelag",{
     expect_identical(timelag, nseasons*min_age)
 })
 
-test_that("fwdBiol does_recruitment_happen",{
-    nyears <- 10
-    niters <- 100
-    flq_in <- FLQuant(NA, dimnames=list(age=0:5, unit=1:4, year=1:nyears, season=1:4,iter=niters))
-    flb_in <- as(FLBiol(flq_in), "FLBiolcpp")
-    desc(flb_in) <- "The Professor of Dub"
-    residuals <- FLQuant(rnorm(100), dimnames = list(year = 1:nyears, unit=1:4, season=1:4, iter = 1:niters))
-    residuals_mult <- TRUE
-    # With 4 Seasons and 4 Units
-    # Units 1 and 2 are M/F recruiting in Season 1
-    # Units 3 and 4 are M/F recruiting in Season 3
-    sr_params <- FLQuant(NA, dim=c(2,1,4,4,1,1)) 
-    sr_params[,,c(1,2),1,] <- rnorm(4)
-    sr_params[,,c(3,4),3,] <- rnorm(4)
-    # Test season 1 in any year
-    season1_timesteps <- seq(from = 1, to=4 * nyears - 3, by=4)
-    season2_timesteps <- seq(from = 2, to=4 * nyears - 2, by=4)
-    season3_timesteps <- seq(from = 3, to=4 * nyears - 1, by=4)
-    season4_timesteps <- seq(from = 4, to=4 * nyears, by=4)
-    # Season 1
-    expect_true(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 1, sample(season1_timesteps, 1)))
-    expect_true(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 2, sample(season1_timesteps, 1)))
-    expect_false(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 3, sample(season1_timesteps, 1)))
-    expect_false(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 4, sample(season1_timesteps, 1)))
-    # Season 2
-    expect_false(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 1, sample(season2_timesteps, 1)))
-    expect_false(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 2, sample(season2_timesteps, 1)))
-    expect_false(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 3, sample(season2_timesteps, 1)))
-    expect_false(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 4, sample(season2_timesteps, 1)))
-    # Season 3
-    expect_false(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 1, sample(season3_timesteps, 1)))
-    expect_false(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 2, sample(season3_timesteps, 1)))
-    expect_true(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 3, sample(season3_timesteps, 1)))
-    expect_true(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 4, sample(season3_timesteps, 1)))
-    # Season 4
-    expect_false(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 1, sample(season4_timesteps, 1)))
-    expect_false(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 2, sample(season4_timesteps, 1)))
-    expect_false(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 3, sample(season4_timesteps, 1)))
-    expect_false(test_fwdBiol_does_recruitment_happen(flb_in, "Ricker", sr_params, residuals, residuals_mult, 4, sample(season4_timesteps, 1)))
-})
-
-
-
-
 #------------------------------------------------------------------------------
 # fwdBiols
 test_that("fwdBiols constructors",{

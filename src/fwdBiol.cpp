@@ -276,35 +276,6 @@ unsigned int fwdBiol_base<T>::srp_timelag() const{
     return timelag;
 }
 
-//! Does recruitment happen for a unit of the fwdBiol in that timestep
-/*!
-  Each unit can recruit in a different season. Each unit can recruit only once per year.
-  The first stock-recruitment parameter is checked.
-  If it is NA, then recruitment does not happen.
-  If the parameter is not NA, then recruitment happens.
-  It is assumed that the timing pattern across iters is the same, e.g. if recruitment happens in season 1 for iter 1, it happens in season 1 for all iters.
-  \param unit The unit we are checking for recruitment
-  \param timestep The timestep we are checking for recruitment.
- */ 
-template <typename T>
-bool fwdBiol_base<T>::does_recruitment_happen(unsigned int unit, unsigned int timestep) const{
-    // Get the SR parameters at that time / unit for the first iter
-    // If first one is NA, then no recruitment
-    std::vector<unsigned int> biol_dim = n_flq.get_dim();
-    unsigned int year = 0;
-    unsigned int season = 0;
-    timestep_to_year_season(timestep, biol_dim[3], year, season);
-    unsigned int area = 1;
-    // Just get first iter
-    std::vector<double> sr_params = srr.get_params(year, unit, season, area, 1); 
-    bool did_spawning_happen = true;
-    // Check the first parameter only
-    if (Rcpp::NumericVector::is_na(sr_params[0])){
-        did_spawning_happen = false;
-    }
-    return did_spawning_happen;
-}
-
 /*------------------------------------------------------------*/
 // fwdBiols class
 

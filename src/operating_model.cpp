@@ -545,15 +545,15 @@ void operatingModel::project_biols(const int timestep){
         //FLQuantAD z_temp(prev_indices_max[0] - prev_indices_min[0]+1, prev_indices_max[1] - prev_indices_min[1]+1, prev_indices_max[2] - prev_indices_min[2]+1, prev_indices_max[3] - prev_indices_min[3]+1, prev_indices_max[4] - prev_indices_min[4]+1, prev_indices_max[5] - prev_indices_min[5]+1, 0.0);
         FLQuantAD survivors = biols(biol_counter).n(prev_indices_min, prev_indices_max) * exp(-1.0 * z_temp);
         // Update biol in timestep by putting survivors into correct age slots
-        // Process by unit (which are effectively distinct - NOT REALLY)
+        // Process by unit (which are effectively distinct)
         for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
-            // Need to know the age in which to the survivors 
+            // Need to know the age in which to place the survivors 
             // Each unit can recruit in a different season and can only recruit in one season
             // If recruitment timestep, survivors get placed in next age i.e. it's their birthday (hooray) and they move up an age class.
             // Else, same age in next timestep
             // Determine if this is a recruitment timestep for this unit
             // Recruitment happening is determined by NAs in SR params - NOT by spwn slot
-            bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, timestep);
+            bool recruiting_now = biols(biol_counter).srr.does_recruitment_happen(ucount, year, season);
             unsigned int age_shift = 0;
             std::vector<adouble> rec(niter, 0.0);
             if (recruiting_now){

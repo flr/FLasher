@@ -1685,10 +1685,6 @@ test_fwdBiol_srp_timelag <- function(fwb) {
     .Call('FLasher_test_fwdBiol_srp_timelag', PACKAGE = 'FLasher', fwb)
 }
 
-test_fwdBiol_does_recruitment_happen <- function(fwbin, model_name, params, residuals, residuals_mult, unit, timestep) {
-    .Call('FLasher_test_fwdBiol_does_recruitment_happen', PACKAGE = 'FLasher', fwbin, model_name, params, residuals, residuals_mult, unit, timestep)
-}
-
 test_fwdBiols_as_wrap <- function(biols_in) {
     .Call('FLasher_test_fwdBiols_as_wrap', PACKAGE = 'FLasher', biols_in)
 }
@@ -1855,6 +1851,10 @@ test_fwdSR_assignment_operator <- function(model_name, params, residuals, residu
 
 test_fwdSR_predict_recruitment <- function(model_name, params, residuals, residuals_mult, srp, initial_params_indices) {
     .Call('FLasher_test_fwdSR_predict_recruitment', PACKAGE = 'FLasher', model_name, params, residuals, residuals_mult, srp, initial_params_indices)
+}
+
+test_fwdSR_does_recruitment_happen <- function(model_name, params, residuals, residuals_mult, unit, year, season) {
+    .Call('FLasher_test_fwdSR_does_recruitment_happen', PACKAGE = 'FLasher', model_name, params, residuals, residuals_mult, unit, year, season)
 }
 
 test_operatingModel_empty_constructor <- function() {

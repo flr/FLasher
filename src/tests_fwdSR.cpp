@@ -71,3 +71,13 @@ FLQuant test_fwdSR_predict_recruitment(std::string model_name, const FLQuant par
     FLQuant rec = fwdsr.predict_recruitment(srp, initial_params_indices);
     return rec;
 }
+
+
+// [[Rcpp::export]]
+bool test_fwdSR_does_recruitment_happen(const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, unsigned int unit, unsigned int year, unsigned int season){
+    fwdSR fwsr(model_name, params, residuals, residuals_mult);
+    return fwsr.does_recruitment_happen(unit, year, season);
+}
+
+
+
