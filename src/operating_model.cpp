@@ -291,11 +291,11 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
     return propf_out;
 }
 
-
 /*! \brief Calculates the recruitment for each iteration for a particular unit of a particular fwdBiol at a particular timestep
  *
  * Each unit of a biol can recruit at a different time so we need to specify the unit we want the recruitment for.
  * However, all units have the same timelag between spawning and recruitment.
+ * Recruitment is based on the total SRP of all units.
  * The length of the returned vector is the number of iterations in the biol.
  * \param biol_no The position of the biol in the biols list (starting at 1).
  * \param unit The unit of the biol we are dealing with.
@@ -313,15 +313,10 @@ std::vector<adouble> operatingModel::calc_rec(const unsigned int biol_no, const 
     // Area not dealt with yet - set to 1
     unsigned int area = 1;
     unsigned int niter = get_niter();
-    // Get SRP for the single unit, year and season, i.e. just iters
-    //
-    // NO GET SRP OF ALL UNITS AND SUM OVER ALL UNITS
-    // BUT SRP IN SOME UNITS WILL BE 0 - SPWN IS NA
-    //
-    //
-    std::vector<unsigned int> srp_indices_min{srp_year, unit, srp_season, area, 1};
-    std::vector<unsigned int> srp_indices_max{srp_year, unit, srp_season, area, niter};
-    FLQuantAD srpq = srp(biol_no, srp_indices_min, srp_indices_max);
+    // SRP for all units
+    std::vector<unsigned int> srp_indices_min{srp_year, 1, srp_season, area, 1};
+    std::vector<unsigned int> srp_indices_max{srp_year, biol_dim[2], srp_season, area, niter};
+    FLQuantAD srpq = total_srp(biol_no, srp_indices_min, srp_indices_max);
     // Initial indices of the SR params are those of the recruitment timestep for the Biol
     // SR params are in step with the Recruitment not the SRP
     unsigned int initial_params_year = 0;

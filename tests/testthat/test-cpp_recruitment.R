@@ -67,8 +67,8 @@ test_that("operatingModel f_prop_spwn methods",{
     expect_that(c(prop_out), is_identical_to(0.0))
 })
 
-# SRP - disaggrated - not summed over unit
-test_that("operatingModel disaggregated srp methods",{
+# SRP 
+test_that("operatingModel srp methods",{
     # Assumes that f_prop_spwn and f methods are working correctly
     # Calculated as SSB: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
     # Make a complicated OM with seasons and units
@@ -217,4 +217,105 @@ test_that("operatingModel disaggregated srp methods",{
 })
 
 
-# Recruitment calculation
+test_that("operatingModel calc_rec annual OM", {
+    FCB <- array(c(1,1,1), dim=c(1,3))
+    colnames(FCB) <- c("F","C","B")
+    data(ple4)
+    # Annual model
+    niters <- 20
+    for (recruitment_age in 0:3){
+        om <- make_test_operatingModel(ple4, FCB, nseasons = 1, recruitment_age = recruitment_age, niters = niters, sd = 0.1)
+        pars <- om[["biols"]][[1]][["srr_params"]]
+        res <- om[["biols"]][[1]][["srr_residuals"]]
+        om[["biols"]][[1]][["srr_residuals_mult"]] <- TRUE
+        rec_year <- round(runif(1, min=5, max=10))
+        # Get the SRP - rec age is 1, so get SRP year before, 
+        srp <- test_operatingModel_total_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, c(rec_year-recruitment_age,1,1,1,1), c(rec_year-recruitment_age,1,1,1,niters))
+        rec_in <- pars[1,] * srp / (pars[2,] + srp) # bevholt
+        rec_in <- rec_in * res[,rec_year]
+        rec_out <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, rec_year)
+        expect_equal(c(rec_in), rec_out)
+        # Additive
+        om[["biols"]][[1]][["srr_residuals_mult"]] <- FALSE
+        rec_in <- pars[1,] * srp / (pars[2,] + srp) # bevholt
+        rec_in <- rec_in + res[,rec_year]
+        rec_out <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, rec_year)
+        expect_equal(c(rec_in), rec_out)
+    }
+})
+
+test_that("operatingModel calc_rec seasonal OM - 1 recruitment event", {
+    FCB <- array(c(1,1,1), dim=c(1,3))
+    colnames(FCB) <- c("F","C","B")
+    data(ple4)
+    niters <- 20
+    nseasons <- 4
+    for (recruitment_season in 1:nseasons){
+        # Seasonal model
+        for (recruitment_age in 0:3){ # recruitment age 0 is special case
+            om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = recruitment_season, recruitment_age = recruitment_age, niters = niters, sd = 0.1)
+            pars <- om[["biols"]][[1]][["srr_params"]]
+            res <- om[["biols"]][[1]][["srr_residuals"]]
+            rec_year <- round(runif(1, min=5, max=10))
+            for(season in 1:4){
+                if (recruitment_age == 0){
+                    srp_season <- season - 1
+                    srp_year <- rec_year
+                    if (srp_season < 1){
+                        srp_season <- nseasons
+                        srp_year <- rec_year - 1
+                    }
+                }
+                if (recruitment_age > 0){
+                    srp_season <- season
+                    srp_year <- rec_year - recruitment_age 
+                }
+                srp <- test_operatingModel_total_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, c(srp_year,1,srp_season,1,1), c(srp_year,1,srp_season,1,niters))
+                rec_in <- pars[1,,,season] * srp / (pars[2,,,season] + srp) # bevholt
+                rec_in <- rec_in * res[,rec_year,,season]
+                rec_out <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, ((rec_year-1) * 4)+season)
+                expect_equal(c(rec_in), rec_out)
+            }
+        }
+    }
+})
+
+test_that("operatingModel calc_rec seasonal OM - multiple recruitment event", {
+    FCB <- array(c(1,1,1), dim=c(1,3))
+    colnames(FCB) <- c("F","C","B")
+    data(ple4)
+    niters <- 20
+    nseasons <- 4
+    recruitment_seasons <- c(1,3)
+    for (recruitment_age in 0:3){
+        om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = recruitment_seasons, recruitment_age = recruitment_age, niters = niters, sd = 0.1)
+        pars <- om[["biols"]][[1]][["srr_params"]]
+        res <- om[["biols"]][[1]][["srr_residuals"]]
+        rec_year <- round(runif(1, min=5, max=10))
+        for(season in 1:4){
+            if (recruitment_age == 0){
+                srp_season <- season - 1
+                srp_year <- rec_year
+                if (srp_season < 1){
+                    srp_season <- nseasons
+                    srp_year <- rec_year - 1
+                }
+            }
+            if (recruitment_age > 0){
+                srp_season <- season
+                srp_year <- rec_year - recruitment_age 
+            }
+            srp <- test_operatingModel_total_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, c(srp_year,1,srp_season,1,1), c(srp_year,2,srp_season,1,niters))
+            # Test by unit
+            for (unit in 1:length(recruitment_seasons)){
+                rec_in <- pars[1,,unit,season] * srp / (pars[2,,unit,season] + srp) # bevholt
+                rec_in <- rec_in * res[,rec_year,unit,season]
+                rec_out <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, unit, ((rec_year-1) * nseasons)+season)
+                expect_equal(c(rec_in), rec_out)
+            }
+        }
+    }
+})
+
+
+
