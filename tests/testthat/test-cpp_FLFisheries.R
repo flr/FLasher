@@ -157,7 +157,7 @@ test_that("FLCatchesAD iterators",{
     # Not const - sets a value in first element (fisheries can be different dims)
     value <- rnorm(1)
     fisheries_out <- test_FLFisheriesAD_iterator(fisheries, value)
-    value_out <- unname(unlist(lapply(fisheries_out, function(x) return(effort(x)[1, 1, 1, 1, 1, 1]))))
+    value_out <- unname(unlist(lapply(fisheries_out, function(x) return(x@effort[1, 1, 1, 1, 1, 1]))))
     expect_identical(rep(value,length(fisheries)), value_out)
     # All others are OK
     for (i in 1:length(fisheries)){
