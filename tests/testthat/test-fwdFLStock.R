@@ -47,9 +47,9 @@ test_that("ssb target", {
 
 
 # RESIDUALS
-residuals <- FLQuants(PLE=window(residuals(psr), start=1957))
-res <- fwd(ple4, control=control, residuals=residuals[[1]], sr=fsr)
-res <- fwd(ple4, control=control, sr=fsr)
+#residuals <- FLQuants(PLE=window(residuals(psr), start=1957))
+#res <- fwd(ple4, control=control, residuals=residuals[[1]], sr=fsr)
+#res <- fwd(ple4, control=control, sr=fsr)
 
 
 # FLS + FLQ
