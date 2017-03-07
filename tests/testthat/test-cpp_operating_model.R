@@ -9,8 +9,7 @@ test_that("operatingModel constructors",{
     test_operatingModel_empty_constructor()
     # Main constructor test
     # Set up parameters for full test 
-    #flq <- random_FLQuant_generator()
-    flq <- random_FLQuant_generator(fixed_dims=c(NA,NA,1,NA,NA,NA)) # force to have 1 unit for now
+    flq <- random_FLQuant_generator()
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     # Pull out just FLBiols for comparison
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
@@ -24,8 +23,7 @@ test_that("operatingModel constructors",{
 })
 
 test_that("operatingModel constructor dimension checks",{
-    #flq <- random_FLQuant_generator(min_dims=c(2,2,2,2,2,2))
-    flq <- random_FLQuant_generator(min_dims=c(2,2,1,2,2,2), fixed_dims=c(NA,NA,1,NA,NA,NA))
+    flq <- random_FLQuant_generator(min_dims=c(2,2,2,2,2,2))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
     good_dim <- dim(flq)
@@ -73,8 +71,7 @@ test_that("operatingModel constructor dimension checks",{
 })
 
 test_that("operatingModel housekeeping",{
-    #flq <- random_FLQuant_generator()
-    flq <- random_FLQuant_generator(fixed_dims=c(NA,NA,1,NA,NA,NA))
+    flq <- random_FLQuant_generator()
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2)
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
@@ -82,10 +79,10 @@ test_that("operatingModel housekeeping",{
     expect_equal(out, dim(flq)[6])
 })
 
-# Test F method with random Biols and Fisheries
+# Test partial F method with random Biols and Fisheries
 # No check if FC catches B
 test_that("operatingModel get_f method for FCB with random OM objects - just partial F - one catch on one biol",{
-    flq <- random_FLQuant_generator(min_dims = c(2,2,2,2,2,2), fixed_dims=c(NA,NA,1,NA,NA,NA))
+    flq <- random_FLQuant_generator(min_dims = c(2,2,2,2,2,2))
     flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 5, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
@@ -155,7 +152,6 @@ test_that("operatingModel get_f method for FCB with random OM objects - just par
 test_that("get_f for biols with example operatingModel1 - total Fs from multiple FLFishery objects",{
     # Get the total Fs on Biols
     # Uses the FCB slot
-    #om <- make_test_operatingModel1(20)
     data(ple4)
     FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
     colnames(FCB) <- c("F","C","B")
@@ -187,8 +183,7 @@ test_that("get_f for biols with example operatingModel1 - total Fs from multiple
 
 test_that("operatingModel fbar methods",{
     # Two catches on a biol
-    #flq <- random_FLQuant_generator(fixed_dims = c(10,2,2,2,2,20))
-    flq <- random_FLQuant_generator(fixed_dims = c(10,2,1,2,2,20))
+    flq <- random_FLQuant_generator(fixed_dims = c(10,2,2,2,2,20))
     flbs <- random_fwdBiols_list_generator(min_biols = 1, max_biols = 1, fixed_dims = dim(flq))
     # Pull out just FLBiols for testing
     flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
@@ -200,6 +195,7 @@ test_that("operatingModel fbar methods",{
     dim_max <- dim(flq)
     dim_min <- round(runif(6, min=1, max = dim_max))
     # Fbar on whole biol
+    # F summed over a unit
     #fin <- test_operatingModel_unit_f_B_subset(flfs, flbs, fc, 1, dim_min, dim_max)
     fin <- test_operatingModel_get_f_B_subset(flfs, flbs, fc, 1, dim_min, dim_max)
     fbar_in <- apply(fin, 2:6, mean)
@@ -448,7 +444,10 @@ test_that("operatingModel project_fisheries", {
 test_that("operatingModel landings, catch and discards methods",{
     # These methods evaluate the current state of the OM
     # i.e. just pull values out, no calculation
-    om <- make_test_operatingModel1(10)
+    data(ple4)
+    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+    colnames(FCB) <- c("F","C","B")
+    om <- make_test_operatingModel(ple4, FCB, nseasons = 4, niters=10)
     dim_max <- dim(n(om[["biols"]][[1]][["biol"]]))
     dim_min <- round(runif(6, min=1, max=dim_max))
     year <- round(runif(1,min=dim_min[2],max=dim_max[2]))
@@ -682,7 +681,10 @@ test_that("operatingModel eval_om simple", {
     # Based on ple4 simple
     # Add more as target types added
     niters <- 10 
-    om <- make_test_operatingModel1(niters)
+    data(ple4)
+    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+    colnames(FCB) <- c("F","C","B")
+    om <- make_test_operatingModel(ple4, FCB, nseasons = 4, niters=niters)
     dim_max <- dim(n(om[["biols"]][[1]][["biol"]]))
     dim_min <- round(runif(6, min=1, max=dim_max))
     # Catch
