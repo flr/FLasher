@@ -682,7 +682,7 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
     fisheries <- FLFisheries(flfs)
     fisheries@desc <- "fisheries"
     # Add a random control for completeness
-    fwc <- random_fwdControl_generator(niters=20)
+    fwc <- random_fwdControl_generator(niters=niters)
     fwc@FCB <- FCB
     return(list(fisheries = fisheries, biols=biols, fwc=fwc))
 }

@@ -287,6 +287,14 @@ A unit can only recruit once per year.
 The recruitment of each unit of a `fwdBiol` is calculated separately and may have different stock recruitment parameters.
 However, the SRP that produces the recruitment is the total SRP across all units, i.e. the SRP of each individual unit is not considered, only the total.
 
+The final step in calculating recruitment is the application of residuals.
+This is an additional multiplier applied to the calculated recruitment.
+The residuals can be used to introduce further uncertainty on the recruitment. 
+
+The residuals are stored as an *FLQuant*. Internally, this must have the same time dimensions as the model.
+However, the R method `fwd()` accepts residuals just for the projection years.
+The first dimension of the residuals is length 1.
+
 ## Calculating SRP
 
 The SRP represents the total spawning potential of the stock at the time of spawning.
@@ -437,10 +445,13 @@ For example, if the model has 4 seasons and recruitment happens in season 4, the
 
 ## Recycling SRR parameters
 
-The dimensions of the SRR parameter *FLQuant* do not need to match the dimension of the `fwdBiol` as values are recycled where necessary.
+The dimensions of the SRR parameter *FLQuant* do not need to match the dimension of the `fwdBiol` as the SRR parameters are recycled where necessary.
 For example, if the model is annual and the SRR parameters are the same every year, then the SRR parameters do not need to be disaggregated by year.
 If there is a trend in the SRR parameters, then you can set different parameter values in every year.
 The recycling works over all dimensions (expect the first dimension) including iterations.
+
+If a dimension is disaggregated it should be the same the size as the rest of the model, otherwise only the first value is used.
+For example, if the model has 50 years and the SRR parameters have only 10 years, only the first year of the SRR parameters will be used.
 
 Due to the recycling of the SRR parameters, care must be taken to set up the SRR parameters when the model is seasonal.
 If the first SRR parameter in a timestep is not NA, the recruitment will be calculated.
@@ -492,33 +503,113 @@ test_fwdSR_get_params("ricker", srr_params, residuals, residuals_mult, c(1,1,1,1
 test_fwdSR_get_params("ricker", srr_params, residuals, residuals_mult, c(2,1,1,1,5))
 # Year 5, iter 10 (recycling over iterations)
 test_fwdSR_get_params("ricker", srr_params, residuals, residuals_mult, c(5,1,1,1,10))
+# Asking for Year outside than SRR params - only the first year is returned
+test_fwdSR_get_params("ricker", srr_params, residuals, residuals_mult, c(10,1,1,1,1))
 ```
 
 ## Example of single recruitment events
 
-
 The recruitment calculation is handled by the `calc_rec()` method, a member of the *operatingModel* class.
 This calculates the recruitment for a unit in a timestep.
 
+Here we show some examples of models with a single recruitment event each year.
 
-In this first example we have a simple annual model with a first age of 1.
+In this first example we have a simple annual model with one fishery, one catch and a single stock. The first age is 1.
 Recruitment happens in every timestep and is a function of the SPR in the previous year.
 The SRR parameters are constant over time which means that there is no need to disaggregate the parameters by time.
 
+```{r, single_rec1}
+FCB <- array(c(1,1,1), dim=c(1,3), dimnames=list(1,c("F","C","B")))
+# Annual model with a first age of one and 5 iterations
+om <- make_test_operatingModel(ple4, FCB, nseasons = 1, recruitment_age = 1, niters = 5, sd = 0.1)
+# Fix the SRR parameters so that they are not disaggregated by time or by iter
+sr_params <- FLQuant(NA, dimnames=list(param=c("a","b")))
+sr_params[1,] <- 700000
+sr_params[2,] <- 9000
+om[["biols"]][[1]][["srr_params"]] <- sr_params
+# Get the recruitment in the year 2 (uses SRP in year 1)
+# SRR parameters are recycled over the year and iter dimensions
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 2)
+# Get the recruitment in the year 10 (uses SRP in year 9)
+# SRR parameters are recycled over the year and iter dimensionas
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 50)
+```
 
-Annual - fixed parameters
+In this example, the model is the same as the one above except now the SRR parameters are disaggregated by year.
 
-Annual - changing parameters
+```{r, single_rec2}
+# Use the same OM as above
+# Set the SRR parameters to be disaggregated by year (not disaggregated by iteration)
+# Need same number of years as rest of model - else only first year is used
+sr_params <- FLQuant(NA, dimnames=list(param=c("a","b"), year=1:52))
+sr_params[1,] <- c(rep(700000,26), rep(900000,26))
+sr_params[2,] <- 9000
+om[["biols"]][[1]][["srr_params"]] <- sr_params
+# Show a few years - note step change in recruitment parameters
+sr_params[,24:28]
+# Get the recruitment in the year 2 (uses SRP in year 1)
+# SRR parameters are recycled over the iter dimension
+# Note same values as above
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 2)
+# Get the recruitment in the year 10 (uses SRP in year 9)
+# SRR parameters are recycled over the iter dimension
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 50)
+```
 
-Seasonal - one unit - no trend
+In this example we build a seasonal model.
+It has four seasons, a first age of 1 and recruits in season 2.
+As we only recruit once per year, the model has 1 unit.
+However, the SRR parameters need to be disaggregated by season so that we know in which season recruitment happens.
 
+```{r, single_rec3}
+FCB <- array(c(1,1,1), dim=c(1,3), dimnames=list(1,c("F","C","B")))
+# Seasonal model with, 4 seasons, recruiting in season 2 and a first age of one and 5 iterations
+om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = 2, recruitment_age = 1, niters = 5, sd = 0.1)
+# The SRR parameters have already been set up for us
+# Recruitment only happens in season 2
+om[["biols"]][[1]][["srr_params"]]
+# Recruitment in Year 2, season 1
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 5)
+# Recruitment in Year 2, season 2
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 6)
+# Recruitment in Year 2, season 3
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 7)
+# Recruitment in Year 2, season 4
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 8)
+```
 
+If the SRR parameters are not disaggregated by season then recruitment will be calculated every season.
+The result is that recruitment is calculated in every season.
+The `spwn` slot has been set so that spawning only happens in season 2.
+Recruitment in seaons 1, 3 and 4 is calculated using an SRP of 0, resulting in a recruitment of 0.
+This might appear to be what we want, but the problem is that recruitment was calculated at all.
+As mentioned above, the timing of recruitment determines the age group that survivors are placed in during the projection.
+When recruitment happens, the survivors from the previous timestep are placed in the next age group.
+In this example, we only wanted one recruitment season (season 2). Every time the projection gets to season 2, the individuals are considered to be a year older.
+If the SRR parameters are not disaggregated by season we do not know when recruitment is supposed to happen and so we do not know when individuals are a year older.
+The code will run, the projection is wrong.
 
-
+```{r, single_rec4}
+# Example of how to incorrectly set up SRR params for a seasonal model
+FCB <- array(c(1,1,1), dim=c(1,3), dimnames=list(1,c("F","C","B")))
+# Seasonal model with, 4 seasons, recruiting in season 2 and a first age of one and 5 iterations
+om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = 2, recruitment_age = 1, niters = 5, sd = 0.1)
+# Replace SRR params with new params without seasonal disaggregation
+# Recruitment only happens in season 2
+om[["biols"]][[1]][["srr_params"]] <- FLQuant(c(900000,9000), dimnames=list(params=c("a","b")))
+# Recruitment in Year 2 season 1
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 5)
+# Recruitment in Year 2, season 2
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 6)
+# Recruitment in Year 2, season 3
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 7)
+# Recruitment in Year 2, season 4
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 8)
+```
 
 ## Multiple recruitment events
 
-The model can become complicated when the stock has multiple units due to multiple recruitment events.
+The model can become complicated when the stock has multiple recruitment events.
 This is explored in more detail here.
 
 Within a year a stock may recruit multiple times.
@@ -529,287 +620,64 @@ We have to keep track of the individuals recruited in season 1 and season 3 sepa
 To do this we use the unit dimension.
 
 The unit dimension is used to store information on individuals from different recruitment events.
-The individuals that results from each recruitment event in a year must be stored in a different unit.
-A stock with multiple recruitment events must have a unit for each recruitment event and must also be seasonal (recruitment can only happen once in a timestep).
+The individuals that are produced in each recruitment event in a year must be stored in a different unit.
+A stock with multiple recruitment events must have a unit for each recruitment event and must also be seasonal (recruitment can only happen once in a timestep so multiple recruitment events implies multiple timesteps in a year).
 
-As mentioned above, due to recycling of SRR parameters, it is necessary to disaggregate the SRR parameters by unit and season.
-The units may have the same SRR parameters, but the timing of recruitment will be different for each unit.
+As mentioned above, due to the recycling of SRR parameters, it is necessary to disaggregate the SRR parameters by unit and season.
+The units may have the same SRR parameters but the timing of recruitment will be different for each unit.
+If the SRR parameters were not disaggregated by unit and season then we would know in which season each unit recruits.
 The SRR parameters should therefore be NA for the units in the timesteps that they do not recruit.
 If not, the same SRR parameters will be used for all units, meaning that the units will recruit at the same time. This is not supposed to happen.
 
-For example, consider a seasonal model which has 4 seasons and recruitment happens in seasons 2 and 4.
-The `spwn` slot of the *fwdBiol* should have been set up so that the SRP in seasons 2 and 4 is 0 (so recruitment is 0 in seasons 1 and 3).
+## Example of multiple recruitment event
+
+Here we build a seasonal model which has 4 seasons with recruitment events in seasons 2 and 4. The first age is 1.
+The `spwn` slot of the *fwdBiol* has been set up so that the SRP in seasons 2 and 4 is 0 (so recruitment is 0 in seasons 1 and 3).
 The SRR parameters need to have 4 seasons and 2 units.
 The first unit will have SRR parameters that produce recruitment in season 2 but are set to NA in seasons 1, 3 and 4.
 The second unit will have SRR parameters that produce recruitment in season 4 but are set to NA in seasons 1, 2 and 3.
 If the SRR params were not disaggregated by unit then, due to recycling of the SRR parameters, both units would recruit at the same time (which may not be what we want).
 This is illustrated below
 
-### Example of multiple recruitment event
-
-
-## Residuals
-
-### Examples of residuals
-
-
-
-# Examples
-
-
-<!--
-## Recruitment
-
-A stock may recruit in any timestep.
-Recruitment is calculated in every timestep. If there is no recruitment in that timestep the calculated recruitment is 0.
-The calculated recruitment is placed into the first age group of the `fwdBiol`.
-
-Recruitment is a function of the spawning reproductive potential (SRP) of the stock and a stock-recruitment function.
-The stock recruitment function and the parameters are stored in an object of class of`fwdSR`. Each `fwdBiol` has a `fwdSR`.
-
-### Stock recruitment parameters
-
-Internally, the stock recruitment parameters are stored as an `FLQuant` along the first dimension. 
-This means that the SRR parameters can be disaggregated by the *year*, *unit*, *season*, *area* and *iter* dimensions.
-In this way trends and uncertainty etc. can be added to the parameters.
-
-If the parameters are not disaggregated then they are recycled where necessary. For example, if we are running a multi year projection but the SRR parameters are not disaggregated by year, the same values are used for each year.
-
-EXAMPLE 
-
-Because of this recycling, we need to be careful to set the stock recruitment parameters to NA for the timesteps and units in which recruitment does not occur.
-For example, if we are running a model with 4 seasons in which the stock only recruits once per year, in season 2, we need to ensure that the parameters have seasons and that in seasons 1, 3 and 4 the values are set to NA.
-
-
-
-
-### Timing of recruitment
-
-The timing of recruitment is important. For example, in determining the correct age group in which to place survivors.
-The timing is determined by the stock recruitment parameters. If the value of the first parameter in a particular timestep is NA then recruitment does not happen in that timestep and the calculated recruitment value is 0.
-
-`does_recruitment_happen()`
-
-
-
-
-
-The main method is `calc_rec()` which takes the `fwdBiol` number and the `timestep`.
-AT THE MOMENT ALSO TAKES UNIT NUMBER, i.e. RECRUITMENT FOR EACH UNIT IS CALCED SEPARATELY - NEED TO FIX THIS
-
-### SRP
-
-
-Given that the age structure of the stock may not start at age 0, it necessary to calculate the SRP at the appropriate time that lead to the current recruitment.
-For example, if the first age of the stock is 1, then the current recruitment is a function of the SRP one year ago.
-The method `srp_timelag()' (a member of the `fwdBiol` class) calculates the lag between the current timestep and the timestep of the appropriate SRP.
-The returned SRP timelag depends on the first age of the stock and whether the model is seasonal:
-
-- If the first age is 0 and the model has a seasonal timestep, the timelag is 1 season i.e. the SRP comes from the previous season.
-- If the first age is 0 and the model has an annual timestep, the timelag is 0, i.e. there is no timelag and the SRP is calculated in the current timestep (it's a strange case).
-- If the first age is >1, the timelag is the product of the first age and the number of seasons in the model, i.e. the difference between the first age and age 0 in the same season (the time of spawning). Note that if the model is annual, there is 1 season.
-
-SPAWNING IS ASSUMED TO BE AN INSTANTANEOUS EVENT THAT HAPPENS AT A POINT DURING THE TIMESTEP
-
-The SRP at the appropriate timestep is calculated using the `srp()` method, a member of the `operatingModel` class.
-
-The SRP calculation is built around 3 parameters that are members of the `fwdBiol` class (and the `FLBiolCpp` class in R):
-
-- `spwn` - the proportion of the time through the timestep when spawning occurs (0 the start, 1 the end, NA no spawning happens). e.g. if `spwn` = 0.5 then spawning happens halfway through the timestep.
-- `fec` - the fecundity of the stock - MEANING WHAT
-- `mat` - the proportion mature in each age group.
-
-CHECK THE 'SPWN = NA' thing, RESULTING SSB CURRENTLY NA BUT SHOULD BE 0.0.
-BUT WHAT IS RESULTING RECRUITMENT
-
-SRP can be calculated in many different ways. For example, total egg production (TEP) and spawning stock biomass (SSB)
-At the moment, only SSB is available.
-
-###### SSB calculation
-
-The SSB in a timestep is calculated as:
-
-$SSB =  \sum_{a=age1}^{max~age} N_{a} Wt_{a} Mat_{a} exp(-Z_{prespawn,a})$
-
-where $a$ is the age, $N$ is the abundance, $Wt$ the average individual mass, $Mat$ the proportion mature and $Z_{prespawn}$ is the total mortality that occurs before spawning in that timestep.
-$Z$ is the sum of $F$ and natural mortality, $M$ i.e.:
-
-$Z_{prespawn, a} = F_{prespawn, a}$ and $M_{prespawn, a}$
-
-where $F_{prespawn}$ and $M_{prespawn}$ are the fishing mortality and natural mortality that occur before spawning in that timestep respectively.
-$M_{prespawn, a}$ is relatively simple to calculate:
-
-$M_{prespawn, a} = Spwn * M_{a}$
-
-where $Spwn$ is `spwn` as described above.
-
-$F_{prespawn, a}$ is more complicated as it needs to take it into account when fishing occurs during the timestep:
-
-$F_{prespawn, a} = F_{a} F_{prop~prespawn}$
-
-where $F_{prop~prespawn}$ is the proportion of fishing that occurs before spawning and is dependent on the time of spawning, $Spwn$, and the timing of fishing.
-The timing of fishing is given by two parameters $F_{start}$ and $F_{end}$ which give the proportion through the timestep.
-This information is stored at the `FLFishery` level in the member `hperiod`. The timing of fishing activity is not structured by age (*quant*) or *unit*, but can change over time (*year* and *season*), *area* and *iter*.
-
-WHAT HAPPENS IF THESE ARE NA? DOES IT MEAN NO FISHING? SAME AS EFFORT = 0? OR AN ERROR? PropF should = 0, i.e. it should not affect SSB calc.
-
-
-$F_{prop~prespawn}$ is calculated by the `f_prop_spwn()` method, a member of the `operatingModel` class. It evaluates three possibilities:
-
-- If $F_{end} < Spwn$ then $F_{prop~prespawn} = 1.0$,  i.e. all fishing takes place before spawning.
-- If $F_{start} > Spwn$ then $F_{prop~prespawn} = 0.0$, i.e. all fishing takes place after spawning.
-- Else $F_{prop~prespawn} = (Spwn - F_{start}) / (F_{end} - F_{start})$, i.e. spawning happens at some point during the fishing period. 
-
-When the stock is fished by multiple ``FLCatch``es, the $F$ parts from each ``FLCatch`` are summed.
-
-HOW ARE UNITS DEALT WITH?
-
-#### Recruitment prediction
-
-Following the calculation of the SRP, the `predict_recruitment()` method is called, taking the SRP and the recruitment timestep.
-This method calculates the recruitment based on the SRP and the SRR parameters at the recruitment timestep,
-It then applies the residuals to the calculated recruitment.
-
-
-Internally, the residuals are the same size as the rest of the operating model apart from along the first dimension (which is always 1 - there is no age structure to the residuals) and the *iter* dimension which must be 1 or the same as the *iter* dimension in the operating model. The residuals are recycled along the *iter* dimension if necessary.
-For example, if the number of iterations in the operating model is 1000 and there is only iteration in the residuals, the residuals are recycled over the operating model iterations.
-
-<!--
-### Examples
-#
-#We can use the built in `make_test_operatingModel3()` function to create the elements needed for a simple operating model with one fishery fishing on a single stock (all based on the `ple4` data set).
-#
-#```{r makeOM3}
-#niters <- 10
-#om <- make_test_operatingModel3(niters=niters)
-#```
-#
-### SSB calculation
-
-<!--
-
-At the moment the `srp()` method calculates the SSB.
-Here we define a function in C++ that exposes this method to R and compile using `cppFunction()` from *Rcpp*.
-
-```{r makeSRPtestfunc}
-#source <- '
-#FLQuantAD ssb_cpp(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-#    operatingModel om(flfs, biols, ctrl);
-#    return om.srp(1, indices_min, indices_max);
-#}
-#'
-#cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
+```{r, multi_rec1}
+# Simple model with a single fishery, catch and stock
+FCB <- array(c(1,1,1), dim=c(1,3), dimnames=list(1,c("F","C","B")))
+# Seasonal model with, 4 seasons, recruitment in seasons 2 and 4, first age of 1 and 5 iterations
+om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = c(2,4), recruitment_age = 1, niters = 5, sd = 0.1)
+# Look at spwn slot that determines the timing of spawning
+# Spawning pattern of unit 1
+spwn(om[["biols"]][[1]][["biol"]])[,1,1,]
+# Spawning pattern of unit 2
+spwn(om[["biols"]][[1]][["biol"]])[,1,2,]
+# Both units spawn at the same time. Recruitment is always based on total SRP of both units.
+# Look at the SRR params - they are disaggregated by param, unit and season (and iter)
+dim(om[["biols"]][[1]][["srr_params"]])
+# Season 1, neither unit recruits
+om[["biols"]][[1]][["srr_params"]][,,,1]
+# Season 2, unit 2 recruits
+om[["biols"]][[1]][["srr_params"]][,,,2]
+# Season 3, neither unit recruits
+om[["biols"]][[1]][["srr_params"]][,,,3]
+# Season 4, unit 2 recruits
+om[["biols"]][[1]][["srr_params"]][,,,4]
+# Check that the calculated recruitment reflects this
+# Year 2, season 1, unit 1
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 5)
+# Year 2, season 1, unit 2
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, 5)
+# Year 2, season 2, unit 1
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 6)
+# Year 2, season 2, unit 2
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, 6)
+# Year 2, season 3, unit 1
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 7)
+# Year 2, season 3, unit 2
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, 7)
+# Year 2, season 4, unit 1
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, 8)
+# Year 2, season 4, unit 2
+test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, 8)
 ```
-
-We calculate the SSB with differing values in the `spwn` and `hperiod` slots to demonstrate the impact of the timing of fishing and the timing of spawning.
-
-For demonstration purposes, we only calculate the SSB for the first year and iteration.
-
-In this first example, all the fishing occurs after spawning has occured. We set the `spwn` slot to 0 (so spawning occurs at the beginning of the timestep) and the `hperiod` to 1.0 (a pulse fishery at the end of the timestep).
-
-```{r spwn_before_fish}
-#spwn(om$biols[[1]][[1]])[] <- 0.0
-#hperiod(om$fisheries[[1]])["start",] <- 1.0
-#hperiod(om$fisheries[[1]])["end",] <- 1.0
-#ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
-```
-
-If spawning happens after the fishing has occured, we get a lower SSB (the stock will also have experienced a whole timesteps worth of natural mortality too):
-```{r spwn_after_fish}
-#spwn(om$biols[[1]][[1]])[] <- 1.0
-#hperiod(om$fisheries[[1]])["start",] <- 0.0
-#hperiod(om$fisheries[[1]])["end",] <- 0.0
-#ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
-```
-
-If spawning happens during the fishing period, the result is somewhere in between:
-```{r spwn_during_fish}
-#spwn(om$biols[[1]][[1]])[] <- 0.5 
-#hperiod(om$fisheries[[1]])["start",] <- 0.3
-#hperiod(om$fisheries[[1]])["end",] <- 0.6
-#ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
-```
-If no spawning happens in that timestep we set the `spwn` slot to NA.
-This results in a SSB of NA:
-SHOULD BE 0?
-
-```{r NAspwn}
-#spwn(om$biols[[1]][[1]])[] <- NA
-#ssb_cpp(om$fisheries, om$biols, om$fwc, c(1,1,1,1,1), c(1,1,1,1,1))
-```
--->
-
-<!--
-### Calculating recruitment
-
-Here we demonstrate how the recruitment is calculated.
-We again use the simple operating model with a single catch and fishery.
-The operating model has iterations but as we set the `sd`argument to 0, each iteration is the same.
-
-```{r makeOM3_again}
-#niters <- 10
-#om <- make_test_operatingModel3(niters=niters, sd = 0.0)
-```
-
-FIX THIS WHEN SPWN = NA
-
-To keep things simple, we set spawning to occur at the start of the timestep, before the fishing period.
-
-```{r spwn_before_fish_again}
-#spwn(om$biols[[1]][[1]])[] <- 0.0 
-## spwn(om$biols[[1]][[1]])[] <- NA 
-#hperiod(om$fisheries[[1]])["start",] <- 1.0 
-#hperiod(om$fisheries[[1]])["end",] <- 1.0
-```
-
-We write a function that exposes the C++ ``calc_rec()`` method to R:
-
-```{r makeRectestfunc}
-#source <- '
-#std::vector<double> rec_cpp(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, unsigned int timestep){
-#    operatingModel om(flfs, biols, ctrl);
-#    std::vector<adouble> rec_ad = om.calc_rec(1, 1, timestep);
-#    std::vector<double> rec(rec_ad.size());
-#    std::transform(rec_ad.begin(), rec_ad.end(), rec.begin(), [](adouble x) {return Value(x);});
-#    return rec;
-#}
-#'
-#cppFunction(code=source, depends = 'FLasher', plugins='cpp11', rebuild=TRUE)
-```
-
-In the default example the SRR parameters do not have a time structure, the values are recycled and the same value is used for all years and seasons.
-Similarly, here there are also no iterations and the values are recycled over all iterations.
-
-```{r srr_params}
-#om$biols[[1]]$srr_params
-```
-
-We calculate the recruitment in year 10. We have iterations but as the iterations are all the same, there is no variability in the calculated recruitment:
-
-```{r rec1}
-#year <- 10
-#rec_cpp(om$fisheries, om$biols, om$fwc, 10)
-```
-
-We can add iterations to the SRR paramers. Here we just add some random noise. This results in random noise in the predicted recruitment:
-
-```{r srr_params_iters}
-#srp <- propagate(om$biols[[1]]$srr_params, niters)
-#srp <- srp * rlnorm(srp, mean=0, sd = 0.1)
-#om$biols[[1]]$srr_params <- srp
-#rec_cpp(om$fisheries, om$biols, om$fwc, 10)
-```
-
-The SRR parameters can vary by any of the dimensions in a FLQuant (apart from the first one, which is used to store the different parameters), e.g. by year and season to model a trend.
-
-SOMETHING ON RESIDUALS AND RECYCLING TOO
-
--->
-
-
-# Recruitment in different seasons
-
-HOW ARE DIFFERENT RECRUITMENT EVENTS HANDLED
 
 # Projection targets
 
