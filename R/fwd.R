@@ -34,8 +34,13 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   # CONVERT biols to list(list(object, name, params, residuals, mult))
   biolscpp <- lapply(object, as, "list")
 
+  # Residuals must be same dim 2-5 as the biol
   # ADD residuals
   for(i in names(biolscpp)) {
+    bdnms <- dimnames(n(biolscpp[[i]][["biol"]]))
+    year_range <- range(as.numeric(bdnms$year)) 
+    # Need a window equivalent for year and season
+    residuals[[i]] <- window(residuals[[i]], start=year_range[1], end=year_range[2])
     biolscpp[[i]][["srr_residuals"]] <- residuals[[i]]
   }
 
