@@ -40,7 +40,7 @@ test_that("operatingModel annual project_biol", {
     om_out <- test_operatingModel_project_biols(om[["fisheries"]], om[["biols"]], om[["fwc"]], year)
     nextn_out <- n(om_out[["biols"]][[1]])[,year,]
     expect_FLQuant_equal(nextn_out, nextn)
-}
+})
 
 
 test_that("operatingModel seasonal project_biol single unit", {
