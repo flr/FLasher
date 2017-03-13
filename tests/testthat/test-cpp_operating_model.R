@@ -717,24 +717,18 @@ test_that("get_target_value_hat", {
 # Values in control object 
 test_that("get_target_value - straight value", {
     niters <- 10 
-    #flq <- random_FLQuant_generator(fixed_dims = c(5,20,3,4,1,niters))
-    flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
-    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
-    # Pull out just FLBiols for testing
-    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
-    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
-    # Fix FCB
-    FCB <- array(NA, dim=c(3,3))
-    FCB[1,] <- c(1,1,1)
-    FCB[2,] <- c(1,2,2)
-    FCB[3,] <- c(2,1,2)
-    # Make an fwdControl to test
-    # Two sim catch targets
-    years <- sort(rep(round(runif(4, min=1,max=dim(flq)[2])),each=2))
-    seasons <- sort(rep(round(runif(4, min=1,max=dim(flq)[4])),each=2))
+    data(ple4)
+    FCB <- array(c(1,1,1,2,1,2), dim=c(2,3))
+    colnames(FCB) <- c("F","C","B")
+    om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = c(1,3), recruitment_age = 1, niters = niters, sd = 0.1)
+    flfs <- om[["fisheries"]]
+    flbs <- om[["biols"]]
+    # Make a fwdControl with a two targets
+    dims <- dim(n(om[["biols"]][[1]][["biol"]]))
+    years <- sort(rep(round(runif(2, min=1,max=dims[2])),each=2))
+    seasons <- sort(rep(round(runif(2, min=1,max=dims[4])),each=2))
     value <- abs(rnorm(4))
     # 1 iter in control, many in OM - should blow up control iters internally
-    # Simple control object
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], 
                         quant = c("catch","catch"), value = value[1:2],
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2))
@@ -742,10 +736,9 @@ test_that("get_target_value - straight value", {
                         quant = c("landings","discards"), value = value[3:4],
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA))
     fwc <- fwdControl(rbind(trgt1,trgt2))
-    fwc@target$order <- c(1,1,2,2)
+    fwc@target$order <- c(1,1,2,2) 
     fwc@FCB <- FCB
     # No iters in control - but iters in OM
-    fwc@iters[,"value",] <- value
     val_hat1 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1)
     val_in1 <- rep(fwc@iters[1,"value",],niters)
     expect_equal(val_hat1, val_in1)
@@ -762,7 +755,6 @@ test_that("get_target_value - straight value", {
     expect_equal(val_hat2, val_in2)
     val_hat <- test_operatingModel_get_target_value2(flfs, flbs, fwc, 2)
     expect_equal(val_hat, c(val_in1, val_in2))
-
     # Same number of iters in iters and OM
     fwc <- fwdControl(rbind(trgt1, trgt2), niters)
     fwc@target$order <- c(1,1,2,2)
@@ -790,20 +782,11 @@ test_that("get_target_value - straight value", {
     fwc@iters[,"value",] <- abs(rnorm(4*(niters-1)))
     fwc@FCB <- FCB
     expect_error(test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1))
-
     # Many iters in control object, 1 in OM
     # Just throws error
-    niters <- 1 
-    flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
-    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
-    # Pull out just FLBiols for testing
-    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
-    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
-    # Make an fwdControl to test
-    # Two sim catch targets
-    years <- rep(round(runif(4, min=1,max=dim(flq)[2])),each=2)
-    seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
-    niters <- 100
+    om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = c(1,3), recruitment_age = 1, niters = 1, sd = 0.1)
+    flfs <- om[["fisheries"]]
+    flbs <- om[["biols"]]
     fwc <- fwdControl(rbind(trgt1, trgt2), niters)
     fwc@target$order <- c(1,1,2,2)
     fwc@iters[,"value",] <- abs(rnorm(4*niters))
@@ -814,21 +797,16 @@ test_that("get_target_value - straight value", {
 test_that("get_target_value - min / max values", {
     # Min / Max tests
     niters <- 10 
-    #flq <- random_FLQuant_generator(fixed_dims = c(5,20,6,4,1,niters))
-    flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
-    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
-    # Pull out just FLBiols for testing
-    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
-    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
-    # Fix FCB
-    FCB <- array(NA, dim=c(3,3))
-    FCB[1,] <- c(1,1,1)
-    FCB[2,] <- c(1,2,2)
-    FCB[3,] <- c(2,1,2)
-    # Make an fwdControl to test
-    # Two sim catch targets
-    years <- rep(round(runif(4, min=1,max=dim(flq)[2])),each=2)
-    seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
+    data(ple4)
+    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+    colnames(FCB) <- c("F","C","B")
+    om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = c(1,3), recruitment_age = 1, niters = niters, sd = 0.1)
+    flfs <- om[["fisheries"]]
+    flbs <- om[["biols"]]
+    # Make a fwdControl with a two targets
+    dims <- dim(n(om[["biols"]][[1]][["biol"]]))
+    years <- sort(rep(round(runif(2, min=1,max=dims[2])),each=2))
+    seasons <- sort(rep(round(runif(2, min=1,max=dims[4])),each=2))
     value <- abs(rnorm(4))
     # Simple control object - just catch
     # Which iters will be less (max) / greater (min) than actual catch
@@ -848,16 +826,14 @@ test_that("get_target_value - min / max values", {
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], 
                         quant = c("catch","catch"),
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2))
-    # fwdControl constructor fix
     fwc <- fwdControl(trgt1, niters)
     fwc@target$order <- 1
     fwc@iters[1,"max",] <- ctrl_catch1
     fwc@iters[2,"max",] <- ctrl_catch2
     fwc@FCB <- FCB
+    # only the small iters should equal values in control - Others same as in OM
     val_hat1 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 1)
-    # only the small iters should equal values in control
     expect_equal(val_hat1[small_iters], unname(fwc@iters[1,"max",small_iters]))
-    # Others same as in OM
     expect_equal(val_hat1[big_iters], catch1[big_iters])
     val_hat2 <- test_operatingModel_get_target_value(flfs, flbs, fwc, 1, 2)
     expect_equal(val_hat2[small_iters], unname(fwc@iters[2,"max",small_iters]))

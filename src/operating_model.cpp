@@ -737,7 +737,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         year_season_to_timestep(target_effort_year, target_effort_season, biols(1).n().get_nseason(), target_effort_timestep);
         // Get the target value based on control object and current value in the OM (if Max / Min)
         // This is not part of the operation sequence so is evaluated before we turn on the tape
-        std::vector<adouble> target_value = get_target_value(target_count); // values of all sim targets for the target
+        std::vector<double> target_value = get_target_value(target_count); // values of all sim targets for the target
         // Set up effort multipliers - do all efforts and iters at same time (keep timesteps, areas, units seperate)
         std::vector<adouble> effort_mult_ad(neffort * niter, effort_mult_initial);
         std::fill(effort_mult_ad.begin(), effort_mult_ad.end(), effort_mult_initial);
@@ -783,9 +783,9 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         std::vector<adouble> error(target_value_hat.size());
         //if(verbose){Rprintf("Calculating error\n");}
         std::transform(target_value.begin(), target_value.end(), target_value_hat.begin(), error.begin(),
-                [](adouble x, adouble y){return x - y;});
+                [](double x, adouble y){return x - y;});
                 //[](adouble x, adouble y){return (x - y) * (x - y);}); // squared error - not as effective
-        if(verbose){Rprintf("target 1. target_value: %f target_value_hat: %f error: %f\n", Value(target_value[0]), Value(target_value_hat[0]), Value(error[0]));}
+        //if(verbose){Rprintf("target 1. target_value: %f target_value_hat: %f error: %f\n", Value(target_value[0]), Value(target_value_hat[0]), Value(error[0]));}
         //if(verbose){Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", Value(target_value[1]), Value(target_value_hat[1]), Value(error[1]));}
         // Stop recording
         CppAD::ADFun<double> fun(effort_mult_ad, error);
@@ -1181,27 +1181,26 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
 } 
 //@}
 
-/*! \name Get the desired target values in the operating model
+/*! \name Get the desired target values 
  */
 //@{
-/*! \brief Get the desired target values in the operating model for all simultaneous targets in a target set.
+/*! \brief Get the desired target values for all simultaneous targets in a target set.
  * If the target values are relative, the returned values are the proportions from the control object, not the actual values.
  * If values are based on max / min some calculation is required.
  * Returns a vector of the simultaneous target values of a target set. 
  * Needs to return adouble because if min / max target, the returned value will depend on current effort value.
  * \param target_no References the target column in the control dataframe. Starts at 1.
  */
-std::vector<adouble> operatingModel::get_target_value(const int target_no) {
-    //Rprintf("In get_target_value all sim targets\n");
+std::vector<double> operatingModel::get_target_value(const int target_no) {
     auto nsim_target = ctrl.get_nsim_target(target_no);
-    std::vector<adouble> value;
+    std::vector<double> value;
     for (auto sim_target_count = 1; sim_target_count <= nsim_target; ++sim_target_count){
         auto sim_target_value = get_target_value(target_no, sim_target_count);
         value.insert(value.end(), sim_target_value.begin(), sim_target_value.end());
     }
     return value;
 }
-/*! \brief Get the desired target values in the operating model for a single simultaneous target
+/*! \brief Get the desired target values for a single simultaneous target
  * If the target values are relative, the returned values are the proportions from the control object, not the actual values.
  * If values are based on max / min some calculation is required.
  * Returns a vector of values of the simultaneous target from the target set. 
@@ -1210,71 +1209,53 @@ std::vector<adouble> operatingModel::get_target_value(const int target_no) {
  * \param target_no References the target column in the control dataframe. Starts at 1.
  * \param sim_target_no References the target column in the control dataframe. Starts at 1.
  */
-std::vector<adouble> operatingModel::get_target_value(const int target_no, const int sim_target_no) {
-    //Rprintf("Get target value\n");
-    // Pull out values for all iterations for the sim targets from the control object
-    auto niter = get_niter(); // number of iters taken from effort of first fishery
-    auto ctrl_niter = ctrl.get_niter();
-    // iters in ctrl object may be less than iters in effort (1 or n)
-    // Check if 1 or n (but ctrl niters cannot be bigger than effort iters)
-    //Rprintf("ctrl iters: %i\n", ctrl_niter);
+std::vector<double> operatingModel::get_target_value(const int target_no, const int sim_target_no) {
+    // Check iters in control and OM
+    // Iters in ctrl object may be less than iters in OM (1 or n)
+    auto niter = get_niter(); // number of iters in OM taken from effort of first fishery
+    auto ctrl_niter = ctrl.get_niter(); // iters in control object
     if ((niter != ctrl_niter) & (ctrl_niter != 1)){
         Rcpp::stop("In operatingModel::get_target_value. Iterations in control object must be 1 or equal to those in fishing effort.\n");
     }
-    std::vector<adouble> value(niter);
     // Are we dealing with a min / max value?
     // If so we need to get the current state of the operating model to compare with
-    // This should not ask for a min / max column in target, but check the first value of min / max column in iters
-    //double max_col = ctrl.get_target_num_col(target_no, sim_target_no, "max");
-    //double min_col = ctrl.get_target_num_col(target_no, sim_target_no, "min");
     std::vector<double> max_col = ctrl.get_target_value(target_no, sim_target_no, 3); 
     std::vector<double> min_col = ctrl.get_target_value(target_no, sim_target_no, 1); 
     // Just check first iteration of min and max values
     bool max_na = Rcpp::NumericVector::is_na(max_col[0]);
     bool min_na = Rcpp::NumericVector::is_na(min_col[0]);
+    std::vector<double> value(niter);
     if (!max_na | !min_na){
-        // Get current value in OM to compare to the min and max
-        std::vector<adouble> current_value = get_target_value_hat(target_no, sim_target_no);
-        value = current_value;
+        // Get current value in OM, force to double, to compare to the min and max
+        std::vector<adouble> value_ad = get_target_value_hat(target_no, sim_target_no);
+        std::transform(value_ad.begin(), value_ad.end(), value.begin(), [](adouble x) {return Value(x);});
         if(!max_na){
-            //Rprintf("Max target\n");
-            std::vector<double> ctrl_value = ctrl.get_target_value(target_no, sim_target_no, 3);
             // In case of only 1 ctrl iter we need to blow up niter
-            std::vector<adouble> ctrl_value_long(niter);
             if (niter > ctrl_niter){
-                std::fill(ctrl_value_long.begin(), ctrl_value_long.end(), ctrl_value[0]);
-            }
-            else {
-                ctrl_value_long.assign(ctrl_value.begin(), ctrl_value.end());
+                max_col.resize(niter);
+                std::fill(max_col.begin(), max_col.end(), max_col[0]);
             }
             // No need to use CppAD Conditional as target value is evaluated before the operation sequence, i.e. not on the tape
-            std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::min(x, y);});
+            std::transform(value.begin(), value.end(), max_col.begin(), value.begin(), [](double x, double y) {return std::min(x, y);});
         }
         if(!min_na){
-            //Rprintf("Min target\n");
-            std::vector<double> ctrl_value = ctrl.get_target_value(target_no, sim_target_no, 1);
             // In case of only 1 ctrl iter we need to blow up niter
-            std::vector<adouble> ctrl_value_long(niter);
             if (niter > ctrl_niter){
-                std::fill(ctrl_value_long.begin(), ctrl_value_long.end(), ctrl_value[0]);
+                min_col.resize(niter);
+                std::fill(min_col.begin(), min_col.end(), min_col[0]);
             }
-            else {
-                ctrl_value_long.assign(ctrl_value.begin(), ctrl_value.end());
-            }
-            std::transform(value.begin(), value.end(), ctrl_value_long.begin(), value.begin(), [](adouble x, adouble y) {return std::max(x, y);});
+            // No need to use CppAD Conditional as target value is evaluated before the operation sequence, i.e. not on the tape
+            std::transform(value.begin(), value.end(), min_col.begin(), value.begin(), [](double x, double y) {return std::max(x, y);});
         }
     }
     // If not min or max, just get the values from the control object
     else {
-        std::vector<double> ctrl_value = ctrl.get_target_value(target_no, sim_target_no, 2);
-        if (niter > ctrl_value.size()){
-            std::fill(value.begin(), value.end(), ctrl_value[0]);
-        }
-        else {
-            value.assign(ctrl_value.begin(), ctrl_value.end());
+        value = ctrl.get_target_value(target_no, sim_target_no, 2);
+        if (niter > value.size()){
+            value.resize(niter);
+            std::fill(value.begin(), value.end(), value[0]);
         }
     }
-    //Rprintf("Returned value: %f\n", Value(value[0]));
     return value;
 }
 //@}

@@ -200,18 +200,14 @@ std::vector<double> test_operatingModel_get_target_value_hat2(FLFisheriesAD flfs
 // [[Rcpp::export]]
 std::vector<double> test_operatingModel_get_target_value(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int target_no, const int sim_target_no){
     operatingModel om(flfs, biols, ctrl);
-    std::vector<adouble> out_ad = om.get_target_value(target_no, sim_target_no);
-    std::vector<double> out(out_ad.size());
-    std::transform(out_ad.begin(), out_ad.end(), out.begin(), [](adouble x) {return Value(x);});
+    std::vector<double> out = om.get_target_value(target_no, sim_target_no);
     return out;
 }
 
 // [[Rcpp::export]]
 std::vector<double> test_operatingModel_get_target_value2(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int target_no){
     operatingModel om(flfs, biols, ctrl);
-    std::vector<adouble> out_ad = om.get_target_value(target_no);
-    std::vector<double> out(out_ad.size());
-    std::transform(out_ad.begin(), out_ad.end(), out.begin(), [](adouble x) {return Value(x);});
+    std::vector<double> out = om.get_target_value(target_no);
     return out;
 }
 

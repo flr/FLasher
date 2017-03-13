@@ -681,7 +681,59 @@ test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2
 
 # Projection targets
 
+## Target types
+
+Can targets be unit / age structured?
+
+It is possible for the control target to have iterations. If there are no iterations, but the model does have iterations (e.g. in the biological abundance), then the same control target value is used for all iterations.
+
+Issue with Fbar target on a stock with multiple units
+
 WHAT HAPPENS WITH SRP AS A TARGET - TIMELAGS
+
+## Internally
+
+This section describes how the targets are evaluated in *FLasher*.
+It is a description of the internal workings of *FLasher* and is, therefore, of limited interest to most users.
+
+To solve the projection, *FLasher* attempts to find the fishing effort values in the appropriate timestep to hit the desired target:
+
+$error = target - \hat{target}$
+
+Where $target$ is the target (what we want, calculated from the the *fwdControl* object), $\hat{target}$ is the state of the operating model at a given level of fishing effort (where we are) and $error$ is the difference between the two. 
+*FLasher* attempts to find the fishing efforts so that $\hat{target}$ results in $error$ equalling 0.
+
+This is handled by three *operatingModel* class methods:
+
+* `get_target_value()`
+* `get_target_value_hat()`
+* `eval_om()`
+
+`get_target_value()` and `get_target_value_hat()` are used to get $target$ and $\hat{target}$ respectively.
+Both of these methods use the `eval_om` method.
+
+### `get_target_value()`
+
+This method takes the desired target value from the *fwdControl* object.
+It is called to calculate `what we want`.
+
+If the target is a minimum or maximum constraint then it is necessary to evaluate the current value of the target type in the operating model, given the current fishing effort, to see if the constraints are active. The desired target value is updated as a result.
+For example, if there is a maximum catch target and current catch value in the operating model is greater than the maximum catch target, the target value is set to the maximum target.
+If the current catch value is less than the maximum catch target, then the target value is set to the current catch value i.e. there is no need to constrain the effort as the constraint has not been breached.
+
+The evaluation of the current value of the target type in the operating model is carried out by calling the `get_target_value_hat()` method.
+
+The returned value is a vector of values. The values in the vector are the target values for each iteration in the model.
+There is no other structure in the returned value, e.g. there is no age structure (although, conceivably, a target could be set a for a single age).
+
+This method does use the target type. It is only concerned with values. When there is a target constraint and the target type is needed, it is handled by the `get_target_value_hat()` method.
+
+### `get_target_value_hat()`
+
+This method is called to calculate the current state of a target in the operating model, i.e. to find out`where we are`.
+
+
+### `eval_om()`
 
 
 # References
