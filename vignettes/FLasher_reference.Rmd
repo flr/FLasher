@@ -683,7 +683,9 @@ test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2
 
 ## Target types
 
-Can targets be unit / age structured?
+An enumerated type, *fwdControlTargetType* is used to store the target type. This is defined in the `fwdControl.h` header file.
+At the moment, targets cannot be set at the age or unit level. The targets are aggregated over all units and ages.
+
 
 It is possible for the control target to have iterations. If there are no iterations, but the model does have iterations (e.g. in the biological abundance), then the same control target value is used for all iterations.
 
@@ -730,7 +732,18 @@ This method does use the target type. It is only concerned with values. When the
 
 ### `get_target_value_hat()`
 
-This method is called to calculate the current state of a target in the operating model, i.e. to find out`where we are`.
+This method calculates the current state of a target in the operating model, i.e. it finds out`where we are`given the current level of fishing effort.
+The method interrogates the *fwdControl* object and retrieves the appropriate fishery, catch and biol number.
+It also sets up the indices ranges (year, season etc.) over which to evaluate the target type.
+All 6 dimensions are set, including the age range (from the `minAge` and `maxAge` column in the control object).
+Only some target types need an age range (such as fbar). However, it is always set because the target types are not treated differently by `get_target_value_hat()`.
+The indices range is not set by target type.
+
+The evaluation is carried out by the method `eval_om()`.
+
+
+If the target is a relative target, it evaluates the absolute both values and then calculates the ratio.
+
 
 
 ### `eval_om()`

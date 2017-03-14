@@ -308,14 +308,20 @@ double fwdControl::get_target_num_col(const int target_no, const int sim_target_
  * \param target_no References the target column in the control dataframe.
  * \param sim_target_no
  */
-std::string fwdControl::get_target_quantity(const int target_no, const int sim_target_no) const{
+std::string fwdControl::get_target_quantity(const int target_no, const int sim_target_no, const bool relative) const{
     auto row = get_target_row(target_no, sim_target_no);
-    Rcpp::CharacterVector quantities = target["quant"];
+    Rcpp::CharacterVector quantities;
+    if (relative){
+        quantities = target["relQuant"];
+    }
+    else {
+        quantities = target["quant"];
+    }
     return Rcpp::as<std::string>(quantities[row]);
 }
 
-fwdControlTargetType fwdControl::get_target_type(const int target_no, const int sim_target_no) const{
-    std::string quantity = get_target_quantity(target_no, sim_target_no);
+fwdControlTargetType fwdControl::get_target_type(const int target_no, const int sim_target_no, const bool relative) const{
+    std::string quantity = get_target_quantity(target_no, sim_target_no, relative);
     return get_target_type(quantity);
 }
 

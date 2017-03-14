@@ -1949,8 +1949,8 @@ test_operatingModel_get_target_value2 <- function(flfs, biols, ctrl, target_no) 
     .Call('FLasher_test_operatingModel_get_target_value2', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no)
 }
 
-test_operatingModel_get_target_age_range_indices <- function(flfs, biols, ctrl, target_no, sim_target_no) {
-    .Call('FLasher_test_operatingModel_get_target_age_range_indices', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no, sim_target_no)
+test_operatingModel_get_target_hat_indices <- function(flfs, biols, ctrl, target_no, sim_target_no, relative) {
+    .Call('FLasher_test_operatingModel_get_target_hat_indices', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no, sim_target_no, relative)
 }
 
 test_operatingModel_catches_subset <- function(flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max) {

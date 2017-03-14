@@ -1066,34 +1066,29 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no) {
  * \param sim_target_no References the simultaneous target in the target set. Starts at 1.
  */
 std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, const int sim_target_no) {
-
     bool verbose = false;
-
-    // Rprintf("In get_target_value_hat sim_target_no\n");
     if(verbose){Rprintf("sim_target_no: %i\n", sim_target_no);}
     // Target information: type, fishery, catch, biol, etc
     auto niter = get_niter();
     unsigned int year = ctrl.get_target_int_col(target_no, sim_target_no, "year");
     unsigned int season = ctrl.get_target_int_col(target_no, sim_target_no, "season");
     if(verbose){Rprintf("year: %i, season: %i\n", year, season);}
-    // Could add unit here if necessary.
-    fwdControlTargetType target_type = ctrl.get_target_type(target_no, sim_target_no);
+    // Could add unit here if necessary - though maybe a restriction is that targets cannot be set at the unit level.
+    fwdControlTargetType target_type = ctrl.get_target_type(target_no, sim_target_no, false);
     unsigned int fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
     unsigned int catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
     unsigned int biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "biol");
     if(verbose){Rprintf("fishery no: %i, catch no: %i, biol no: %i\n", fishery_no, catch_no, biol_no);}
-    // Set indices for subsetting the target values. We need to set indices_min and indices_max. This is passed to eval_om to eval the target over this range.
-    // Get the timestep (year / season) from control object. If we want a non-point timestep, e.g. sum over a range, then additional info will need to be in the control object
-    // Get all iters, units in the target object.
-    // Area is just
-    // Get the ages from minAge maxAge it possible
+    // Set indices for subsetting the target values. This is passed to eval_om to eval the target over this range.
+    // A year range may be possible in the future, e.g. total catches over a year
     unsigned int min_year = year;
     unsigned int max_year = year; // May change if additional info in control object
     unsigned int min_season = season;
     unsigned int max_season = season; // May change if additional info in control object
     // Get the unit range but could be biol only (total catch), or catch only (total catch from several biols), or fishery only (econ)
-    // If biol not NA, choose unit from biol
+    // As a first guess, unit comes from fishery which is always 1 (no fishery slots are disagregated over unit)
     unsigned int nunit = 1;
+    // If biol not NA, choose unit from biol
     if (!Rcpp::IntegerVector::is_na(biol_no)){
         nunit = biols(biol_no).n().get_nunit();
     }
@@ -1101,33 +1096,27 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     else if (!Rcpp::IntegerVector::is_na(catch_no)){
         nunit = fisheries(fishery_no, catch_no).landings_n().get_nunit();
     }
-    // Else unit comes from fishery which is always 1
-    else {
-        nunit = 1;
-    }
     // Age range - if NA in control, set to 1
     std::vector<unsigned int> age_range_indices = {0,0};
     unsigned int minAge = ctrl.get_target_int_col(target_no, sim_target_no, "minAge");
     unsigned int maxAge = ctrl.get_target_int_col(target_no, sim_target_no, "maxAge");
-    //if(verbose){Rprintf("minAge: %i maxAge %i\n", minAge, maxAge);}
     if(!Rcpp::IntegerVector::is_na(minAge) & !Rcpp::IntegerVector::is_na(maxAge)){
-        //if(verbose){Rprintf("Gettig age range indices\n");}
-        age_range_indices = get_target_age_range_indices(target_no, sim_target_no); // indices start at 0
+        age_range_indices = get_target_age_range_indices(target_no, sim_target_no, false); // indices start at 0
     }
-    //if(verbose){Rprintf("age_range_indices: %i %i\n", age_range_indices[0], age_range_indices[1]);}
     // Area
     unsigned int area = 1;
+    // Create the indices
     std::vector<unsigned int> indices_min = {age_range_indices[0]+1,min_year,1,min_season,area,1};
     std::vector<unsigned int> indices_max = {age_range_indices[1]+1,max_year,nunit,max_season,area,niter};
-    // Get the current absolute values, i.e. not relative, as FLQuant
+    // Get values from the OM
     FLQuantAD target_value = eval_om(target_type, fishery_no, catch_no, biol_no, indices_min, indices_max);
 
-    // Are we dealing with absolute or relative values?
-    // If relative, then we need to make rel_indices_min and rel_indices_max
+    // If relative target, then we need to make rel_indices_min and rel_indices_max
     // Targets can only be relative in time, fishery, catch and biol
     // i.e. Cannot change the target type (always relative to same target type)
     // Age range is the same - careful when comparing Fs from different Biols with different minAge and maxAges - it will be wrong!
-    // Has to be relative in time (can be same timestep, but must still be notified) and relative in fishery
+    // Could add relAge columns?
+    // Could also add relTargetType column?
     unsigned int rel_year = ctrl.get_target_int_col(target_no, sim_target_no, "relYear"); 
     unsigned int rel_season = ctrl.get_target_int_col(target_no, sim_target_no, "relSeason");
     bool target_rel_year_na = Rcpp::IntegerVector::is_na(rel_year);
@@ -1155,6 +1144,10 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
         if (!target_rel_catch_na & target_rel_fishery_na){
             Rcpp::stop("In operatingModel::get_target_value_hat. If relCatch specified, relFishery must also be specified\n.");
         }
+        // If we have a relBiol we do not want a relCatch or relFishery 
+        if (!target_rel_biol_na & !target_rel_catch_na){
+            Rcpp::stop("In operatingModel::get_target_value_hat. If relBiol specified, we do not need a relCatch\n.");
+        }
         // Set indices for subsetting the relative target values - similar to above
         // Need to know unit range but could be biol only (total catch), or catch only (total catch from several biols), or fishery only (econ)
         // If biol not NA, choose unit from biol
@@ -1170,8 +1163,19 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
         unsigned int rel_max_year = rel_year; // May change if additional info in control object
         unsigned int rel_min_season = rel_season;
         unsigned int rel_max_season = rel_season; // May change if additional info in control object
-        std::vector<unsigned int> rel_indices_min = {age_range_indices[0]+1,rel_min_year,1,rel_min_season,1,1};
-        std::vector<unsigned int> rel_indices_max = {age_range_indices[1]+1,rel_max_year,rel_nunit,rel_max_season,1,niter};
+        // Relative age range - if NA in control, set to original age range
+        std::vector<unsigned int> rel_age_range_indices = age_range_indices;
+        unsigned int rel_min_age = ctrl.get_target_int_col(target_no, sim_target_no, "relMinAge");
+        unsigned int rel_max_age = ctrl.get_target_int_col(target_no, sim_target_no, "relMaxAge");
+        if(!Rcpp::IntegerVector::is_na(rel_min_age) & !Rcpp::IntegerVector::is_na(rel_max_age)){
+            rel_age_range_indices = get_target_age_range_indices(target_no, sim_target_no, true); // indices start at 0
+        }
+        fwdControlTargetType rel_target_type = ctrl.get_target_type(target_no, sim_target_no, true);
+
+
+        // Fix here
+        std::vector<unsigned int> rel_indices_min = {rel_age_range_indices[0]+1,rel_min_year,1,rel_min_season,1,1};
+        std::vector<unsigned int> rel_indices_max = {rel_age_range_indices[1]+1,rel_max_year,rel_nunit,rel_max_season,1,niter};
         // Get the relative target value from the OM
         FLQuantAD rel_target_value = eval_om(target_type, rel_fishery, rel_catch, rel_biol, rel_indices_min, rel_indices_max);
         target_value = target_value / rel_target_value;
@@ -1180,6 +1184,117 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     return value;
 } 
 //@}
+
+/*! \brief Get the indices of the desired target
+ *
+ * Gets the range of indices of the desired target.
+ * Indices start at 1.
+ * 
+ * \param indices_min Vector of the minimum indices.
+ * \param indices_max Vector of the maximum indices.
+ * \param target_no References the target column in the control dataframe. Starts at 1.
+ * \param sim_target_no References the target column in the control dataframe. Starts at 1.
+ * \param relative Are we getting the relative target indices.
+ */
+void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_min, std::vector<unsigned int>& indices_max, const int target_no, const int sim_target_no, const bool relative) {
+    // Get the key information
+    unsigned int year, season, fishery_no, catch_no, biol_no, min_age, max_age;
+    if (relative){
+        year = ctrl.get_target_int_col(target_no, sim_target_no, "relYear"); 
+        season = ctrl.get_target_int_col(target_no, sim_target_no, "relSeason");
+        fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "relFishery");
+        catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "relCatch");
+        biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "relBiol");
+        min_age = ctrl.get_target_int_col(target_no, sim_target_no, "relMinAge");
+        max_age = ctrl.get_target_int_col(target_no, sim_target_no, "relMaxAge");
+    }
+    if (!relative){
+        year = ctrl.get_target_int_col(target_no, sim_target_no, "year"); 
+        season = ctrl.get_target_int_col(target_no, sim_target_no, "season");
+        fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
+        catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
+        biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "biol");
+        min_age = ctrl.get_target_int_col(target_no, sim_target_no, "minAge");
+        max_age = ctrl.get_target_int_col(target_no, sim_target_no, "maxAge");
+    }
+    // Are these NAs?
+    bool year_na = Rcpp::IntegerVector::is_na(year);
+    bool season_na = Rcpp::IntegerVector::is_na(season);
+    bool fishery_na = Rcpp::IntegerVector::is_na(fishery_no);
+    bool catch_na = Rcpp::IntegerVector::is_na(catch_no);
+    bool biol_na = Rcpp::IntegerVector::is_na(biol_no);
+    bool min_age_na = Rcpp::IntegerVector::is_na(min_age);
+    bool max_age_na = Rcpp::IntegerVector::is_na(max_age);
+    // Check if we have the correct information
+    // Do we have at least at year and season
+    if (year_na | season_na){
+        Rcpp::stop("In OM get_target_hat_indices. We need both Year and Season in control (inc. for relative targets if necessary).\n");
+    }
+    // If all three of FCB are NA then something is very wrong
+    if (biol_na & fishery_na & catch_na){
+        Rcpp::stop("In OM get_target_hat_indices. You need at least a fishery, catch or biol in control (inc. for relative targets if necessary).\n");
+    }
+    // If we have a Catch we must have a Fishery
+    if (!catch_na & fishery_na){
+        Rcpp::stop("In operatingModel::get_target_hat_indices. If catch specified, fishery must also be specified (inc. for relative targets if necessary).\n");
+    }
+    // If we have a Biol we do not want a Catch or relFishery 
+    if (!biol_na & (!catch_na | !fishery_na)){
+        Rcpp::stop("In operatingModel::get_target_hat_indices. If Biol specified, we do not need a Catch (inc. for relative targets if necessary)\n.");
+    }
+    // Need to know unit range but could be biol only (total catch), or catch only (total catch from several biols), or fishery only (econ)
+    // If just fishery, nunit = 1
+    unsigned int nunit = 1;
+    // If biol not NA, choose unit from biol
+    if (!biol_na){
+        nunit = biols(biol_no).n().get_nunit();
+    }
+    // Else if catch not NA choose unit from catch
+    else if (!catch_na){
+        nunit = fisheries(fishery_no, catch_no).landings_n().get_nunit();
+    }
+    unsigned int min_year = year;
+    unsigned int max_year = year; // May change if additional info in control object
+    unsigned int min_season = season;
+    unsigned int max_season = season; // May change if additional info in control object
+    unsigned int niter = get_niter();
+    // Make initial indices
+    indices_min = {1, min_year, 1, min_season, 1, 1};
+    indices_max = {1, max_year, nunit, max_season, 1, niter};
+    // If we have min or max age, get age indices
+    if (!min_age_na | !max_age_na){
+        if (min_age_na | max_age_na){
+            Rcpp::stop("In operatingModel::get_target_hat_indices. Must supply both minAge and maxAge, not just one of them.\n");
+        }
+        std::vector<std::string> age_names;
+        // Get from biol or catch
+        if(!biol_na){
+            age_names = Rcpp::as<std::vector<std::string> >(biols(biol_no).n().get_dimnames()[0]);
+        }
+        else if (!catch_na){
+            age_names = Rcpp::as<std::vector<std::string> >(fisheries(fishery_no, catch_no).landings_n().get_dimnames()[0]);
+        }
+        else {
+            Rcpp::stop("In operatingModel::get_target_hat_indices. Unable to get age range as biol_no and catch_no are NA.\n");
+        }
+        // Use find() to match names - precheck in R that they exist - if not find, returns the last
+        std::vector<std::string>::iterator age_min_iterator = find(age_names.begin(), age_names.end(), std::to_string(min_age));
+        if(age_min_iterator != age_names.end()){
+            indices_min[0] = std::distance(age_names.begin(), age_min_iterator)+1;
+        }
+        else {
+            Rcpp::stop("minAge in control not found in dimnames of target object\n");
+        }
+        std::vector<std::string>::iterator age_max_iterator = find(age_names.begin(), age_names.end(), std::to_string(max_age));
+        if(age_max_iterator != age_names.end()){
+            indices_max[0] = std::distance(age_names.begin(), age_max_iterator)+1;
+        }
+        else {
+            Rcpp::stop("maxAge in control not found in dimnames of target object\n");
+        }
+    }
+    return;
+}
 
 /*! \name Get the desired target values 
  */
@@ -1267,7 +1382,7 @@ std::vector<double> operatingModel::get_target_value(const int target_no, const 
  * \param target_no References the target column in the control dataframe. Starts at 1.
  * \param sim_target_no References the target column in the control dataframe. Starts at 1.
  */
-std::vector<unsigned int> operatingModel::get_target_age_range_indices(const unsigned int target_no, const unsigned int sim_target_no) const {
+std::vector<unsigned int> operatingModel::get_target_age_range_indices(const unsigned int target_no, const unsigned int sim_target_no, const bool relative) const {
     std::vector<std::string> age_names;
     // Get age names from biol in target. 
     int biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "biol"); 

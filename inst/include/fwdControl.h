@@ -55,8 +55,8 @@ class fwdControl {
         double get_target_num_col(const int target_no, const int sim_target_no, const std::string col) const;
         std::vector<double> get_target_value(const int target_no, const int col) const; // gets all iters for all simultaneous targets. col: 1 = min, 2 = value, 3 = max
         std::vector<double> get_target_value(const int target_no, const int sim_target_no, const int col) const; // gets all iters for one simultaneous target. col: 1 = min, 2 = value, 3 = max
-        std::string get_target_quantity(const int target_no, const int sim_target_no) const;
-        fwdControlTargetType get_target_type(const int target_no, const int sim_target_no) const;
+        std::string get_target_quantity(const int target_no, const int sim_target_no, const bool relative=false) const;
+        fwdControlTargetType get_target_type(const int target_no, const int sim_target_no, const bool relative=false) const;
         fwdControlTargetType get_target_type(const std::string quantity) const;
         std::vector<unsigned int> get_age_range(const unsigned int target_no, const unsigned int sim_target_no) const; // Returns the age range - just the values in target no calculation
         // FCB accessors

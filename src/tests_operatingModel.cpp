@@ -211,11 +211,22 @@ std::vector<double> test_operatingModel_get_target_value2(FLFisheriesAD flfs, fw
     return out;
 }
 
+//// [[Rcpp::export]]
+//std::vector<unsigned int> test_operatingModel_get_target_age_range_indices(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const bool relative){ 
+//    operatingModel om(flfs, biols, ctrl);
+//    std::vector<unsigned int> age_range_indices = om.get_target_age_range_indices(target_no, sim_target_no, relative);
+//    return age_range_indices;
+//}
+
+
 // [[Rcpp::export]]
-std::vector<unsigned int> test_operatingModel_get_target_age_range_indices(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no){ 
+Rcpp::List test_operatingModel_get_target_hat_indices(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const bool relative){
     operatingModel om(flfs, biols, ctrl);
-    std::vector<unsigned int> age_range_indices = om.get_target_age_range_indices(target_no, sim_target_no);
-    return age_range_indices;
+    std::vector<unsigned int> indices_min(6,0); 
+    std::vector<unsigned int> indices_max(6,0);
+    om.get_target_hat_indices(indices_min, indices_max, target_no, sim_target_no, relative);
+	return Rcpp::List::create(Rcpp::Named("indices_min", indices_min),
+        Rcpp::Named("indices_max", indices_max));
 }
 
 /*----------- target calculations --------------*/

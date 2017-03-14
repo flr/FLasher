@@ -6411,9 +6411,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// test_operatingModel_get_target_age_range_indices
-std::vector<unsigned int> test_operatingModel_get_target_age_range_indices(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no);
-RcppExport SEXP FLasher_test_operatingModel_get_target_age_range_indices(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
+// test_operatingModel_get_target_hat_indices
+Rcpp::List test_operatingModel_get_target_hat_indices(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const bool relative);
+RcppExport SEXP FLasher_test_operatingModel_get_target_hat_indices(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP relativeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6422,7 +6422,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type target_no(target_noSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type sim_target_no(sim_target_noSEXP);
-    rcpp_result_gen = Rcpp::wrap(test_operatingModel_get_target_age_range_indices(flfs, biols, ctrl, target_no, sim_target_no));
+    Rcpp::traits::input_parameter< const bool >::type relative(relativeSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_operatingModel_get_target_hat_indices(flfs, biols, ctrl, target_no, sim_target_no, relative));
     return rcpp_result_gen;
 END_RCPP
 }
