@@ -139,3 +139,60 @@ test_that("fwdControl get_FCB methods", {
     # Not found
     expect_error(test_fwdControl_get_FCB_row_no(fwc, 10, fcb[row_in,"C"], fcb[row_in,"B"]))
 })
+
+
+test_that("fwdControl get_FCB_nos", {
+    fishery <- round(runif(1, min=1, max=5))
+    catch <- round(runif(1, min=1, max=5))
+    biol <- round(runif(1, min=1, max=5))
+    trgt <- data.frame(year = 1, season = 1, quant = "f",
+                        fishery = c(fishery,NA,NA,NA),
+                        catch = c(catch,NA,catch,NA),
+                        biol = c(NA,biol,biol,NA))
+    fwc <- fwdControl(trgt)
+    fwc@target$order <- 1
+    FCB <- array(c(1,1,1), dim=c(1,3))
+    colnames(FCB) <- c("F","C","B")
+    fwc@FCB <- FCB
+    fcb_out <- as.integer(test_fwdControl_get_FCB_nos(fwc, 1, 1, FALSE, TRUE))
+    expect_identical(fcb_out, as.integer(c(fwc@target[1,"fishery"], fwc@target[1,"catch"], fwc@target[1,"biol"])))
+    fcb_out <- as.integer(test_fwdControl_get_FCB_nos(fwc, 1, 2, FALSE, TRUE))
+    expect_identical(fcb_out, as.integer(c(fwc@target[2,"fishery"], fwc@target[2,"catch"], fwc@target[2,"biol"])))
+    # Should fail check but not asked
+    fcb_out <- as.integer(test_fwdControl_get_FCB_nos(fwc, 1, 3, FALSE, FALSE))
+    expect_identical(fcb_out, as.integer(c(fwc@target[3,"fishery"], fwc@target[3,"catch"], fwc@target[3,"biol"])))
+    # Fails check
+    expect_error(test_fwdControl_get_FCB_nos(fwc, 1, 3, FALSE, TRUE))
+    # Should fail check but not asked
+    fcb_out <- as.integer(test_fwdControl_get_FCB_nos(fwc, 1, 4, FALSE, FALSE))
+    expect_identical(fcb_out, as.integer(c(fwc@target[4,"fishery"], fwc@target[4,"catch"], fwc@target[4,"biol"])))
+    # Fails check
+    expect_error(test_fwdControl_get_FCB_nos(fwc, 1, 4, FALSE, TRUE))
+    # Relative
+    fishery <- round(runif(1, min=1, max=5))
+    catch <- round(runif(1, min=1, max=5))
+    biol <- round(runif(1, min=1, max=5))
+    trgt <- data.frame(year = 1, season = 1, quant = "f",
+                        relFishery = c(fishery,NA,NA,NA),
+                        relCatch = c(catch,NA,catch,NA),
+                        relBiol = c(NA,biol,biol,NA))
+    fwc <- fwdControl(trgt)
+    fwc@target$order <- 1
+    FCB <- array(c(1,1,1), dim=c(1,3))
+    colnames(FCB) <- c("F","C","B")
+    fwc@FCB <- FCB
+    fcb_out <- as.integer(test_fwdControl_get_FCB_nos(fwc, 1, 1, TRUE, TRUE))
+    expect_identical(fcb_out, as.integer(c(fwc@target[1,"relFishery"], fwc@target[1,"relCatch"], fwc@target[1,"relBiol"])))
+    fcb_out <- as.integer(test_fwdControl_get_FCB_nos(fwc, 1, 2, TRUE, TRUE))
+    expect_identical(fcb_out, as.integer(c(fwc@target[2,"relFishery"], fwc@target[2,"relCatch"], fwc@target[2,"relBiol"])))
+    # Should fail check but not asked
+    fcb_out <- as.integer(test_fwdControl_get_FCB_nos(fwc, 1, 3, TRUE, FALSE))
+    expect_identical(fcb_out, as.integer(c(fwc@target[3,"relFishery"], fwc@target[3,"relCatch"], fwc@target[3,"relBiol"])))
+    # Fails check
+    expect_error(test_fwdControl_get_FCB_nos(fwc, 1, 3, TRUE, TRUE))
+    # Should fail check but not asked
+    fcb_out <- as.integer(test_fwdControl_get_FCB_nos(fwc, 1, 4, TRUE, FALSE))
+    expect_identical(fcb_out, as.integer(c(fwc@target[4,"relFishery"], fwc@target[4,"relCatch"], fwc@target[4,"relBiol"])))
+    # Fails check
+    expect_error(test_fwdControl_get_FCB_nos(fwc, 1, 4, TRUE, TRUE))
+}

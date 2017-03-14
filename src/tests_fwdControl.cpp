@@ -120,6 +120,11 @@ unsigned int test_fwdControl_get_FCB_row_no(const fwdControl control, const unsi
     return control.get_FCB_row_no(fishery_no, catch_no, biol_no);
 }
 
-
+// [[Rcpp::export]]
+std::vector<unsigned int> test_fwdControl_get_FCB_nos(const fwdControl control, const unsigned int target_no, const unsigned int sim_target_no, const bool relative, const bool check){
+    std::vector<unsigned int> out;
+    out = control.get_FCB_nos(target_no, sim_target_no, relative, check);
+    return out;
+}
 
 

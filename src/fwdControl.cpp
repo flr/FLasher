@@ -408,6 +408,46 @@ unsigned int fwdControl::get_FCB_row_no(const unsigned int fishery_no, const uns
     return row_counter - 1;
 }
 
+/*! \brief Interrogate the control object for fishery, catch and biol numbers
+ *
+ * Relative fishery etc is offered.
+ * Basic sanity check offered.
+ *
+ * \param target_no Target number
+ * \param sim_target_no Simultaneous target number
+ * \param relative Are we checking the relative fishery etc.
+ * \param check Are we checking for NAs
+ */
+
+std::vector<unsigned int> fwdControl::get_FCB_nos(const unsigned int target_no, const unsigned int sim_target_no, const bool relative, const bool check) const{
+    unsigned int fishery_no, catch_no, biol_no;
+    if (relative){
+        fishery_no = get_target_int_col(target_no, sim_target_no, "relFishery");
+        catch_no = get_target_int_col(target_no, sim_target_no, "relCatch");
+        biol_no = get_target_int_col(target_no, sim_target_no, "relBiol");
+    }
+    if (!relative){
+        fishery_no = get_target_int_col(target_no, sim_target_no, "fishery");
+        catch_no = get_target_int_col(target_no, sim_target_no, "catch");
+        biol_no = get_target_int_col(target_no, sim_target_no, "biol");
+    }
+    if (check){
+        bool fishery_na = Rcpp::IntegerVector::is_na(fishery_no);
+        bool catch_na = Rcpp::IntegerVector::is_na(catch_no);
+        bool biol_na = Rcpp::IntegerVector::is_na(biol_no);
+        // If all three of FCB are NA then something is very wrong
+        if (biol_na & fishery_na & catch_na){
+            Rcpp::stop("In fwdControl::get_FCB_nos. You need at least a fishery, catch or biol in control.\n");
+        }
+        // If we have a Catch we must have a Fishery
+        if (!catch_na & fishery_na){
+            Rcpp::stop("In fwdControl::get_FCB_nos. If catch specified, fishery must also be specified.\n");
+        }
+    }
+    std::vector<unsigned int> FCB_nos = {fishery_no, catch_no, biol_no};
+    return FCB_nos;
+}
+
 /*------------------------------------------------------------------*/
 
 /* Just some tests to operate on data.frames */

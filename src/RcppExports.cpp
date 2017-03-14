@@ -5924,6 +5924,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// test_fwdControl_get_FCB_nos
+std::vector<unsigned int> test_fwdControl_get_FCB_nos(const fwdControl control, const unsigned int target_no, const unsigned int sim_target_no, const bool relative, const bool check);
+RcppExport SEXP FLasher_test_fwdControl_get_FCB_nos(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP relativeSEXP, SEXP checkSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type target_no(target_noSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type sim_target_no(sim_target_noSEXP);
+    Rcpp::traits::input_parameter< const bool >::type relative(relativeSEXP);
+    Rcpp::traits::input_parameter< const bool >::type check(checkSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_fwdControl_get_FCB_nos(control, target_no, sim_target_no, relative, check));
+    return rcpp_result_gen;
+END_RCPP
+}
 // test_fwdSR_empty_constructor
 void test_fwdSR_empty_constructor();
 RcppExport SEXP FLasher_test_fwdSR_empty_constructor() {

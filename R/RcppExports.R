@@ -1821,6 +1821,10 @@ test_fwdControl_get_FCB_row_no <- function(control, fishery_no, catch_no, biol_n
     .Call('FLasher_test_fwdControl_get_FCB_row_no', PACKAGE = 'FLasher', control, fishery_no, catch_no, biol_no)
 }
 
+test_fwdControl_get_FCB_nos <- function(control, target_no, sim_target_no, relative, check) {
+    .Call('FLasher_test_fwdControl_get_FCB_nos', PACKAGE = 'FLasher', control, target_no, sim_target_no, relative, check)
+}
+
 test_fwdSR_empty_constructor <- function() {
     invisible(.Call('FLasher_test_fwdSR_empty_constructor', PACKAGE = 'FLasher'))
 }
