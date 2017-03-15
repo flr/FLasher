@@ -517,30 +517,16 @@ test_that("get_target_value_hat", {
     # FC11 -> B1
     # FC12 and FC21 -> B2
     niters <- 10 
-    #flq <- random_FLQuant_generator(fixed_dims = c(5,20,2,4,1,niters))
-    flq <- random_FLQuant_generator(fixed_dims = c(5,20,1,4,1,niters))
-    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
-    # Set so Biols only spawn in 1 season, other seasons have NA - no spawning
-    spwn_season1 <- 1
-    not_spwn_seasons1 <- !((1:dim(flq)[4]) %in% spwn_season1)
-    flbs[[1]][["biol"]]@spwn[1,,,not_spwn_seasons1] <- NA
-    spwn_season2 <- 3
-    not_spwn_seasons2 <- !((1:dim(flq)[4]) %in% spwn_season2)
-    flbs[[2]][["biol"]]@spwn[1,,,not_spwn_seasons2] <- NA
-    # Biol 2 has spwn = 0
-    flbs[[2]][["biol"]]@spwn[1,,,spwn_season2] <- 0 
-    # Pull out just FLBiols for testing
-    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
-    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
-    # Fix FCB
-    FCB <- array(NA, dim=c(3,3))
-    FCB[1,] <- c(1,1,1)
-    FCB[2,] <- c(1,2,2)
-    FCB[3,] <- c(2,1,2)
-    # Make an fwdControl to test
-    # Two sim catch targets
-    years <- sort(rep(round(runif(4, min=1,max=dim(flq)[2])),each=2))
-    seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
+    data(ple4)
+    FCB <- array(c(1,1,2,1,2,1,1,2,2), dim=c(3,3))
+    colnames(FCB) <- c("F","C","B")
+    om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = c(1,3), recruitment_age = 1, niters = niters, sd = 0.1)
+    flfs <- om[["fisheries"]]
+    flbs <- om[["biols"]]
+    dims <- dim(n(flbs[[1]][["biol"]]))
+    # A selection of years and seasons for targets
+    years <- sort(rep(round(runif(4, min=1,max=dims[2])),each=2))
+    seasons <- rep(round(runif(4, min=1,max=dims[4])),each=2)
     trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], 
                         quant = c("catch","catch"),
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
@@ -551,8 +537,8 @@ test_that("get_target_value_hat", {
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,NA),
                         relFishery = NA, relCatch = NA, relBiol = NA,
                         relYear = NA, relSeason = NA)
-    rel_years <- rep(round(runif(4, min=1,max=dim(flq)[2])),each=2)
-    rel_seasons <- rep(round(runif(4, min=1,max=dim(flq)[4])),each=2)
+    rel_years <- rep(round(runif(4, min=1,max=dims[2])),each=2)
+    rel_seasons <- rep(round(runif(4, min=1,max=dims[4])),each=2)
     rel_trgt1 <- data.frame(year = years[5:6], season = seasons[5:6],
                         quant = c("catch","catch"),
                         fishery = c(1,NA), catch = c(1,NA), biol = c(NA,2),
@@ -569,12 +555,10 @@ test_that("get_target_value_hat", {
     # Need to add order column back in (done automatically in fwd)
     fwc@target$order <- c(1,1,2,2,3,3,4,4)
     fwc@FCB <- FCB
-
     # Target 1 - 1 sim target at a time
     val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
     val_in1 <- c(unitSums(catch(flfs[[1]][[1]])[,years[1],,seasons[1]]))
     expect_equal(val_hat1, val_in1)
-
     val_hat2 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 2)
     val_in2 <- c(unitSums((catch(flfs[[1]][[2]]) + catch(flfs[[2]][[1]]))[,years[2],,seasons[2]]))
     expect_equal(val_hat2, val_in2)
@@ -630,11 +614,12 @@ test_that("get_target_value_hat", {
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 7))
     expect_error(test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 8))
 
-    # Fbar target
-    min_age <- round(runif(1,min=min(as.numeric(dimnames(flq)$age)), max=max(as.numeric(dimnames(flq)$age))))
-    max_age <- round(runif(1,min=min_age, max=max(as.numeric(dimnames(flq)$age))))
-    years <- rep(round(runif(1, min=1,max=dim(flq)[2])),each=2)
-    seasons <- rep(round(runif(1, min=1,max=dim(flq)[4])),each=2)
+    # Fbar target with ages
+    dimns <- dimnames(n(flbs[[1]][["biol"]]))
+    min_age <- round(runif(1,min=min(as.numeric(dimns$age)), max=max(as.numeric(dimns$age))))
+    max_age <- round(runif(1,min=min_age, max=max(as.numeric(dimns$age))))
+    years <- rep(round(runif(1, min=1,max=dims[2])),each=2)
+    seasons <- rep(round(runif(1, min=1,max=dims[4])),each=2)
     f_trgt1 <- data.frame(year = years[1:2], season = seasons[1:2], 
                         quant = c("f","f"), 
                         fishery = c(NA,1), catch = c(NA,2), biol = c(1,1),
@@ -645,7 +630,7 @@ test_that("get_target_value_hat", {
     fwc@FCB <- FCB
     # 1 sim target at a time
     dim_min <- c(min_age, years[1], 1, seasons[1], 1, 1)
-    dim_max <- c(max_age, years[1], dim(flq)[3], seasons[1], dim(flq)[5], dim(flq)[6])
+    dim_max <- c(max_age, years[1], dims[3], seasons[1], dims[5], dims[6])
     # Sim 1 - F on Biol 1
     val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
     val_in1 <- c(test_operatingModel_fbar_B(flfs, flbs, fwc, 1, dim_min, dim_max))
@@ -658,60 +643,60 @@ test_that("get_target_value_hat", {
     val_hat <- test_operatingModel_get_target_value_hat2(flfs, flbs, fwc, 1)
     expect_equal(val_hat, c(val_in1, val_in2))
 
-    # SSB target - try each season in year 1
-    years <- 1
-    seasons <- c(1,1,2,2,3,3,4,4)
-    ssb_trgt1 <- data.frame(year = years, season = seasons, 
-                        quant = "ssb",
-                        fishery = NA, catch = NA, biol = rep(c(1,2),4))
-    fwc <- fwdControl(ssb_trgt1)
-    fwc@target$order <- seasons
-    fwc@FCB <- FCB
-    # Season 1 - Biol 1 - Spwn > 0
-    val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
-    val_in1 <- c(test_operatingModel_SRP_FLQ_subset(flfs, flbs, fwc, 1, c(years[1],1,seasons[1],1,1), c(years[1],1,seasons[1],1,niters)))
-    expect_equal(val_hat1, val_in1)
-    # Season 1 - Biol 2 - Spwn is NA - error
-    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 2))
-    # Seasons 2 and 4 - both Biols Spwn is NA
-    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 2, 1))
-    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 2, 2))
-    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 4, 1))
-    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 4, 2))
-    # Season 3 - Biol 1 - Spwn is NA
-    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 3, 1))
-    # Season 3 - Biol 2 - Spwn is 0 so we get the SRP at the start of season 4
-    val_hat2 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 3, 2)
-    # Spwn at start of season 4 - need to set spwn to 0 in season 4 as currently in NA
-    flbs_temp <- flbs
-    flbs_temp[[2]][["biol"]]@spwn[] <- 0.0
-    val_in2 <- c(test_operatingModel_SRP_FLQ_subset(flfs, flbs_temp, fwc, 2, c(years[1],1,seasons[6]+1,1,1), c(years[1],1,seasons[6]+1,1,niters)))
-    expect_equal(val_hat2, val_in2)
-
-    # Relative SSB target - SSB relative to year before
-    ssb_trgt2 <- data.frame(year = 2, season = 1, 
-                            relYear = 1, relSeason = 1,
-                        quant = "ssb",
-                        fishery = NA, catch = NA, biol = 1,
-                        relFishery = NA, relCatch = NA, relBiol = 1)
-    fwc <- fwdControl(ssb_trgt2)
-    fwc@target$order <- 1
-    fwc@FCB <- FCB
-    val_hat <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
-    val_in1 <- c(test_operatingModel_SRP_FLQ_subset(flfs, flbs, fwc, 1, c(1,1,1,1,1), c(1,1,1,1,niters)))
-    val_in2 <- c(test_operatingModel_SRP_FLQ_subset(flfs, flbs, fwc, 1, c(2,1,1,1,1), c(2,1,1,1,niters)))
-    expect_equal(val_in2 / val_in1, val_hat)
-
-    # Relative SSB target - SSB relative to season before - fails
-    ssb_trgt3 <- data.frame(year = 2, season = 1, 
-                            relYear = 1, relSeason = 4,
-                        quant = "ssb",
-                        fishery = NA, catch = NA, biol = 1,
-                        relFishery = NA, relCatch = NA, relBiol = 1)
-    fwc <- fwdControl(ssb_trgt3)
-    fwc@target$order <- 1
-    fwc@FCB <- FCB
-    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1))
+#    # SSB target - try each season in year 1
+#    years <- 1
+#    seasons <- c(1,1,2,2,3,3,4,4)
+#    ssb_trgt1 <- data.frame(year = years, season = seasons, 
+#                        quant = "ssb",
+#                        fishery = NA, catch = NA, biol = rep(c(1,2),4))
+#    fwc <- fwdControl(ssb_trgt1)
+#    fwc@target$order <- seasons
+#    fwc@FCB <- FCB
+#    # Season 1 - Biol 1 - Spwn > 0
+#    val_hat1 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
+#    val_in1 <- c(test_operatingModel_SRP_FLQ_subset(flfs, flbs, fwc, 1, c(years[1],1,seasons[1],1,1), c(years[1],1,seasons[1],1,niters)))
+#    expect_equal(val_hat1, val_in1)
+#    # Season 1 - Biol 2 - Spwn is NA - error
+#    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 2))
+#    # Seasons 2 and 4 - both Biols Spwn is NA
+#    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 2, 1))
+#    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 2, 2))
+#    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 4, 1))
+#    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 4, 2))
+#    # Season 3 - Biol 1 - Spwn is NA
+#    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 3, 1))
+#    # Season 3 - Biol 2 - Spwn is 0 so we get the SRP at the start of season 4
+#    val_hat2 <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 3, 2)
+#    # Spwn at start of season 4 - need to set spwn to 0 in season 4 as currently in NA
+#    flbs_temp <- flbs
+#    flbs_temp[[2]][["biol"]]@spwn[] <- 0.0
+#    val_in2 <- c(test_operatingModel_SRP_FLQ_subset(flfs, flbs_temp, fwc, 2, c(years[1],1,seasons[6]+1,1,1), c(years[1],1,seasons[6]+1,1,niters)))
+#    expect_equal(val_hat2, val_in2)
+#
+#    # Relative SSB target - SSB relative to year before
+#    ssb_trgt2 <- data.frame(year = 2, season = 1, 
+#                            relYear = 1, relSeason = 1,
+#                        quant = "ssb",
+#                        fishery = NA, catch = NA, biol = 1,
+#                        relFishery = NA, relCatch = NA, relBiol = 1)
+#    fwc <- fwdControl(ssb_trgt2)
+#    fwc@target$order <- 1
+#    fwc@FCB <- FCB
+#    val_hat <- test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1)
+#    val_in1 <- c(test_operatingModel_SRP_FLQ_subset(flfs, flbs, fwc, 1, c(1,1,1,1,1), c(1,1,1,1,niters)))
+#    val_in2 <- c(test_operatingModel_SRP_FLQ_subset(flfs, flbs, fwc, 1, c(2,1,1,1,1), c(2,1,1,1,niters)))
+#    expect_equal(val_in2 / val_in1, val_hat)
+#
+#    # Relative SSB target - SSB relative to season before - fails
+#    ssb_trgt3 <- data.frame(year = 2, season = 1, 
+#                            relYear = 1, relSeason = 4,
+#                        quant = "ssb",
+#                        fishery = NA, catch = NA, biol = 1,
+#                        relFishery = NA, relCatch = NA, relBiol = 1)
+#    fwc <- fwdControl(ssb_trgt3)
+#    fwc@target$order <- 1
+#    fwc@FCB <- FCB
+#    expect_error(test_operatingModel_get_target_value_hat(flfs, flbs, fwc, 1, 1))
 })
 
 # Values in control object 
@@ -998,9 +983,9 @@ test_that("operatingModel get_target_hat_indices", {
     season1 <- round(runif(1,min=1, max=dims[4]))
     season2 <- round(runif(1,min=1, max=dims[4]))
     trgt <- data.frame(year = year, season = c(season1, season2, nseasons, nseasons, nseasons), 
-                        quant = c("f", "catch", "f", "f","f"),
-                        fishery = c(NA,1, 1, NA,NA), catch = c(NA,1,1,1,NA), biol = c(1,NA,NA,NA,NA),
-                        minAge = c(min_age, NA,NA,NA,NA), maxAge = c(max_age, NA, max_age,NA,NA))
+                        quant = c("f", "catch", "f"),
+                        fishery = c(NA,1, 1), catch = c(NA,1,1), biol = c(1,NA,NA),
+                        minAge = c(min_age, NA,NA), maxAge = c(max_age, NA, max_age))
     fwc <- fwdControl(trgt)
     fwc@target$order <- c(1,1,2,2,2)
     fwc@FCB <- FCB
@@ -1016,10 +1001,6 @@ test_that("operatingModel get_target_hat_indices", {
     expect_identical(c(indices_min,indices_max), c(out[["indices_min"]], out[["indices_max"]]))
     # Test 3 - error min age but no max age
     expect_error(test_operatingModel_get_target_hat_indices(flfs, flbs, fwc, 2, 1, FALSE))
-    # Test 4 - catch but no fishery
-    expect_error(test_operatingModel_get_target_hat_indices(flfs, flbs, fwc, 2, 2, FALSE))
-    # Test 5 - no catch, fishery or biol
-    expect_error(test_operatingModel_get_target_hat_indices(flfs, flbs, fwc, 2, 3, FALSE))
     # Relative targets
     min_age <- round(runif(1,min=rec_age, max=(dims[1]/2)))
     max_age <- round(runif(1,min=min_age, max=dims[1]-1-rec_age))

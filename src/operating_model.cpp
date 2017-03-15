@@ -1068,116 +1068,30 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no) {
 std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, const int sim_target_no) {
     bool verbose = false;
     if(verbose){Rprintf("sim_target_no: %i\n", sim_target_no);}
-    // Target information: type, fishery, catch, biol, etc
-    auto niter = get_niter();
-    unsigned int year = ctrl.get_target_int_col(target_no, sim_target_no, "year");
-    unsigned int season = ctrl.get_target_int_col(target_no, sim_target_no, "season");
-    if(verbose){Rprintf("year: %i, season: %i\n", year, season);}
-    // Could add unit here if necessary - though maybe a restriction is that targets cannot be set at the unit level.
+    std::vector<unsigned int> indices_min(1,6);
+    std::vector<unsigned int> indices_max(1,6);
+    get_target_hat_indices(indices_min, indices_max, target_no, sim_target_no, false);
+    // Target type
     fwdControlTargetType target_type = ctrl.get_target_type(target_no, sim_target_no, false);
-    unsigned int fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
-    unsigned int catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
-    unsigned int biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "biol");
-    if(verbose){Rprintf("fishery no: %i, catch no: %i, biol no: %i\n", fishery_no, catch_no, biol_no);}
-    // Set indices for subsetting the target values. This is passed to eval_om to eval the target over this range.
-    // A year range may be possible in the future, e.g. total catches over a year
-    unsigned int min_year = year;
-    unsigned int max_year = year; // May change if additional info in control object
-    unsigned int min_season = season;
-    unsigned int max_season = season; // May change if additional info in control object
-    // Get the unit range but could be biol only (total catch), or catch only (total catch from several biols), or fishery only (econ)
-    // As a first guess, unit comes from fishery which is always 1 (no fishery slots are disagregated over unit)
-    unsigned int nunit = 1;
-    // If biol not NA, choose unit from biol
-    if (!Rcpp::IntegerVector::is_na(biol_no)){
-        nunit = biols(biol_no).n().get_nunit();
-    }
-    // Else if catch not NA choose unit from catch
-    else if (!Rcpp::IntegerVector::is_na(catch_no)){
-        nunit = fisheries(fishery_no, catch_no).landings_n().get_nunit();
-    }
-    // Age range - if NA in control, set to 1
-    std::vector<unsigned int> age_range_indices = {0,0};
-    unsigned int minAge = ctrl.get_target_int_col(target_no, sim_target_no, "minAge");
-    unsigned int maxAge = ctrl.get_target_int_col(target_no, sim_target_no, "maxAge");
-    if(!Rcpp::IntegerVector::is_na(minAge) & !Rcpp::IntegerVector::is_na(maxAge)){
-        age_range_indices = get_target_age_range_indices(target_no, sim_target_no, false); // indices start at 0
-    }
-    // Area
-    unsigned int area = 1;
-    // Create the indices
-    std::vector<unsigned int> indices_min = {age_range_indices[0]+1,min_year,1,min_season,area,1};
-    std::vector<unsigned int> indices_max = {age_range_indices[1]+1,max_year,nunit,max_season,area,niter};
-    // Get values from the OM
-    FLQuantAD target_value = eval_om(target_type, fishery_no, catch_no, biol_no, indices_min, indices_max);
-
-    // If relative target, then we need to make rel_indices_min and rel_indices_max
-    // Targets can only be relative in time, fishery, catch and biol
-    // i.e. Cannot change the target type (always relative to same target type)
-    // Age range is the same - careful when comparing Fs from different Biols with different minAge and maxAges - it will be wrong!
-    // Could add relAge columns?
-    // Could also add relTargetType column?
+    std::vector<unsigned int> FCB_nos;
+    FCB_nos = ctrl.get_FCB_nos(target_no, sim_target_no, false, false);
+    // Evaluate the OM at that 
+    FLQuantAD target_value = eval_om(target_type, FCB_nos[0], FCB_nos[1], FCB_nos[2], indices_min, indices_max);
+    // Do we have a relative target?
     unsigned int rel_year = ctrl.get_target_int_col(target_no, sim_target_no, "relYear"); 
     unsigned int rel_season = ctrl.get_target_int_col(target_no, sim_target_no, "relSeason");
-    bool target_rel_year_na = Rcpp::IntegerVector::is_na(rel_year);
-    bool target_rel_season_na = Rcpp::IntegerVector::is_na(rel_season);
-    unsigned int rel_fishery = ctrl.get_target_int_col(target_no, sim_target_no, "relFishery");
-    unsigned int rel_catch = ctrl.get_target_int_col(target_no, sim_target_no, "relCatch");
-    unsigned int rel_biol = ctrl.get_target_int_col(target_no, sim_target_no, "relBiol");
-    bool target_rel_fishery_na = Rcpp::IntegerVector::is_na(rel_fishery);
-    bool target_rel_catch_na = Rcpp::IntegerVector::is_na(rel_catch);
-    bool target_rel_biol_na = Rcpp::IntegerVector::is_na(rel_biol);
-    // If any of these are not NA then we may have a relative target
-    // This may need to be rethought when we start to include target values that sum over ranges
-    if (!target_rel_year_na | !target_rel_season_na | !target_rel_biol_na | !target_rel_fishery_na | !target_rel_catch_na){
-        if(verbose){Rprintf("Relative target target\n");}
-        // Before we go any further, do we have sensible relative Biol, Catch and Fishery, Year and Season
-        // Do we have at least at year and season
-        if (target_rel_year_na | target_rel_season_na){
-            Rcpp::stop("In OM get_target_hat. If relative target, we need both relYear and relSeason in control\n");
-        }
-        // If all three of FCB are NA then something is very wrong
-        if (target_rel_biol_na & target_rel_fishery_na & target_rel_catch_na){
-            Rcpp::stop("In OM get_target_hat. You need at least a relative fishery, catch or biol on control");
-        }
-        // If we have a relCatch we must have a relFishery
-        if (!target_rel_catch_na & target_rel_fishery_na){
-            Rcpp::stop("In operatingModel::get_target_value_hat. If relCatch specified, relFishery must also be specified\n.");
-        }
-        // If we have a relBiol we do not want a relCatch or relFishery 
-        if (!target_rel_biol_na & !target_rel_catch_na){
-            Rcpp::stop("In operatingModel::get_target_value_hat. If relBiol specified, we do not need a relCatch\n.");
-        }
-        // Set indices for subsetting the relative target values - similar to above
-        // Need to know unit range but could be biol only (total catch), or catch only (total catch from several biols), or fishery only (econ)
-        // If biol not NA, choose unit from biol
-        unsigned int rel_nunit = 1;
-        if (!Rcpp::IntegerVector::is_na(rel_biol)){
-            rel_nunit = biols(rel_biol).n().get_nunit();
-        }
-        // Else if catch not NA choose unit from catch
-        else if (!Rcpp::IntegerVector::is_na(rel_catch)){
-            rel_nunit = fisheries(rel_fishery, rel_catch).landings_n().get_nunit();
-        }
-        unsigned int rel_min_year = rel_year;
-        unsigned int rel_max_year = rel_year; // May change if additional info in control object
-        unsigned int rel_min_season = rel_season;
-        unsigned int rel_max_season = rel_season; // May change if additional info in control object
-        // Relative age range - if NA in control, set to original age range
-        std::vector<unsigned int> rel_age_range_indices = age_range_indices;
-        unsigned int rel_min_age = ctrl.get_target_int_col(target_no, sim_target_no, "relMinAge");
-        unsigned int rel_max_age = ctrl.get_target_int_col(target_no, sim_target_no, "relMaxAge");
-        if(!Rcpp::IntegerVector::is_na(rel_min_age) & !Rcpp::IntegerVector::is_na(rel_max_age)){
-            rel_age_range_indices = get_target_age_range_indices(target_no, sim_target_no, true); // indices start at 0
-        }
-        fwdControlTargetType rel_target_type = ctrl.get_target_type(target_no, sim_target_no, true);
-
-
-        // Fix here
-        std::vector<unsigned int> rel_indices_min = {rel_age_range_indices[0]+1,rel_min_year,1,rel_min_season,1,1};
-        std::vector<unsigned int> rel_indices_max = {rel_age_range_indices[1]+1,rel_max_year,rel_nunit,rel_max_season,1,niter};
-        // Get the relative target value from the OM
-        FLQuantAD rel_target_value = eval_om(target_type, rel_fishery, rel_catch, rel_biol, rel_indices_min, rel_indices_max);
+    bool rel_year_na = Rcpp::IntegerVector::is_na(rel_year);
+    bool rel_season_na = Rcpp::IntegerVector::is_na(rel_season);
+    std::vector<unsigned int> rel_FCB_nos;
+    rel_FCB_nos = ctrl.get_FCB_nos(target_no, sim_target_no, true, false);
+    bool rel_fishery_na = Rcpp::IntegerVector::is_na(rel_FCB_nos[0]);
+    bool rel_catch_na = Rcpp::IntegerVector::is_na(rel_FCB_nos[1]);
+    bool rel_biol_na = Rcpp::IntegerVector::is_na(rel_FCB_nos[2]);
+    if (!rel_year_na | !rel_season_na | !rel_fishery_na | !rel_catch_na | !rel_biol_na){
+        std::vector<unsigned int> rel_indices_min(1,6);
+        std::vector<unsigned int> rel_indices_max(1,6);
+        get_target_hat_indices(rel_indices_min, rel_indices_max, target_no, sim_target_no, true);
+        FLQuantAD rel_target_value = eval_om(target_type, rel_FCB_nos[0], rel_FCB_nos[1], rel_FCB_nos[2], rel_indices_min, rel_indices_max);
         target_value = target_value / rel_target_value;
     }
     std::vector<adouble> value = target_value.get_data();
@@ -1199,21 +1113,22 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
 void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_min, std::vector<unsigned int>& indices_max, const int target_no, const int sim_target_no, const bool relative) {
     // Get the key information
     unsigned int year, season, fishery_no, catch_no, biol_no, min_age, max_age;
+    // Get and check FCB nos
+    std::vector<unsigned int> FCB_nos;
+    const bool check_FCB = true;
+    FCB_nos = ctrl.get_FCB_nos(target_no, sim_target_no, relative, check_FCB);
+    fishery_no = FCB_nos[0];
+    catch_no = FCB_nos[1];
+    biol_no = FCB_nos[2];
     if (relative){
         year = ctrl.get_target_int_col(target_no, sim_target_no, "relYear"); 
         season = ctrl.get_target_int_col(target_no, sim_target_no, "relSeason");
-        fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "relFishery");
-        catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "relCatch");
-        biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "relBiol");
         min_age = ctrl.get_target_int_col(target_no, sim_target_no, "relMinAge");
         max_age = ctrl.get_target_int_col(target_no, sim_target_no, "relMaxAge");
     }
     if (!relative){
         year = ctrl.get_target_int_col(target_no, sim_target_no, "year"); 
         season = ctrl.get_target_int_col(target_no, sim_target_no, "season");
-        fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
-        catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
-        biol_no = ctrl.get_target_int_col(target_no, sim_target_no, "biol");
         min_age = ctrl.get_target_int_col(target_no, sim_target_no, "minAge");
         max_age = ctrl.get_target_int_col(target_no, sim_target_no, "maxAge");
     }
@@ -1229,18 +1144,6 @@ void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_m
     // Do we have at least at year and season
     if (year_na | season_na){
         Rcpp::stop("In OM get_target_hat_indices. We need both Year and Season in control (inc. for relative targets if necessary).\n");
-    }
-    // If all three of FCB are NA then something is very wrong
-    if (biol_na & fishery_na & catch_na){
-        Rcpp::stop("In OM get_target_hat_indices. You need at least a fishery, catch or biol in control (inc. for relative targets if necessary).\n");
-    }
-    // If we have a Catch we must have a Fishery
-    if (!catch_na & fishery_na){
-        Rcpp::stop("In operatingModel::get_target_hat_indices. If catch specified, fishery must also be specified (inc. for relative targets if necessary).\n");
-    }
-    // If we have a Biol we do not want a Catch or relFishery 
-    if (!biol_na & (!catch_na | !fishery_na)){
-        Rcpp::stop("In operatingModel::get_target_hat_indices. If Biol specified, we do not need a Catch (inc. for relative targets if necessary)\n.");
     }
     // Need to know unit range but could be biol only (total catch), or catch only (total catch from several biols), or fishery only (econ)
     // If just fishery, nunit = 1
