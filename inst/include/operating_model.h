@@ -81,10 +81,6 @@ class operatingModel {
         std::vector<double> get_target_value(const int target_no, const int sim_target_no); // All iters for a sim target
         void get_target_hat_indices(std::vector<unsigned int>& indices_min, std::vector<unsigned int>& indices_max, const int target_no, const int sim_target_no, const bool relative);
         
-        // age range indices for age-based targets (e.g. fbar)
-        // Returns the indices of the age range, starts at 0
-        std::vector<unsigned int> get_target_age_range_indices(const unsigned int target_no, const unsigned int sim_target_no, const bool relative=false) const; 
-
         // The target value calculations
         // Partial fbar of a single catch on a single biol
         FLQuantAD fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
