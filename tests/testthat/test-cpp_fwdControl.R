@@ -195,4 +195,4 @@ test_that("fwdControl get_FCB_nos", {
     expect_identical(fcb_out, as.integer(c(fwc@target[4,"relFishery"], fwc@target[4,"relCatch"], fwc@target[4,"relBiol"])))
     # Fails check
     expect_error(test_fwdControl_get_FCB_nos(fwc, 1, 4, TRUE, TRUE))
-}
+})

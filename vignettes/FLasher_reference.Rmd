@@ -277,7 +277,7 @@ In *Flasher*, calculating recruitment has two main stages:
 1. Calculating the Stock Recruitment Potential (SRP)
 2. Calculating the recruitment from the SRP: $R = f(SRP)$
 
-A stock may spawn and recruit more than one time in a year but recruitment can only happen once in a timestep.
+A stock may spawn and recruit more than one time in a year, e.g. it can recruit in multiple seasons, but recruitment can only happen once in a timestep.
 This means that if there are multiple recruitment events in a year, the model must be seasonal.
 When a stock recruits more than one time in year, the resulting recruitment from each event is placed into a different unit of the stock.
 For example, if the stock recruits twice a year, then the stock must have at least two units.
@@ -286,6 +286,10 @@ A unit can only recruit once per year.
 
 The recruitment of each unit of a `fwdBiol` is calculated separately and may have different stock recruitment parameters.
 However, the SRP that produces the recruitment is the total SRP across all units, i.e. the SRP of each individual unit is not considered, only the total.
+
+The abundance in an *fwdBiol* is the abundance at the start of the timestep.
+The calculated recruitment is inserted into the abundance in the same timestep as we calculate it meaning that we calculate recruitment at the start of the timestep.
+It is inserted into the first age group of the biol.
 
 The final step in calculating recruitment is the application of residuals.
 This is an additional multiplier applied to the calculated recruitment.
@@ -691,7 +695,9 @@ It is possible for the control target to have iterations. If there are no iterat
 
 Issue with Fbar target on a stock with multiple units
 
-WHAT HAPPENS WITH SRP AS A TARGET - TIMELAGS
+There are two SRP / SSB targets that calculate slightly different things:
+* SRP is the SRP `at the time of spawning`. 
+* SSB is the mass of mature fish (sum N * wt * mat) `at the end of the timestep`, i.e. the survivors after all mortality (fishing and natural) has stopped.
 
 ## Internally
 
@@ -747,6 +753,8 @@ If the target is a relative target, it evaluates the absolute both values and th
 
 
 ### `eval_om()`
+
+Calls the appropriate method for evaluating the state of the operating model, e.g. catch, discards, SSB etc.
 
 
 # References

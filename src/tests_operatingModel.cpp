@@ -132,6 +132,13 @@ FLQuantAD test_operatingModel_fbar_B(FLFisheriesAD flfs, fwdBiolsAD biols, const
 
 /*----------- project and run methods --------------*/
 // [[Rcpp::export]]
+FLQuantAD test_operatingModel_survivors(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const int timestep){
+    operatingModel om(flfs, biols, ctrl);
+    FLQuant out = om.survivors(biol_no, timestep);
+    return out;
+}
+
+// [[Rcpp::export]]
 operatingModel test_operatingModel_project_biols(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int timestep){
     operatingModel om(flfs, biols, ctrl);
     om.project_biols(timestep);
@@ -272,4 +279,11 @@ FLQuantAD test_operatingModel_discards_n_subset(FLFisheriesAD flfs, SEXP flbs_li
     operatingModel om(flfs, biols, ctrl);
     return om.discards_n(biol_no, indices_min, indices_max);
 }
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_ssb_target(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    return om.ssb_target(biol_no, indices_min, indices_max);
+}
+
 

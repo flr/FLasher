@@ -14,7 +14,7 @@ void fwdControl::init_target_map(){
     target_map["landings"] = target_landings;
     target_map["discards"] = target_discards;
     target_map["srp"] = target_srp;
-    target_map["ssb"] = target_srp; // Does the same thing as SRP at the moment
+    target_map["ssb"] = target_ssb; // Does the same thing as SRP at the moment
     target_map["biomass"] = target_biomass;
     target_map["effort"] = target_effort;
     target_map["revenue"] = target_revenue;

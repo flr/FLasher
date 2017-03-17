@@ -214,6 +214,33 @@ test_that("operatingModel fbar methods",{
     expect_FLQuant_equal(fbar_in, fbar_out)
 })
 
+test_that("operatingModel ssb target methods",{
+    FCB <- array(c(1,1,1), dim=c(1,3))
+    colnames(FCB) <- c("F","C","B")
+    data(ple4)
+    # Annual model
+    min_age <- 1
+    niters <- 20
+    om <- make_test_operatingModel(ple4, FCB, nseasons = 1, recruitment_age = min_age, niters = niters, sd = 0.1)
+    dms <- dim(n(om[["biols"]][[1]][["biol"]]))
+    year <- round(runif(1,min=1, max= dms[2]-1))
+    season <- round(runif(1,min=1, max= dms[4]))
+    indices_min <- c(year,1,season,1,1)
+    indices_max <- c(year,dms[3],season,dms[5],dms[6])
+    survivors <- test_operatingModel_survivors(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, year)
+    ssb <- quantSums(survivors * (wt(om[["biols"]][[1]][["biol"]]) * mat(om[["biols"]][[1]][["biol"]]))[,year,,season,])
+    ssb_out <-  test_operatingModel_ssb_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, indices_min, indices_max)
+    expect_FLQuant_equal(ssb, ssb_out)
+    # Indices too long
+    bad_indices_min <- c(1,indices_min)
+    bad_indices_max <- c(1,indices_max)
+    expect_error(test_operatingModel_ssb_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, bad_indices_min, indices_max))
+    expect_error(test_operatingModel_ssb_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, indices_min, bad_indices_max))
+    # Indices not the same time step
+    indices_min[1] <- indices_min[1]+1
+    expect_error(test_operatingModel_ssb_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, indices_min, indices_max))
+})
+
 test_that("operatingModel landings, catch and discards methods",{
     # These methods evaluate the current state of the OM
     # i.e. just pull values out, no calculation
@@ -295,221 +322,221 @@ test_that("operatingModel landings, catch and discards methods",{
     expect_error(test_operatingModel_catch_n_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, dim_min, dim_max))
 })
 
-# eval_om work with units - important as the target calculations use unit_sum()
-test_that("operatingModel eval_om units", {
-    # Two fisheries, two biols
-    # FC11 -> B1
-    # FC12 and FC21 -> B2
-    #nunits <- 8
-    nunits <- 1
-    niters <- 10 
-    flq <- random_FLQuant_generator(fixed_dims = c(5,20,nunits,4,1,niters))
-    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
-    # Biol 1 spwn in season 1 only, Biol 2 spwns in season 3 but spwn = 0
-    flbs[[1]][["biol"]]@spwn[1,,,1] <- runif(niters * dim(flq)[2], min=0.1, max = 1)
-    flbs[[1]][["biol"]]@spwn[1,,,2:4] <- NA
-    flbs[[2]][["biol"]]@spwn[1,,,3] <- 0
-    flbs[[2]][["biol"]]@spwn[1,,,c(1,2,4)] <- NA
-    # Pull out just FLBiols for testing
-    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
-    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
-    fwc <- random_fwdControl_generator(niters=1)
-    FCB <- array(NA, dim=c(3,3))
-    FCB[1,] <- c(1,1,1)
-    FCB[2,] <- c(1,2,2)
-    FCB[3,] <- c(2,1,2)
-    fwc@FCB <- FCB
-    # Get full indices - but the last year
-    dim_max <- dim(n(flbs[[1]][["biol"]]))
-    dim_min <- round(runif(6,min=1,max=dim_max))
-    #  Catch FC11
-    cout11 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 1, 1, as.integer(NA), dim_min, dim_max)
-    cin11 <- unitSums(catch(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    expect_FLQuant_equal(cout11,cin11)
-    #  Catch FC12
-    cout12 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 1, 2, as.integer(NA), dim_min, dim_max)
-    cin12 <- unitSums(catch(flfs[[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    expect_FLQuant_equal(cout12,cin12)
-    #  Catch FC21
-    cout21 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 2, 1, as.integer(NA), dim_min, dim_max)
-    cin21 <- unitSums(catch(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    expect_FLQuant_equal(cout21,cin21)
-    #  Catch B1
-    coutb1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", as.integer(NA),as.integer(NA),1, dim_min, dim_max)
-    expect_FLQuant_equal(coutb1,cin11)
-    #  Catch B2
-    coutb2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", as.integer(NA),as.integer(NA),2, dim_min, dim_max)
-    expect_FLQuant_equal(coutb2,cin12+cin21)
-    #  Landings FC11
-    lout11 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", 1, 1, as.integer(NA), dim_min, dim_max)
-    lin11 <- unitSums(landings(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    expect_FLQuant_equal(lout11,lin11)
-    #  Landings FC12
-    lout12 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", 1, 2, as.integer(NA), dim_min, dim_max)
-    lin12 <- unitSums(landings(flfs[[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    expect_FLQuant_equal(lout12,lin12)
-    #  Landings FC21
-    lout21 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", 2, 1, as.integer(NA), dim_min, dim_max)
-    lin21 <- unitSums(landings(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    expect_FLQuant_equal(lout21,lin21)
-    #  Landings B1
-    loutb1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", as.integer(NA),as.integer(NA),1, dim_min, dim_max)
-    expect_FLQuant_equal(loutb1,lin11)
-    #  Landings B2
-    loutb2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", as.integer(NA),as.integer(NA),2, dim_min, dim_max)
-    expect_FLQuant_equal(loutb2,lin12+lin21)
-    #  Discards FC11
-    dout11 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", 1, 1, as.integer(NA), dim_min, dim_max)
-    din11 <- unitSums(discards(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    expect_FLQuant_equal(dout11,din11)
-    #  Discards FC12
-    dout12 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", 1, 2, as.integer(NA), dim_min, dim_max)
-    din12 <- unitSums(discards(flfs[[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    expect_FLQuant_equal(dout12,din12)
-    #  Discards FC21
-    dout21 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", 2, 1, as.integer(NA), dim_min, dim_max)
-    din21 <- unitSums(discards(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
-    expect_FLQuant_equal(dout21,din21)
-    #  Discards B1
-    doutb1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", as.integer(NA),as.integer(NA),1, dim_min, dim_max)
-    expect_FLQuant_equal(doutb1,din11)
-    #  Discards B2
-    doutb2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", as.integer(NA),as.integer(NA),2, dim_min, dim_max)
-    expect_FLQuant_equal(doutb2,din12+din21)
-    # Fbar B1
-    foutb1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", as.integer(NA),as.integer(NA),1, dim_min, dim_max)
-    finb1 <- test_operatingModel_fbar_B(flfs, flbs, fwc, 1, dim_min, dim_max) # Assume is correct
-    expect_FLQuant_equal(foutb1,finb1)
-    # Fbar FC11
-    foutfc11 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", 1,1,1, dim_min, dim_max)
-    finfc11 <- test_operatingModel_fbar_FCB(flfs, flbs, fwc, 1,1,1, dim_min, dim_max) # Assume is correct
-    expect_FLQuant_equal(foutfc11,finfc11)
-    # Fbar B2
-    foutb2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", as.integer(NA),as.integer(NA),1, dim_min, dim_max)
-    finb2 <- test_operatingModel_fbar_B(flfs, flbs, fwc, 1, dim_min, dim_max) # Assume is correct
-    expect_FLQuant_equal(foutb1,finb1)
-    # Fbar FC12
-    foutfc12 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", 1,2,1, dim_min, dim_max)
-    finfc12 <- test_operatingModel_fbar_FCB(flfs, flbs, fwc, 1,2,1, dim_min, dim_max) # Assume is correct
-    expect_FLQuant_equal(foutfc12,finfc12)
-    # Fbar FC22
-    foutfc21 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", 2,1,1, dim_min, dim_max)
-    finfc21 <- test_operatingModel_fbar_FCB(flfs, flbs, fwc, 2,1,1, dim_min, dim_max) # Assume is correct
-    expect_FLQuant_equal(foutfc21,finfc21)
+## eval_om work with units - important as the target calculations use unit_sum()
+#test_that("operatingModel eval_om units", {
+#    # Two fisheries, two biols
+#    # FC11 -> B1
+#    # FC12 and FC21 -> B2
+#    #nunits <- 8
+#    nunits <- 1
+#    niters <- 10 
+#    flq <- random_FLQuant_generator(fixed_dims = c(5,20,nunits,4,1,niters))
+#    flbs <- random_fwdBiols_list_generator(min_biols = 2, max_biols = 2, fixed_dims = dim(flq))
+#    # Biol 1 spwn in season 1 only, Biol 2 spwns in season 3 but spwn = 0
+#    flbs[[1]][["biol"]]@spwn[1,,,1] <- runif(niters * dim(flq)[2], min=0.1, max = 1)
+#    flbs[[1]][["biol"]]@spwn[1,,,2:4] <- NA
+#    flbs[[2]][["biol"]]@spwn[1,,,3] <- 0
+#    flbs[[2]][["biol"]]@spwn[1,,,c(1,2,4)] <- NA
+#    # Pull out just FLBiols for testing
+#    flbs_in <- lapply(flbs, function(x) return(x[["biol"]]))
+#    flfs <- random_FLFisheries_generator(fixed_dims = dim(flq), min_fisheries=2, max_fisheries=2, min_catches=2, max_catches=2)
+#    fwc <- random_fwdControl_generator(niters=1)
+#    FCB <- array(NA, dim=c(3,3))
+#    FCB[1,] <- c(1,1,1)
+#    FCB[2,] <- c(1,2,2)
+#    FCB[3,] <- c(2,1,2)
+#    fwc@FCB <- FCB
+#    # Get full indices - but the last year
+#    dim_max <- dim(n(flbs[[1]][["biol"]]))
+#    dim_min <- round(runif(6,min=1,max=dim_max))
+#    #  Catch FC11
+#    cout11 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 1, 1, as.integer(NA), dim_min, dim_max)
+#    cin11 <- unitSums(catch(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+#    expect_FLQuant_equal(cout11,cin11)
+#    #  Catch FC12
+#    cout12 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 1, 2, as.integer(NA), dim_min, dim_max)
+#    cin12 <- unitSums(catch(flfs[[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+#    expect_FLQuant_equal(cout12,cin12)
+#    #  Catch FC21
+#    cout21 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", 2, 1, as.integer(NA), dim_min, dim_max)
+#    cin21 <- unitSums(catch(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+#    expect_FLQuant_equal(cout21,cin21)
+#    #  Catch B1
+#    coutb1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", as.integer(NA),as.integer(NA),1, dim_min, dim_max)
+#    expect_FLQuant_equal(coutb1,cin11)
+#    #  Catch B2
+#    coutb2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "catch", as.integer(NA),as.integer(NA),2, dim_min, dim_max)
+#    expect_FLQuant_equal(coutb2,cin12+cin21)
+#    #  Landings FC11
+#    lout11 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", 1, 1, as.integer(NA), dim_min, dim_max)
+#    lin11 <- unitSums(landings(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+#    expect_FLQuant_equal(lout11,lin11)
+#    #  Landings FC12
+#    lout12 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", 1, 2, as.integer(NA), dim_min, dim_max)
+#    lin12 <- unitSums(landings(flfs[[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+#    expect_FLQuant_equal(lout12,lin12)
+#    #  Landings FC21
+#    lout21 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", 2, 1, as.integer(NA), dim_min, dim_max)
+#    lin21 <- unitSums(landings(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+#    expect_FLQuant_equal(lout21,lin21)
+#    #  Landings B1
+#    loutb1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", as.integer(NA),as.integer(NA),1, dim_min, dim_max)
+#    expect_FLQuant_equal(loutb1,lin11)
+#    #  Landings B2
+#    loutb2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "landings", as.integer(NA),as.integer(NA),2, dim_min, dim_max)
+#    expect_FLQuant_equal(loutb2,lin12+lin21)
+#    #  Discards FC11
+#    dout11 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", 1, 1, as.integer(NA), dim_min, dim_max)
+#    din11 <- unitSums(discards(flfs[[1]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+#    expect_FLQuant_equal(dout11,din11)
+#    #  Discards FC12
+#    dout12 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", 1, 2, as.integer(NA), dim_min, dim_max)
+#    din12 <- unitSums(discards(flfs[[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+#    expect_FLQuant_equal(dout12,din12)
+#    #  Discards FC21
+#    dout21 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", 2, 1, as.integer(NA), dim_min, dim_max)
+#    din21 <- unitSums(discards(flfs[[2]][[1]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])
+#    expect_FLQuant_equal(dout21,din21)
+#    #  Discards B1
+#    doutb1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", as.integer(NA),as.integer(NA),1, dim_min, dim_max)
+#    expect_FLQuant_equal(doutb1,din11)
+#    #  Discards B2
+#    doutb2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "discards", as.integer(NA),as.integer(NA),2, dim_min, dim_max)
+#    expect_FLQuant_equal(doutb2,din12+din21)
+#    # Fbar B1
+#    foutb1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", as.integer(NA),as.integer(NA),1, dim_min, dim_max)
+#    finb1 <- test_operatingModel_fbar_B(flfs, flbs, fwc, 1, dim_min, dim_max) # Assume is correct
+#    expect_FLQuant_equal(foutb1,finb1)
+#    # Fbar FC11
+#    foutfc11 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", 1,1,1, dim_min, dim_max)
+#    finfc11 <- test_operatingModel_fbar_FCB(flfs, flbs, fwc, 1,1,1, dim_min, dim_max) # Assume is correct
+#    expect_FLQuant_equal(foutfc11,finfc11)
+#    # Fbar B2
+#    foutb2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", as.integer(NA),as.integer(NA),1, dim_min, dim_max)
+#    finb2 <- test_operatingModel_fbar_B(flfs, flbs, fwc, 1, dim_min, dim_max) # Assume is correct
+#    expect_FLQuant_equal(foutb1,finb1)
+#    # Fbar FC12
+#    foutfc12 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", 1,2,1, dim_min, dim_max)
+#    finfc12 <- test_operatingModel_fbar_FCB(flfs, flbs, fwc, 1,2,1, dim_min, dim_max) # Assume is correct
+#    expect_FLQuant_equal(foutfc12,finfc12)
+#    # Fbar FC22
+#    foutfc21 <- test_operatingModel_eval_om(flfs, flbs, fwc, "f", 2,1,1, dim_min, dim_max)
+#    finfc21 <- test_operatingModel_fbar_FCB(flfs, flbs, fwc, 2,1,1, dim_min, dim_max) # Assume is correct
+#    expect_FLQuant_equal(foutfc21,finfc21)
 
-    # SSB targets
-    # SRP B1
-    dim_min[4] <- 1 # Season 1 - should be OK
-    srp_outB1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "ssb", as.integer(NA),as.integer(NA),1, dim_min, dim_max)
-    srp_inB1 <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fwc, 1, dim_min[-1], dim_max[-1])
-    expect_FLQuant_equal(srp_outB1,srp_inB1)
-    dim_min[4] <- 2 # Season 2 - first timestep has spwn = NA - throws error
-    expect_error(test_operatingModel_eval_om(flfs, flbs, fwc, "ssb", as.integer(NA),as.integer(NA),1, dim_min_temp, dim_max))
+#    # SSB targets
+#    # SRP B1
+#    dim_min[4] <- 1 # Season 1 - should be OK
+#    srp_outB1 <- test_operatingModel_eval_om(flfs, flbs, fwc, "ssb", as.integer(NA),as.integer(NA),1, dim_min, dim_max)
+#    srp_inB1 <- test_operatingModel_SRP_FLQ_subset(flfs, flbs, fwc, 1, dim_min[-1], dim_max[-1])
+#    expect_FLQuant_equal(srp_outB1,srp_inB1)
+#    dim_min[4] <- 2 # Season 2 - first timestep has spwn = NA - throws error
+#    expect_error(test_operatingModel_eval_om(flfs, flbs, fwc, "ssb", as.integer(NA),as.integer(NA),1, dim_min_temp, dim_max))
+#
+#    # SRP B2 - can only do a single timestep as spwn = 0
+#    expect_error(test_operatingModel_eval_om(flfs, flbs, fwc, "ssb", as.integer(NA),as.integer(NA),2, dim_min, dim_max))
+#    # Season 3, Year 1, all iters and units
+#    dim_min <- c(1,1,1,3,1,1)
+#    dim_max <- c(dim(flq)[1],1,dim(flq)[3],3,1,dim(flq)[6])
+#    srp_outB2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "ssb", as.integer(NA),as.integer(NA),2, dim_min, dim_max)
+#    # Should be SRP in next timestep if spwn = 0
+#    dim_min_plus <- c(1,1,1,4,1,1)
+#    dim_max_plus <- c(dim(flq)[1],1,dim(flq)[3],4,1,dim(flq)[6])
+#    # Set spwn to 0 etc
+#    flbs_temp <- flbs
+#    flbs_temp[[2]][["biol"]]@spwn[] <- 0.0
+#    srp_inB2 <- test_operatingModel_SRP_FLQ_subset(flfs, flbs_temp, fwc, 2, dim_min_plus[-1], dim_max_plus[-1])
+#    expect_FLQuant_equal(srp_outB2,srp_inB2)
+#    # But spwn in returned object should be same as orig
+#    om_out <- test_operatingModel_eval_om2(flfs, flbs, fwc, "ssb", as.integer(NA),as.integer(NA),2, dim_min, dim_max)
+#    expect_FLQuant_equal(om_out[["biols"]][[2]]@spwn, flbs[[2]][["biol"]]@spwn)
 
-    # SRP B2 - can only do a single timestep as spwn = 0
-    expect_error(test_operatingModel_eval_om(flfs, flbs, fwc, "ssb", as.integer(NA),as.integer(NA),2, dim_min, dim_max))
-    # Season 3, Year 1, all iters and units
-    dim_min <- c(1,1,1,3,1,1)
-    dim_max <- c(dim(flq)[1],1,dim(flq)[3],3,1,dim(flq)[6])
-    srp_outB2 <- test_operatingModel_eval_om(flfs, flbs, fwc, "ssb", as.integer(NA),as.integer(NA),2, dim_min, dim_max)
-    # Should be SRP in next timestep if spwn = 0
-    dim_min_plus <- c(1,1,1,4,1,1)
-    dim_max_plus <- c(dim(flq)[1],1,dim(flq)[3],4,1,dim(flq)[6])
-    # Set spwn to 0 etc
-    flbs_temp <- flbs
-    flbs_temp[[2]][["biol"]]@spwn[] <- 0.0
-    srp_inB2 <- test_operatingModel_SRP_FLQ_subset(flfs, flbs_temp, fwc, 2, dim_min_plus[-1], dim_max_plus[-1])
-    expect_FLQuant_equal(srp_outB2,srp_inB2)
-    # But spwn in returned object should be same as orig
-    om_out <- test_operatingModel_eval_om2(flfs, flbs, fwc, "ssb", as.integer(NA),as.integer(NA),2, dim_min, dim_max)
-    expect_FLQuant_equal(om_out[["biols"]][[2]]@spwn, flbs[[2]][["biol"]]@spwn)
+#    # Economic indicators
+#    for (fishery_no in 1:length(flfs)){
+#        dim_max <- dim(landings.wt(flfs[[fishery_no]][[1]]))
+#        dim_min <- round(runif(6,min=1,max=dim_max))
+#        # Revenue at catch level
+#        for(catch_no in 1:length(flfs[[fishery_no]])){
+#            rev_out <- test_operatingModel_eval_om(flfs, flbs, fwc, "revenue", fishery_no,catch_no,as.integer(NA), dim_min, dim_max)
+#            rev_in2 <- test_FLCatch_revenue_subset(flfs[[fishery_no]][[catch_no]], dim_min[-1], dim_max[-1])
+#            rev_in <- unitSums(quantSums((landings.n(flfs[[fishery_no]][[catch_no]]) * landings.wt(flfs[[fishery_no]][[catch_no]]) * price(flfs[[fishery_no]][[catch_no]]))[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]))
+#            expect_FLQuant_equal(rev_in, rev_out)
+#            expect_FLQuant_equal(rev_in2, rev_out)
+#        }
+#        # Revenue from fishery
+#        rev_out <- test_operatingModel_eval_om(flfs, flbs, fwc, "revenue", fishery_no, as.integer(NA),as.integer(NA), dim_min, dim_max)
+#        rev_in2 <- test_FLFishery_revenue_subset(flfs[[fishery_no]], dim_min[-1], dim_max[-1])
+#        rev_in <- lapply(flfs[[fishery_no]], function(x){return(unitSums(quantSums((landings.n(x) * landings.wt(x) * price(x))[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])))})
+#        rev_in <- Reduce("+",rev_in)
+#        expect_FLQuant_equal(rev_in, rev_out)
+#        expect_FLQuant_equal(rev_in2, rev_out)
+#        # Effort from fishery
+#        eff_out <- test_operatingModel_eval_om(flfs, flbs, fwc, "effort", fishery_no, as.integer(NA),as.integer(NA), dim_min, dim_max)
+#        eff_in <- flfs[[fishery_no]]@effort[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]
+#        expect_FLQuant_equal(eff_in, eff_out)
+#    }
+#})
 
-    # Economic indicators
-    for (fishery_no in 1:length(flfs)){
-        dim_max <- dim(landings.wt(flfs[[fishery_no]][[1]]))
-        dim_min <- round(runif(6,min=1,max=dim_max))
-        # Revenue at catch level
-        for(catch_no in 1:length(flfs[[fishery_no]])){
-            rev_out <- test_operatingModel_eval_om(flfs, flbs, fwc, "revenue", fishery_no,catch_no,as.integer(NA), dim_min, dim_max)
-            rev_in2 <- test_FLCatch_revenue_subset(flfs[[fishery_no]][[catch_no]], dim_min[-1], dim_max[-1])
-            rev_in <- unitSums(quantSums((landings.n(flfs[[fishery_no]][[catch_no]]) * landings.wt(flfs[[fishery_no]][[catch_no]]) * price(flfs[[fishery_no]][[catch_no]]))[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]))
-            expect_FLQuant_equal(rev_in, rev_out)
-            expect_FLQuant_equal(rev_in2, rev_out)
-        }
-        # Revenue from fishery
-        rev_out <- test_operatingModel_eval_om(flfs, flbs, fwc, "revenue", fishery_no, as.integer(NA),as.integer(NA), dim_min, dim_max)
-        rev_in2 <- test_FLFishery_revenue_subset(flfs[[fishery_no]], dim_min[-1], dim_max[-1])
-        rev_in <- lapply(flfs[[fishery_no]], function(x){return(unitSums(quantSums((landings.n(x) * landings.wt(x) * price(x))[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]])))})
-        rev_in <- Reduce("+",rev_in)
-        expect_FLQuant_equal(rev_in, rev_out)
-        expect_FLQuant_equal(rev_in2, rev_out)
-        # Effort from fishery
-        eff_out <- test_operatingModel_eval_om(flfs, flbs, fwc, "effort", fishery_no, as.integer(NA),as.integer(NA), dim_min, dim_max)
-        eff_in <- flfs[[fishery_no]]@effort[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]]
-        expect_FLQuant_equal(eff_in, eff_out)
-    }
-})
-
-test_that("operatingModel eval_om simple", {
-    # Based on ple4 simple
-    # Add more as target types added
-    niters <- 10 
-    data(ple4)
-    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
-    colnames(FCB) <- c("F","C","B")
-    om <- make_test_operatingModel(ple4, FCB, nseasons = 4, niters=niters)
-    dim_max <- dim(n(om[["biols"]][[1]][["biol"]]))
-    dim_min <- round(runif(6, min=1, max=dim_max))
-    # Catch
-    # 1, 1, 1 Cannot ask for biol and a catch
-    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", 1, 1, 1, dim_min, dim_max))
-    # 1, 2, NA
-    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", 1, 2, as.integer(NA), dim_min, dim_max)
-    cin <- catch(om[["fisheries"]][[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]] 
-    expect_FLQuant_equal(cout, cin)
-    # NA, NA, 2
-    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", as.integer(NA), as.integer(NA), 2, dim_min, dim_max)
-    cin <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, dim_min[-1], dim_max[-1])
-    expect_FLQuant_equal(cout, cin)
-    # NA, NA, 3 error
-    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", as.integer(NA), as.integer(NA), 3, dim_min, dim_max))
-    # If catch but no fishery - error
-    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", as.integer(NA), 1, as.integer(NA), dim_min, dim_max))
-    # Landings
-    # 1, 1, 1 Cannot ask for biol and a catch
-    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", 1, 1, 1, dim_min, dim_max))
-    # 1, 2, NA
-    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", 1, 2, as.integer(NA), dim_min, dim_max)
-    cin <- landings(om[["fisheries"]][[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]] 
-    expect_FLQuant_equal(cout, cin)
-    # NA, NA, 2
-    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", as.integer(NA), as.integer(NA), 2, dim_min, dim_max)
-    cin <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, dim_min[-1], dim_max[-1])
-    expect_FLQuant_equal(cout, cin)
-    # NA, NA, 3 error
-    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", as.integer(NA), as.integer(NA), 3, dim_min, dim_max))
-    # Discards
-    # 1, 1, 1 Cannot ask for biol and a catch
-    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", 1, 1, 1, dim_min, dim_max))
-    # 1, 2, NA
-    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", 1, 2, as.integer(NA), dim_min, dim_max)
-    cin <- discards(om[["fisheries"]][[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]] 
-    expect_FLQuant_equal(cout, cin)
-    # NA, NA, 2
-    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", as.integer(NA), as.integer(NA), 2, dim_min, dim_max)
-    cin <- test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, dim_min[-1], dim_max[-1])
-    expect_FLQuant_equal(cout, cin)
-    # NA, NA, 3 error
-    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", as.integer(NA), as.integer(NA), 3, dim_min, dim_max))
-    # Effort
-    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "effort", 1, as.integer(NA), as.integer(NA), dim_min, dim_max)
-    expect_FLQuant_equal(om[["fisheries"]][[1]]@effort[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], cout)
-    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "effort", 2, as.integer(NA), as.integer(NA), dim_min, dim_max)
-    expect_FLQuant_equal(om[["fisheries"]][[2]]@effort[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], cout)
-    # Effort but no fishery no specified
-    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "effort", as.integer(NA), as.integer(NA), 1, dim_min, dim_max))
-    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "effort", as.integer(NA), 1, as.integer(NA), dim_min, dim_max))
-})
+#test_that("operatingModel eval_om simple", {
+#    # Based on ple4 simple
+#    # Add more as target types added
+#    niters <- 10 
+#    data(ple4)
+#    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+#    colnames(FCB) <- c("F","C","B")
+#    om <- make_test_operatingModel(ple4, FCB, nseasons = 4, niters=niters)
+#    dim_max <- dim(n(om[["biols"]][[1]][["biol"]]))
+#    dim_min <- round(runif(6, min=1, max=dim_max))
+#    # Catch
+#    # 1, 1, 1 Cannot ask for biol and a catch
+#    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", 1, 1, 1, dim_min, dim_max))
+#    # 1, 2, NA
+#    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", 1, 2, as.integer(NA), dim_min, dim_max)
+#    cin <- catch(om[["fisheries"]][[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]] 
+#    expect_FLQuant_equal(cout, cin)
+#    # NA, NA, 2
+#    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", as.integer(NA), as.integer(NA), 2, dim_min, dim_max)
+#    cin <- test_operatingModel_catches_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, dim_min[-1], dim_max[-1])
+#    expect_FLQuant_equal(cout, cin)
+#    # NA, NA, 3 error
+#    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", as.integer(NA), as.integer(NA), 3, dim_min, dim_max))
+#    # If catch but no fishery - error
+#    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "catch", as.integer(NA), 1, as.integer(NA), dim_min, dim_max))
+#    # Landings
+#    # 1, 1, 1 Cannot ask for biol and a catch
+#    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", 1, 1, 1, dim_min, dim_max))
+#    # 1, 2, NA
+#    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", 1, 2, as.integer(NA), dim_min, dim_max)
+#    cin <- landings(om[["fisheries"]][[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]] 
+#    expect_FLQuant_equal(cout, cin)
+#    # NA, NA, 2
+#    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", as.integer(NA), as.integer(NA), 2, dim_min, dim_max)
+#    cin <- test_operatingModel_landings_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, dim_min[-1], dim_max[-1])
+#    expect_FLQuant_equal(cout, cin)
+#    # NA, NA, 3 error
+#    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "landings", as.integer(NA), as.integer(NA), 3, dim_min, dim_max))
+#    # Discards
+#    # 1, 1, 1 Cannot ask for biol and a catch
+#    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", 1, 1, 1, dim_min, dim_max))
+#    # 1, 2, NA
+#    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", 1, 2, as.integer(NA), dim_min, dim_max)
+#    cin <- discards(om[["fisheries"]][[1]][[2]])[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]] 
+#    expect_FLQuant_equal(cout, cin)
+#    # NA, NA, 2
+#    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", as.integer(NA), as.integer(NA), 2, dim_min, dim_max)
+#    cin <- test_operatingModel_discards_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, dim_min[-1], dim_max[-1])
+#    expect_FLQuant_equal(cout, cin)
+#    # NA, NA, 3 error
+#    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "discards", as.integer(NA), as.integer(NA), 3, dim_min, dim_max))
+#    # Effort
+#    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "effort", 1, as.integer(NA), as.integer(NA), dim_min, dim_max)
+#    expect_FLQuant_equal(om[["fisheries"]][[1]]@effort[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], cout)
+#    cout <- test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "effort", 2, as.integer(NA), as.integer(NA), dim_min, dim_max)
+#    expect_FLQuant_equal(om[["fisheries"]][[2]]@effort[,dim_min[2]:dim_max[2], dim_min[3]:dim_max[3], dim_min[4]:dim_max[4], dim_min[5]:dim_max[5], dim_min[6]:dim_max[6]], cout)
+#    # Effort but no fishery no specified
+#    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "effort", as.integer(NA), as.integer(NA), 1, dim_min, dim_max))
+#    expect_error(test_operatingModel_eval_om(om[["fisheries"]], om[["biols"]], om[["fwc"]], "effort", as.integer(NA), 1, as.integer(NA), dim_min, dim_max))
+#})
 
 # Current values in operating model (asked for by values in control)
 test_that("get_target_value_hat", {
@@ -981,13 +1008,13 @@ test_that("operatingModel get_target_hat_indices", {
     max_age <- round(runif(1,min=min_age, max=dims[1]-1-rec_age))
     year <- round(runif(1,min=1, max=dims[2]))
     season1 <- round(runif(1,min=1, max=dims[4]))
-    season2 <- round(runif(1,min=1, max=dims[4]))
-    trgt <- data.frame(year = year, season = c(season1, season2, nseasons, nseasons, nseasons), 
+    season2 <- round(runif(1,min=season1, max=dims[4]))
+    trgt <- data.frame(year = year, season = c(season1, season1, season2), 
                         quant = c("f", "catch", "f"),
                         fishery = c(NA,1, 1), catch = c(NA,1,1), biol = c(1,NA,NA),
                         minAge = c(min_age, NA,NA), maxAge = c(max_age, NA, max_age))
     fwc <- fwdControl(trgt)
-    fwc@target$order <- c(1,1,2,2,2)
+    fwc@target$order <- c(1,1,2)
     fwc@FCB <- FCB
     # Test 1 - age structure
     out <- test_operatingModel_get_target_hat_indices(flfs, flbs, fwc, 1, 1, FALSE)
@@ -996,8 +1023,8 @@ test_that("operatingModel get_target_hat_indices", {
     expect_identical(c(indices_min,indices_max), c(out[["indices_min"]], out[["indices_max"]]))
     # Test 2 - no age structure
     out <- test_operatingModel_get_target_hat_indices(flfs, flbs, fwc, 1, 2, FALSE)
-    indices_min <- c(1,year,1,season2,1,1)
-    indices_max <- c(1,year,dims[3],season2,1,dims[6])
+    indices_min <- c(year,1,season1,1,1)
+    indices_max <- c(year,dims[3],season1,1,dims[6])
     expect_identical(c(indices_min,indices_max), c(out[["indices_min"]], out[["indices_max"]]))
     # Test 3 - error min age but no max age
     expect_error(test_operatingModel_get_target_hat_indices(flfs, flbs, fwc, 2, 1, FALSE))
@@ -1026,8 +1053,8 @@ test_that("operatingModel get_target_hat_indices", {
     expect_identical(c(indices_min,indices_max), c(out[["indices_min"]], out[["indices_max"]]))
     # Test 2 - no age structure
     out <- test_operatingModel_get_target_hat_indices(flfs, flbs, fwc, 2, 1, TRUE)
-    indices_min <- c(1,year,1,season2,1,1)
-    indices_max <- c(1,year,dims[3],season2,1,dims[6])
+    indices_min <- c(year,1,season2,1,1)
+    indices_max <- c(year,dims[3],season2,1,dims[6])
     expect_identical(c(indices_min,indices_max), c(out[["indices_min"]], out[["indices_max"]]))
 })
 

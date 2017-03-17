@@ -19,9 +19,9 @@ test_that("operatingModel annual project_biol", {
     min_age <- 1
     niters <- 20
     om <- make_test_operatingModel(ple4, FCB, nseasons = 1, recruitment_age = min_age, niters = niters, sd = 0.1)
-    # Project a random year
+    # Project a random year - i.e. get abundance at start of that year
     dms <- dim(n(om[["biols"]][[1]][["biol"]]))
-    year <- round(runif(1,min=min_age+1, max= dms[2]))
+    year <- round(runif(1,min=min_age+2, max= dms[2]))
     prev_indices_min <- c(1,year-1,1,1,1,1)
     prev_indices_max <- c(dms[1],year-1,dms[3],dms[4],dms[5],dms[6])
     indices_min <- c(1,year,1,1,1,1)
@@ -30,11 +30,14 @@ test_that("operatingModel annual project_biol", {
     fin <- test_operatingModel_get_f_B_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, prev_indices_min,  prev_indices_max)
     zin <- fin + m(om[["biols"]][[1]][["biol"]])[1:dms[1], year-1, 1:dms[3], 1:dms[4], 1:dms[5], 1:dms[6]]
     survivors <- n(om[["biols"]][[1]][["biol"]])[1:dms[1], year-1, 1:dms[3], 1:dms[4], 1:dms[5], 1:dms[6]] * exp(-zin)
+    # survivors at end of previous timestep
+    survivors_out <- test_operatingModel_survivors(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, year-1)
+    expect_FLQuant_equal(survivors, survivors_out)
     # pgroup etc
     nextn <- survivors
     nextn[2:dms[1],] <- survivors[1:(dms[1]-1),]
     nextn[dms[1],] <- nextn[dms[1],] + survivors[dms[1],]
-    # Test recruitment - already tested elsewhere - just confirm here
+    # Get recruitment - already tested elsewhere - just confirm here
     rec_out <- test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 1, year)
     nextn[1,] <- rec_out
     om_out <- test_operatingModel_project_biols(om[["fisheries"]], om[["biols"]], om[["fwc"]], year)
@@ -68,9 +71,12 @@ test_that("operatingModel seasonal project_biol single unit", {
             # Get F
             fin <- test_operatingModel_get_f_B_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, prev_indices_min,  prev_indices_max)
             zin <- fin + m(om[["biols"]][[1]][["biol"]])[1:dms[1], prev_indices_min[2], 1:dms[3], prev_indices_min[4], 1:dms[5], 1:dms[6]]
+            timestep <- ((year-1)*nseasons) + season
             # Survivors
             survivors <- n(om[["biols"]][[1]][["biol"]])[1:dms[1], prev_indices_min[2], 1:dms[3], prev_indices_min[4], 1:dms[5], 1:dms[6]] * exp(-zin)
-            timestep <- ((year-1)*nseasons) + season
+            # survivors at end of previous timestep
+            survivors_out <- test_operatingModel_survivors(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, timestep-1)
+            expect_FLQuant_equal(survivors, survivors_out)
             om_out <- test_operatingModel_project_biols(om[["fisheries"]], om[["biols"]], om[["fwc"]], timestep)
             nextn_out <- n(om_out[["biols"]][[1]])[,year,,season]
             nextn <- survivors
@@ -152,8 +158,9 @@ test_that("operatingModel seasonal project_fisheries", {
     season <- round(runif(1,min=1, max= dms[4]))
     indices_min <- c(1,year,1,season,1,1)
     indices_max <- c(dms[1],year,dms[3],season,dms[5],dms[6])
+    timestep <- ((year-1)*nseasons)+season
     # Project fisheries
-    om_out <- test_operatingModel_project_fisheries(om[["fisheries"]], om[["biols"]], om[["fwc"]], ((year-1)*nseasons)+nseasons)
+    om_out <- test_operatingModel_project_fisheries(om[["fisheries"]], om[["biols"]], om[["fwc"]], timestep)
     # Get catch etc of F1C1
     fishery <- 1
     catch <- 1

@@ -502,6 +502,34 @@ FLQuantAD operatingModel::get_f(const int biol_no) const {
 //}
 //@}
 
+/*! \brief Calculate the survivors at the end of a timestep.
+ *   Survivors are based on the fishing effort and population abundance at the end of a timestep
+ *   Calculation is based on the the Baranov equation: N2 = N1 * (exp -Z)
+ *   This assumes that the instantaneous rate of fishing and natural mortalities are constant over the timestep and occur simultaneously.
+ *   \param biol_no Position of the fwdBiol in the fwdBiols list.
+ *   \param timestep The time step we calculate the abundance at the end of.
+ */
+FLQuantAD operatingModel::survivors(const int biol_no, const int timestep) const{
+    unsigned int year = 0;
+    unsigned int season = 0;
+    std::vector<unsigned int> biol_dim = biols(biol_no).n().get_dim(); 
+    timestep_to_year_season(timestep, biol_dim[3], year, season);
+    // timestep checks
+    if ((year > biol_dim[1]) | (season > biol_dim[3])){
+        Rcpp::stop("In operatingModel::project_biols. Timestep outside of range");
+    }
+    unsigned int niter = get_niter();
+    unsigned int area = 1; // Not yet set up for areas so just set to 1 for now
+    // Indices for subsetting the timestep
+    std::vector<unsigned int> indices_min{1, year, 1, season, area, 1};
+    std::vector<unsigned int> indices_max{biol_dim[0], year, biol_dim[2], season, area, niter};
+    // Get survivors from last timestep 
+    FLQuantAD z_temp = get_f(biol_no, indices_min, indices_max) + biols(biol_no).m(indices_min, indices_max);
+    FLQuantAD survivors = biols(biol_no).n(indices_min, indices_max) * exp(-1.0 * z_temp);
+    return survivors;
+} 
+
+
 /*! \brief Project the Biols in the operatingModel by a single timestep
  *   Projects the Biols in the operatingModel by a single timestep.
  *   All abundances in the Biols are updated in the timestep based on the fishing effort and population abundance in the previous timestep.
@@ -515,62 +543,39 @@ void operatingModel::project_biols(const int timestep){
     if (timestep < 2){
         Rcpp::stop("In operatingModel::project_biols. Uses effort in previous timestep so timestep must be at least 2.");
     }
-    unsigned int year = 0;
-    unsigned int season = 0;
-    unsigned int prev_year = 0;
-    unsigned int prev_season = 0;
-    std::vector<unsigned int> biol_dim = biols(1).n().get_dim(); // All biols have same year and season range, so pick first one
-    timestep_to_year_season(timestep, biol_dim[3], year, season);
-    timestep_to_year_season(timestep-1, biol_dim[3], prev_year, prev_season);
-    // timestep checks
-    if ((year > biol_dim[1]) | (season > biol_dim[3])){
-        Rcpp::stop("In operatingModel::project_biols. Timestep outside of range");
-    }
-    unsigned int niter = get_niter();
-    // Not yet set up for areas so just set to 1 for now
-    unsigned int area = 1;
-    // Loop over and update each biol
     for (unsigned int biol_counter=1; biol_counter <= biols.get_nbiols(); ++biol_counter){
-        // Indices for subsetting the previous timestep
         std::vector<unsigned int> biol_dim = biols(biol_counter).n().get_dim();
-        std::vector<unsigned int> prev_indices_min{1, prev_year, 1, prev_season, area, 1};
-        std::vector<unsigned int> prev_indices_max{biol_dim[0], prev_year, biol_dim[2], prev_season, area, niter};
-        // Get survivors from last timestep 
-        FLQuantAD z_temp = get_f(biol_counter, prev_indices_min, prev_indices_max) + biols(biol_counter).m(prev_indices_min, prev_indices_max);
-        //FLQuantAD z_temp(prev_indices_max[0] - prev_indices_min[0]+1, prev_indices_max[1] - prev_indices_min[1]+1, prev_indices_max[2] - prev_indices_min[2]+1, prev_indices_max[3] - prev_indices_min[3]+1, prev_indices_max[4] - prev_indices_min[4]+1, prev_indices_max[5] - prev_indices_min[5]+1, 0.0);
-        FLQuantAD survivors = biols(biol_counter).n(prev_indices_min, prev_indices_max) * exp(-1.0 * z_temp);
-        // Update biol in timestep by putting survivors into correct age slots
-        // Process by unit (which are effectively distinct)
+        unsigned int year = 1;
+        unsigned int season = 1;
+        timestep_to_year_season(timestep, biol_dim[3], year, season);
+        // timestep checks
+        if ((year > biol_dim[1]) | (season > biol_dim[3])){
+            Rcpp::stop("In operatingModel::project_biols. Timestep outside of range");
+        }
+        unsigned int niter = get_niter();
+        unsigned int area = 1;
+        // Get abundance at end of preceding timestep
+        FLQuantAD surv = survivors(biol_counter, timestep-1);
+        FLQuantAD new_abundance = surv;
         for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
-            // Need to know the age in which to place the survivors 
-            // Each unit can recruit in a different season and can only recruit in one season
-            // If recruitment timestep, survivors get placed in next age i.e. it's their birthday (hooray) and they move up an age class.
-            // Else, same age in next timestep
-            // Determine if this is a recruitment timestep for this unit
-            // Recruitment happening is determined by NAs in SR params - NOT by spwn slot
             bool recruiting_now = biols(biol_counter).srr.does_recruitment_happen(ucount, year, season);
-            unsigned int age_shift = 0;
-            std::vector<adouble> rec(niter, 0.0);
+            // If recruiting shift survivor ages, fix plus group and recruit
             if (recruiting_now){
-                age_shift = 1;
-                // Get the recruitment, all iters
-                rec = calc_rec(biol_counter, ucount, timestep);
+                std::vector<adouble> rec = calc_rec(biol_counter, ucount, timestep);
+                for (unsigned int icount = 1; icount <= niter; ++icount){
+                    for (unsigned int qcount = 2; qcount <= biol_dim[0]; ++qcount){
+                        new_abundance(qcount,1,ucount,1,area,icount) = surv(qcount-1,1,ucount,1,area,icount);
+                    }
+                    // plus group
+                    new_abundance(biol_dim[0], 1, ucount, 1, area, icount) = new_abundance(biol_dim[0], 1, ucount, 1, area, icount) + surv(biol_dim[0], 1, ucount, 1, 1, icount);
+                    // recruitment
+                    new_abundance(1,1,ucount,1,area,icount) = rec[icount-1];
+                }
             }
-            // Need to loop over things as objects are awkward size
+            // Update biol with survivors
             for (unsigned int icount = 1; icount <= niter; ++icount){
-                // Place all but the final survivor age (careful with age shift) - final survivor age dealt with a bit later
-                for (unsigned int qcount = 1; qcount <= (biol_dim[0] - 1); ++qcount){
-                    biols(biol_counter).n(qcount + age_shift, year, ucount, season, area, icount) = survivors(qcount, 1, ucount, 1, 1, icount);
-                }
-                // If it is the recruitment season add final age of survivors into the plus group
-                if (recruiting_now){
-                    biols(biol_counter).n(biol_dim[0], year, ucount, season, area, icount) = biols(biol_counter).n(biol_dim[0], year, ucount, season, area, icount) + survivors(biol_dim[0], 1, ucount, 1, 1, icount);
-                    // Put recruitment into first age
-                    biols(biol_counter).n(1, year, ucount, season, area, icount) = rec[icount-1];
-                }
-                // Else the final survivor age gets put in final age
-                else {
-                    biols(biol_counter).n(biol_dim[0], year, ucount, season, area, icount) = survivors(biol_dim[0], 1, ucount, 1, 1, icount);
+                for (unsigned int qcount = 1; qcount <= biol_dim[0]; ++qcount){
+                    biols(biol_counter).n(qcount, year, ucount, season, area, icount) = new_abundance(qcount, 1, ucount, 1, 1, icount);
                 }
             }
         }
@@ -599,7 +604,6 @@ void operatingModel::project_fisheries(const int timestep){
     if ((year > catch_dim[1]) | (season > catch_dim[3])){
         Rcpp::stop("In operatingModel::project_fisheries. timestep outside of range");
     }
-    // CAREFUL WITH NUMBER OF ITERS
     // Number of iters for all catch_n and biol n must be the same as all derive from effort which has the number of iters
     unsigned int niter = get_niter();
     // Not yet set up for areas
@@ -833,26 +837,18 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
  * \param indices_min The minimum range of the returned FLQuant. Of length 6 even if target does need all of them (e.g. catch does not need the first dimension).
  * \param indices_max The maximum range of the returned FLQuant. Of length 6 even if target does need all of them (e.g. catch does not need the first dimension).
  */
-FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) {
+FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
     bool verbose = false;
-    // Indices must be of length 6, even if not all of them are needed
-    if(indices_min.size() != 6 | indices_max.size() != 6){
-        Rcpp::stop("In operatingModel eval_om. indices_min and max must be of length 6 even if not all of the dimensions are used.\n");
-    }
     // If we have a catch_no, we must also have a fishery_no
     // But you are allowed a fishery with no catch - effort target
     if(!(Rcpp::IntegerVector::is_na(catch_no)) & Rcpp::IntegerVector::is_na(fishery_no)){
         Rcpp::stop("In operatingModel::eval_om. If you specify a catch_no, you must also specify a fishery_no.\n");
     }
     FLQuantAD out;
-    //Rprintf("In eval_om. fishery_no: %i, catch_no: %i, biol_no: %i\n", fishery_no, catch_no, biol_no);
-
     switch(target_type){
         case target_revenue: {
             // Revenue is not age structured - sums over all ages
             if(verbose){Rprintf("target_revenue\n");}
-            std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
-            std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
             // Revenue can come from an FLFishery or a single FLCatch (in which case the FLFishery must be specified)
             if (Rcpp::IntegerVector::is_na(fishery_no)){
                 Rcpp::stop("In operatingModel::eval_om. Asking for revenue target but fishery_no has not been specified.\n");
@@ -860,24 +856,21 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             // Get revenue from a FLFishery (needs only FLFishery)
             if (Rcpp::IntegerVector::is_na(catch_no)){
                 //Rprintf("Revenue from a FLFishery\n");
-                out = fisheries(fishery_no).revenue(indices_min5, indices_max5);
+                out = fisheries(fishery_no).revenue(indices_min, indices_max);
             }
             else {
                 //Rprintf("Revenue from an FLCatch\n");
-                out = fisheries(fishery_no, catch_no).revenue(indices_min5, indices_max5);
+                out = fisheries(fishery_no, catch_no).revenue(indices_min, indices_max);
             }
         break;
         }
         case target_effort: {
             if(verbose){Rprintf("target_effort\n");}
-            // Indices should be of length 5
-            std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
-            std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
             if (Rcpp::IntegerVector::is_na(fishery_no)){
                 Rcpp::stop("In operatingModel::eval_om. Asking for effort target but fishery_no has been specified.\n");
             }
             else {
-                out = fisheries(fishery_no).effort(indices_min5, indices_max5);
+                out = fisheries(fishery_no).effort(indices_min, indices_max);
             }
         break;
         }
@@ -899,17 +892,14 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         }
         case target_catch: {
             if(verbose){Rprintf("target_catch\n");}
-            // Indices should be of length 5 - lop off the first value
-            std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
-            std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
             // Is it total catch of a biol, or catch of an FLCatch
             if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
                 if(verbose){Rprintf("biol_no is NA, catch is from FLCatch %i in FLFishery %i\n", catch_no, fishery_no);}
-                out = unit_sum(fisheries(fishery_no, catch_no).catches(indices_min5, indices_max5));
+                out = unit_sum(fisheries(fishery_no, catch_no).catches(indices_min, indices_max));
             }
             else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 if(verbose){Rprintf("catch is total catch from biol %i\n", biol_no);}
-                out =  unit_sum(catches(biol_no, indices_min5, indices_max5));
+                out =  unit_sum(catches(biol_no, indices_min, indices_max));
             }
             else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 Rcpp::stop("In operatingModel::eval_om. Asking for catch from a particular fishery but no catch_no has been specified.\n");
@@ -921,15 +911,12 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         }
         case target_landings: {
             if(verbose){Rprintf("target_landings\n");}
-            // Indices should be of length 5
-            std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
-            std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
             if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
-                out = unit_sum(fisheries(fishery_no, catch_no).landings(indices_min5, indices_max5));
+                out = unit_sum(fisheries(fishery_no, catch_no).landings(indices_min, indices_max));
             }
             else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 if(verbose){Rprintf("landings are total landings from biol %i\n", biol_no);}
-                out = unit_sum(landings(biol_no, indices_min5, indices_max5));
+                out = unit_sum(landings(biol_no, indices_min, indices_max));
             }
             else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 Rcpp::stop("In operatingModel::eval_om. Asking for landings from a particular fishery but no catch_no has been specified.\n");
@@ -941,15 +928,12 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         }
         case target_discards: {
             if(verbose){Rprintf("target_discards\n");}
-            // Indices should be of length 5
-            std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
-            std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
             if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
-                out = unit_sum(fisheries(fishery_no, catch_no).discards(indices_min5, indices_max5));
+                out = unit_sum(fisheries(fishery_no, catch_no).discards(indices_min, indices_max));
             }
             else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 if(verbose){Rprintf("discards are total discards from biol %i\n", biol_no);}
-                out = unit_sum(discards(biol_no, indices_min5, indices_max5));
+                out = unit_sum(discards(biol_no, indices_min, indices_max));
             }
             else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
                 Rcpp::stop("In operatingModel::eval_om. Asking for discards from a particular fishery but no catch_no has been specified.\n");
@@ -960,63 +944,64 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             break;
         }
         case target_srp: {
-            // Spawning reproductive potential - currently called if target is 'ssb' or 'srp'
+            //// Spawning reproductive potential - currently called if target is 'ssb' or 'srp'
             if(verbose){Rprintf("target_srp\n");}
-            if (Rcpp::IntegerVector::is_na(biol_no)){
-                Rcpp::stop("In operatingModel eval_om. Trying to evaluate SRP target when biol_no. is NA in control object.\n");
-            }
-            // Indices should be of length 5
-            std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
-            std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
-            // Special conditions for SRP + SSB targets
-            // If spwn of biol is > 0, then we get the SRP in that timestep
-            // Else we get the SRP in the following timestep (if there is room)
-            // Which results in a whole lot of faffing about!
-            // check spwn in the first unit, and timestep, area and iter - this one will determine when we evaluate the SRP
-            double spwn_ts = biols(biol_no).spwn()(1,indices_min[1],1,indices_min[3],1,1);
-            // If NA
-            if (Rcpp::NumericVector::is_na(spwn_ts)){
-                Rcpp::stop("In OM eval_om. Asking for SSB / SRP target but Biol.spwn is NA in the requested timestep.\n");
-            }
-            if (spwn_ts > 0){
-                // All is good - get SRP in current timestep
-                if(verbose){Rprintf("In OM eval_om. Get SRP in current timestep\n");}
-                out = unit_sum(srp(biol_no, indices_min5, indices_max5));
-            }
-            else {
-                if(verbose){Rprintf("In OM eval_om. Get SRP in next timestep\n");}
-                // This only works if a point in time - i.e. does not work over a subset as after adjusting timestep, some elements of min_indices may be greater than elements of max_indices
-                if ((indices_min5[0] != indices_max5[0]) | (indices_min5[2] != indices_max5[2])){
-                    Rcpp::stop("In OM eval_om. Trying to eval SRP target in next timestep. Requested subset indices are a range in time not a single timestep.\n");
-                }
-                // Keep a copy of the original spwn
-                FLQuant spwn_orig = biols(biol_no).spwn();
-                // Set spwn to 0 - this means that the eval_om method is no longer const
-                biols(biol_no).spwn().fill(0.0);
-                // Bump min and max timestep by one and get SRP next timestep - they are the same
-                unsigned int timestep = 0;
-                std::vector<unsigned int> biol_dim = biols(biol_no).n().get_dim(); 
-                year_season_to_timestep(indices_min5[0], indices_min5[2], biol_dim[3], timestep);
-                timestep_to_year_season(++timestep, biol_dim[3], indices_min5[0], indices_min5[2]);
-                indices_max5[0] = indices_min5[0];
-                indices_max5[2] = indices_min5[2];
-                // Is timestep too big for dims
-                unsigned int max_timestep = biol_dim[1] * biol_dim[3];
-                if (timestep > max_timestep){
-                    //Rcpp::stop("In OM eval_om. Evaluating SRP in following timestep. Trying to get SRP outside timerange range of Biol. If you want to do this you need to increase the time range of your objects.\n");
-                    Rcpp::warning("In OM eval_om. Evaluating SRP in following timestep. Trying to get SRP outside timerange range of Biol. If you want to do this you need to increase the time range of your objects. Returning 0s\n");
-                    FLQuantAD out0(indices_max5[0]-indices_min5[0]+1, indices_max5[1]-indices_min5[1]+1, indices_max5[2]-indices_min5[2]+1, indices_max5[3]-indices_min5[3]+1, indices_max5[4]-indices_min5[4]+1, indices_max5[5]-indices_min5[5]+1);
-                    out0.fill(0.0);
-                    out = out0;
-                }
-                else{
-                    out = unit_sum(srp(biol_no, indices_min5, indices_max5));
-                }
-                // Reset the spwn member
-                biols(biol_no).spwn() = spwn_orig;
-            }
+            //if (Rcpp::IntegerVector::is_na(biol_no)){
+            //    Rcpp::stop("In operatingModel eval_om. Trying to evaluate SRP target when biol_no. is NA in control object.\n");
+            //}
+            //// Special conditions for SRP + SSB targets
+            //// If spwn of biol is > 0, then we get the SRP in that timestep
+            //// Else we get the SRP in the following timestep (if there is room)
+            //// Which results in a whole lot of faffing about!
+            //// check spwn in the first unit, and timestep, area and iter - this one will determine when we evaluate the SRP
+            //double spwn_ts = biols(biol_no).spwn()(1,indices_min[1],1,indices_min[3],1,1);
+            //// If NA
+            //if (Rcpp::NumericVector::is_na(spwn_ts)){
+            //    Rcpp::stop("In OM eval_om. Asking for SSB / SRP target but Biol.spwn is NA in the requested timestep.\n");
+            //}
+            //if (spwn_ts > 0){
+            //    // All is good - get SRP in current timestep
+            //    if(verbose){Rprintf("In OM eval_om. Get SRP in current timestep\n");}
+            //    out = unit_sum(srp(biol_no, indices_min, indices_max));
+            //}
+            //else {
+            //    if(verbose){Rprintf("In OM eval_om. Get SRP in next timestep\n");}
+            //    // This only works if a point in time - i.e. does not work over a subset as after adjusting timestep, some elements of min_indices may be greater than elements of max_indices
+            //    if ((indices_min[0] != indices_max[0]) | (indices_min[2] != indices_max[2])){
+            //        Rcpp::stop("In OM eval_om. Trying to eval SRP target in next timestep. Requested subset indices are a range in time not a single timestep.\n");
+            //    }
+            //    // Keep a copy of the original spwn
+            //    FLQuant spwn_orig = biols(biol_no).spwn();
+            //    // Set spwn to 0 - this means that the eval_om method is no longer const
+            //    biols(biol_no).spwn().fill(0.0);
+            //    // Bump min and max timestep by one and get SRP next timestep - they are the same
+            //    unsigned int timestep = 0;
+            //    std::vector<unsigned int> biol_dim = biols(biol_no).n().get_dim(); 
+            //    year_season_to_timestep(indices_min[0], indices_min[2], biol_dim[3], timestep);
+            //    timestep_to_year_season(++timestep, biol_dim[3], indices_min[0], indices_min[2]);
+            //    indices_max[0] = indices_min[0];
+            //    indices_max[2] = indices_min[2];
+            //    // Is timestep too big for dims
+            //    unsigned int max_timestep = biol_dim[1] * biol_dim[3];
+            //    if (timestep > max_timestep){
+            //        //Rcpp::stop("In OM eval_om. Evaluating SRP in following timestep. Trying to get SRP outside timerange range of Biol. If you want to do this you need to increase the time range of your objects.\n");
+            //        Rcpp::warning("In OM eval_om. Evaluating SRP in following timestep. Trying to get SRP outside timerange range of Biol. If you want to do this you need to increase the time range of your objects. Returning 0s\n");
+            //        FLQuantAD out0(indices_max[0]-indices_min[0]+1, indices_max[1]-indices_min[1]+1, indices_max[2]-indices_min[2]+1, indices_max[3]-indices_min[3]+1, indices_max[4]-indices_min[4]+1, indices_max[5]-indices_min[5]+1);
+            //        out0.fill(0.0);
+            //        out = out0;
+            //    }
+            //    else{
+            //        out = unit_sum(srp(biol_no, indices_min, indices_max));
+            //    }
+            //    // Reset the spwn member
+            //    biols(biol_no).spwn() = spwn_orig;
+            //}
         break;
-    }
+        }
+        case target_ssb: {
+            if(verbose){Rprintf("target_ssb\n");}
+            break;
+        }
 //        case target_biomass: {
 //            if(verbose){Rprintf("target_biomass\n");}
 //            if (Rcpp::IntegerVector::is_na(biol_no)){
@@ -1103,6 +1088,8 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
  *
  * Gets the range of indices of the desired target.
  * Indices start at 1.
+ * The indices have length 5 (year, unit, season, area, iter) unless minAge and maxAge are present in the control object.
+ * In that case, the indices are length 6 with age structure added.
  * 
  * \param indices_min Vector of the minimum indices.
  * \param indices_max Vector of the maximum indices.
@@ -1161,14 +1148,15 @@ void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_m
     unsigned int min_season = season;
     unsigned int max_season = season; // May change if additional info in control object
     unsigned int niter = get_niter();
-    // Make initial indices
-    indices_min = {1, min_year, 1, min_season, 1, 1};
-    indices_max = {1, max_year, nunit, max_season, 1, niter};
+
     // If we have min or max age, get age indices
     if (!min_age_na | !max_age_na){
         if (min_age_na | max_age_na){
             Rcpp::stop("In operatingModel::get_target_hat_indices. Must supply both minAge and maxAge, not just one of them.\n");
         }
+        // Make initial indices
+        indices_min = {1, min_year, 1, min_season, 1, 1};
+        indices_max = {1, max_year, nunit, max_season, 1, niter};
         std::vector<std::string> age_names;
         // Get from biol or catch
         if(!biol_na){
@@ -1195,6 +1183,11 @@ void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_m
         else {
             Rcpp::stop("maxAge in control not found in dimnames of target object\n");
         }
+    }
+    else {
+        // No min / max age then we assume no age structure in the target 
+        indices_min = {min_year, 1, min_season, 1, 1};
+        indices_max = {max_year, nunit, max_season, 1, niter};
     }
     return;
 }
@@ -1486,8 +1479,8 @@ FLQuantAD operatingModel::discards_n(const int biol_no, const std::vector<unsign
  * into the catches from each biol. This is not yet implemented.
  *
  * \param biol_no Position of the chosen biol in the biols list
- * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 6)
- * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 6)
+ * \param indices_min minimum indices for subsetting (age - iter, integer vector of length 6)
+ * \param indices_max maximum indices for subsetting (age - iter, integer vector of length 6)
  */
 FLQuantAD operatingModel::catch_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
     if(indices_min.size() != 6 | indices_max.size() != 6){
@@ -1495,6 +1488,42 @@ FLQuantAD operatingModel::catch_n(const int biol_no, const std::vector<unsigned 
     }
     FLQuantAD total_catch_n = landings_n(biol_no, indices_min, indices_max) + discards_n(biol_no, indices_min, indices_max);
     return total_catch_n;
+}
+
+
+/*! \brief Subset the SSB at the end of the timestep
+ *
+ * This the SSB at the end of the timestep, not at the time of spawning.
+ * It is used for the target calculation.
+ * SSB = sum (N * wt * mat)
+ * Where N is the abundance at the end of the timestep.
+ * The indices range arguments must be for a single timestep only.
+ *
+ * \param biol_no Position of the chosen biol in the biols list
+ * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 5)
+ * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
+ */
+FLQuantAD operatingModel::ssb_target(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if(indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel ssb_target. indices_min and max must be of length 6\n");
+    }
+    // Check that only one timestep is asked for
+    if ((indices_min[0] != indices_max[0]) | (indices_min[2] != indices_max[2])){
+        Rcpp::stop("In operatingModel ssb_target. Year and season of indices_min and indices_max must be the same. Only one timestep allowed.\n");
+    }
+    std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
+    unsigned int timestep;
+    year_season_to_timestep(indices_min[0], indices_min[2], dim[3], timestep);
+    FLQuantAD surv = survivors(biol_no, timestep);
+    // Calc SSB - without unit sum - done in eval_om
+    // Need bigger indices
+    std::vector<unsigned int> qindices_min = indices_min;
+    qindices_min.insert(qindices_min.begin(), 1);
+    std::vector<unsigned int> qindices_max = indices_max;
+    qindices_max.insert(qindices_max.begin(), dim[0]);
+    // SSB = survivors * wt * mat
+    FLQuant ssb = quant_sum(surv * biols(biol_no).wt(qindices_min, qindices_max) * biols(biol_no).mat(qindices_min, qindices_max));
+    return ssb;
 }
 
 ////-------------------------------------------------
