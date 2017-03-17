@@ -88,6 +88,7 @@ class operatingModel {
         // Total fbar on a biol (possibly from multiple catches)
         FLQuantAD fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD ssb_target(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD biomass_target(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
         // Extract total catches / landings / discards from a biol - not calculated from effort
         FLQuantAD landings(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
