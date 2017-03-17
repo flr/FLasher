@@ -230,13 +230,13 @@ test_that("FLFishery indicators",{
     # Fishery with 1 catch
     fishery <- random_FLFishery_generator(min_catches = 1, max_catches = 1)
     rev_out <- test_FLFishery_revenue(fishery)
-    rev_in <- unitSums(quantSums(fishery[[1]]@price * fishery[[1]]@landings.n * fishery[[1]]@landings.wt))
+    rev_in <- (quantSums(fishery[[1]]@price * fishery[[1]]@landings.n * fishery[[1]]@landings.wt))
     expect_FLQuant_equal(rev_in, rev_out)
     # Fishery with multiple catches
     fishery <- random_FLFishery_generator(min_catches = 2, max_catches = 5)
     rev_out <- test_FLFishery_revenue(fishery)
     rev_in <- lapply(fishery, function(x) {
-        return(unitSums(quantSums(price(x) * landings.n(x) * landings.wt(x))))
+        return(quantSums(price(x) * landings.n(x) * landings.wt(x)))
     })
     rev_in <- Reduce("+",rev_in)
     expect_FLQuant_equal(rev_in, rev_out)
@@ -247,7 +247,7 @@ test_that("FLFishery indicators",{
     indices_min <- round(runif(5, min=1, max=indices_max))
     rev_out <- test_FLFishery_revenue_subset(fishery, indices_min, indices_max)
     rev_in <- lapply(fishery, function(x) {
-        return(unitSums(quantSums((price(x) * landings.n(x) * landings.wt(x))[,indices_min[1]:indices_max[1],indices_min[2]:indices_max[2],indices_min[3]:indices_max[3], indices_min[4]: indices_max[4], indices_min[5]:indices_max[5]])))
+        return(quantSums((price(x) * landings.n(x) * landings.wt(x))[,indices_min[1]:indices_max[1],indices_min[2]:indices_max[2],indices_min[3]:indices_max[3], indices_min[4]: indices_max[4], indices_min[5]:indices_max[5]]))
     })
     rev_in <- Reduce("+",rev_in)
 })

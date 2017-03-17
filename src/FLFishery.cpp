@@ -150,15 +150,15 @@ FLQuant_base<T> FLFishery_base<T>::revenue(const std::vector<unsigned int> indic
     if((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In FLFishery revenue indices subsetter. indices_min and max must be of length 5 (no age dimension)\n");
     }
-    // Revenue had no age or unit structure
-    FLQuant_base<T> revenue(1,indices_max[0]-indices_min[0]+1, 1, indices_max[2]-indices_min[2]+1, indices_max[3]-indices_min[3]+1, indices_max[4]-indices_min[4]+1, 0.0);
+    // Revenue had no age structure
+    FLQuant_base<T> revenue(1,indices_max[0]-indices_min[0]+1, indices_max[1]-indices_min[1]+1, indices_max[2]-indices_min[2]+1, indices_max[3]-indices_min[3]+1, indices_max[4]-indices_min[4]+1, 0.0);
     // Set dimnames - based on effort - need to set unit range to 1
-    std::vector<unsigned int> indices_unit_min = indices_min;
-    indices_unit_min[1] = 1;
-    std::vector<unsigned int> indices_unit_max = indices_max;
-    indices_unit_max[1] = 1;
-    Rcpp::List new_dimnames = (*this).effort(indices_unit_min, indices_unit_max).get_dimnames();
-    revenue.set_dimnames(new_dimnames);
+    //std::vector<unsigned int> indices_unit_min = indices_min;
+    //indices_unit_min[1] = 1;
+    //std::vector<unsigned int> indices_unit_max = indices_max;
+    //indices_unit_max[1] = 1;
+    //Rcpp::List new_dimnames = (*this).effort(indices_min, indices_max).get_dimnames();
+    //revenue.set_dimnames(new_dimnames);
     /// sum revenue over catches
     for (const auto& it : (*this)){
         revenue = revenue + it.revenue(indices_min, indices_max);

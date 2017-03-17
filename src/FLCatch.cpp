@@ -323,7 +323,7 @@ FLQuant_base<T> FLCatch_base<T>::revenue(const std::vector<unsigned int> indices
     std::vector<unsigned int> dims = landings_wt_flq.get_dim();
     quant_indices_max.insert(quant_indices_max.begin(), dims[0]);
     // Summed over all ages and requested unit range
-    FLQuant_base<T> revenue = unit_sum(quant_sum(price(quant_indices_min, quant_indices_max) * landings_n(quant_indices_min, quant_indices_max) * landings_wt(quant_indices_min, quant_indices_max)));
+    FLQuant_base<T> revenue = quant_sum(price(quant_indices_min, quant_indices_max) * landings_n(quant_indices_min, quant_indices_max) * landings_wt(quant_indices_min, quant_indices_max));
     return revenue;
 }
 
