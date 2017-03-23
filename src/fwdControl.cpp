@@ -14,7 +14,7 @@ void fwdControl::init_target_map(){
     target_map["landings"] = target_landings;
     target_map["discards"] = target_discards;
     target_map["srp"] = target_srp;
-    target_map["ssb"] = target_ssb; // Does the same thing as SRP at the moment
+    target_map["ssb"] = target_ssb; 
     target_map["biomass"] = target_biomass;
     target_map["effort"] = target_effort;
     target_map["revenue"] = target_revenue;
@@ -446,6 +446,21 @@ std::vector<unsigned int> fwdControl::get_FCB_nos(const unsigned int target_no, 
     }
     std::vector<unsigned int> FCB_nos = {fishery_no, catch_no, biol_no};
     return FCB_nos;
+}
+
+
+// Is a Biol fished by a Catch that fishes on multiple Biols
+bool fwdControl::shared_catch(const unsigned int biol_no) const{
+    bool out = false;
+    auto FC = get_FC(biol_no);
+    // Loop over rows of FC, get the Biols that it fishes, if length > 1, multiple biols
+    for (auto row_counter = 0; row_counter < FC.nrow(); ++row_counter){
+        std::vector<int> Bs = get_B(FC(row_counter, 0), FC(row_counter, 1));
+        if (Bs.size() > 1){
+            out = true;
+        }
+    }
+    return out;
 }
 
 /*------------------------------------------------------------------*/

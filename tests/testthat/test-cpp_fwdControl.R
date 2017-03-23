@@ -196,3 +196,14 @@ test_that("fwdControl get_FCB_nos", {
     # Fails check
     expect_error(test_fwdControl_get_FCB_nos(fwc, 1, 4, TRUE, TRUE))
 })
+
+test_that("fwdControl shared_catch", {
+    fwc <- random_fwdControl_generator()
+    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+    fwc@FCB <- FCB
+    expect_false(test_fwdControl_shared_catch(fwc, 1))
+    expect_false(test_fwdControl_shared_catch(fwc, 2))
+    expect_true(test_fwdControl_shared_catch(fwc, 3))
+    expect_true(test_fwdControl_shared_catch(fwc, 4))
+})
+

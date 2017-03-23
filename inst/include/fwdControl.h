@@ -16,7 +16,6 @@
 
 // Enumerated type for the target types
 // If you add something here you have to also add it to the map in control.cpp
-// Also, if it's an abundance based target, add it to operatingModel::get_target_fmult_timestep(const int target_no) and to abundance_targets below 
 enum fwdControlTargetType {
     target_effort,
     target_revenue,
@@ -67,13 +66,12 @@ class fwdControl {
         unsigned int get_FCB_nrow() const;
         unsigned int get_FCB_row_no(const unsigned int fishery_no, const unsigned int catch_no, const unsigned int biol_no) const;
         std::vector<unsigned int> get_FCB_nos(const unsigned int target_no, const unsigned int sim_target_no, const bool relative, const bool check) const;
+        bool shared_catch(const unsigned int biol_no) const;
 
     private:
         Rcpp::DataFrame target;
         Rcpp::NumericVector target_iters; 
         target_map_type target_map;
         Rcpp::IntegerMatrix FCB; // an (n x 3) matrix with columns F, C and B
-        // Add more abundance target types if necessary - different timing of F in the operating model
-        //std::vector<fwdControlTargetType> abundance_targets {target_srp, target_biomass};
 };
 

@@ -127,4 +127,10 @@ std::vector<unsigned int> test_fwdControl_get_FCB_nos(const fwdControl control, 
     return out;
 }
 
+// [[Rcpp::export]]
+bool test_fwdControl_shared_catch(const fwdControl control, const unsigned int biol_no){
+    return control.shared_catch(biol_no);
+}
+
+
 
