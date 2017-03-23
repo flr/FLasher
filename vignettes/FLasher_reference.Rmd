@@ -690,15 +690,83 @@ test_operatingModel_calc_rec(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2
 An enumerated type, *fwdControlTargetType* is used to store the target type. This is defined in the `fwdControl.h` header file.
 At the moment, targets cannot be set at the age or unit level. The targets are aggregated over all units and ages.
 
-
 It is possible for the control target to have iterations. If there are no iterations, but the model does have iterations (e.g. in the biological abundance), then the same control target value is used for all iterations.
 
-Issue with Fbar target on a stock with multiple units
+Different target types require different combinations of Fishery, Catch and Biol to be specifed (NA means not specified). The following table describes the requirements:
+
+Fishery | Catch | Biol | Notes
+------- | ----- | ---- | -----
+        |       |      | Error - you have to specify something
+        |       |   x  | Total catch, landings, discards or Fbar of a Biol (where possible to calculate - see below). Biological targets e.g. SSB
+        |   x   |      | Error - if you specify a Catch you must also specify a Fishery
+        |   x   |   x  | Error - if you specify a Catch you must also specify a Fishery
+   x    |       |      | Total revenue or effort of a fishery
+   x    |       |   x  | Error - also needs Catch to be specified
+   x    |   x   |      | Catch, landings, discards or revenue of a particular Fishery / Catch
+   x    |   x   |   x  | Partial F of a Fishery / Catch on a Biol
+
+### Fishery targets
+
+Specify Fishery only - no Catch or Biol 
+
+Total Revenue - calculated as...
+
+Effort - taken from object
+
+### Catch targets
+
+Must specify Catch and Fishery number, OR, a Biol number (not both)
+
+### Biological targets
 
 With biologically based targets we have to be careful with the timing: 
+
 * `SRP` is the SRP `at the time of spawning`. 
 * `SSB` is the mass of mature fish (sum N * wt * mat) `at the end of the timestep`, i.e. the survivors after all mortality (fishing and natural) has stopped.
 * `Biomass` is the total mass of fish (sum N * wt) `at the end of the timestep`, i.e. the survivors after all mortality (fishing and natural) has stopped.
+
+### Fbar targets
+
+Fbar targets are set at either:
+
+* Total Fbar on a Biol;
+* Partial Fbar of a Fishery / Catch on a Biol.
+
+In the first case, the Biol number must be specified in the control object.
+In the second case, the Fishery, Catch and Biol number must be specified in the control object (`fwd()` may make an internal attempt at filling this in, for example when the projection object is an *FLStock* which has one Fishery / Catch and Biol. However, it will be safer for the user to specify clearly what they want).
+
+When setting an Fbar target it is necessary to set the age range over which to calculate it. The age range is set using the `minAge` and `maxAge` columns in the control object. This is done automatically when the projection object is an *FLStock* by taking the information from the `range` slot.
+
+Fbar targets have a single unit, i.e. when the objects have multiple units, the Fbar is the Fbar of the combined unit.
+This means that it is not possible to set an Fbar target for a particular unit.
+
+This presents some problems as calculating the combined Fbar of an object with multiple units is more complicated than an object with a single unit.
+Although it is possible to calculate the F of each unit, there is no easy way of combining these into a single unit i.e. you cannot just take the mean across the units.
+Instead, *FLasher* attempts to calculate the unit-combined F by using the unit-combined catch numbers, abundances and survivors: 
+First, the unit combined $z$ is calculated using:
+
+$combined_z = log(combined_n / combined_survivors)$
+
+Then the unit combined $f$ is calculated using:
+
+$combined_f = (combined_catch * combined_z) / (combined_n * (1 - exp(-combined_z)))$
+
+or, as $survivors = N exp(-combined_z)$:
+
+$combined_f = (combined_catch * log(combined_n / combined_survivors)) / (combined_n - combined_survivors)$
+
+This method is implemented as `get_f_nunit()` (called either with a Biol for the total F, or with a Fishery, Catch and Biol for the partial F).
+When evaluating Fbar, the `get_f_nunit()` method is only called when multiple units are present.
+When single units are present, the normal `get_f()` methods are used.
+
+Calculating the unit combined F requires the unit combined catch numbers.
+For example, when calculating the combined F of a Biol, you need the combined total catch from that Biol, and when calculating the combined partial F of a Fishery, Catch and Biol, you need the combined partial catch of that Fishery and Catch from that Biol.
+
+However, it is currently not possible to access the catch from a Biol when the Catch that fishes that Biol also fishes on other Biols (it is not a common case). 
+This is because it is not possible to attribute the total catch of that Catch to a particular Biol.
+The result is that it is not currently possible to calculate the unit combined F or unit combined Fbar for a Biol, partial or otherwise, in this situation.
+If this is attempted, there is an error message (SHOW EXAMPLE).
+Although, it is of course possible to calculate these catches, the current implementation of FLasher simply takes the existing catch numbers from the Catches in the operating model. They are not calculated 'live' each time they are asked for.
 
 ## Internally
 

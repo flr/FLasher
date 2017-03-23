@@ -442,18 +442,17 @@ FLQuantAD operatingModel::get_f(const int biol_no) const {
  * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
-//FLQuantAD operatingModel::get_unit_z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-//    if (indices_min.size() != 6 | indices_max.size() != 6){
-//        Rcpp::stop("In operatingModel get_unit_z subsetter. Indices not of length 6\n");
-//    }
-//    FLQuantAD n = biols(biol_no).n(indices_min, indices_max);
-//    FLQuantAD survivors = n * exp(-1.0 * (get_f(biol_no, indices_min, indices_max) + biols(biol_no).m(indices_min, indices_max)));
-//    FLQuantAD unit_z = -1.0 * log(unit_sum(survivors) / unit_sum(n));
-//    return unit_z; 
-//}
+FLQuantAD operatingModel::get_nunit_z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if (indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel get_unit_z subsetter. Indices not of length 6\n");
+    }
+    FLQuantAD n = biols(biol_no).n(indices_min, indices_max);
+    FLQuantAD surv = survivors(biol_no, indices_min, indices_max);
+    FLQuantAD nunit_z = -1.0 * log(unit_sum(surv) / unit_sum(n));
+    return nunit_z; 
+}
 
-
-/*! \name get_unit_f
+/*! \name get_nunit_f
  * Get the fishing mortality collapsed over the unit dimension.
  * This is a special case for Biols and Catches with multiple units where you want the fishing mortality combined over units (i.e. the unit dimension is collapsed).
  * This is calculated by extracting the current total catch from the FLCatches. The catch is not calculated 'live' using the current effort.
@@ -466,6 +465,13 @@ FLQuantAD operatingModel::get_f(const int biol_no) const {
  * Z is the total mortality on the Biol from all FLCatches and fishing mortality
  * C is the catch from either an individual Catch or the Catch on the Biol
  * C, Z and N have been collapsed over the unit dimension.
+ * Alternatively:
+ * F = C log (N / survivors) / (N - survivors)
+ *
+ * It is not possible to calculate the unit combined F when the Biol is fished by a Catch that also fishes on other Biols.
+ * This is because it is not possible to get the portion of catches of that Catch that come from a particular Biol.
+ * A check is made and an error thrown if tried.
+ *
  */
 //@{
 /*! \brief Get the fishing mortality on a Biol, collapsed over the unit dimension.
@@ -473,16 +479,20 @@ FLQuantAD operatingModel::get_f(const int biol_no) const {
  * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
-//FLQuantAD operatingModel::get_unit_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-//    if (indices_min.size() != 6 | indices_max.size() != 6){
-//        Rcpp::stop("In operatingModel get_unit_f subsetter. Indices not of length 6\n");
-//    }
-//    FLQuantAD unit_catch =  unit_sum(catch_n(biol_no, indices_min, indices_max));
-//    FLQuantAD unit_z = get_unit_z(biol_no, indices_min, indices_max);
-//    FLQuantAD n = unit_sum(biols(biol_no).n(indices_min, indices_max));
-//    FLQuantAD unit_f = (unit_catch * unit_z) / ((1.0-exp(-1.0 * unit_z)) * n);
-//    return unit_f;
-//}
+FLQuantAD operatingModel::get_nunit_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if (indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel get_nunit_f B subsetter. Indices not of length 6\n");
+    }
+    // Test for shared catch
+    if (ctrl.shared_catch(biol_no)){
+        Rcpp::stop("In operatingModel get_nunit_f B. Not possible to get unit combined F of a Biol that is fished by a Catch that also fishes on other Biols. This is because it is not possible to get the portion of catches of that Catch that come from a particular Biol.\n");
+    }
+    FLQuantAD unit_catch =  unit_sum(catch_n(biol_no, indices_min, indices_max));
+    FLQuantAD unit_surv = unit_sum(survivors(biol_no, indices_min, indices_max));
+    FLQuantAD unit_n = unit_sum(biols(biol_no).n(indices_min, indices_max));
+    FLQuantAD nunit_f = (unit_catch * log(unit_n / unit_surv)) / (unit_n - unit_surv);
+    return nunit_f;
+}
 /*! \brief Get the fishing mortality from an individual Catch on a Biol, collapsed over the unit dimension.
  * \param fishery_no the position of the Fishery within the Fisheries (starting at 1).
  * \param catch_no the position of the Catch within the Catches (starting at 1).
@@ -490,45 +500,38 @@ FLQuantAD operatingModel::get_f(const int biol_no) const {
  * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
-//FLQuantAD operatingModel::get_unit_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-//    if (indices_min.size() != 6 | indices_max.size() != 6){
-//        Rcpp::stop("In operatingModel get_unit_f subsetter. Indices not of length 6\n");
-//    }
-//    FLQuantAD unit_catch = unit_sum(fisheries(fishery_no, catch_no).catch_n(indices_min, indices_max));
-//    FLQuantAD unit_z = get_unit_z(biol_no, indices_min, indices_max);
-//    FLQuantAD n = unit_sum(biols(biol_no).n(indices_min, indices_max));
-//    FLQuantAD unit_f = (unit_catch * unit_z) / ((1.0-exp(-1.0 * unit_z)) * n);
-//    return unit_f;
-//}
+FLQuantAD operatingModel::get_nunit_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if (indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel get_nunit_f FCB subsetter. Indices not of length 6\n");
+    }
+    // Test for shared catch
+    if (ctrl.shared_catch(biol_no)){
+        Rcpp::stop("In operatingModel get_nunit_f FCB. Not possible to get unit combined F of a Biol that is fished by a Catch that also fishes on other Biols. This is because it is not possible to get the portion of catches of that Catch that come from a particular Biol.\n");
+    }
+    FLQuantAD unit_catch = unit_sum(fisheries(fishery_no, catch_no).catch_n(indices_min, indices_max));
+    FLQuantAD nunit_z = get_nunit_z(biol_no, indices_min, indices_max);
+    FLQuantAD unit_n = unit_sum(biols(biol_no).n(indices_min, indices_max));
+    FLQuantAD nunit_f = (unit_catch * nunit_z) / ((1.0-exp(-1.0 * nunit_z)) * unit_n);
+    return nunit_f;
+}
 //@}
 
 /*! \brief Calculate the survivors at the end of a timestep.
  *   Survivors are based on the fishing effort and population abundance at the end of a timestep
  *   Calculation is based on the the Baranov equation: N2 = N1 * (exp -Z)
  *   This assumes that the instantaneous rate of fishing and natural mortalities are constant over the timestep and occur simultaneously.
- *   \param biol_no Position of the fwdBiol in the fwdBiols list.
- *   \param timestep The time step we calculate the abundance at the end of.
+ * \param biol_no Position of the fwdBiol in the fwdBiols list.
+ * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
+ * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
-FLQuantAD operatingModel::survivors(const int biol_no, const int timestep) const{
-    unsigned int year = 0;
-    unsigned int season = 0;
-    std::vector<unsigned int> biol_dim = biols(biol_no).n().get_dim(); 
-    timestep_to_year_season(timestep, biol_dim[3], year, season);
-    // timestep checks
-    if ((year > biol_dim[1]) | (season > biol_dim[3])){
-        Rcpp::stop("In operatingModel::project_biols. Timestep outside of range");
+FLQuantAD operatingModel::survivors(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+    if (indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel survivors subsetter. Indices not of length 6\n");
     }
-    unsigned int niter = get_niter();
-    unsigned int area = 1; // Not yet set up for areas so just set to 1 for now
-    // Indices for subsetting the timestep
-    std::vector<unsigned int> indices_min{1, year, 1, season, area, 1};
-    std::vector<unsigned int> indices_max{biol_dim[0], year, biol_dim[2], season, area, niter};
-    // Get survivors from last timestep 
     FLQuantAD z_temp = get_f(biol_no, indices_min, indices_max) + biols(biol_no).m(indices_min, indices_max);
     FLQuantAD survivors = biols(biol_no).n(indices_min, indices_max) * exp(-1.0 * z_temp);
     return survivors;
-} 
-
+}
 
 /*! \brief Project the Biols in the operatingModel by a single timestep
  *   Projects the Biols in the operatingModel by a single timestep.
@@ -554,8 +557,15 @@ void operatingModel::project_biols(const int timestep){
         }
         unsigned int niter = get_niter();
         unsigned int area = 1;
+        // Make indices for previous timestep
+        unsigned int prev_year = 1;
+        unsigned int prev_season = 1;
+        timestep_to_year_season(timestep-1, biol_dim[3], prev_year, prev_season);
+        std::vector<unsigned int> prev_indices_min{1, prev_year, 1, prev_season, area, 1};
+        std::vector<unsigned int> prev_indices_max{biol_dim[0], prev_year, biol_dim[2], prev_season, area, niter};
         // Get abundance at end of preceding timestep
-        FLQuantAD surv = survivors(biol_counter, timestep-1);
+        FLQuantAD surv = survivors(biol_counter, prev_indices_min, prev_indices_max);
+        //FLQuantAD surv = survivors(biol_counter, timestep-1);
         FLQuantAD new_abundance = surv;
         for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
             bool recruiting_now = biols(biol_counter).srr.does_recruitment_happen(ucount, year, season);
@@ -834,137 +844,172 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
  * \param fishery_no The fishery number. 
  * \param catch_no The catch number. 
  * \param biol_no The biol number. 
- * \param indices_min The minimum range of the returned FLQuant. Of length 6 even if target does need all of them (e.g. catch does not need the first dimension).
- * \param indices_max The maximum range of the returned FLQuant. Of length 6 even if target does need all of them (e.g. catch does not need the first dimension).
+ * \param indices_min The minimum range of the returned FLQuant. Length should be appropriate for the target type (e.g. 6 for Fbar, 5 for SSB).
+ * \param indices_max The maximum range of the returned FLQuant. Length should be appropriate for the target type (e.g. 6 for Fbar, 5 for SSB).
  */
 FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
     bool verbose = false;
-    // If we have a catch_no, we must also have a fishery_no
-    // But you are allowed a fishery with no catch - effort target
-    if(!(Rcpp::IntegerVector::is_na(catch_no)) & Rcpp::IntegerVector::is_na(fishery_no)){
-        Rcpp::stop("In operatingModel::eval_om. If you specify a catch_no, you must also specify a fishery_no.\n");
+    
+    bool biol_na = Rcpp::IntegerVector::is_na(biol_no);
+    bool catch_na = Rcpp::IntegerVector::is_na(catch_no);
+    bool fishery_na = Rcpp::IntegerVector::is_na(fishery_no);
+
+    // Checks
+    // Must have at least one of FBC
+    if (biol_na & fishery_na & catch_na){
+        Rcpp::stop("In operatingModel::eval_om. No Fishery, Catch or Biol specified.\n");
     }
+    // If we have a Catch, we must also have a Fishery
+    if(!catch_na & fishery_na){
+        Rcpp::stop("In operatingModel::eval_om. If you specify a Catch, you must also specify a Fishery.\n");
+    }
+    // Cannot have Fishery and Biol but no Catch
+    if(!biol_na & !fishery_na & catch_na){
+        Rcpp::stop("In operatingModel::eval_om. Only Fishery and Biol specified. Must also specify Catch.\n");
+    }
+
     FLQuantAD out;
     switch(target_type){
         case target_revenue: {
             // Revenue is not age structured - sums over all ages
             if(verbose){Rprintf("target_revenue\n");}
-            // Revenue can come from an FLFishery or a single FLCatch (in which case the FLFishery must be specified)
-            if (Rcpp::IntegerVector::is_na(fishery_no)){
-                Rcpp::stop("In operatingModel::eval_om. Asking for revenue target but fishery_no has not been specified.\n");
+            // Total revenue of a Fishery (no Biol allowed)
+            if (!fishery_na & catch_na & biol_na){
+                out = unit_sum(fisheries(fishery_no).revenue(indices_min, indices_max));
             }
-            // Get revenue from a FLFishery (needs only FLFishery)
-            if (Rcpp::IntegerVector::is_na(catch_no)){
-                //Rprintf("Revenue from a FLFishery\n");
-                out = fisheries(fishery_no).revenue(indices_min, indices_max);
+            // Revenue from a Catch (no Biol allowed)
+            else if (!fishery_na & !catch_na & biol_na){
+                out = unit_sum(fisheries(fishery_no, catch_no).revenue(indices_min, indices_max));
             }
             else {
-                //Rprintf("Revenue from an FLCatch\n");
-                out = fisheries(fishery_no, catch_no).revenue(indices_min, indices_max);
+                Rcpp::stop("In operatingModel::eval_om. Asking for revenue target but Fishery, Catch and Biol not specified correctly. Only Fishery (for total revenue) , or Fishery and Catch (for revenue of a Catch) allowed.\n");
             }
         break;
         }
         case target_effort: {
             if(verbose){Rprintf("target_effort\n");}
-            if (Rcpp::IntegerVector::is_na(fishery_no)){
-                Rcpp::stop("In operatingModel::eval_om. Asking for effort target but fishery_no has been specified.\n");
+            // Effort only has one unit
+            std::vector<unsigned int> effort_indices_min = indices_min;
+            std::vector<unsigned int> effort_indices_max = indices_max;
+            effort_indices_min[2] = 1;
+            effort_indices_max[2] = 1;
+            // Effort of fishery only
+            if (!fishery_na & catch_na & biol_na){
+                out = fisheries(fishery_no).effort(indices_min, indices_max);
             }
-            out = fisheries(fishery_no).effort(indices_min, indices_max);
+            else {
+                Rcpp::stop("In operatingModel::eval_om. Asking for effort target but Fishery, Catch and Biol not specified correctly. Only Fishery allowed.\n");
+            }
         break;
         }
         case target_fbar: {
             if(verbose){Rprintf("target_fbar\n");}
-            if (Rcpp::IntegerVector::is_na(biol_no)) {
-                Rcpp::stop("In operatingModel::eval_om. Asking for fbar when biol_no is NA. Not yet implemented. Please specify which Biol you mean.\n");
+            // Total Fbar on a biol
+            if (!biol_na & fishery_na & catch_na){
+                out = fbar(biol_no, indices_min, indices_max);
             }
-            // Is it total fbar on a biol, or fbar of an FLCatch
-            if (!Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
-                if(verbose){Rprintf("fbar is from FLCatch %i in FLFishery %i on biol %i\n", catch_no, fishery_no, biol_no);}
+            // Partial Fbar from a Fishery and Catch on a Biol
+            else if (!biol_na & !fishery_na & !catch_na){
                 out = fbar(fishery_no, catch_no, biol_no, indices_min, indices_max);
             }
             else {
-                if(verbose){Rprintf("catch_no is NA. fbar is total fbar from biol %i\n", biol_no);}
-                out = fbar(biol_no, indices_min, indices_max);
+                Rcpp::stop("In operatingModel::eval_om. Asking for Fbar target but Fishery, Catch and Biol not specified correctly. Either specify only a Biol (for the total Fbar on a biol) or specify the Fishery, Catch and Biol (for the partial Fbar).\n");
             }
             break;
         }
         case target_catch: {
             if(verbose){Rprintf("target_catch\n");}
-            // Is it total catch of a biol, or catch of an FLCatch
-            if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
-                if(verbose){Rprintf("biol_no is NA, catch is from FLCatch %i in FLFishery %i\n", catch_no, fishery_no);}
-                out = unit_sum(fisheries(fishery_no, catch_no).catches(indices_min, indices_max));
-            }
-            else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
+            // Calculate catch of a Biol
+            if (!biol_na & fishery_na & catch_na){
                 if(verbose){Rprintf("catch is total catch from biol %i\n", biol_no);}
                 out =  unit_sum(catches(biol_no, indices_min, indices_max));
             }
-            else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
-                Rcpp::stop("In operatingModel::eval_om. Asking for catch from a particular fishery but no catch_no has been specified.\n");
+            // Catch taken from the Fishery and Catch objects
+            else if (biol_na & !fishery_na & !catch_na){
+                if(verbose){Rprintf("biol_no is NA, catch is from FLCatch %i in FLFishery %i\n", catch_no, fishery_no);}
+                out = unit_sum(fisheries(fishery_no, catch_no).catches(indices_min, indices_max));
+            }
+            else if (!fishery_na & !catch_na & !biol_na) {
+                Rcpp::stop("In operatingModel::eval_om. Asking for catch from a specific Fishery / Catch and Biol. It's a special case that is not yet implemented. Can you ask for total catch from just the Biol instead and set Fishery / Catch to NA?\n");
             }
             else {
-                Rcpp::stop("In operatingModel::eval_om. Asking for catch from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total catch from just the biol instead and set catch no to NA?\n");
+                Rcpp::stop("In operatingModel::eval_om. Asking for catch target but Fishery, Catch and Biol not specified correctly. You must only specify the Fishery and Catch (for the catch of a Catch) or the Biol (for the total catch from a Biol).\n");
             }
             break;
         }
         case target_landings: {
             if(verbose){Rprintf("target_landings\n");}
-            if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
+            // Calculate landings of a Biol
+            if (!biol_na & fishery_na & catch_na){
+                if(verbose){Rprintf("landings is total landings from biol %i\n", biol_no);}
+                out =  unit_sum(landings(biol_no, indices_min, indices_max));
+            }
+            // Landings taken from the Fishery and Catch objects
+            else if (biol_na & !fishery_na & !catch_na){
+                if(verbose){Rprintf("Biol is NA, landings is from Catch %i in Fishery %i\n", catch_no, fishery_no);}
                 out = unit_sum(fisheries(fishery_no, catch_no).landings(indices_min, indices_max));
             }
-            else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
-                if(verbose){Rprintf("landings are total landings from biol %i\n", biol_no);}
-                out = unit_sum(landings(biol_no, indices_min, indices_max));
-            }
-            else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
-                Rcpp::stop("In operatingModel::eval_om. Asking for landings from a particular fishery but no catch_no has been specified.\n");
+            else if (!fishery_na & !catch_na & !biol_na) {
+                Rcpp::stop("In operatingModel::eval_om. Asking for landings from a specific Fishery / Catch and Biol. It's a special case that is not yet implemented. Can you ask for total landings from just the Biol instead and set Fishery / Catch to NA?\n");
             }
             else {
-                Rcpp::stop("In operatingModel::eval_om. Asking for landings from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total landings from just the biol instead?\n");
+                Rcpp::stop("In operatingModel::eval_om. Asking for landings target but Fishery, Catch and Biol not specified correctly. You must only specify the Fishery and Catch (for the landings of a Catch) or the Biol (for the total landings from a Biol).\n");
             }
             break;
         }
         case target_discards: {
             if(verbose){Rprintf("target_discards\n");}
-            if (Rcpp::IntegerVector::is_na(biol_no) & !Rcpp::IntegerVector::is_na(catch_no)){
+            // Calculate discards of a Biol
+            if (!biol_na & fishery_na & catch_na){
+                if(verbose){Rprintf("discards is total discards from biol %i\n", biol_no);}
+                out =  unit_sum(discards(biol_no, indices_min, indices_max));
+            }
+            // Landings taken from the Fishery and Catch objects
+            else if (biol_na & !fishery_na & !catch_na){
+                if(verbose){Rprintf("Biol is NA, discards is from Catch %i in Fishery %i\n", catch_no, fishery_no);}
                 out = unit_sum(fisheries(fishery_no, catch_no).discards(indices_min, indices_max));
             }
-            else if (!Rcpp::IntegerVector::is_na(biol_no) & Rcpp::IntegerVector::is_na(catch_no)){
-                if(verbose){Rprintf("discards are total discards from biol %i\n", biol_no);}
-                out = unit_sum(discards(biol_no, indices_min, indices_max));
-            }
-            else if (!Rcpp::IntegerVector::is_na(fishery_no) & Rcpp::IntegerVector::is_na(catch_no)){
-                Rcpp::stop("In operatingModel::eval_om. Asking for discards from a particular fishery but no catch_no has been specified.\n");
+            else if (!fishery_na & !catch_na & !biol_na) {
+                Rcpp::stop("In operatingModel::eval_om. Asking for discards from a specific Fishery / Catch and Biol. It's a special case that is not yet implemented. Can you ask for total discards from just the Biol instead and set Fishery / Catch to NA?\n");
             }
             else {
-                Rcpp::stop("In operatingModel::eval_om. Asking for discards from a particular catch and biol. It's a special case that is not yet implemented. Can you ask for total discards from just the biol instead?\n");
+                Rcpp::stop("In operatingModel::eval_om. Asking for discards target but Fishery, Catch and Biol not specified correctly. You must only specify the Fishery and Catch (for the discards of a Catch) or the Biol (for the total discards from a Biol).\n");
             }
             break;
         }
+
         case target_srp: {
-            // Stock reproductive potential - only for target 'srp'
-            // SRP at the time of spawning
+            // SRP - *at the time of spawning*
             if(verbose){Rprintf("target_srp\n");}
-            if (Rcpp::IntegerVector::is_na(biol_no)){
-                Rcpp::stop("In operatingModel eval_om. Trying to evaluate SRP target when biol_no. is NA in control object.\n");
+            // Only calc if only a Biol
+            if (!biol_na & fishery_na & catch_na){
+                out = total_srp(biol_no, indices_min, indices_max); 
             }
-            out = total_srp(biol_no, indices_min, indices_max); 
+            else {
+                Rcpp::stop("In operatingModel::eval_om. Asking for SRP target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
+            }
             break;
          }
         case target_ssb: {
             if(verbose){Rprintf("target_ssb\n");}
-            if (Rcpp::IntegerVector::is_na(biol_no)){
-                Rcpp::stop("In operatingModel eval_om. Trying to evaluate SRP target when biol_no. is NA in control object.\n");
+            // Only calc if only a Biol
+            if (!biol_na & fishery_na & catch_na){
+                out = unit_sum(ssb_target(biol_no, indices_min, indices_max)); 
             }
-            out = unit_sum(ssb_target(biol_no, indices_min, indices_max)); 
+            else {
+                Rcpp::stop("In operatingModel::eval_om. Asking for SSB target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
+            }
             break;
         }
         case target_biomass: {
             if(verbose){Rprintf("target_biomass\n");}
-            if (Rcpp::IntegerVector::is_na(biol_no)){
-                Rcpp::stop("In operatingModel eval_om. Trying to evaluate biomass target when biol no. is NA. Problem with control object?\n");
+            // Only calc if only a Biol
+            if (!biol_na & fishery_na & catch_na){
+                out = unit_sum(biomass_target(biol_no, indices_min, indices_max));
             }
-            out = unit_sum(biomass_target(biol_no, indices_min, indices_max));
+            else {
+                Rcpp::stop("In operatingModel::eval_om. Asking for biomass target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
+            }
             break;
         }
         default:
@@ -1230,11 +1275,12 @@ std::vector<double> operatingModel::get_target_value(const int target_no, const 
 
 /*! \name fbar
  * Calculate the mean instantaneous fishing mortality over the specified age range.
- * This collapses the unit dimension using the get_unit_f() method which extracts the current catches in the OM.
+ * This collapses the unit dimension using the get_nunit_f() method which extracts the current catches in the OM.
  * It is therefore assumed that the catches in the OM for the specified indices have been updated and reflect the current effort and abundance.
  * If this is not the case, you will need to run project_fisheries() for the desired timesteps.
  * Note that the indices are not the names of the ages, but the positions, starting at 1
  * No check is made to see if the Fishery and Catch are fishing on the Biol.
+ * Note that this method requires that ALL of the catch in the FLCatch must come from the Biol, i.e. this method will not correctly if the Fishery and Catch are fising on multiple biols.
  */
 //@{
 /*! \brief The mean instantaneous fishing mortality over the specified age range of a single biol from a single fishery / catch, subset over dimensions 2-6.
@@ -1246,10 +1292,20 @@ std::vector<double> operatingModel::get_target_value(const int target_no, const 
  * \param indices_max The maximum indices quant, year, unit etc (length 6)
 */
 FLQuantAD operatingModel::fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    // Get the F, then mean over the first dimension
-    //FLQuantAD f = get_unit_f(fishery_no, catch_no, biol_no, indices_min, indices_max); 
-    FLQuantAD f = get_f(fishery_no, catch_no, biol_no, indices_min, indices_max); 
-    FLQuantAD fbar = quant_mean(f);
+    if(indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel fbar FCB method. indices_min and max must be of length 6\n");
+    }
+    FLQuantAD fbar;
+    // If a single unit is asked for, get F using get_f method
+    if (indices_min[2] == indices_max[2]){
+        FLQuantAD f = get_f(fishery_no, catch_no, biol_no, indices_min, indices_max); 
+        fbar = quant_mean(f);
+    }
+    // Else we have to fanny about with multiple units
+    else {
+        FLQuantAD f = get_nunit_f(fishery_no, catch_no, biol_no, indices_min, indices_max); 
+        fbar = quant_mean(f);
+    }
     return fbar;
 }
 
@@ -1259,14 +1315,23 @@ FLQuantAD operatingModel::fbar(const int fishery_no, const int catch_no, const i
  * \param indices_max The maximum indices quant, year, unit etc (length 6)
  */
 FLQuantAD operatingModel::fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    // Get the F, then mean over the first dimension
-    //FLQuantAD f = get_unit_f(biol_no, indices_min, indices_max); 
-    FLQuantAD f = get_f(biol_no, indices_min, indices_max); 
-    FLQuantAD fbar = quant_mean(f);
+    if(indices_min.size() != 6 | indices_max.size() != 6){
+        Rcpp::stop("In operatingModel fbar B method. indices_min and max must be of length 6\n");
+    }
+    FLQuantAD fbar;
+    // If a single unit is asked for, get F using get_f method
+    if (indices_min[2] == indices_max[2]){
+        FLQuantAD f = get_f(biol_no, indices_min, indices_max); 
+        fbar = quant_mean(f);
+    }
+    // Else we have to fanny about with multiple units
+    else {
+        FLQuantAD f = get_nunit_f(biol_no, indices_min, indices_max); 
+        fbar = quant_mean(f);
+    }
     return fbar;
 }
 //@}
-
 
 /*! \brief The total landings mass from a single biol 
  * Sums up the current landings from each of the FLCatch objects that fish the biol
@@ -1466,15 +1531,13 @@ FLQuantAD operatingModel::ssb_target(const int biol_no,  const std::vector<unsig
         Rcpp::stop("In operatingModel ssb_target. Year and season of indices_min and indices_max must be the same. Only one timestep allowed.\n");
     }
     std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
-    unsigned int timestep;
-    year_season_to_timestep(indices_min[0], indices_min[2], dim[3], timestep);
-    FLQuantAD surv = survivors(biol_no, timestep);
     // Calc SSB - without unit sum - done in eval_om
     // Need bigger indices
     std::vector<unsigned int> qindices_min = indices_min;
     qindices_min.insert(qindices_min.begin(), 1);
     std::vector<unsigned int> qindices_max = indices_max;
     qindices_max.insert(qindices_max.begin(), dim[0]);
+    FLQuantAD surv = survivors(biol_no, qindices_min, qindices_max);
     // SSB = survivors * wt * mat
     FLQuant ssb = quant_sum(surv * biols(biol_no).wt(qindices_min, qindices_max) * biols(biol_no).mat(qindices_min, qindices_max));
     return ssb;
@@ -1494,16 +1557,13 @@ FLQuantAD operatingModel::ssb_target(const int biol_no,  const std::vector<unsig
  */
 FLQuantAD operatingModel::biomass_target(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
     if(indices_min.size() != 5 | indices_max.size() != 5){
-        Rcpp::stop("In operatingModel ssb_target. indices_min and max must be of length 6\n");
+        Rcpp::stop("In operatingModel biomass_target. indices_min and max must be of length 6\n");
     }
     // Check that only one timestep is asked for
     if ((indices_min[0] != indices_max[0]) | (indices_min[2] != indices_max[2])){
-        Rcpp::stop("In operatingModel ssb_target. Year and season of indices_min and indices_max must be the same. Only one timestep allowed.\n");
+        Rcpp::stop("In operatingModel biomass_target. Year and season of indices_min and indices_max must be the same. Only one timestep allowed.\n");
     }
     std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
-    unsigned int timestep;
-    year_season_to_timestep(indices_min[0], indices_min[2], dim[3], timestep);
-    FLQuantAD surv = survivors(biol_no, timestep);
     // Calc biomass - without unit sum - done in eval_om
     // Need bigger indices
     std::vector<unsigned int> qindices_min = indices_min;
@@ -1511,6 +1571,7 @@ FLQuantAD operatingModel::biomass_target(const int biol_no,  const std::vector<u
     std::vector<unsigned int> qindices_max = indices_max;
     qindices_max.insert(qindices_max.begin(), dim[0]);
     // Biomass = survivors * wt
+    FLQuantAD surv = survivors(biol_no, qindices_min, qindices_max);
     FLQuant biomass = quant_sum(surv * biols(biol_no).wt(qindices_min, qindices_max));
     return biomass;
 }

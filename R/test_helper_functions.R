@@ -446,13 +446,16 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
             # no beta parameter atm
             catch.q(newc) <- FLPar(c(1.0), dimnames=list(params=c("alpha", "beta"), iter = 1))
             catch.q(newc)["beta",] <- 0.0 # Fix F calculation in code
-            # price?
+            # price - just fill with +ve rnorm
+            price(newc)[] <- abs(rnorm(prod(dim(price(newc))), mean=1, sd=sd))
             catches[[paste("catch", cno, sep="")]] <- newc
         }
         newf <- FLFishery(catches) # range not set correctly
         desc(newf) <- paste("fishery", fno, sep="")
         name(newf) <- paste("fishery", fno, sep="")
-        effort(newf)[] <- 1
+        # Effort is only allowed to have 1 unit
+        newf@effort <- newf@effort[,,1,,,]
+        newf@effort[] <- abs(rnorm(prod(dim(newf@effort)),mean=1,sd=sd))
         # Fish all through the season
         hperiod(newf)[1,] <- 0
         hperiod(newf)[2,] <- 1

@@ -107,36 +107,37 @@ FLQuantAD test_operatingModel_fbar_B(FLFisheriesAD flfs, fwdBiolsAD biols, const
     return fb;
 }
 
-/*----------- unit_z and unit_f--------------*/
+/*----------- nunit_z and nunit_f--------------*/
 
-//// [[Rcpp::export]]
-//FLQuantAD test_operatingModel_unit_z_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-//    operatingModel om(flfs, biols, ctrl);
-//    FLQuantAD z = om.get_unit_z(biol_no, indices_min, indices_max);
-//    return z;
-//}
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_nunit_z_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD z = om.get_nunit_z(biol_no, indices_min, indices_max);
+    return z;
+}
 
-//// [[Rcpp::export]]
-//FLQuantAD test_operatingModel_unit_f_B_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-//    operatingModel om(flfs, biols, ctrl);
-//    FLQuantAD f = om.get_unit_f(biol_no, indices_min, indices_max);
-//    return f;
-//}
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_nunit_f_B_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD f = om.get_nunit_f(biol_no, indices_min, indices_max);
+    return f;
+}
 
-//// [[Rcpp::export]]
-//FLQuantAD test_operatingModel_unit_f_FCB_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-//    operatingModel om(flfs, biols, ctrl);
-//    FLQuantAD f = om.get_unit_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
-//    return f;
-//}
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_nunit_f_FCB_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    FLQuantAD f = om.get_nunit_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
+    return f;
+}
 
 /*----------- project and run methods --------------*/
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_survivors(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const int timestep){
+FLQuantAD test_operatingModel_survivors(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
     operatingModel om(flfs, biols, ctrl);
-    FLQuant out = om.survivors(biol_no, timestep);
+    FLQuant out = om.survivors(biol_no, indices_min, indices_max);
     return out;
 }
+
 
 // [[Rcpp::export]]
 operatingModel test_operatingModel_project_biols(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int timestep){
@@ -177,15 +178,6 @@ FLQuantAD test_operatingModel_eval_om(FLFisheriesAD flfs, fwdBiolsAD biols, cons
     return out;
 }
 
-// Returns whole OM to see if it has been changed
-// [[Rcpp::export]]
-operatingModel test_operatingModel_eval_om2(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const std::string strquantity, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-    operatingModel om(flfs, biols, ctrl);
-    fwdControlTargetType quantity = ctrl.get_target_type(strquantity);
-    FLQuantAD out = om.eval_om(quantity, fishery_no, catch_no, biol_no, indices_min, indices_max);
-    return om;
-}
-
 // [[Rcpp::export]]
 std::vector<double> test_operatingModel_get_target_value_hat(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int target_no, const int sim_target_no){
     operatingModel om(flfs, biols, ctrl);
@@ -218,14 +210,6 @@ std::vector<double> test_operatingModel_get_target_value2(FLFisheriesAD flfs, fw
     return out;
 }
 
-//// [[Rcpp::export]]
-//std::vector<unsigned int> test_operatingModel_get_target_age_range_indices(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const bool relative){ 
-//    operatingModel om(flfs, biols, ctrl);
-//    std::vector<unsigned int> age_range_indices = om.get_target_age_range_indices(target_no, sim_target_no, relative);
-//    return age_range_indices;
-//}
-
-
 // [[Rcpp::export]]
 Rcpp::List test_operatingModel_get_target_hat_indices(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const bool relative){
     operatingModel om(flfs, biols, ctrl);
@@ -239,8 +223,7 @@ Rcpp::List test_operatingModel_get_target_hat_indices(FLFisheriesAD flfs, fwdBio
 /*----------- target calculations --------------*/
 
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_catches_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-    fwdBiolsAD biols(flbs_list_sexp);
+FLQuantAD test_operatingModel_catches_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
     operatingModel om(flfs, biols, ctrl);
     return om.catches(biol_no, indices_min, indices_max);
 }
