@@ -69,8 +69,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   # CONVERT to numeric 'fishery', ...
   if (!is.numeric(trg$fishery))
     trg[,"fishery"] <- match(trg[,"fishery"], rownames(dif))
-  if(nrow(dif) == 1 & all(is.na(trg["fishery"])))
-    trg[,"fishery"] <- 1L
+  #if(nrow(dif) == 1 & all(is.na(trg["fishery"])))
+  #  trg[,"fishery"] <- 1L
 
   # ... 'catch', ...
   if (!is.numeric(trg$catch)) {
@@ -147,7 +147,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
     fishery@desc <- character(1)
   if(length(object@desc) == 0)
     object@desc <- character(1)
-
 
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control,
@@ -297,18 +296,20 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # SET @target[fcb]
     control@target[c("fishery", "catch", "biol")] <- rep(c(NA, NA, 1), each=dim(control@target)[1])
 
-    # IF minAge and maxAge are NA, then range(min, max)
-    arng <- control@target[,c("minAge", "maxAge")]
-    arng[,1] <- ifelse(is.na(arng[,1]), range(object, "minfbar"), arng[,1])
-    arng[,2] <- ifelse(is.na(arng[,2]), range(object, "maxfbar"), arng[,2])
-    control@target[,c("minAge", "maxAge")] <- arng
+    # Some targets require minAge and maxAge to be set
+    # IF minAge and maxAge are NA and target is one of them, then range(min, max)
+    # Fbar and F
+    age_range_targets <- c("f", "fbar")
+    control@target[,"minAge"] <- ifelse(is.na(control@target[,"minAge"]) & (control@target[,"quant"] %in% age_range_targets), range(object, "minfbar"), control@target[,"minAge"])
+    control@target[,"maxAge"] <- ifelse(is.na(control@target[,"maxAge"]) & (control@target[,"quant"] %in% age_range_targets), range(object, "maxfbar"), control@target[,"maxAge"])
 
     # If relative targets (relYear) then we must also have relBiol (all FLStock targets can be related directly to the biol)
     if (any(!is.na(control@target$relYear))){
         relYear_rows <- !is.na(control@target$relYear)
         control@target$relBiol[relYear_rows] <- 1
     }
-  
+
+
     # RUN
     out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals))
 

@@ -849,7 +849,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
  */
 FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
     bool verbose = false;
-    
+    //Rprintf("Fishery: %i, Catch: %i, Biol: %i\n", fishery_no, catch_no, biol_no);
     bool biol_na = Rcpp::IntegerVector::is_na(biol_no);
     bool catch_na = Rcpp::IntegerVector::is_na(catch_no);
     bool fishery_na = Rcpp::IntegerVector::is_na(fishery_no);
@@ -1061,6 +1061,7 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     std::vector<unsigned int> FCB_nos;
     FCB_nos = ctrl.get_FCB_nos(target_no, sim_target_no, false, false);
     // Evaluate the OM at that 
+    //Rprintf("In get_target_value_hat. Fishery: %i Catch: %i Biol: %i\n", FCB_nos[0], FCB_nos[1], FCB_nos[2]);
     FLQuantAD target_value = eval_om(target_type, FCB_nos[0], FCB_nos[1], FCB_nos[2], indices_min, indices_max);
     // Do we have a relative target?
     unsigned int rel_year = ctrl.get_target_int_col(target_no, sim_target_no, "relYear"); 
