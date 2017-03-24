@@ -725,6 +725,9 @@ With biologically based targets we have to be careful with the timing:
 * `SSB` is the mass of mature fish (sum N * wt * mat) `at the end of the timestep`, i.e. the survivors after all mortality (fishing and natural) has stopped.
 * `Biomass` is the total mass of fish (sum N * wt) `at the end of the timestep`, i.e. the survivors after all mortality (fishing and natural) has stopped.
 
+Note that as `SRP` target is the SRP at the time of spawning, if the fishing periods starts after spawning then the fishing mortality in that timestep will have no impact on the SRP.
+The solver will fail in this case.
+
 ### Fbar targets
 
 Fbar targets are set at either:

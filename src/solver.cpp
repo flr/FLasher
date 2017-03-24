@@ -47,9 +47,7 @@ double euclid_norm(std::vector<double> x){
  * \param tolerance The tolerance of the solutions.
  */
 std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const int niter, const int nsim_targets, const double indep_min, const double indep_max, const int max_iters, const double tolerance){
-    
     bool verbose = false;
-
     //Rprintf("indep.size(): %i niter: %i, nsim_targets: %i\n",indep.size(), niter, nsim_targets);
     if(verbose){Rprintf("\nIn Newton Raphson\n");}
     // Check that product of niter and nsim_targets = length of indep (otherwise something has gone wrong)
@@ -101,7 +99,6 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
             if(iter_solved[iter_count] == 0){
                 //if(verbose){Rprintf("Iter %i not yet solved\n", iter_count);}
                 // Subsetting y and Jacobian for that iter only
-                //if(verbose){Rprintf("Subsetting\n");}
                 for(int jac_count_row = 0; jac_count_row < nsim_targets; ++jac_count_row){
                     iter_y[jac_count_row] = y[iter_count * nsim_targets + jac_count_row];
                     // Fill up mini Jacobian for that iteration 
@@ -110,12 +107,10 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
                         iter_jac[jac_count_row + (jac_count_col * nsim_targets)] = jac[jac_element];
                     }
                 }
-                //if(verbose){Rprintf("Done subsetting\n");}
                 // Solve to get w = f(x0) / f'(x0)
                 // Puts resulting w (delta_indep) into iter_y
-                //if(verbose){Rprintf("LU Solving\n");}
                 //if(verbose){Rprintf("nsim_targets: %i\n", nsim_targets);}
-                //if(verbose){Rprintf("iter_jac: %f\n", iter_jac[0]);}
+                if(verbose){Rprintf("iter_jac: %f\n", iter_jac[0]);}
                 //if(verbose){Rprintf("iter_y: %f\n", iter_y[0]);}
                 CppAD::LuSolve(nsim_targets, nsim_targets, iter_jac, iter_y, iter_y, logdet); 
                 //if(verbose){Rprintf("Done LU Solving\n");}

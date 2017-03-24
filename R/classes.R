@@ -8,7 +8,7 @@
 
 
 # .qlevels - available quants for fwdControl
-.qlevels <-  c('catch', 'landings', 'discards', 'f', 'fbar', 'ssb', 'revenue', 'effort')
+.qlevels <-  c('catch', 'landings', 'discards', 'f', 'fbar', 'ssb', 'srp', 'biomass', 'revenue', 'effort')
 
 # .fcb, .vfcb - Possible fishery-catch-biol combinations in @target {{{
 .fcb <- list(
@@ -17,7 +17,7 @@
   list(quant=c("fbar", "f"), fishery=c(TRUE, FALSE), catch=c(TRUE, FALSE), biol=c(TRUE,TRUE)),
   list(quant=c("catch", "landings", "discards"),
     fishery=c(TRUE, FALSE),catch=c(TRUE, FALSE), biol=c(FALSE, TRUE)),
-  list(quant=c("ssb", "srp"), catch=FALSE, fishery=FALSE, biol=TRUE))
+  list(quant=c("ssb", "srp", "biomass"), catch=FALSE, fishery=FALSE, biol=TRUE))
 
 foo <- function(x) {
   fcb <- as.data.frame(x[2:4])
