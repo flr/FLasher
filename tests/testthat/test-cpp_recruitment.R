@@ -67,6 +67,60 @@ test_that("operatingModel f_prop_spwn methods",{
     expect_that(c(prop_out), is_identical_to(0.0))
 })
 
+# z_pre_spwn
+# SRP 
+test_that("operatingModel srp methods",{
+    FCB <- array(c(1,1,2,1,2,1,1,2,2), dim=c(3,3))
+    colnames(FCB) <- c("F","C","B")
+    data(ple4)
+    # Recruitment in seasons 1 and 3, 
+    om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = c(1,3), recruitment_age = 1, niters = 20, sd = 0.1)
+    # Spwns in middle of timestep
+    biols <- lapply(om[["biols"]], function(x) {
+                        spwn(x[["biol"]])[,,,1,] <- 0.5
+                        spwn(x[["biol"]])[,,,3,] <- 0.5
+                        return(x)
+    })
+    om[["biols"]] <- biols
+    flbs_in <- lapply(om$biols, function(x) return(x[["biol"]]))
+
+    # Biol 1 - fished by 1 fishery only
+    biol_no <- 1
+    fishery_no <- 1
+    catch_no <- 1
+    dim <- dim(flbs_in[[biol_no]]@n)
+    year <- round(runif(1, min=1, max=dim[2]))
+    indices_min <- c(1,year,1,1,1,1)
+    indices_max <- c(dim[1],year, dim[3], dim[4], dim[5], dim[6])
+    prop_in <- test_operatingModel_f_prop_spwn_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, biol_no, indices_min[-1], indices_max[-1])
+    f_in <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, indices_min, indices_max)
+    f_pre_spwn_in <- (f_in %*% prop_in)
+    m_pre_spwn_in <- (flbs_in[[biol_no]]@m %*% flbs_in[[biol_no]]@spwn[1,])[,year,]
+    z_pre_spwn_in <- m_pre_spwn_in + f_pre_spwn_in
+    # replace NA with 0.0
+    z_pre_spwn_in[is.na(z_pre_spwn_in)] <- 0.0
+    z_pre_spwn_out <- test_operatingModel_get_z_pre_spwn(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min, indices_max)
+    expect_FLQuant_equal(z_pre_spwn_in, z_pre_spwn_out)
+
+    # Biol 2 - fished by a couple
+    dim <- dim(flbs_in[[2]]@n)
+    year <- round(runif(1, min=1, max=dim[2]))
+    indices_min <- c(1,year,1,1,1,1)
+    indices_max <- c(dim[1],year, dim[3], dim[4], dim[5], dim[6])
+    prop_in12 <- test_operatingModel_f_prop_spwn_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, indices_min[-1], indices_max[-1])
+    f_in122 <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, 2, 2, indices_min, indices_max)
+    prop_in21 <- test_operatingModel_f_prop_spwn_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 2, indices_min[-1], indices_max[-1])
+    f_in212 <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, 1, 2, indices_min, indices_max)
+    f_pre_spwn_in <- (f_in122 %*% prop_in12) + (f_in212 %*% prop_in21)
+    m_pre_spwn_in <- (flbs_in[[2]]@m %*% flbs_in[[2]]@spwn[1,])[,year,]
+    z_pre_spwn_in <- m_pre_spwn_in + f_pre_spwn_in
+    # replace NA with 0.0
+    z_pre_spwn_in[is.na(z_pre_spwn_in)] <- 0.0
+    z_pre_spwn_out <- test_operatingModel_get_z_pre_spwn(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, indices_min, indices_max)
+    expect_FLQuant_equal(z_pre_spwn_in, z_pre_spwn_out)
+})
+
+
 # SRP 
 test_that("operatingModel srp methods",{
     # Assumes that f_prop_spwn and f methods are working correctly
@@ -75,7 +129,7 @@ test_that("operatingModel srp methods",{
     FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
     colnames(FCB) <- c("F","C","B")
     data(ple4)
-    # Recruitment in seasons 1 and 3, so spawning in seasons 4 and 2
+    # Recruitment in seasons 1 and 3, 
     om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = c(1,3), recruitment_age = 1, niters = 20, sd = 0.1)
     # Add unfished biol
     om[["biols"]][[5]] <- om[["biols"]][[1]]
@@ -87,13 +141,13 @@ test_that("operatingModel srp methods",{
     catch_no <- 1
     dim <- dim(flbs_in[[biol_no]]@n)
     dim[1] <- 1
-    # Get full range from input data
     f_indices_min <- rep(1,6)
     f_indices_max <- dim(om[["biols"]][[biol_no]][["biol"]]@n)
     prop_in <- test_operatingModel_f_prop_spwn_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, biol_no, f_indices_min[-1], f_indices_max[-1])
     f_in <- test_operatingModel_get_f_FCB_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], fishery_no, catch_no, biol_no, f_indices_min, f_indices_max)
     srp_in <- quantSums(flbs_in[[biol_no]]@n * flbs_in[[biol_no]]@mat * flbs_in[[biol_no]]@wt * exp(-(f_in %*% prop_in) - (flbs_in[[biol_no]]@m %*% flbs_in[[biol_no]]@spwn[1,])))
     srp_in[is.na(srp_in)] <- 0.0 # replace NA with 0 - NA is from NA in spwn - means no spawning so SRP is 0
+    # Get full range from input data
     srp_out <- test_operatingModel_SRP_FLQ_subset(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, f_indices_min[-1], f_indices_max[-1])
     expect_FLQuant_equal(srp_in, srp_out)
     # Subset the full range
