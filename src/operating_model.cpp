@@ -150,18 +150,19 @@ unsigned int operatingModel::get_niter() const{
 }
 
 
-/*! \brief Calculates the total mortality before spawning
+/*! \brief Calculates the exponent of negative total mortality before spawning
  *
- * Calculated as Fprespwn + m*spwn where the natural mortality, m, is assumed to be constant over the timestep
+ * Calculated as exp(-Fprespwn + m*spwn) where the natural mortality, m, is assumed to be constant over the timestep
  * and Fprespwn is how much fishing mortality happened before spawning.
  * Note that if the spwn member of the FLBiol is NA (no spawning), then 0.0 is returned.
- * i.e. there is no mortality before spawning, even though spawning does not happen.
+ * This method is used for SSB / SRP calculation.
+ * SSB should be 0 when spwn is NA, hence returning 0.0 when spwn is NA
  *
  * \param biol_no The position of the biol in the biols list (starting at 1)
  * \param indices_min The minimum indices: year, unit, season, area, iter (length 5).
  * \param indices_max The maximum indices: year, unit, season, area, iter (length 5).
  */
-FLQuantAD operatingModel::get_z_pre_spwn(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+FLQuantAD operatingModel::get_exp_z_pre_spwn(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
     // Check indices_min and indices_max are of length 6
     if (indices_min.size() != 6 | indices_max.size() != 6){
         Rcpp::stop("In operatingModel::get_z_pre_spwn subsetter. Indices not of length 6\n");
@@ -189,9 +190,11 @@ FLQuantAD operatingModel::get_z_pre_spwn(const int biol_no, const std::vector<un
     spwn_indices_max[0] = 1;
     FLQuant m_pre_spwn = sweep_mult(biols(biol_no).m(indices_min, indices_max), biols(biol_no).spwn(indices_min, spwn_indices_max));
     FLQuantAD z_pre_spwn = f_pre_spwn + m_pre_spwn;
+    FLQuantAD exp_z_pre_spwn = exp(-1.0 * z_pre_spwn);
+    // exp_z_pre_spwn needs to be 0 when spwn is 0
     // If spwn in biol is NA, then no spawning has occured. Therefore the amount of F and M before spawning is 0
-    // A spwn of NA will result in the z_pre_spwn of NA
-    // So we find NA in spwn and replace in z_pre_spwn with 0.0
+    // A spwn of NA will result in the exp_z_pre_spwn of NA
+    // So we find NA in spwn and replace in exp_z_pre_spwn with 0.0
     FLQuant spwn_temp = biols(biol_no).spwn(indices_min, spwn_indices_max);
     // Hacky because exp_z is age structured and spwn is not
     for (auto iter_count = 1; iter_count <= qdim[5]; ++iter_count){
@@ -202,11 +205,11 @@ FLQuantAD operatingModel::get_z_pre_spwn(const int biol_no, const std::vector<un
                         // If spwn is NA set all ages of pre_spwn to 0.0
                         if (Rcpp::NumericVector::is_na(spwn_temp(1,year_count, unit_count, season_count, area_count, iter_count))){
                             for (auto age_count = 1; age_count <= qdim[0]; ++age_count){
-                                z_pre_spwn(age_count, year_count, unit_count, season_count, area_count, iter_count) = 0.0;
+                                exp_z_pre_spwn(age_count, year_count, unit_count, season_count, area_count, iter_count) = 0.0;
                             }
                         }
     }}}}}
-    return z_pre_spwn;
+    return exp_z_pre_spwn;
 }
 
 /*! \brief Calculates the total spawning recruitment potential of a biol at the time of spawning
@@ -250,54 +253,13 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
     std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
     std::vector<unsigned int> qindices_max = indices_max;
     qindices_max.insert(qindices_max.begin(), dim[0]);
-    // Make dim of the Fprespwn object: max - min + 1
-    std::vector<unsigned int> qdim(6,0.0);
-    std::transform(qindices_max.begin(), qindices_max.end(), qindices_min.begin(), qdim.begin(), [](unsigned int x, unsigned int y){return x-y+1;});
-    FLQuantAD f_pre_spwn(qdim);
-    // Get Fprespawn = F * Fpropspawn for each F fishing the biol
-    // 1. ID which F are fishing that B (timing is determined by hperiod and spwn)
-    // 2. Get F(F,C,B)
-    // 3. Get Fpropspawn(F,C,B)
-    // 4. sum (F * Fpropspawn)
-    const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
-    //Rprintf("Getting f_pre_spwn\n");
-    for (unsigned int f_counter=0; f_counter < FC.nrow(); ++f_counter){
-        FLQuantAD tempf = get_f(FC(f_counter,0), FC(f_counter,1), biol_no, qindices_min, qindices_max); 
-        FLQuant temp_prop_spwn = f_prop_spwn(FC(f_counter,0), biol_no, indices_min, indices_max);
-        FLQuantAD temp_propf = sweep_mult(tempf, temp_prop_spwn);
-        f_pre_spwn = f_pre_spwn + temp_propf;
-    }
-    // Get m pre spwn - need to adjust subsetter for the first dimension
-    std::vector<unsigned int> spwn_indices_max = qindices_max;
-    spwn_indices_max[0] = 1;
-    FLQuant m_pre_spwn = sweep_mult(biols(biol_no).m(qindices_min, qindices_max), biols(biol_no).spwn(qindices_min, spwn_indices_max));
-
-    // If spwn in biol is NA, then SRP is 0
-    // Without the following chunk of code we get SRP = NA when spwn is NA. We want 0.0
-    // Here we replace exp(-Fprespwn - Mprespwn) with 0.0
-    FLQuantAD exp_z_pre_spwn = exp((-1.0 * f_pre_spwn) - m_pre_spwn);
-    // Find NA in spwn and replace in exp_z with 0.0
-    FLQuant spwn_temp = biols(biol_no).spwn(qindices_min, spwn_indices_max);
-    // Hacky because exp_z is age structured and spwn is not
-    for (auto iter_count = 1; iter_count <= qdim[5]; ++iter_count){
-        for (auto area_count = 1; area_count <= qdim[4]; ++area_count){
-            for (auto season_count = 1; season_count <= qdim[3]; ++season_count){
-                for (auto unit_count = 1; unit_count <= qdim[2]; ++unit_count){
-                    for (auto year_count = 1; year_count <= qdim[1]; ++year_count){
-                        // If spwn is NA set all ages of pre_spwn to 0.0
-                        if (Rcpp::NumericVector::is_na(spwn_temp(1,year_count, unit_count, season_count, area_count, iter_count))){
-                            for (auto age_count = 1; age_count <= qdim[0]; ++age_count){
-                                exp_z_pre_spwn(age_count, year_count, unit_count, season_count, area_count, iter_count) = 0.0;
-                            }
-                        }
-    }}}}}
+    FLQuantAD exp_z_pre_spwn = get_exp_z_pre_spwn(biol_no, qindices_min, qindices_max);
 
     // Get srp: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
     FLQuantAD srp = quant_sum(
         biols(biol_no).n(qindices_min, qindices_max) *
         biols(biol_no).wt(qindices_min, qindices_max) *
         biols(biol_no).mat(qindices_min, qindices_max) * exp_z_pre_spwn);
-
     return srp;
 }
 

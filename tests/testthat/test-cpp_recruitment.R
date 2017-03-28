@@ -97,10 +97,11 @@ test_that("operatingModel srp methods",{
     f_pre_spwn_in <- (f_in %*% prop_in)
     m_pre_spwn_in <- (flbs_in[[biol_no]]@m %*% flbs_in[[biol_no]]@spwn[1,])[,year,]
     z_pre_spwn_in <- m_pre_spwn_in + f_pre_spwn_in
+    exp_z_pre_spwn_in <- exp(-z_pre_spwn_in)
     # replace NA with 0.0
-    z_pre_spwn_in[is.na(z_pre_spwn_in)] <- 0.0
-    z_pre_spwn_out <- test_operatingModel_get_z_pre_spwn(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min, indices_max)
-    expect_FLQuant_equal(z_pre_spwn_in, z_pre_spwn_out)
+    exp_z_pre_spwn_in[is.na(exp_z_pre_spwn_in)] <- 0.0
+    exp_z_pre_spwn_out <- test_operatingModel_get_exp_z_pre_spwn(om[["fisheries"]], om[["biols"]], om[["fwc"]], biol_no, indices_min, indices_max)
+    expect_FLQuant_equal(exp_z_pre_spwn_in, exp_z_pre_spwn_out)
 
     # Biol 2 - fished by a couple
     dim <- dim(flbs_in[[2]]@n)
@@ -114,10 +115,11 @@ test_that("operatingModel srp methods",{
     f_pre_spwn_in <- (f_in122 %*% prop_in12) + (f_in212 %*% prop_in21)
     m_pre_spwn_in <- (flbs_in[[2]]@m %*% flbs_in[[2]]@spwn[1,])[,year,]
     z_pre_spwn_in <- m_pre_spwn_in + f_pre_spwn_in
+    exp_z_pre_spwn_in <- exp(-z_pre_spwn_in)
     # replace NA with 0.0
-    z_pre_spwn_in[is.na(z_pre_spwn_in)] <- 0.0
-    z_pre_spwn_out <- test_operatingModel_get_z_pre_spwn(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, indices_min, indices_max)
-    expect_FLQuant_equal(z_pre_spwn_in, z_pre_spwn_out)
+    exp_z_pre_spwn_in[is.na(exp_z_pre_spwn_in)] <- 0.0
+    exp_z_pre_spwn_out <- test_operatingModel_get_exp_z_pre_spwn(om[["fisheries"]], om[["biols"]], om[["fwc"]], 2, indices_min, indices_max)
+    expect_FLQuant_equal(exp_z_pre_spwn_in, exp_z_pre_spwn_out)
 })
 
 

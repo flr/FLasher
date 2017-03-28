@@ -32,9 +32,9 @@ unsigned int test_operatingModel_get_niter(FLFisheriesAD flfs, fwdBiolsAD biols,
 /*----------- SRP and Rec calculations--------------*/
 
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_get_z_pre_spwn(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+FLQuantAD test_operatingModel_get_exp_z_pre_spwn(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
     operatingModel om(flfs, biols, ctrl);
-    FLQuantAD out = om.get_z_pre_spwn(biol_no, indices_min, indices_max);
+    FLQuantAD out = om.get_exp_z_pre_spwn(biol_no, indices_min, indices_max);
     return out;
 }
 
