@@ -106,8 +106,13 @@ Rcpp::IntegerMatrix test_fwdControl_get_FC(const fwdControl control, const int b
 }
 
 // [[Rcpp::export]]
-std::vector<int> test_fwdControl_get_B(const fwdControl control, const int fishery_no, const int catch_no){
+std::vector<unsigned int> test_fwdControl_get_B(const fwdControl control, const int fishery_no, const int catch_no){
     return control.get_B(fishery_no, catch_no);
+}
+
+// [[Rcpp::export]]
+std::vector<unsigned int> test_fwdControl_get_F(const fwdControl control, const int biol_no){
+    return control.get_F(biol_no);
 }
 
 // [[Rcpp::export]]

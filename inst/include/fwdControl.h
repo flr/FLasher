@@ -24,8 +24,10 @@ enum fwdControlTargetType {
     target_landings,
     target_discards,
     target_srp,
-    target_ssb,
-    target_biomass
+    target_ssb_end,
+    target_ssb_spawn,
+    target_biomass_end,
+    target_biomass_spawn
 };
 
 // Map the target type as string to the enumerated type - typedef so we can make iterators to it later
@@ -62,7 +64,8 @@ class fwdControl {
         // FCB accessors
         Rcpp::IntegerMatrix get_FCB() const;
         Rcpp::IntegerMatrix get_FC(const int biol_no) const;
-        std::vector<int> get_B(const int fishery_no, const int catch_no) const;
+        std::vector<unsigned int> get_B(const unsigned int fishery_no, const unsigned int catch_no) const;
+        std::vector<unsigned int> get_F(const unsigned int biol_no) const;
         unsigned int get_FCB_nrow() const;
         unsigned int get_FCB_row_no(const unsigned int fishery_no, const unsigned int catch_no, const unsigned int biol_no) const;
         std::vector<unsigned int> get_FCB_nos(const unsigned int target_no, const unsigned int sim_target_no, const bool relative, const bool check) const;

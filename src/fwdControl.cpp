@@ -14,8 +14,10 @@ void fwdControl::init_target_map(){
     target_map["landings"] = target_landings;
     target_map["discards"] = target_discards;
     target_map["srp"] = target_srp;
-    target_map["ssb"] = target_ssb; 
-    target_map["biomass"] = target_biomass;
+    target_map["ssb_end"] = target_ssb_end; 
+    target_map["ssb_spawn"] = target_ssb_spawn; 
+    target_map["biomass_end"] = target_biomass_end; 
+    target_map["biomass_spawn"] = target_biomass_spawn; 
     target_map["effort"] = target_effort;
     target_map["revenue"] = target_revenue;
     return;
@@ -360,8 +362,8 @@ Rcpp::IntegerMatrix fwdControl::get_FC(const int biol_no) const{
 }
 
 // Given the Fishery / catch no, what Biols do they fish?
-std::vector<int> fwdControl::get_B(const int fishery_no, const int catch_no) const{
-    std::vector<int> rows;
+std::vector<unsigned int> fwdControl::get_B(const unsigned int fishery_no, const unsigned int catch_no) const{
+    std::vector<unsigned int> rows;
     for (unsigned int row_counter=0; row_counter < FCB.nrow(); ++row_counter){
         if(FCB(row_counter,0) == fishery_no){
             if(FCB(row_counter,1) == catch_no){
@@ -369,11 +371,25 @@ std::vector<int> fwdControl::get_B(const int fishery_no, const int catch_no) con
             }
         }
     }
-    std::vector<int> B(rows.size(),0.0);
+    std::vector<unsigned int> B(rows.size(),0.0);
     for (unsigned int row_counter=0; row_counter < rows.size(); ++ row_counter){
         B[row_counter] = FCB(rows[row_counter],2);
     }
     return B;
+}
+
+// Given the Biol, what unique Fisheries fish it
+std::vector<unsigned int> fwdControl::get_F(const unsigned int biol_no) const{
+    std::vector<unsigned int> Fs;
+    for (unsigned int row_counter=0; row_counter < FCB.nrow(); ++row_counter){
+        if(FCB(row_counter,2) == biol_no){
+                Fs.push_back(FCB(row_counter,0));
+        }
+    }
+    std::sort(Fs.begin(), Fs.end());
+    auto last = std::unique(Fs.begin(), Fs.end());
+    Fs.erase(last, Fs.end()); 
+    return Fs;
 }
 
 /*! \brief Get the number of rows in the FCB matrix
@@ -455,7 +471,7 @@ bool fwdControl::shared_catch(const unsigned int biol_no) const{
     auto FC = get_FC(biol_no);
     // Loop over rows of FC, get the Biols that it fishes, if length > 1, multiple biols
     for (auto row_counter = 0; row_counter < FC.nrow(); ++row_counter){
-        std::vector<int> Bs = get_B(FC(row_counter, 0), FC(row_counter, 1));
+        std::vector<unsigned int> Bs = get_B(FC(row_counter, 0), FC(row_counter, 1));
         if (Bs.size() > 1){
             out = true;
         }

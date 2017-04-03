@@ -1813,6 +1813,10 @@ test_fwdControl_get_B <- function(control, fishery_no, catch_no) {
     .Call('FLasher_test_fwdControl_get_B', PACKAGE = 'FLasher', control, fishery_no, catch_no)
 }
 
+test_fwdControl_get_F <- function(control, biol_no) {
+    .Call('FLasher_test_fwdControl_get_F', PACKAGE = 'FLasher', control, biol_no)
+}
+
 test_fwdControl_get_FCB_nrow <- function(control) {
     .Call('FLasher_test_fwdControl_get_FCB_nrow', PACKAGE = 'FLasher', control)
 }
@@ -2001,8 +2005,20 @@ test_operatingModel_discards_n_subset <- function(flfs, flbs_list_sexp, ctrl, bi
     .Call('FLasher_test_operatingModel_discards_n_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
 }
 
-test_operatingModel_ssb_target <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
-    .Call('FLasher_test_operatingModel_ssb_target', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+test_operatingModel_ssb_end <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_ssb_end', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_ssb_spawn <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_ssb_spawn', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_biomass_end <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_biomass_end', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_biomass_spawn <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_biomass_spawn', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
 }
 
 test_max3 <- function(indep) {

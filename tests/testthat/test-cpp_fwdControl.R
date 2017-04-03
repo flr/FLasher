@@ -140,6 +140,20 @@ test_that("fwdControl get_FCB methods", {
     expect_error(test_fwdControl_get_FCB_row_no(fwc, 10, fcb[row_in,"C"], fcb[row_in,"B"]))
 })
 
+test_that("fwdControl get_F methods", {
+    fwc <- random_fwdControl_generator()
+    nrows <- 20
+    Fs <- round(runif(nrows, min=1, max=4))
+    Cs <- round(runif(nrows, min=1, max=4))
+    Bs <- round(runif(nrows, min=1, max=4))
+    new_FCB <- matrix(c(Fs, Cs, Bs), nrow=nrows)
+    fwc@FCB  <- new_FCB
+    for (biol_no in 1:4){
+        F_in <- sort(unique(fwc@FCB[fwc@FCB[,3] == biol_no,1]))
+        F_out <- test_fwdControl_get_F(fwc, biol_no)
+        expect_identical(F_out, F_in)
+    }
+})
 
 test_that("fwdControl get_FCB_nos", {
     fishery <- round(runif(1, min=1, max=5))

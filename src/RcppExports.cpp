@@ -5887,7 +5887,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_fwdControl_get_B
-std::vector<int> test_fwdControl_get_B(const fwdControl control, const int fishery_no, const int catch_no);
+std::vector<unsigned int> test_fwdControl_get_B(const fwdControl control, const int fishery_no, const int catch_no);
 RcppExport SEXP FLasher_test_fwdControl_get_B(SEXP controlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -5896,6 +5896,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int >::type fishery_no(fishery_noSEXP);
     Rcpp::traits::input_parameter< const int >::type catch_no(catch_noSEXP);
     rcpp_result_gen = Rcpp::wrap(test_fwdControl_get_B(control, fishery_no, catch_no));
+    return rcpp_result_gen;
+END_RCPP
+}
+// test_fwdControl_get_F
+std::vector<unsigned int> test_fwdControl_get_F(const fwdControl control, const int biol_no);
+RcppExport SEXP FLasher_test_fwdControl_get_F(SEXP controlSEXP, SEXP biol_noSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const fwdControl >::type control(controlSEXP);
+    Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_fwdControl_get_F(control, biol_no));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -6613,9 +6625,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// test_operatingModel_ssb_target
-FLQuantAD test_operatingModel_ssb_target(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_ssb_target(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+// test_operatingModel_ssb_end
+FLQuantAD test_operatingModel_ssb_end(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_operatingModel_ssb_end(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6625,7 +6637,55 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP);
     Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
     Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
-    rcpp_result_gen = Rcpp::wrap(test_operatingModel_ssb_target(flfs, biols, ctrl, biol_no, indices_min, indices_max));
+    rcpp_result_gen = Rcpp::wrap(test_operatingModel_ssb_end(flfs, biols, ctrl, biol_no, indices_min, indices_max));
+    return rcpp_result_gen;
+END_RCPP
+}
+// test_operatingModel_ssb_spawn
+FLQuantAD test_operatingModel_ssb_spawn(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_operatingModel_ssb_spawn(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< const fwdBiolsAD >::type biols(biolsSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_operatingModel_ssb_spawn(flfs, biols, ctrl, biol_no, indices_min, indices_max));
+    return rcpp_result_gen;
+END_RCPP
+}
+// test_operatingModel_biomass_end
+FLQuantAD test_operatingModel_biomass_end(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_operatingModel_biomass_end(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< const fwdBiolsAD >::type biols(biolsSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_operatingModel_biomass_end(flfs, biols, ctrl, biol_no, indices_min, indices_max));
+    return rcpp_result_gen;
+END_RCPP
+}
+// test_operatingModel_biomass_spawn
+FLQuantAD test_operatingModel_biomass_spawn(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
+RcppExport SEXP FLasher_test_operatingModel_biomass_spawn(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const FLFisheriesAD >::type flfs(flfsSEXP);
+    Rcpp::traits::input_parameter< const fwdBiolsAD >::type biols(biolsSEXP);
+    Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< const int >::type biol_no(biol_noSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_min(indices_minSEXP);
+    Rcpp::traits::input_parameter< const std::vector<unsigned int> >::type indices_max(indices_maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_operatingModel_biomass_spawn(flfs, biols, ctrl, biol_no, indices_min, indices_max));
     return rcpp_result_gen;
 END_RCPP
 }
