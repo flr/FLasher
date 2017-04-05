@@ -271,9 +271,62 @@ FLQuantAD test_operatingModel_discards_n_subset(FLFisheriesAD flfs, SEXP flbs_li
 }
 
 // [[Rcpp::export]]
-FLQuantAD test_operatingModel_ssb_target(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+FLQuantAD test_operatingModel_ssb_start(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
     operatingModel om(flfs, biols, ctrl);
-    return om.ssb_target(biol_no, indices_min, indices_max);
+    return om.ssb_start(biol_no, indices_min, indices_max);
 }
 
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_biomass_start(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    return om.biomass_start(biol_no, indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_ssb_end(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    return om.ssb_end(biol_no, indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_ssb_spawn(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    return om.ssb_spawn(biol_no, indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_ssb_flash(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    return om.ssb_flash(biol_no, indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_biomass_flash(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    return om.biomass_flash(biol_no, indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_biomass_end(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    return om.biomass_end(biol_no, indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
+FLQuantAD test_operatingModel_biomass_spawn(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    return om.biomass_spawn(biol_no, indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
+bool test_operatingModel_spawn_before_fishing(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    return om.spawn_before_fishing(biol_no, indices_min, indices_max);
+}
+
+// [[Rcpp::export]]
+bool test_operatingModel_fishing_before_spawn(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
+    operatingModel om(flfs, biols, ctrl);
+    return om.fishing_before_spawn(biol_no, indices_min, indices_max);
+}
 

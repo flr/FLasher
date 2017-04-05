@@ -60,6 +60,8 @@ class operatingModel {
         FLQuantAD total_srp(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuant f_prop_spwn(const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD get_exp_z_pre_spwn(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        bool spawn_before_fishing(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        bool fishing_before_spawn(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         std::vector<adouble> calc_rec(const unsigned int biol_no, const unsigned int unit, const unsigned int rec_timestep) const;
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no) const; 
@@ -88,8 +90,14 @@ class operatingModel {
         FLQuantAD fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         // Total fbar on a biol (possibly from multiple catches)
         FLQuantAD fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        FLQuantAD ssb_target(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
-        FLQuantAD biomass_target(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD ssb_start(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD biomass_start(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD ssb_end(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD biomass_end(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD ssb_spawn(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD biomass_spawn(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD ssb_flash(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max); // not const as projects
+        FLQuantAD biomass_flash(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max); // not const as projects
 
         // Extract total catches / landings / discards from a biol - not calculated from effort
         FLQuantAD landings(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;

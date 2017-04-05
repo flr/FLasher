@@ -149,6 +149,80 @@ unsigned int operatingModel::get_niter() const{
     return fisheries(1).effort().get_niter();
 }
 
+/*! \brief Does spawning occuring before fishing
+ *
+ * Any range of indices can be used. If ANY of them has spwn <= hperiod[1,] then true is returned.
+ * False is only returned if ALL of the indices has spwn > hperiod[1,].
+ * This is best used for a single timestep.
+ * If spawn is NA, then it is still False.
+ *
+ * \param biol_no The position of the biol in the biols list (starting at 1)
+ * \param indices_min The minimum indices: year, unit, season, area, iter (length 5).
+ * \param indices_max The maximum indices: year, unit, season, area, iter (length 5).
+ */
+bool operatingModel::spawn_before_fishing(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+    // Check indices_min and indices_max are of length 6
+    if (indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel::spawn_before_fishing subsetter. Indices not of length 5\n");
+    }
+    auto sbf = false;
+    // Loop over all Fs that catch B
+    // Loop over indices
+    // if spwn <= hperiod[1,] then return true
+    // What if spwn is NA? Looks OK - see tests
+    FLQuant spwn = biols(biol_no).spwn();
+    auto Fs =  ctrl.get_F(biol_no); // unique Fs fishing that B
+    for (unsigned int f_counter=0; f_counter < Fs.size(); ++f_counter){
+        FLQuant hperiod = fisheries(Fs[f_counter]).hperiod();
+        for (auto year_count = indices_min[0]; year_count <= indices_max[0]; ++year_count){
+            for (auto unit_count = indices_min[1]; unit_count <= indices_max[1]; ++unit_count){
+                for (auto season_count = indices_min[2]; season_count <= indices_max[2]; ++season_count){
+                    for (auto area_count = indices_min[3]; area_count <= indices_max[3]; ++area_count){
+                        for (auto iter_count = indices_min[4]; iter_count <= indices_max[4]; ++iter_count){
+                            if (spwn(1,year_count, unit_count, season_count, area_count, iter_count) <= hperiod(1,year_count, unit_count, season_count, area_count, iter_count)){
+                                sbf = true;
+                            }
+        }}}}}
+    }
+    return sbf;
+}
+
+/*! \brief Does fishing happen spawning
+ *
+ * Any range of indices can be used. If ANY of them has spwn > hperiod[1,] then true is returned.
+ * False is only returned if ALL of the indices has hperiod[1,] > spwn.
+ * This is best used for a single timestep.
+ *
+ * \param biol_no The position of the biol in the biols list (starting at 1)
+ * \param indices_min The minimum indices: year, unit, season, area, iter (length 5).
+ * \param indices_max The maximum indices: year, unit, season, area, iter (length 5).
+ */
+bool operatingModel::fishing_before_spawn(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+    // Check indices_min and indices_max are of length 6
+    if (indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel::spawn_before_fishing subsetter. Indices not of length 5\n");
+    }
+    auto fbs = false;
+    // Loop over all Fs that catch B
+    // Loop over indices
+    // if spwn <= hperiod[1,] then return true
+    // What if spwn is NA? Looks OK - see tests
+    FLQuant spwn = biols(biol_no).spwn();
+    auto Fs =  ctrl.get_F(biol_no); // unique Fs fishing that B
+    for (unsigned int f_counter=0; f_counter < Fs.size(); ++f_counter){
+        FLQuant hperiod = fisheries(Fs[f_counter]).hperiod();
+        for (auto year_count = indices_min[0]; year_count <= indices_max[0]; ++year_count){
+            for (auto unit_count = indices_min[1]; unit_count <= indices_max[1]; ++unit_count){
+                for (auto season_count = indices_min[2]; season_count <= indices_max[2]; ++season_count){
+                    for (auto area_count = indices_min[3]; area_count <= indices_max[3]; ++area_count){
+                        for (auto iter_count = indices_min[4]; iter_count <= indices_max[4]; ++iter_count){
+                            if (spwn(1,year_count, unit_count, season_count, area_count, iter_count) > hperiod(1,year_count, unit_count, season_count, area_count, iter_count)){
+                                fbs = true;
+                            }
+        }}}}}
+    }
+    return fbs;
+}
 
 /*! \brief Calculates the exponent of negative total mortality before spawning
  *
@@ -681,7 +755,7 @@ void operatingModel::project_fisheries(const int timestep){
             std::transform(indices_max.begin(), indices_max.end(), indices_min.begin(), catch_temp_dims.begin(), [] (unsigned int x, unsigned int y) {return x-y+1;});
             FLQuantAD catch_temp(catch_temp_dims, 0.0);
             // Loop over each biol that the FC fishes - a catch can fish more than one biol
-            std::vector<int> biols_fished = ctrl.get_B(fishery_count, catch_count);
+            auto biols_fished = ctrl.get_B(fishery_count, catch_count);
             for (int biol_count=0; biol_count < biols_fished.size(); ++biol_count){
                 // Index of total Z
                 unsigned int biol_no = biols_fished[biol_count];
@@ -998,6 +1072,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             // SRP - *at the time of spawning*
             // Only calc if only a Biol
             if (!biol_na & fishery_na & catch_na){
+
                 // If fishing starts after spawning occurs then fishing has no impact on the SRP.
                 // The solver will do nothing as a result. Better to throw a warning
                 // Check is super faffy
@@ -1023,6 +1098,12 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
                 if (spwn_before_fishing){
                     Rcpp::warning("In operatingModel eval_om, SRP target. Spawning happens before fishing so fishing effort has no impact on SRP. Cannot solve - if that's what you were trying to do.\n");
                 }
+
+
+                // Better to have a bool spawn_before_fishing method - need it also for SSB_FLash target
+                // But should check only 1 timestep? What about iterations?
+
+
                 out = total_srp(biol_no, indices_min, indices_max); 
             }
             else {
@@ -1030,25 +1111,47 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             }
             break;
          }
-        case target_ssb: {
-            if(verbose){Rprintf("target_ssb\n");}
+        case target_ssb_end: {
+            if(verbose){Rprintf("target_ssb_end\n");}
             // Only calc if only a Biol
             if (!biol_na & fishery_na & catch_na){
-                out = unit_sum(ssb_target(biol_no, indices_min, indices_max)); 
+                out = unit_sum(ssb_end(biol_no, indices_min, indices_max)); 
             }
             else {
-                Rcpp::stop("In operatingModel::eval_om. Asking for SSB target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
+                Rcpp::stop("In operatingModel::eval_om. Asking for SSB_end target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
             }
             break;
         }
-        case target_biomass: {
-            if(verbose){Rprintf("target_biomass\n");}
+        case target_biomass_end: {
+            if(verbose){Rprintf("target_biomass_end\n");}
             // Only calc if only a Biol
             if (!biol_na & fishery_na & catch_na){
-                out = unit_sum(biomass_target(biol_no, indices_min, indices_max));
+                out = unit_sum(biomass_end(biol_no, indices_min, indices_max));
             }
             else {
-                Rcpp::stop("In operatingModel::eval_om. Asking for biomass target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
+                Rcpp::stop("In operatingModel::eval_om. Asking for biomass_end target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
+            }
+            break;
+        }
+        case target_ssb_spawn: {
+            if(verbose){Rprintf("target_ssb_spawn\n");}
+            // Only calc if only a Biol
+            if (!biol_na & fishery_na & catch_na){
+                out = unit_sum(ssb_spawn(biol_no, indices_min, indices_max));
+            }
+            else {
+                Rcpp::stop("In operatingModel::eval_om. Asking for SSB_spawn target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
+            }
+            break;
+        }
+        case target_biomass_spawn: {
+            if(verbose){Rprintf("target_biomass_spawn\n");}
+            // Only calc if only a Biol
+            if (!biol_na & fishery_na & catch_na){
+                out = unit_sum(biomass_spawn(biol_no, indices_min, indices_max));
+            }
+            else {
+                Rcpp::stop("In operatingModel::eval_om. Asking for biomass_spawn target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
             }
             break;
         }
@@ -1402,7 +1505,7 @@ FLQuantAD operatingModel::landings(const int biol_no, const std::vector<unsigned
     // Loop over the FCs that catch from that biol 
     for (int FC_counter = 0; FC_counter < FC.nrow(); ++FC_counter){
         // What biols are also fished by that FC
-       std::vector<int> biols_fished = ctrl.get_B(FC(FC_counter, 0), FC(FC_counter, 1)); 
+       auto biols_fished = ctrl.get_B(FC(FC_counter, 0), FC(FC_counter, 1)); 
         // Do any of these FCs catch another biol - if so STOP and return error
         if (biols_fished.size() > 1){
             Rcpp::stop("In om::landings. Trying to get landings from a biol that is fished by an FLCatch that also fishes another biol. Not yet implemented.\n");
@@ -1440,7 +1543,7 @@ FLQuantAD operatingModel::discards(const int biol_no, const std::vector<unsigned
     // Loop over the FCs that catch from that biol 
     for (int FC_counter = 0; FC_counter < FC.nrow(); ++FC_counter){
         // What biols are also fished by that FC
-       std::vector<int> biols_fished = ctrl.get_B(FC(FC_counter, 0), FC(FC_counter, 1)); 
+       auto biols_fished = ctrl.get_B(FC(FC_counter, 0), FC(FC_counter, 1)); 
         // Do any of these FCs catch another biol - if so STOP and return error
         if (biols_fished.size() > 1){
             Rcpp::stop("In om::discards. Trying to get discards from a biol that is fished by an FLCatch that also fishes another biol. Not yet implemented.\n");
@@ -1491,7 +1594,7 @@ FLQuantAD operatingModel::landings_n(const int biol_no, const std::vector<unsign
     // Loop over the FCs that catch from that biol 
     for (int FC_counter = 0; FC_counter < FC.nrow(); ++FC_counter){
         // What biols are also fished by that FC
-       std::vector<int> biols_fished = ctrl.get_B(FC(FC_counter, 0), FC(FC_counter, 1)); 
+       auto biols_fished = ctrl.get_B(FC(FC_counter, 0), FC(FC_counter, 1)); 
         // Do any of these FCs catch another biol - if so STOP and return error
         if (biols_fished.size() > 1){
             Rcpp::stop("In om::landings_n. Trying to get landings from a biol that is fished by an FLCatch that also fishes another biol. Not yet implemented.\n");
@@ -1523,7 +1626,7 @@ FLQuantAD operatingModel::discards_n(const int biol_no, const std::vector<unsign
     // Loop over the FCs that catch from that biol 
     for (int FC_counter = 0; FC_counter < FC.nrow(); ++FC_counter){
         // What biols are also fished by that FC
-       std::vector<int> biols_fished = ctrl.get_B(FC(FC_counter, 0), FC(FC_counter, 1)); 
+       auto biols_fished = ctrl.get_B(FC(FC_counter, 0), FC(FC_counter, 1)); 
         // Do any of these FCs catch another biol - if so STOP and return error
         if (biols_fished.size() > 1){
             Rcpp::stop("In om::discards_n. Trying to get discards from a biol that is fished by an FLCatch that also fishes another biol. Not yet implemented.\n");
@@ -1551,35 +1654,87 @@ FLQuantAD operatingModel::catch_n(const int biol_no, const std::vector<unsigned 
     return total_catch_n;
 }
 
+/*! \brief Subset the SSB at the start of the timestep
+ *
+ * Calculates the SSB at the start of the timestep, not at the time of spawning.
+ * It is used for the target calculation.
+ * SSB = sum (N * wt * mat)
+ * Where N is the abundance at the start of the timestep.
+ * Units are not collapsed.
+ *
+ * \param biol_no Position of the chosen biol in the biols list
+ * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 5)
+ * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
+ */
+FLQuantAD operatingModel::ssb_start(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if(indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel ssb_start. indices_min and max must be of length 6\n");
+    }
+    // Need bigger indices
+    std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
+    std::vector<unsigned int> qindices_min = indices_min;
+    qindices_min.insert(qindices_min.begin(), 1);
+    std::vector<unsigned int> qindices_max = indices_max;
+    qindices_max.insert(qindices_max.begin(), dim[0]);
+    // SSB = n * wt * mat
+    // Calc SSB - without unit sum - done in eval_om
+    FLQuantAD ssb = quant_sum(biols(biol_no).n(qindices_min, qindices_max) * biols(biol_no).wt(qindices_min, qindices_max) * biols(biol_no).mat(qindices_min, qindices_max));
+    return ssb;
+}
+
+/*! \brief Subset the biomass at the start of the timestep
+ *
+ * Calculates the biomass at the start of the timestep, not at the time of spawning.
+ * It is used for the target calculation.
+ * SSB = sum (N * wt)
+ * Where N is the abundance at the start of the timestep.
+ * Units are not collapsed.
+ *
+ * \param biol_no Position of the chosen biol in the biols list
+ * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 5)
+ * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
+ */
+FLQuantAD operatingModel::biomass_start(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    if(indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel ssb_start. indices_min and max must be of length 6\n");
+    }
+    // Need bigger indices
+    std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
+    std::vector<unsigned int> qindices_min = indices_min;
+    qindices_min.insert(qindices_min.begin(), 1);
+    std::vector<unsigned int> qindices_max = indices_max;
+    qindices_max.insert(qindices_max.begin(), dim[0]);
+    // biomass = n * wt
+    // Calc biomass - without unit sum - done in eval_om
+    FLQuantAD biomass = quant_sum(biols(biol_no).n(qindices_min, qindices_max) * biols(biol_no).wt(qindices_min, qindices_max));
+    return biomass;
+}
+
 /*! \brief Subset the SSB at the end of the timestep
  *
  * Calculates the SSB at the end of the timestep, not at the time of spawning.
  * It is used for the target calculation.
  * SSB = sum (N * wt * mat)
  * Where N is the abundance at the end of the timestep.
- * The indices range arguments must be for a single timestep only.
+ * Units not collapsed.
  *
  * \param biol_no Position of the chosen biol in the biols list
  * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 5)
  * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
  */
-FLQuantAD operatingModel::ssb_target(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+FLQuantAD operatingModel::ssb_end(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
     if(indices_min.size() != 5 | indices_max.size() != 5){
-        Rcpp::stop("In operatingModel ssb_target. indices_min and max must be of length 6\n");
+        Rcpp::stop("In operatingModel ssb_end. indices_min and max must be of length 6\n");
     }
-    // Check that only one timestep is asked for
-    if ((indices_min[0] != indices_max[0]) | (indices_min[2] != indices_max[2])){
-        Rcpp::stop("In operatingModel ssb_target. Year and season of indices_min and indices_max must be the same. Only one timestep allowed.\n");
-    }
-    std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
-    // Calc SSB - without unit sum - done in eval_om
     // Need bigger indices
+    std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
     std::vector<unsigned int> qindices_min = indices_min;
     qindices_min.insert(qindices_min.begin(), 1);
     std::vector<unsigned int> qindices_max = indices_max;
     qindices_max.insert(qindices_max.begin(), dim[0]);
     FLQuantAD surv = survivors(biol_no, qindices_min, qindices_max);
     // SSB = survivors * wt * mat
+    // Calc SSB - without unit sum - done in eval_om
     FLQuantAD ssb = quant_sum(surv * biols(biol_no).wt(qindices_min, qindices_max) * biols(biol_no).mat(qindices_min, qindices_max));
     return ssb;
 }
@@ -1596,13 +1751,13 @@ FLQuantAD operatingModel::ssb_target(const int biol_no,  const std::vector<unsig
  * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 5)
  * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
  */
-FLQuantAD operatingModel::biomass_target(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+FLQuantAD operatingModel::biomass_end(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
     if(indices_min.size() != 5 | indices_max.size() != 5){
-        Rcpp::stop("In operatingModel biomass_target. indices_min and max must be of length 6\n");
+        Rcpp::stop("In operatingModel biomass_end. indices_min and max must be of length 6\n");
     }
     // Check that only one timestep is asked for
     if ((indices_min[0] != indices_max[0]) | (indices_min[2] != indices_max[2])){
-        Rcpp::stop("In operatingModel biomass_target. Year and season of indices_min and indices_max must be the same. Only one timestep allowed.\n");
+        Rcpp::stop("In operatingModel biomass_end. Year and season of indices_min and indices_max must be the same. Only one timestep allowed.\n");
     }
     std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
     // Calc biomass - without unit sum - done in eval_om
@@ -1617,8 +1772,189 @@ FLQuantAD operatingModel::biomass_target(const int biol_no,  const std::vector<u
     return biomass;
 }
 
+/*! \brief Calculate the SSB at the time of spawning
+ *
+ * Calculates the SSB at the time of spawning.
+ * sum N * wt * mat * exp(-Zspwn)
+ * If any value of the spwn member in the indices range is NA an error is thrown (as it implies no spawning for that timestep / unit etc).
+ *
+ * \param biol_no Position of the chosen biol in the biols list
+ * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 5)
+ * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
+ */
+FLQuantAD operatingModel::ssb_spawn(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+    // Check indices_min and indices_max are of length 5
+    if (indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel::ssb_spawn subsetter. Indices not of length 5\n");
+    }
+    // Check for NA in spwn - if any value of spwn across indices range is NA - stop
+    std::vector<unsigned int> qindices_min = indices_min;
+    qindices_min.insert(qindices_min.begin(), 1);
+    std::vector<unsigned int> qindices_max = indices_max;
+    qindices_max.insert(qindices_max.begin(), 1);
+    FLQuant spwn = biols(biol_no).spwn(qindices_min, qindices_max);
+    for (const auto& it : spwn){
+        if (Rcpp::NumericVector::is_na(it)){
+            Rcpp::stop("In operatingModel::ssb_spawn subsetter. spwn member has NA value in the indices range. Implies no spawning so cannot calculate SSB at time of spawning. Stopping\n");
+        }
+    }
+    // Add age range to input indices
+    std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
+    qindices_max[0] = dim[0];
+    FLQuantAD exp_z_pre_spwn = get_exp_z_pre_spwn(biol_no, qindices_min, qindices_max);
+    // Get srp: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
+    FLQuantAD ssb = quant_sum(
+        biols(biol_no).n(qindices_min, qindices_max) *
+        biols(biol_no).wt(qindices_min, qindices_max) *
+        biols(biol_no).mat(qindices_min, qindices_max) * exp_z_pre_spwn);
+    return ssb;
+}
 
-////-------------------------------------------------
+/*! \brief Calculate the biomass at the time of spawning
+ *
+ * Calculates the SSB at the time of spawning.
+ * sum N * wt * exp(-Zspwn)
+ *
+ * \param biol_no Position of the chosen biol in the biols list
+ * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 5)
+ * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
+ */
+FLQuantAD operatingModel::biomass_spawn(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+    // Check indices_min and indices_max are of length 5
+    if (indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel::biomass_spawn subsetter. Indices not of length 5\n");
+    }
+    // Check for NA in spwn - if any value of spwn across indices range is NA - stop
+    std::vector<unsigned int> qindices_min = indices_min;
+    qindices_min.insert(qindices_min.begin(), 1);
+    std::vector<unsigned int> qindices_max = indices_max;
+    qindices_max.insert(qindices_max.begin(), 1);
+    FLQuant spwn = biols(biol_no).spwn(qindices_min, qindices_max);
+    for (const auto& it : spwn){
+        if (Rcpp::NumericVector::is_na(it)){
+            Rcpp::stop("In operatingModel::biomass_spawn subsetter. spwn member has NA value in the indices range. Implies no spawning so cannot calculate SSB at time of spawning. Stopping\n");
+        }
+    }
+    // Add age range to input indices
+    std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
+    qindices_max[0] = dim[0];
+    FLQuantAD exp_z_pre_spwn = get_exp_z_pre_spwn(biol_no, qindices_min, qindices_max);
+    // Get srp: N*wt*exp(-Fprespwn - m*spwn) summed over age dimension
+    FLQuantAD biomass = quant_sum(
+        biols(biol_no).n(qindices_min, qindices_max) *
+        biols(biol_no).wt(qindices_min, qindices_max) * exp_z_pre_spwn);
+    return biomass;
+}
+
+/*! \brief Calculate the SSB old-school FLash style
+ *
+ * If fishing takes place after spawning it has no impact on SSB at time of spawning. Therefore, get SSB at time of spawning in next time step (if there is no spawning in the next timestep, an error is thrown).
+ * If fishing takes place before spawning, get SSB at time of spawning in current time step.
+ * 
+ * \param biol_no Position of the chosen biol in the biols list
+ * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 5)
+ * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
+ */
+FLQuantAD operatingModel::ssb_flash(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) {
+    // Check indices_min and indices_max are of length 5
+    if (indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel::ssb_flash subsetter. Indices not of length 5\n");
+    }
+    // Check a single timestep
+    if((indices_min[0] != indices_max[0]) | (indices_min[2] != indices_max[2])){
+        Rcpp::stop("In operatingModel::ssb_flash subsetter. Only one timestep allowed in subsetting.\n");
+    }
+    FLQuantAD out;
+    // If fishing affects SSB in current timestep, get SSB in current timestep at time of spawning
+    if (fishing_before_spawn(biol_no, indices_min, indices_max)){
+        out = ssb_spawn(biol_no, indices_min, indices_max);
+    }
+    // Otherwise get SSB at time of spawning in next timestep
+    else {
+        // SSB at time of spawning in next timestep
+        // Update population in next timestep
+        auto biol_dim = biols(biol_no).n().get_dim(); 
+        // Set up indices for next timestep - really faffy!
+        unsigned int timestep = 0;
+        year_season_to_timestep(indices_min[0], indices_min[2], biol_dim[3], timestep);
+        timestep++;
+        project_biols(timestep);
+        std::vector<unsigned int> next_indices_min = indices_min;
+        std::vector<unsigned int> next_indices_max = indices_max;
+        timestep_to_year_season(timestep, biol_dim[3], next_indices_min[0], next_indices_min[2]);
+        next_indices_max[0] = next_indices_min[0];
+        next_indices_max[2] = next_indices_min[2];
+        // Check for NA in spwn in next time step - if any value of spwn across indices range is NA - stop
+        std::vector<unsigned int> qindices_min = next_indices_min;
+        qindices_min.insert(qindices_min.begin(), 1);
+        std::vector<unsigned int> qindices_max = next_indices_max;
+        qindices_max.insert(qindices_max.begin(), 1);
+        FLQuant spwn = biols(biol_no).spwn(qindices_min, qindices_max);
+        for (const auto& it : spwn){
+            if (Rcpp::NumericVector::is_na(it)){
+                Rcpp::stop("In operatingModel::ssb_flash. spwn member in following time step has NA value in the indices range. Implies no spawning so cannot calculate SSB at time of spawning. Stopping\n");
+            }
+        }
+        out = ssb_spawn(biol_no, next_indices_min, next_indices_max);
+    }
+    return out;
+}
+
+/*! \brief Calculate the biomass old-school FLash style
+ *
+ * If fishing takes place after spawning it has no impact on SSB at time of spawning. Therefore, get biomass at time of spawning in next time step (if there is no spawning in the next timestep, an error is thrown).
+ * If fishing takes place before spawning, get biomass at time of spawning in current time step.
+ * 
+ * \param biol_no Position of the chosen biol in the biols list
+ * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 5)
+ * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
+ */
+FLQuantAD operatingModel::biomass_flash(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) {
+    // Check indices_min and indices_max are of length 5
+    if (indices_min.size() != 5 | indices_max.size() != 5){
+        Rcpp::stop("In operatingModel::biomass_flash subsetter. Indices not of length 5\n");
+    }
+    // Check a single timestep
+    if((indices_min[0] != indices_max[0]) | (indices_min[2] != indices_max[2])){
+        Rcpp::stop("In operatingModel::biomass_flash subsetter. Only one timestep allowed in subsetting.\n");
+    }
+    FLQuantAD out;
+    // If fishing affects SSB in current timestep, get SSB in current timestep at time of spawning
+    if (fishing_before_spawn(biol_no, indices_min, indices_max)){
+        out = biomass_spawn(biol_no, indices_min, indices_max);
+    }
+    // Otherwise get SSB at time of spawning in next timestep
+    else {
+        // SSB at time of spawning in next timestep
+        // Update population in next timestep
+        auto biol_dim = biols(biol_no).n().get_dim(); 
+        // Set up indices for next timestep - really faffy!
+        unsigned int timestep = 0;
+        year_season_to_timestep(indices_min[0], indices_min[2], biol_dim[3], timestep);
+        timestep++;
+        project_biols(timestep);
+        std::vector<unsigned int> next_indices_min = indices_min;
+        std::vector<unsigned int> next_indices_max = indices_max;
+        timestep_to_year_season(timestep, biol_dim[3], next_indices_min[0], next_indices_min[2]);
+        next_indices_max[0] = next_indices_min[0];
+        next_indices_max[2] = next_indices_min[2];
+        // Check for NA in spwn in next time step - if any value of spwn across indices range is NA - stop
+        std::vector<unsigned int> qindices_min = next_indices_min;
+        qindices_min.insert(qindices_min.begin(), 1);
+        std::vector<unsigned int> qindices_max = next_indices_max;
+        qindices_max.insert(qindices_max.begin(), 1);
+        FLQuant spwn = biols(biol_no).spwn(qindices_min, qindices_max);
+        for (const auto& it : spwn){
+            if (Rcpp::NumericVector::is_na(it)){
+                Rcpp::stop("In operatingModel::biomass_flash. spwn member in following time step has NA value in the indices range. Implies no spawning so cannot calculate SSB at time of spawning. Stopping\n");
+            }
+        }
+        out = biomass_spawn(biol_no, next_indices_min, next_indices_max);
+    }
+    return out;
+}
+
+//-------------------------------------------------
 //
 //
 ////// Define some pointers to function 

@@ -342,34 +342,250 @@ test_that("operatingModel fbar methods",{
     expect_error(test_operatingModel_fbar_FCB(flfs, flbs, fwc, 2, 2, 4, indices_min, indices_max))
 })
 
-test_that("operatingModel ssb target methods",{
+test_that("operatingModel ssb and biomass target methods",{
     FCB <- array(c(1,1,1), dim=c(1,3))
     colnames(FCB) <- c("F","C","B")
     data(ple4)
-    # Annual model
+    # Seasonal model
     min_age <- 1
     niters <- 20
-    om <- make_test_operatingModel(ple4, FCB, nseasons = 1, recruitment_age = min_age, niters = niters, sd = 0.1)
-    dms <- dim(n(om[["biols"]][[1]][["biol"]]))
+    om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = c(1,3,4), recruitment_age = min_age, niters = niters, sd = 0.1)
+    flfs <- om[["fisheries"]]
+    biols <- om[["biols"]]
+    biols[[1]][["biol"]]@spwn[,,,1] <- 0.5
+    biols[[1]][["biol"]]@spwn[,,,3] <- 0.5
+    fwc <- om[["fwc"]]
+    dms <- dim(n(biols[[1]][["biol"]]))
     year <- round(runif(1,min=1, max= dms[2]-1))
-    season <- round(runif(1,min=1, max= dms[4]))
+
+    # SSB and Biomass at start of timestep
+    season <- 1
     indices_min <- c(year,1,season,1,1)
     indices_max <- c(year,dms[3],season,dms[5],dms[6])
     indices_min6 <- c(1, indices_min)
     indices_max6 <- c(dms[1], indices_max)
-    survivors <- test_operatingModel_survivors(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, indices_min6, indices_max6)
-    ssb <- quantSums(survivors * (wt(om[["biols"]][[1]][["biol"]]) * mat(om[["biols"]][[1]][["biol"]]))[,year,,season,])
-    ssb_out <-  test_operatingModel_ssb_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, indices_min, indices_max)
+    ssb <- quantSums((n(biols[[1]][["biol"]]) * wt(biols[[1]][["biol"]]) * mat(biols[[1]][["biol"]]))[,year,,season,])
+    ssb_out <-  test_operatingModel_ssb_start(flfs, biols, fwc, 1, indices_min, indices_max)
     expect_FLQuant_equal(ssb, ssb_out)
+    biomass <- quantSums((wt(biols[[1]][["biol"]]) * n(biols[[1]][["biol"]]))[,year,,season,])
+    biomass_out <-  test_operatingModel_biomass_start(flfs, biols, fwc, 1, indices_min, indices_max)
+    expect_FLQuant_equal(biomass, biomass_out)
     # Indices too long
     bad_indices_min <- c(1,indices_min)
     bad_indices_max <- c(1,indices_max)
-    expect_error(test_operatingModel_ssb_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, bad_indices_min, indices_max))
-    expect_error(test_operatingModel_ssb_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, indices_min, bad_indices_max))
-    # Indices not the same time step
-    indices_min[1] <- indices_min[1]+1
-    expect_error(test_operatingModel_ssb_target(om[["fisheries"]], om[["biols"]], om[["fwc"]], 1, indices_min, indices_max))
+    expect_error(test_operatingModel_ssb_start(flfs, biols, fwc, 1, bad_indices_min, indices_max))
+    expect_error(test_operatingModel_ssb_start(flfs, biols, fwc, 1, indices_min, bad_indices_max))
+    expect_error(test_operatingModel_biomass_start(flfs, biols, fwc, 1, bad_indices_min, indices_max))
+    expect_error(test_operatingModel_biomass_start(flfs, biols, fwc, 1, indices_min, bad_indices_max))
+
+    # SSB and Biomass at end of timestep
+    season <- 1
+    indices_min <- c(year,1,season,1,1)
+    indices_max <- c(year,dms[3],season,dms[5],dms[6])
+    indices_min6 <- c(1, indices_min)
+    indices_max6 <- c(dms[1], indices_max)
+    survivors <- test_operatingModel_survivors(flfs, biols, fwc, 1, indices_min6, indices_max6)
+    ssb <- quantSums(survivors * (wt(biols[[1]][["biol"]]) * mat(biols[[1]][["biol"]]))[,year,,season,])
+    ssb_out <-  test_operatingModel_ssb_end(flfs, biols, fwc, 1, indices_min, indices_max)
+    expect_FLQuant_equal(ssb, ssb_out)
+    biomass <- quantSums(survivors * wt(biols[[1]][["biol"]])[,year,,season,])
+    biomass_out <-  test_operatingModel_biomass_end(flfs, biols, fwc, 1, indices_min, indices_max)
+    expect_FLQuant_equal(biomass, biomass_out)
+    # Indices too long
+    bad_indices_min <- c(1,indices_min)
+    bad_indices_max <- c(1,indices_max)
+    expect_error(test_operatingModel_ssb_end(flfs, biols, fwc, 1, bad_indices_min, indices_max))
+    expect_error(test_operatingModel_ssb_end(flfs, biols, fwc, 1, indices_min, bad_indices_max))
+    expect_error(test_operatingModel_biomass_end(flfs, biols, fwc, 1, bad_indices_min, indices_max))
+    expect_error(test_operatingModel_biomass_end(flfs, biols, fwc, 1, indices_min, bad_indices_max))
+
+    # SSB and Biomass at time of spawning
+    season <- 1
+    indices_min <- c(year,1,season,1,1)
+    indices_max <- c(year,dms[3],season,dms[5],dms[6])
+    indices_min6 <- c(1, indices_min)
+    indices_max6 <- c(dms[1], indices_max)
+    exp_z_pre_spwn <- test_operatingModel_get_exp_z_pre_spwn(flfs, biols, fwc, 1, indices_min6, indices_max6)
+    ssb_in <- quantSums(exp_z_pre_spwn * (n(biols[[1]][["biol"]]) * wt(biols[[1]][["biol"]]) * mat(biols[[1]][["biol"]]))[,year,,season,])
+    ssb_out <-  test_operatingModel_ssb_spawn(flfs, biols, fwc, 1, indices_min, indices_max)
+    expect_FLQuant_equal(ssb_in, ssb_out)
+    biomass_in <- quantSums(exp_z_pre_spwn * (n(biols[[1]][["biol"]]) * wt(biols[[1]][["biol"]]))[,year,,season,])
+    biomass_out <-  test_operatingModel_biomass_spawn(flfs, biols, fwc, 1, indices_min, indices_max)
+    expect_FLQuant_equal(biomass_in, biomass_out)
+    season <- 2 # no spawning - should throw error
+    indices_min <- c(year,1,season,1,1)
+    indices_max <- c(year,dms[3],season,dms[5],dms[6])
+    indices_min6 <- c(1, indices_min)
+    indices_max6 <- c(dms[1], indices_max)
+    expect_error(test_operatingModel_ssb_spawn(flfs, biols, fwc, 1, indices_min, indices_max))
+    expect_error(test_operatingModel_biomass_spawn(flfs, biols, fwc, 1, indices_min, indices_max))
+
+    # SSB and Biomass FLash style
+    # * Season 1
+    season <- 1
+    indices_min <- c(year,1,season,1,1)
+    indices_max <- c(year,dms[3],season,dms[5],dms[6])
+    indices_min6 <- c(1, indices_min)
+    indices_max6 <- c(dms[1], indices_max)
+    # If F before spawning, get SSB at time of spawning in current timestep
+    flfs[[1]]@hperiod[1,] <- 0.3
+    ssb_out <-  test_operatingModel_ssb_flash(flfs, biols, fwc, 1, indices_min, indices_max)
+    ssb_in <-  test_operatingModel_ssb_spawn(flfs, biols, fwc, 1, indices_min, indices_max)
+    expect_FLQuant_equal(ssb_in, ssb_out)
+    biomass_out <-  test_operatingModel_biomass_flash(flfs, biols, fwc, 1, indices_min, indices_max)
+    biomass_in <-  test_operatingModel_biomass_spawn(flfs, biols, fwc, 1, indices_min, indices_max)
+    expect_FLQuant_equal(biomass_in, biomass_out)
+    # If F after spawning, get SSB at time of spawning in following timestep
+    # But no spawning in following timestep - so what happens...
+    # Not solvable in a projection - throws an error
+    flfs[[1]]@hperiod[1,] <- 0.9
+    expect_error(test_operatingModel_ssb_flash(flfs, biols, fwc, 1, indices_min, indices_max))
+    expect_error(test_operatingModel_biomass_flash(flfs, biols, fwc, 1, indices_min, indices_max))
+
+    # * Season 2 - no spawning
+    # No matter what hperiod is, as no spawning in this season, you have to get SSB at time of spawning in next timestep
+    # And if it does not spawn in next time period - error
+    season <- 2
+    indices_min <- c(year,1,season,1,1)
+    indices_max <- c(year,dms[3],season,dms[5],dms[6])
+    indices_min6 <- c(1, indices_min)
+    indices_max6 <- c(dms[1], indices_max)
+    ssb_out <-  test_operatingModel_ssb_flash(flfs, biols, fwc, 1, indices_min, indices_max)
+    biomass_out <-  test_operatingModel_biomass_flash(flfs, biols, fwc, 1, indices_min, indices_max)
+    # Get SSB at time of spawning in following timestep (season 3)
+    next_year <- year
+    next_season <- season + 1
+    next_indices_min <- c(next_year,1,next_season,1,1)
+    next_indices_max <- c(next_year,dms[3],next_season,dms[5],dms[6])
+    next_indices_min6 <- c(1, next_indices_min)
+    next_indices_max6 <- c(dms[1], next_indices_max)
+    timestep <- (year-1)*dms[4]+season
+    next_timestep <- timestep+1
+    # need to get N in next timestep
+    om2 <- test_operatingModel_project_biols(flfs, biols, fwc, next_timestep)
+    nextn <- om2[["biols"]][[1]]@n[,next_year,,next_season,]
+    exp_z_pre_spwn <- test_operatingModel_get_exp_z_pre_spwn(flfs, biols, fwc, 1, next_indices_min6, next_indices_max6)
+    ssb_in <- quantSums(exp_z_pre_spwn * nextn * (wt(biols[[1]][["biol"]]) * mat(biols[[1]][["biol"]]))[,next_year,,next_season,])
+    expect_FLQuant_equal(ssb_in, ssb_out)
+    biomass_in <- quantSums(exp_z_pre_spwn * nextn * wt(biols[[1]][["biol"]])[,next_year,,next_season,])
+    expect_FLQuant_equal(biomass_in, biomass_out)
+
+    # * Season 3 spawns - also spawns in season 4
+    season <- 3
+    indices_min <- c(year,1,season,1,1)
+    indices_max <- c(year,dms[3],season,dms[5],dms[6])
+    indices_min6 <- c(1, indices_min)
+    indices_max6 <- c(dms[1], indices_max)
+    # If F before spawning, get SSB at time of spawning in season 3
+    flfs[[1]]@hperiod[1,] <- 0.3
+    ssb_out <-  test_operatingModel_ssb_flash(flfs, biols, fwc, 1, indices_min, indices_max)
+    ssb_in <-  test_operatingModel_ssb_spawn(flfs, biols, fwc, 1, indices_min, indices_max)
+    expect_FLQuant_equal(ssb_in, ssb_out)
+    biomass_out <-  test_operatingModel_biomass_flash(flfs, biols, fwc, 1, indices_min, indices_max)
+    biomass_in <-  test_operatingModel_biomass_spawn(flfs, biols, fwc, 1, indices_min, indices_max)
+    expect_FLQuant_equal(biomass_in, biomass_out)
+    # If F after spawning, get SSB at time of spawning in season 4
+    flfs[[1]]@hperiod[1,] <- 0.9
+    ssb_out <-  test_operatingModel_ssb_flash(flfs, biols, fwc, 1, indices_min, indices_max)
+    biomass_out <-  test_operatingModel_biomass_flash(flfs, biols, fwc, 1, indices_min, indices_max)
+    next_year <- year
+    next_season <- season + 1
+    next_indices_min <- c(next_year,1,next_season,1,1)
+    next_indices_max <- c(next_year,dms[3],next_season,dms[5],dms[6])
+    next_indices_min6 <- c(1, next_indices_min)
+    next_indices_max6 <- c(dms[1], next_indices_max)
+    timestep <- (year-1)*dms[4]+season
+    next_timestep <- timestep+1
+    om2 <- test_operatingModel_project_biols(flfs, biols, fwc, next_timestep)
+    nextn <- om2[["biols"]][[1]]@n[,next_year,,next_season,]
+    exp_z_pre_spwn <- test_operatingModel_get_exp_z_pre_spwn(flfs, biols, fwc, 1, next_indices_min6, next_indices_max6)
+    ssb_in <- quantSums(exp_z_pre_spwn * nextn * (wt(biols[[1]][["biol"]]) * mat(biols[[1]][["biol"]]))[,next_year,,next_season,])
+    expect_FLQuant_equal(ssb_in, ssb_out)
+    biomass_in <- quantSums(exp_z_pre_spwn * nextn * wt(biols[[1]][["biol"]])[,next_year,,next_season,])
+    expect_FLQuant_equal(biomass_in, biomass_out)
 })
+
+test_that("operatingModel spawn_before_fishing and fishing_before_spawn",{
+    # These methods evaluate the current state of the OM
+    # i.e. just pull values out, no calculation
+    data(ple4)
+    FCB <- array(c(1,1,2,2,2,1,2,1,2,2,1,2,2,3,4), dim=c(5,3))
+    colnames(FCB) <- c("F","C","B")
+    niters <- 10
+    om <- make_test_operatingModel(ple4, FCB, recruitment_seasons = c(1,3), nseasons = 4, niters=niters)
+    flfs <- om[["fisheries"]]
+    biols <- om[["biols"]]
+    fwc <- om[["fwc"]]
+    dim <- dim(n(biols[[1]][["biol"]]))
+    # Simple case: 1F -> 1B
+    biol_no <- 1
+    # * Season 1
+    season <- 1
+    year <- round(runif(1, min=1,max=dim[2]))
+    indices_min <- c(year,1,season,1,1)
+    indices_max<- c(year,dim[3],season,dim[5],dim[6])
+    # spwn = 0, hstart = 0
+    spwn(biols[[biol_no]][["biol"]])[,year,,season] <- 0.0
+    hperiod(flfs[[1]])[1,year,,season] <- 0.0
+    expect_true(test_operatingModel_spawn_before_fishing(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    expect_false(test_operatingModel_fishing_before_spawn(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    # spwn = 0, hstart = 0.3
+    spwn(biols[[biol_no]][["biol"]])[,year,,season] <- 0.0
+    hperiod(flfs[[1]])[1,year,,season] <- 0.3
+    expect_true(test_operatingModel_spawn_before_fishing(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    expect_false(test_operatingModel_fishing_before_spawn(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    # spwn = 0.3, hstart = 0.3
+    spwn(biols[[biol_no]][["biol"]])[,year,,season] <- 0.3
+    hperiod(flfs[[1]])[1,year,,season] <- 0.3
+    expect_true(test_operatingModel_spawn_before_fishing(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    expect_false(test_operatingModel_fishing_before_spawn(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    # spwn = 0.5, hstart = 0.3
+    spwn(biols[[biol_no]][["biol"]])[,year,,season] <- 0.5
+    hperiod(flfs[[1]])[1,year,,season] <- 0.3
+    expect_false(test_operatingModel_spawn_before_fishing(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    expect_true(test_operatingModel_fishing_before_spawn(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    # spwn = NA, hstart = 0.3
+    spwn(biols[[biol_no]][["biol"]])[,year,,season] <- NA
+    hperiod(flfs[[1]])[1,year,,season] <- 0.3
+    expect_false(test_operatingModel_spawn_before_fishing(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    expect_false(test_operatingModel_fishing_before_spawn(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    # spwn = 0.3, hstart = NA 
+    spwn(biols[[biol_no]][["biol"]])[,year,,season] <- 0.3
+    hperiod(flfs[[1]])[1,year,,season] <- NA
+    expect_false(test_operatingModel_spawn_before_fishing(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    expect_false(test_operatingModel_fishing_before_spawn(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    # spwn = NA, hstart = NA 
+    spwn(biols[[biol_no]][["biol"]])[,year,,season] <- NA
+    hperiod(flfs[[1]])[1,year,,season] <- NA
+    expect_false(test_operatingModel_spawn_before_fishing(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    expect_false(test_operatingModel_fishing_before_spawn(flfs, biols, fwc, biol_no, indices_min, indices_max))
+
+    # More complicated case: 2F -> 1B
+    biol_no <- 2
+    season <- 3
+    year <- round(runif(1, min=1,max=dim[2]))
+    indices_min <- c(year,1,season,1,1)
+    indices_max<- c(year,dim[3],season,dim[5],dim[6])
+    # spwn = 0, hstart = 0, hstart = 0
+    spwn(biols[[biol_no]][["biol"]])[,year,,season] <- 0.0
+    hperiod(flfs[[1]])[1,year,,season] <- 0.0
+    hperiod(flfs[[2]])[1,year,,season] <- 0.0
+    expect_true(test_operatingModel_spawn_before_fishing(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    expect_false(test_operatingModel_fishing_before_spawn(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    # spwn = 0.3, hstart = 0, hstart = 0
+    spwn(biols[[biol_no]][["biol"]])[,year,,season] <- 0.3
+    hperiod(flfs[[1]])[1,year,,season] <- 0.0
+    hperiod(flfs[[2]])[1,year,,season] <- 0.0
+    expect_false(test_operatingModel_spawn_before_fishing(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    expect_true(test_operatingModel_fishing_before_spawn(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    # spwn = 0.3, hstart = 0.5, hstart = 0
+    spwn(biols[[biol_no]][["biol"]])[,year,,season] <- 0.3
+    hperiod(flfs[[1]])[1,year,,season] <- 0.5
+    hperiod(flfs[[2]])[1,year,,season] <- 0.0
+    expect_true(test_operatingModel_spawn_before_fishing(flfs, biols, fwc, biol_no, indices_min, indices_max))
+    expect_true(test_operatingModel_fishing_before_spawn(flfs, biols, fwc, biol_no, indices_min, indices_max))
+})
+
 
 test_that("operatingModel landings, catch and discards methods",{
     # These methods evaluate the current state of the OM
@@ -571,7 +787,7 @@ test_that("operatingModel eval_om", {
 
     # ** SSB (B) - at end of timestep
     biol <- round(runif(1,min=1,max=4))
-    sout <- test_operatingModel_eval_om(flfs, flbs, fwc, "ssb", as.integer(NA), as.integer(NA), biol, indices_min5, indices_max5)
+    sout <- test_operatingModel_eval_om(flfs, flbs, fwc, "ssb_end", as.integer(NA), as.integer(NA), biol, indices_min5, indices_max5)
     indices_min <- c(1,year,1,season,1,1)
     indices_max <- c(dms[1], year,dms[3],season,1,dms[6])
     surv <- test_operatingModel_survivors(flfs, flbs, fwc, biol, indices_min, indices_max)
@@ -579,23 +795,23 @@ test_that("operatingModel eval_om", {
     sin <- unitSums(quantSums(surv * (mat(b) * wt(b))[1:dms[1],indices_min5[1]:indices_max5[1], indices_min5[2]:indices_max5[2], indices_min5[3]:indices_max5[3], indices_min5[4]:indices_max5[4], indices_min5[5]:indices_max5[5]]))
     expect_FLQuant_equal(sout, sin)
     # Error FCB
-    expect_error(test_operatingModel_eval_om(flfs, flbs, fwc, "ssb", 1, 1, 1, indices_min, indices_max))
+    expect_error(test_operatingModel_eval_om(flfs, flbs, fwc, "ssb_end", 1, 1, 1, indices_min, indices_max))
     # Error FC
-    expect_error(test_operatingModel_eval_om(flfs, flbs, fwc, "ssb", 1, 1, as.integer(NA), indices_min, indices_max))
+    expect_error(test_operatingModel_eval_om(flfs, flbs, fwc, "ssb_end", 1, 1, as.integer(NA), indices_min, indices_max))
     
     # ** Biomass (B) - at end of timestep
     indices_min <- c(1,year,1,season,1,1)
     indices_max <- c(dms[1], year,dms[3],season,1,dms[6])
     biol <- round(runif(1,min=1,max=4))
-    bout <- test_operatingModel_eval_om(flfs, flbs, fwc, "biomass", as.integer(NA), as.integer(NA), biol, indices_min[-1], indices_max[-1])
+    bout <- test_operatingModel_eval_om(flfs, flbs, fwc, "biomass_end", as.integer(NA), as.integer(NA), biol, indices_min[-1], indices_max[-1])
     b <- flbs[[biol]][["biol"]]
     surv <- test_operatingModel_survivors(flfs, flbs, fwc, biol, indices_min, indices_max)
     bin <- unitSums(quantSums(surv * wt(b)[1:dms[1],indices_min5[1]:indices_max5[1], indices_min5[2]:indices_max5[2], indices_min5[3]:indices_max5[3], indices_min5[4]:indices_max5[4], indices_min5[5]:indices_max5[5]]))
     expect_FLQuant_equal(bout, bin)
     # Error FCB
-    expect_error(test_operatingModel_eval_om(flfs, flbs, fwc, "biomass", 1, 1, 1, indices_min[-1], indices_max[-1]))
+    expect_error(test_operatingModel_eval_om(flfs, flbs, fwc, "biomass_end", 1, 1, 1, indices_min[-1], indices_max[-1]))
     # Error FC
-    expect_error(test_operatingModel_eval_om(flfs, flbs, fwc, "biomass", 1, 1, as.integer(NA), indices_min[-1], indices_max[-1]))
+    expect_error(test_operatingModel_eval_om(flfs, flbs, fwc, "biomass_end", 1, 1, as.integer(NA), indices_min[-1], indices_max[-1]))
 
     # ** Fbar (FCB, B) - where possible depending on number of Catches fishing the biol and the number of units
     # Check the errors with FCB

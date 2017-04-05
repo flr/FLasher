@@ -2005,6 +2005,14 @@ test_operatingModel_discards_n_subset <- function(flfs, flbs_list_sexp, ctrl, bi
     .Call('FLasher_test_operatingModel_discards_n_subset', PACKAGE = 'FLasher', flfs, flbs_list_sexp, ctrl, biol_no, indices_min, indices_max)
 }
 
+test_operatingModel_ssb_start <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_ssb_start', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_biomass_start <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_biomass_start', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
 test_operatingModel_ssb_end <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
     .Call('FLasher_test_operatingModel_ssb_end', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
 }
@@ -2013,12 +2021,28 @@ test_operatingModel_ssb_spawn <- function(flfs, biols, ctrl, biol_no, indices_mi
     .Call('FLasher_test_operatingModel_ssb_spawn', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
 }
 
+test_operatingModel_ssb_flash <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_ssb_flash', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_biomass_flash <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_biomass_flash', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
 test_operatingModel_biomass_end <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
     .Call('FLasher_test_operatingModel_biomass_end', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
 }
 
 test_operatingModel_biomass_spawn <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
     .Call('FLasher_test_operatingModel_biomass_spawn', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_spawn_before_fishing <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_spawn_before_fishing', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
+}
+
+test_operatingModel_fishing_before_spawn <- function(flfs, biols, ctrl, biol_no, indices_min, indices_max) {
+    .Call('FLasher_test_operatingModel_fishing_before_spawn', PACKAGE = 'FLasher', flfs, biols, ctrl, biol_no, indices_min, indices_max)
 }
 
 test_max3 <- function(indep) {
