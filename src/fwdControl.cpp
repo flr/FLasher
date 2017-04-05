@@ -14,10 +14,14 @@ void fwdControl::init_target_map(){
     target_map["landings"] = target_landings;
     target_map["discards"] = target_discards;
     target_map["srp"] = target_srp;
+    target_map["ssb_start"] = target_ssb_start; 
     target_map["ssb_end"] = target_ssb_end; 
     target_map["ssb_spawn"] = target_ssb_spawn; 
+    target_map["ssb_flash"] = target_ssb_flash; 
+    target_map["biomass_start"] = target_biomass_start; 
     target_map["biomass_end"] = target_biomass_end; 
     target_map["biomass_spawn"] = target_biomass_spawn; 
+    target_map["biomass_flash"] = target_biomass_flash; 
     target_map["effort"] = target_effort;
     target_map["revenue"] = target_revenue;
     return;

@@ -169,7 +169,6 @@ bool operatingModel::spawn_before_fishing(const int biol_no, const std::vector<u
     // Loop over all Fs that catch B
     // Loop over indices
     // if spwn <= hperiod[1,] then return true
-    // What if spwn is NA? Looks OK - see tests
     FLQuant spwn = biols(biol_no).spwn();
     auto Fs =  ctrl.get_F(biol_no); // unique Fs fishing that B
     for (unsigned int f_counter=0; f_counter < Fs.size(); ++f_counter){
@@ -187,11 +186,12 @@ bool operatingModel::spawn_before_fishing(const int biol_no, const std::vector<u
     return sbf;
 }
 
-/*! \brief Does fishing happen spawning
+/*! \brief Does fishing happen before spawning
  *
  * Any range of indices can be used. If ANY of them has spwn > hperiod[1,] then true is returned.
  * False is only returned if ALL of the indices has hperiod[1,] > spwn.
  * This is best used for a single timestep.
+ * If spwn is NA, then it is False
  *
  * \param biol_no The position of the biol in the biols list (starting at 1)
  * \param indices_min The minimum indices: year, unit, season, area, iter (length 5).
@@ -206,7 +206,6 @@ bool operatingModel::fishing_before_spawn(const int biol_no, const std::vector<u
     // Loop over all Fs that catch B
     // Loop over indices
     // if spwn <= hperiod[1,] then return true
-    // What if spwn is NA? Looks OK - see tests
     FLQuant spwn = biols(biol_no).spwn();
     auto Fs =  ctrl.get_F(biol_no); // unique Fs fishing that B
     for (unsigned int f_counter=0; f_counter < Fs.size(); ++f_counter){
@@ -938,7 +937,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
  * \param indices_min The minimum range of the returned FLQuant. Length should be appropriate for the target type (e.g. 6 for Fbar, 5 for SSB).
  * \param indices_max The maximum range of the returned FLQuant. Length should be appropriate for the target type (e.g. 6 for Fbar, 5 for SSB).
  */
-FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) {
     bool verbose = false;
     //Rprintf("Fishery: %i, Catch: %i, Biol: %i\n", fishery_no, catch_no, biol_no);
     bool biol_na = Rcpp::IntegerVector::is_na(biol_no);
@@ -1070,40 +1069,12 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         }
         case target_srp: {
             // SRP - *at the time of spawning*
-            // Only calc if only a Biol
             if (!biol_na & fishery_na & catch_na){
-
-                // If fishing starts after spawning occurs then fishing has no impact on the SRP.
-                // The solver will do nothing as a result. Better to throw a warning
-                // Check is super faffy
-                if (indices_min.size() != 5 | indices_max.size() !=5 ){
-                    Rcpp::stop("In operatingModel eval_om. SRP target needs indices of length 5\n.");
+                // fbs is FALSE if spwn before fishing, OR if spwn is NA
+                bool fbs = fishing_before_spawn(biol_no, indices_min, indices_max); 
+                if (!fbs){
+                    Rcpp::stop("In operatingModel eval_om, srp target. Either spawning happens before fishing (so fishing effort has no impact on SRP), or no spawning in timestep. Cannot solve. Stopping\n");
                 }
-                FLQuant spwn = biols(biol_no).spwn();
-                bool spwn_before_fishing = false;
-                Rcpp::IntegerMatrix FCs = ctrl.get_FC(biol_no);
-                for (auto FCcount=0; FCcount < FCs.nrow(); ++ FCcount){
-                    auto fishery_no = FCs(FCcount,0);
-                    FLQuant hperiod = fisheries(fishery_no).hperiod();
-                    for (auto nyear=indices_min[0]; nyear <= indices_max[0]; ++nyear){
-                        for (auto nunit=indices_min[1]; nunit <= indices_max[1]; ++nunit){
-                            for (auto nseason=indices_min[2]; nseason <= indices_max[2]; ++nseason){
-                                for (auto narea=indices_min[3]; narea <= indices_max[3]; ++narea){
-                                    for (auto niter=indices_min[4]; niter <= indices_max[4]; ++niter){
-                                        if (spwn(1,nyear,nunit,nseason,narea,niter) <= hperiod(1,nyear,1,nseason,narea,niter)){
-                                            spwn_before_fishing=true;
-                                        }
-                    }}}}}
-                }
-                if (spwn_before_fishing){
-                    Rcpp::warning("In operatingModel eval_om, SRP target. Spawning happens before fishing so fishing effort has no impact on SRP. Cannot solve - if that's what you were trying to do.\n");
-                }
-
-
-                // Better to have a bool spawn_before_fishing method - need it also for SSB_FLash target
-                // But should check only 1 timestep? What about iterations?
-
-
                 out = total_srp(biol_no, indices_min, indices_max); 
             }
             else {
@@ -1111,9 +1082,28 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             }
             break;
          }
+        case target_ssb_start: {
+            if(verbose){Rprintf("target_ssb_start\n");}
+            if (!biol_na & fishery_na & catch_na){
+                out = unit_sum(ssb_start(biol_no, indices_min, indices_max)); 
+            }
+            else {
+                Rcpp::stop("In operatingModel::eval_om. Asking for SSB_start target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
+            }
+            break;
+        }
+        case target_biomass_start: {
+            if(verbose){Rprintf("target_biomass_start\n");}
+            if (!biol_na & fishery_na & catch_na){
+                out = unit_sum(biomass_start(biol_no, indices_min, indices_max)); 
+            }
+            else {
+                Rcpp::stop("In operatingModel::eval_om. Asking for biomass_start target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
+            }
+            break;
+        }
         case target_ssb_end: {
             if(verbose){Rprintf("target_ssb_end\n");}
-            // Only calc if only a Biol
             if (!biol_na & fishery_na & catch_na){
                 out = unit_sum(ssb_end(biol_no, indices_min, indices_max)); 
             }
@@ -1124,7 +1114,6 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         }
         case target_biomass_end: {
             if(verbose){Rprintf("target_biomass_end\n");}
-            // Only calc if only a Biol
             if (!biol_na & fishery_na & catch_na){
                 out = unit_sum(biomass_end(biol_no, indices_min, indices_max));
             }
@@ -1135,8 +1124,12 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         }
         case target_ssb_spawn: {
             if(verbose){Rprintf("target_ssb_spawn\n");}
-            // Only calc if only a Biol
             if (!biol_na & fishery_na & catch_na){
+                // fbs is FALSE if spwn before fishing, OR if spwn is NA
+                bool fbs = fishing_before_spawn(biol_no, indices_min, indices_max); 
+                if (!fbs){
+                    Rcpp::stop("In operatingModel eval_om, ssb_spawn target. Either spawning happens before fishing (so fishing effort has no impact on SRP), or no spawning in timestep. Cannot solve. Stopping\n");
+                }
                 out = unit_sum(ssb_spawn(biol_no, indices_min, indices_max));
             }
             else {
@@ -1146,12 +1139,36 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
         }
         case target_biomass_spawn: {
             if(verbose){Rprintf("target_biomass_spawn\n");}
-            // Only calc if only a Biol
             if (!biol_na & fishery_na & catch_na){
+                // fbs is FALSE if spwn before fishing, OR if spwn is NA
+                bool fbs = fishing_before_spawn(biol_no, indices_min, indices_max); 
+                if (!fbs){
+                    Rcpp::stop("In operatingModel eval_om, biomass_spawn target. Either spawning happens before fishing (so fishing effort has no impact on SRP), or no spawning in timestep. Cannot solve. Stopping\n");
+                }
                 out = unit_sum(biomass_spawn(biol_no, indices_min, indices_max));
             }
             else {
                 Rcpp::stop("In operatingModel::eval_om. Asking for biomass_spawn target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
+            }
+            break;
+        }
+        case target_ssb_flash: {
+            if(verbose){Rprintf("target_ssb_flash\n");}
+            if (!biol_na & fishery_na & catch_na){
+                out = unit_sum(ssb_flash(biol_no, indices_min, indices_max));
+            }
+            else {
+                Rcpp::stop("In operatingModel::eval_om. Asking for SSB_flash target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
+            }
+            break;
+        }
+        case target_biomass_flash: {
+            if(verbose){Rprintf("target_biomass_flash\n");}
+            if (!biol_na & fishery_na & catch_na){
+                out = unit_sum(biomass_flash(biol_no, indices_min, indices_max));
+            }
+            else {
+                Rcpp::stop("In operatingModel::eval_om. Asking for biomass_flash target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
             }
             break;
         }
@@ -1849,6 +1866,8 @@ FLQuantAD operatingModel::biomass_spawn(const int biol_no,  const std::vector<un
 /*! \brief Calculate the SSB old-school FLash style
  *
  * If fishing takes place after spawning it has no impact on SSB at time of spawning. Therefore, get SSB at time of spawning in next time step (if there is no spawning in the next timestep, an error is thrown).
+ * This is really dodgy because if spawning in next timestep happens after fishing in next timestep, then SSB at spawning is a function of fishing effort in current AND next timestep.
+ * It assumes that fishing and spawning take place at same time in each timestep. For a seasonal model, this is really dodgy.
  * If fishing takes place before spawning, get SSB at time of spawning in current time step.
  * 
  * \param biol_no Position of the chosen biol in the biols list
@@ -1904,6 +1923,8 @@ FLQuantAD operatingModel::ssb_flash(const int biol_no,  const std::vector<unsign
  *
  * If fishing takes place after spawning it has no impact on SSB at time of spawning. Therefore, get biomass at time of spawning in next time step (if there is no spawning in the next timestep, an error is thrown).
  * If fishing takes place before spawning, get biomass at time of spawning in current time step.
+ * This is really dodgy because if spawning in next timestep happens after fishing in next timestep, then SSB at spawning is a function of fishing effort in current AND next timestep.
+ * It assumes that fishing and spawning take place at same time in each timestep. For a seasonal model, this is really dodgy.
  * 
  * \param biol_no Position of the chosen biol in the biols list
  * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 5)

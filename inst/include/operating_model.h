@@ -76,7 +76,7 @@ class operatingModel {
         Rcpp::IntegerMatrix run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters = 50); 
 
         // Sorting out target values - these are not const as eval_om may need to change spwn() member if SRP / SSB target 
-        FLQuantAD eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max); // const is relaxed as ssb_flash and biomass_flash may need to project again and update biol
         // The actual current target values in the OM - to be compared to the desired values
         std::vector<adouble> get_target_value_hat(const int target_no); 
         std::vector<adouble> get_target_value_hat(const int target_no, const int sim_target_no); 

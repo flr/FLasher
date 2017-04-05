@@ -24,10 +24,14 @@ enum fwdControlTargetType {
     target_landings,
     target_discards,
     target_srp,
+    target_ssb_start,
     target_ssb_end,
     target_ssb_spawn,
+    target_ssb_flash,
+    target_biomass_start,
     target_biomass_end,
-    target_biomass_spawn
+    target_biomass_spawn,
+    target_biomass_flash
 };
 
 // Map the target type as string to the enumerated type - typedef so we can make iterators to it later
