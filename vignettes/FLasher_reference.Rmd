@@ -33,11 +33,15 @@ options(width=60)
 
 # Introduction
 
-This document focuses on the details of the projection methods of the *FLasher* package. These are implemented in C++ using *RCpp* amd *CppAD*.
-Particular attention is paid to the `operatingModel` class, and how the components of an `operatingModel` object (`FLFisheries`, `fwdBiols` etc.) interact.
+This document focuses on the details of the projection methods of the *FLasher* package. These are implemented in C++ using __RCpp__ amd __CppAD__.
+It is not intended to teach people how to use __FLasher__ but to act as a reference for the package and describe how projections using __Flasher__ are carried out.
+Particular attention is paid to the **operatingModel** class, and how the components of an **operatingModel** object (**FLFisheries**, **fwdBiols** etc.) interact.
 
+<!--
 Details on how the basic C++ classes are implemented and used can be found in the *FLCpp* vignette.
+-->
 
+<!--
 # Example objects
 
 We need some simple objects to demonstrate the functionality.
@@ -50,56 +54,65 @@ MOVE DOWN TO WHERE FIRST USED
 #om3 <- make_test_operatingModel3(niters = 100, sd = 0.1)
 data(ple4)
 ```
+-->
 
-# The `operatingModel` class
+# The **operatingModel** class
 
-In *FLasher*, an operating model is made up of the fisheries (that perform fishing activity) and the biological stocks.
-Operating models are represented by the `operatingModel` class.
+In __FLasher__, an operating model is made up of the fisheries that perform fishing activity and the biological stocks.
+Operating models are represented by the **operatingModel** class which make up the heart of the projection.
 
 ADD DIAGRAM
 
 ## The biological stocks
 
-Each biological stock is represented by an object of class `fwdBiol` (analagous to the `FLBiol` class in R). This contains the abundance and life history information of the biological stock through time.
-The stock recruitment relationship is also contained here, as an object of class `fwdSR`.
-
-DIAGRAM?
+The biological stocks in the operating model are stored as an object of class **fwdBiols**.
+This is a list of the stocks, each stored as an **fwdBiol** object (analagous to the **FLBiol** class in R).
+Each **fwdBiol** contains the abundance and life history information of the biological stock through time, such as mean weights at age, maturity etc.
+The stock recruitment relationship is also stored in the **fwdBiol** here, as an object of class **fwdSR**.
 
 ## The fisheries
 
-The fisheries are represented by an object of class `FLFisheries`. This is a list of `FLFishery` objects, each of which represents an individual fishery.
-An `FLFishery` is a fleet (set of vessels) that has the same metier or gear type, e.g. beam trawlers or long lines.
-A fishery is made up of a series of catches, each one is represented by an object of class `FLCatch`.
-Each `FLCatch` object represents the catch from a fish stock (usually from a single biological stock - mixing catches from more than one stock is a special case where multiple biological stocks are represented as catches from a single stock).
-It is possible for a fishery to have only a single catch, i.e. it only catches from one biological stock.
+The Fisheries are represented by an object of class **FLFisheries**. This is a list of **FLFishery** objects, each of which represents an individual Fishery.
+An **FLFishery** is a fleet (set of vessels) that has the same metier or gear type, e.g. beam trawlers or long lines.
+A Fishery is made up of a series of Catches, each one is represented by an object of class **FLCatch**.
+Each **FLCatch** object represents the catch from a fish stock (usually from a single biological stock - mixing catches from more than one stock is a special case where multiple biological stocks are represented as catches from a single stock).
+A Fishery may have only a single Catch, i.e. it only catches from one biological stock.
 Multiple catches inside a fishery cannot catch from the same biological stock, i.e. a fishery can only catch once from a biological stock.
 
-The `FLCatch` object contains the landing and discard numbers and weights along with the selectivity and catchability parameters.
+The **FLCatch** object contains the landing and discard numbers and weights along with the selectivity and catchability parameters.
 They interact with the biological stocks by imposing fishing mortality.
-Fishing effort is defined at the level of the fishery so that all catches inside the same fishery have the same effort.
+Fishing effort is defined at the level of the Fishery so that all Catches inside the same Fishery have the same effort.
 
-For example if a fishery catches plaice and sole, there would be two `FLCatch` objects: one for plaice and one for sole. Each one would have different landing and discards weights, selectivity and catchability. However, they have the effort as fishing effort is defined at the fishery level not the catch level.
+For example, if a fishery catches plaice and sole, there would be two `FLCatch` objects: one for plaice and one for sole. Each one would have different landing and discards weights, selectivity and catchability. However, they have the effort as fishing effort is defined at the fishery level not the catch level.
 
 
 <!--
 Costs are at vessel level (fixed costs) but what about vessels that use multiple gears.  During a year each gear does not use the same effort. But effort is defined at the fishery level.  So we consider each gear as a seperate fishery? But then your costs are split between two fishery objects for same vessel.
 -->
 
-DIAGRAM
+## The projection control
+
+The third main member of the **operatingModel** class is an **fwdControl** object. This specifies that timesteps, target types and values of the projection.
+It also describes how the Fisheries, Catches and Biols interact with each other through the **FCB** matrix.
 
 ## Examples of operating models
 
 The simplest operating model is one which has a single fishery with a single catch fishing a single biological stock.
 
+DIAGRAM
+
 A mixed fishery is one with technical interactions (i.e. a stock may be caught by more than fishery or type of gear).
 Simple example: two fisheries on one stock.
 
+DIAGRAM
+
 # The projection process
 
-Each timestep of a projection is handled independently.
-The projection is driven by the effort in the `FLFisheries` at that timestep (i.e. the effort in each 'FLFishery' in the operating model).
+A projection can either be annual or seasonal. The number of seasons in a year is up to the user.
+Each timestep of a projection, whether season or year, is handled independently.
 
-The projection is split into two stages: projecting the fisheries (to calculate the current catches based on the effort and biological abundance in the current time step) and projecting the biology (to calculate the biological abundance in the next timestep).
+The projection is driven by the effort in the **FLFisheries** at that timestep (i.e. the effort in each **FLFishery** in the operating model).
+The projection is split into two stages: projecting the fisheries in a timestep (to calculate the catches in that timestep based on the effort and biological abundance in that timestep) and projecting the biology (to calculate the biological abundance in the next timestep based on the fishing mortality in the previous timestep).
 
 In both of these steps fishing mortality is the key metric that drives removals resulting in the catches and changes in the biological stock abundance.
 
@@ -109,27 +122,24 @@ Fishing effort drives the catches and biological stock abundance through fishing
 As such, it is a key metric of the model.
 
 Fishing mortality (F) is an age-structured metric that represents the impact of fishing on the stock.
-Inside *FLasher* it is the result of the interaction between an `FLCatch` and an `fwdBiol` object.
+Inside __FLasher__ it is the result of the interaction between an **FLCatch** and an **fwdBiol** object.
 
-As mentioned above, a `fwdBiol` can be fished by multiple `FLCatch`es.
-INSERT DIAGRAM OF MULTIPLE CATCHES ON A STOCK
+The fishing mortality imposed on a Biol from a single Catch is known as the partial fishing mortality.
+As mentioned above, a Biol can be fished by multiple Catches.
 
-The fishing mortality imposed on a `fwdBiol` from a single `FLCatch` is known as the partial fishing mortality.
 The partial fishing mortality is calculated as:
 
 $pF_{a,c,b} = \alpha_{c} Sel_{a,c} E_{f}$
 
-where $a$ is age, $b$ the `fwdBiol`, $c$ the `FLCatch`, $f$ is the `FLFishery` that contains the `FLCatch`, $pF$ is the partial fishing mortality, $\alpha$ is the catchability scaling parameter, $Sel$ is the gear selectivity and $E$ is the fishing effort.
+where $a$ is age, $b$ the Biol, $c$ the Catch, $f$ is the Fishery that contains the Catch, $pF$ is the partial fishing mortality, $\alpha$ is the catchability scaling parameter, $Sel$ is the gear selectivity and $E$ is the fishing effort.
 $\alpha$ can be set so that a particular effort and selectivity result in the desired F.
-Note that fishing effort is set at the `FLFishery` level and each `FLCatch` of an `FLFishery` has the same fishing effort.
-
-THIS CHANGE NEEDS TO BE AFFECTED IN THE CODE
+Note that fishing effort is set at the Fishery level and each Catch of an Fishery has the same fishing effort.
 
 The total fishing mortality imposed on a stock from all the `FLCatches` that fish it is the sum of the partial fishing mortalities:
 
 $F_{a,b} = pF_{a,b,c1} + pF_{a,b,c2} + ...$
 
-where $cx$ is the index of the `FLCatch`es fishing the stock, $F$ is the total fishing mortality and $pF$ is the partial fishing mortality.
+where $cx$ is the index of the Catches fishing the stock, $F$ is the total fishing mortality and $pF$ is the partial fishing mortality.
 
 <!-- OLD
 $F_{a,c,b} = \alpha_{c} B_{b}^{-\beta_{c}} S_{a,c} E_{c}$
@@ -140,15 +150,21 @@ where $a$ is age, $c$ the `FLCatch`, $b$ the `fwdBiol`, $F$ is the fishing morta
 NOTE: THIS RELATIONSHIP IS ABOUT TO CHANGE AND INCLUDE AN ADDITIONAL $\gamma$ term.
 -->
 
-Internally, the catchability parameter, $\alpha$, is stored in the `FLCatch` object as an `FLQuant`. This means that it can vary over the year, unit, season, area and iter dimension (the first dimension is not used). For example, $\alpha$ could increase over time to represent technological creep.
-The value of $\alpha$ is recycled over the dimensions over which it does not change i.e. if $\alpha$ does not change over any dimension then it is only necessary to set a single value in the `FLQuant`(see example in section \ref{sec:recycle_q}).
+Internally, the catchability parameter, $\alpha$, is stored in the **FLCatch** object as an **FLQuant**. This means that it can vary over the year, unit, season, area and iter dimension (the first dimension is not used). For example, $\alpha$ could increase over time to represent technological creep.
+The value of $\alpha$ is recycled over the dimensions over which it does not change i.e. if $\alpha$ does not change over any dimension then it is only necessary to set a single value in the **FLQuant**.
 
-The selectivity is also stored in the `FLCatch` object as an age-structured `FLQuant`.  This means that it can vary over the year, unit, season, area and iter dimension. The selectivity should be scaled between 0 and 1.
-The selectivity `FLQuant` needs to be the correct dimensions for the whole projection, i.e. there is no recycling apart from the iter dimension.
+<!--
+(see example in section \ref{sec:recycle_q}).
+-->
 
-Effort is stored at the `FLFishery` level so that the same effort is used for all the `FLCatch` objects in the fishery.
-It is stored as an `FLQuant` but the first dimension is not used.
-The effort`FLQuant` needs to be the correct dimensions for the whole projection, i.e. there is no recycling apart from the iter dimension.
+The selectivity is also stored in the **FLCatch** object as an age-structured **FLQuant**.  This means that it can vary over the year, unit, season, area and iter dimension. The selectivity should be scaled between 0 and 1.
+The selectivity **FLQuant** needs to be the correct dimensions for the whole projection, i.e. there is no recycling apart from the iter dimension.
+
+Effort is stored at the **FLFishery** level so that the same effort is used for all the **FLCatch** objects in the Fishery.
+It is stored as an **FLQuant** but the first dimension is not used. Additionally, it has no unit structure.
+The effort **FLQuant** needs to have the same year and season dimensions as the projection, i.e. there is no recycling apart from the iter dimension.
+
+<!--
 
 ## Recycling the catchability parameter $\alpha$
 \label{sec:recycle_q}
@@ -170,28 +186,28 @@ dim(recycled_q)
 # Note that dimnames have not been set - that is OK as it is used internally
 recycled_q
 ```
-
+-->
 
 # Projecting the fisheries
 
-In each time step of the projection, the landings and discards numbers are updated in the `FLCatch`es of the `FLFishery` objects.
-The projection is carried out using the `project_fisheries()` method.
-Catch numbers at age in each time step are calculated for each of the `FLCatch` objects inside each of the `FLFishery` using the Baranov equation (REF).
+In each time step of the projection, the landings and discards numbers are updated in the **FLCatch**es of the **FLFishery** objects.
+In __FLasher__, the projection is carried out using the **operatingModel** *project_fisheries()* method.
+Catch numbers at age in each time step are calculated for each of the **FLCatch** objects inside each of the **FLFishery** using the Baranov equation (REF).
 
-A biological stock may be fished by more than one `FLCatch`.
-The catch of one `FLCatch` from a biological stock is known as the partial catch.
+A biological stock may be fished by more than one **FLCatch**.
+The catch of one **FLCatch** from a biological stock is known as the partial catch.
 The total catch of a biological stock equals the sum of the partial catches from that stock.
 
 $C_{a,b} = pC_{a,b,c1} + pC_{a,b,c2} + ...$
 
-where $cx$ the `FLCatch`, $C$ is the total catch and $pC$ is the partial catch from each `FLCatch`. 
-Where a stock is only fished by a single `FLCatch`, the partial catch is equal to the total catch.
+where $cx$ the Catch, $C$ is the total catch and $pC$ is the partial catch from each Catch. 
+Where a stock is only fished by a single Catch, the partial catch is equal to the total catch.
 
-The partial catch of a `FLCatch` from a biological stock is given as:
+The partial catch of a Catch from a biological stock is given as:
 
 $pC_{a,b,c} = (pF_{a,b,c} / Z_{a,b}) * (1 - exp(-Z_{a,b})) * N_{a,b}$
 
-where $a$ is age, $b$ the `fwdBiol`, $c$ the `FLCatch`, $pC$ is the partial catch, $pF$ is the partial fishing mortality, $Z$ is the total mortality of the biological stock being fished (total fishing mortality of the stock plus natural mortality) and $N$ is abundance of the biological stock being fished.
+where $a$ is age, $b$ the Biol, $c$ the Catch, $pC$ is the partial catch, $pF$ is the partial fishing mortality, $Z$ is the total mortality of the biological stock being fished (total fishing mortality of the stock plus natural mortality) and $N$ is abundance of the biological stock being fished.
 
 The total mortality is given as:
 
@@ -199,34 +215,33 @@ $Z_{a,b} = F_{a,b} + m_{a,b}$
 
 where $m$ is the natural mortality of the biological stock.
 
-$N$ and $m$ are stored in the corresponding `fwdBiol` object.
+$N$ and $m$ are stored in the corresponding **fwdBiol** object.
 
 Landings and discards numbers are calculated by splitting the catch numbers using the discard ratio.
-When the `FLFishery` is created in C++ from the R objects, the discard ratio is calculated from the existing landings and discards numbers in the R-based object, i.e. the future discard ratio can be set up by entering the appropriate values in the future landings and discards numbers. These values are then written over with the actual landings and discards during the projection.
+When the **FLFishery** is created in C++ from the R objects, the discard ratio is calculated from the existing landings and discards numbers in the R-based object, i.e. the future discard ratio can be set up by entering the appropriate values in the future landings and discards numbers. These values are then written over with the actual landings and discards during the projection.
 
 $DR_{a,c} = D_{a,c} / / (D_{a,c} + L_{a,c})$
 
 where $DR$ is the discard rate, $D$ is the discard numbers and $L$ is the landings numbers.
 
-In C++, the discard ratio is stored as an `FLQuant` of the `FLCatch` object.
+In the **operatinModel**, the discard ratio is stored as an **FLQuant** of the **FLCatch** object.
 During a projection it is used to split the calculated catch numbers into landings and discards:
 
 $L_{a,c} = pC_{a,c} * (1 - DR_{a,c})$
 $D_{a,c} = pC_{a,c} * DR_{a,c}$
 
-There is a special case where a single `FLCatch` may catch from more than one stock (for example, where two biological stocks are considered to be a single stock by the management regime).
-In this special case the sum of the landings and discard numbers from each stock are in the `FLCatch`.
+There is a special case where a single Catch may catch from more than one Biol (for example, where two biological stocks are considered to be a single stock by the management regime).
+In this special case the sum of the landings and discard numbers from each stock are in the **FLCatch**.
 
 ## Differences with FLash concerning catch weights at age
 
-There is a difference between *FLasher* and *FLash* concerning the calculation of total catch biomass.
-In *FLasher* and *FLash* catch numbers at age are the sum of the landing and discards numbers at age.
-In *FLash* the mean catch weights at age are fixed in advance in using the `catch.wt` slot.
-In *FLasher* the mean catch weights at age are calculated using the landings and discards numbers and weights at age.
-This means the that mean catch weights at age in *FLasher* are not fixed in advance but will change according to the projected landings and discards numbers.
-The result is that the mean catch weights at age will differ between *FLash* and *FLasher*.
-This difference is most noticeable when a total catch is set as a target. Both *FLash* and *FLasher* will hit the same total catch weight target but because the mean catch weights at age are different, the catch numbers at age will be different.
-
+There is a difference between __FLasher__ and __FLash__ concerning the calculation of total catch biomass.
+In __FLasher__ and __FLash__ catch numbers at age are the sum of the landing and discards numbers at age.
+In __FLash__ the mean catch weights at age are fixed in advance in using the *catch.wt* slot.
+In __FLasher__ the mean catch weights at age are calculated using the landings and discards numbers and weights at age.
+This means the that mean catch weights at age in __FLasher__ are not fixed in advance but will change according to the projected landings and discards numbers.
+The result is that the mean catch weights at age will differ between __FLash__ and __FLasher__.
+This difference is most noticeable when a total catch is set as a target. Both __FLash__ and __FLasher__ will hit the same total catch weight target but because the mean catch weights at age are different, the catch numbers at age will be different.
 
 # Projecting the biology
 
