@@ -44,12 +44,12 @@ int test_fwdControl_get_niter(const fwdControl control){
 }
 
 // [[Rcpp::export]]
-unsigned int test_fwdControl_get_nsim_target(const fwdControl control, unsigned int target_no){
+int test_fwdControl_get_nsim_target(const fwdControl control, unsigned int target_no){
     return control.get_nsim_target(target_no);
 }
 
 // [[Rcpp::export]]
-unsigned int test_fwdControl_get_target_row(const fwdControl control, unsigned int target_no, unsigned int sim_target_no){
+int test_fwdControl_get_target_row(const fwdControl control, unsigned int target_no, unsigned int sim_target_no){
     return control.get_target_row(target_no, sim_target_no);
 }
 
@@ -64,7 +64,7 @@ Rcpp::IntegerVector test_fwdControl_get_target_int_col(const fwdControl control,
 }
 
 // [[Rcpp::export]]
-unsigned int test_fwdControl_get_target_int_col2(const fwdControl control, const int target_no, const int sim_target_no, const std::string col){
+int test_fwdControl_get_target_int_col2(const fwdControl control, const int target_no, const int sim_target_no, const std::string col){
     return control.get_target_int_col(target_no, sim_target_no, col);
 }
 
@@ -116,20 +116,22 @@ std::vector<unsigned int> test_fwdControl_get_F(const fwdControl control, const 
 }
 
 // [[Rcpp::export]]
-unsigned int test_fwdControl_get_FCB_nrow(const fwdControl control){
+int test_fwdControl_get_FCB_nrow(const fwdControl control){
     return control.get_FCB_nrow();
 }
 
 // [[Rcpp::export]]
-unsigned int test_fwdControl_get_FCB_row_no(const fwdControl control, const unsigned int fishery_no, const unsigned int catch_no, const unsigned int biol_no){
+int test_fwdControl_get_FCB_row_no(const fwdControl control, const unsigned int fishery_no, const unsigned int catch_no, const unsigned int biol_no){
     return control.get_FCB_row_no(fishery_no, catch_no, biol_no);
 }
 
 // [[Rcpp::export]]
-std::vector<unsigned int> test_fwdControl_get_FCB_nos(const fwdControl control, const unsigned int target_no, const unsigned int sim_target_no, const bool relative, const bool check){
+std::vector<int> test_fwdControl_get_FCB_nos(const fwdControl control, const unsigned int target_no, const unsigned int sim_target_no, const bool relative, const bool check){
     std::vector<unsigned int> out;
     out = control.get_FCB_nos(target_no, sim_target_no, relative, check);
-    return out;
+    // unsigned int does not like NAs when passing back to R
+    std::vector<int> out2(out.begin(), out.end());
+    return out2;
 }
 
 // [[Rcpp::export]]

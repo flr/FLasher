@@ -79,14 +79,14 @@ fwdControl(target=target, iters=25)
 # LIST
 
 target <- list(list(year=1990, quant='f', value=0.1),
-     list(year=1991, quant='ssb', value=2000))
+     list(year=1991, quant='ssb_end', value=2000))
 
 fwdControl(target)
 
 #
 
 target <- list(list(year=1990:1992, quant='f', value=0.1),
-     list(year=1993, quant='ssb', value=2000))
+     list(year=1993, quant='ssb_end', value=2000))
 
 fwdControl(target)
 
@@ -95,28 +95,28 @@ fwdControl(target)
 #
 
 target <- list(list(year=1990, quant='f', value=runif(10, 0.1, 0.2)),
-     list(year=1991, quant='ssb', value=rnorm(10, 2000)))
+     list(year=1991, quant='ssb_end', value=rnorm(10, 2000)))
 
 fwdControl(target)
 
 #
 
 target <- list(list(year=1990:1992, quant='f', value=runif(10, 0.1, 0.2)),
-     list(year=1993, quant='ssb', value=rnorm(10, 2000)))
+     list(year=1993, quant='ssb_end', value=rnorm(10, 2000)))
 
 fwdControl(target)
 
 #
 
 target <- list(list(year=1990, quant='f', max=runif(10, 0.1, 0.2), min=0.05),
-     list(year=1991, quant='ssb', value=rnorm(10, 2000)))
+     list(year=1991, quant='ssb_end', value=rnorm(10, 2000)))
 
 fwdControl(target)
 
 #
 
 target <- list(list(year=1990, quant='f', max=runif(10, 0.1, 0.2), min=NA),
-     list(year=1991, quant='ssb', value=rnorm(10, 2000)))
+     list(year=1991, quant='ssb_end', value=rnorm(10, 2000)))
 
 fwdControl(target)
 
@@ -124,21 +124,21 @@ fwdControl(target)
 # list elements with more than one row
 
 target <- list(list(year=1990:1992, quant='f', max=rep(1, 10), min=0.05),
-     list(year=1993, quant='ssb', value=rnorm(10, 200)))
+     list(year=1993, quant='ssb_end', value=rnorm(10, 200)))
 
 fwdControl(target)
 
 #
 
 target <- list(list(year=1990, season=1:4, quant='f', max=rep(1, 10), min=0.05),
-     list(year=1993, quant='ssb', season=1, value=rnorm(10, 200)))
+     list(year=1993, quant='ssb_end', season=1, value=rnorm(10, 200)))
 
 fwdControl(target)
 
 # wrong year order
 
 target <- list(list(year=1992:1990, quant='f', max=rep(1, 10), min=0.05),
-     list(year=1993, quant='ssb', value=rnorm(10, 200)))
+     list(year=1993, quant='ssb_end', value=rnorm(10, 200)))
 
 fwdControl(target)
 

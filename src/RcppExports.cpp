@@ -5731,7 +5731,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_fwdControl_get_nsim_target
-unsigned int test_fwdControl_get_nsim_target(const fwdControl control, unsigned int target_no);
+int test_fwdControl_get_nsim_target(const fwdControl control, unsigned int target_no);
 RcppExport SEXP FLasher_test_fwdControl_get_nsim_target(SEXP controlSEXP, SEXP target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -5743,7 +5743,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_fwdControl_get_target_row
-unsigned int test_fwdControl_get_target_row(const fwdControl control, unsigned int target_no, unsigned int sim_target_no);
+int test_fwdControl_get_target_row(const fwdControl control, unsigned int target_no, unsigned int sim_target_no);
 RcppExport SEXP FLasher_test_fwdControl_get_target_row(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -5781,7 +5781,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_fwdControl_get_target_int_col2
-unsigned int test_fwdControl_get_target_int_col2(const fwdControl control, const int target_no, const int sim_target_no, const std::string col);
+int test_fwdControl_get_target_int_col2(const fwdControl control, const int target_no, const int sim_target_no, const std::string col);
 RcppExport SEXP FLasher_test_fwdControl_get_target_int_col2(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP colSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -5912,7 +5912,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_fwdControl_get_FCB_nrow
-unsigned int test_fwdControl_get_FCB_nrow(const fwdControl control);
+int test_fwdControl_get_FCB_nrow(const fwdControl control);
 RcppExport SEXP FLasher_test_fwdControl_get_FCB_nrow(SEXP controlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -5923,7 +5923,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_fwdControl_get_FCB_row_no
-unsigned int test_fwdControl_get_FCB_row_no(const fwdControl control, const unsigned int fishery_no, const unsigned int catch_no, const unsigned int biol_no);
+int test_fwdControl_get_FCB_row_no(const fwdControl control, const unsigned int fishery_no, const unsigned int catch_no, const unsigned int biol_no);
 RcppExport SEXP FLasher_test_fwdControl_get_FCB_row_no(SEXP controlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -5937,7 +5937,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_fwdControl_get_FCB_nos
-std::vector<unsigned int> test_fwdControl_get_FCB_nos(const fwdControl control, const unsigned int target_no, const unsigned int sim_target_no, const bool relative, const bool check);
+std::vector<int> test_fwdControl_get_FCB_nos(const fwdControl control, const unsigned int target_no, const unsigned int sim_target_no, const bool relative, const bool check);
 RcppExport SEXP FLasher_test_fwdControl_get_FCB_nos(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP relativeSEXP, SEXP checkSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

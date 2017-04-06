@@ -694,16 +694,25 @@ It is possible for the control target to have iterations. If there are no iterat
 
 Different target types require different combinations of Fishery, Catch and Biol to be specifed (NA means not specified). The following table describes the requirements:
 
-Fishery | Catch | Biol | Notes
-------- | ----- | ---- | -----
-        |       |      | Error - you have to specify something
-        |       |   x  | Total catch, landings, discards or Fbar of a Biol (where possible to calculate - see below). Biological targets e.g. SSB
-        |   x   |      | Error - if you specify a Catch you must also specify a Fishery
-        |   x   |   x  | Error - if you specify a Catch you must also specify a Fishery
-   x    |       |      | Total revenue or effort of a fishery
-   x    |       |   x  | Error - also needs Catch to be specified
-   x    |   x   |      | Catch, landings, discards or revenue of a particular Fishery / Catch
-   x    |   x   |   x  | Partial F of a Fishery / Catch on a Biol
+Target type | Fishery | Catch | Biol | Notes
+------------| ------- | ----- | ---- | -----
+Catch       |    X    |   X   |      |
+            |         |       |   X  | Not possible if Biol is caught by a Catch that also catches another Biol
+Landings    |    X    |   X   |      |
+            |         |       |   X  | Not possible if Biol is caught by a Catch that also catches another Biol
+Discards    |    X    |   X   |      |
+            |         |       |   X  | Not possible if Biol is caught by a Catch that also catches another Biol
+F           |         |       |   X  | Total F on a biol
+            |    X    |   X   |   X  | Partial F of a Fishery and Catch on a Biol
+Effort      |    X    |       |      |
+Revenue     |    X    |       |      | Total revenue of the fishery
+            |    X    |   X   |      | Revenue from a single Catch
+SSB         |         |       |   X  | Various SSB targets are available (see below)
+Biomass     |         |       |   X  | Various biomass targets are available (see below)
+SRP         |         |       |   X  | 
+
+
+
 
 ### Fishery targets
 
@@ -721,9 +730,10 @@ Must specify Catch and Fishery number, OR, a Biol number (not both)
 
 With biologically based targets we have to be careful with the timing: 
 
-* `SRP` is the SRP `at the time of spawning`. 
-* `SSB` is the mass of mature fish (sum N * wt * mat) `at the end of the timestep`, i.e. the survivors after all mortality (fishing and natural) has stopped.
-* `Biomass` is the total mass of fish (sum N * wt) `at the end of the timestep`, i.e. the survivors after all mortality (fishing and natural) has stopped.
+* `srp` is the SRP `at the time of spawning`. 
+* `ssb_end` and `biomass_end` is the total SSB or biomass of fish `at the end of the timestep`, i.e. the survivors after all mortality (fishing and natural) has stopped.
+* `ssb_spawn` and `biomass_spawn` is the total SSB or biomass of fish `at the time of spawning`.
+* `ssb_flash` and `biomass_flash` tries to replicate the behaviour of the **FLash** package. If fishing occurs before spawning, the SSN or biomass at the time of spawning is returned. If the fishing occurs after spawning then fishing has no impact on SSB or biomass at the time of spawning and so the SSB or biomass at the time of spawning in the `next` time step is returned. Similarly, if there is no spawning in that time step, the SSB or biomass at the time of spawning in the `next` time step is returned (unless there is also no spawning in the next time step in which case an error occurs'. This behaviour is a bit dangerous because if we are trying to get the SSB or biomass in the next time step and fishing in the next time step happens before spawning, the SSB or biomass will be affected by the fishing effort in the current time step `and` the next time step (which is not solved for). Due to the weird nature of this target type it is better to only use if for annual models.
 
 Note that as `SRP` target is the SRP at the time of spawning, if the fishing periods starts after spawning then the fishing mortality in that timestep will have no impact on the SRP.
 The solver will fail in this case.

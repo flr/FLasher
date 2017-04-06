@@ -262,7 +262,7 @@ random_fwdBiols_list_generator <- function(min_biols = 1, max_biols = 5, ...){
 #' @return A fwdControl object
 random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), nseasons = 2, max_nsim_target = 3, niters = round(runif(1,min=5,max=10))){
     quantities <- c("f","catch","landings","discards")#, "ssb", "biomass")
-    abundance_quantities <- c("ssb", "biomass", "f")
+    abundance_quantities <- c("ssb_end", "biomass_end", "f")
     f_quantities <- c("f") # either B, or FCB
     # Randomly set simultaneous targets
     nsim_each <- round(runif(length(years) * nseasons, min = 1, max = max_nsim_target))

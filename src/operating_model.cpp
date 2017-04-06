@@ -53,12 +53,6 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsA
     // Then the biols
     for (int biol_no=1; biol_no <= biols_in.get_nbiols();  ++biol_no){
         std::vector<unsigned int> biol_dim = biols_in(biol_no).n().get_dim();
-
-        // Yeah they are!
-        //if(biol_dim[2] > 1){
-        //    Rcpp::stop("Multiple units in OM not yet implemented\n");
-        //}
-
         if ((landings_dim11[1] != biol_dim[1]) | (landings_dim11[3] != biol_dim[3])){
             Rcpp::stop("In operatingModel constructor. All biols and catches must have the same year and season range.\n");
         }
@@ -1073,7 +1067,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
                 // fbs is FALSE if spwn before fishing, OR if spwn is NA
                 bool fbs = fishing_before_spawn(biol_no, indices_min, indices_max); 
                 if (!fbs){
-                    Rcpp::stop("In operatingModel eval_om, srp target. Either spawning happens before fishing (so fishing effort has no impact on SRP), or no spawning in timestep. Cannot solve. Stopping\n");
+                    Rcpp::warning("In operatingModel eval_om, srp target. Either spawning happens before fishing (so fishing effort has no impact on SRP), or no spawning in timestep. Cannot solve. Stopping\n");
                 }
                 out = total_srp(biol_no, indices_min, indices_max); 
             }
@@ -1082,26 +1076,27 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             }
             break;
          }
-        case target_ssb_start: {
-            if(verbose){Rprintf("target_ssb_start\n");}
-            if (!biol_na & fishery_na & catch_na){
-                out = unit_sum(ssb_start(biol_no, indices_min, indices_max)); 
-            }
-            else {
-                Rcpp::stop("In operatingModel::eval_om. Asking for SSB_start target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
-            }
-            break;
-        }
-        case target_biomass_start: {
-            if(verbose){Rprintf("target_biomass_start\n");}
-            if (!biol_na & fishery_na & catch_na){
-                out = unit_sum(biomass_start(biol_no, indices_min, indices_max)); 
-            }
-            else {
-                Rcpp::stop("In operatingModel::eval_om. Asking for biomass_start target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
-            }
-            break;
-        }
+// Makes no sense to have SSB at start - cannot affect it with F in current time step
+//        case target_ssb_start: {
+//            if(verbose){Rprintf("target_ssb_start\n");}
+//            if (!biol_na & fishery_na & catch_na){
+//                out = unit_sum(ssb_start(biol_no, indices_min, indices_max)); 
+//            }
+//            else {
+//                Rcpp::stop("In operatingModel::eval_om. Asking for SSB_start target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
+//            }
+//            break;
+//        }
+//        case target_biomass_start: {
+//            if(verbose){Rprintf("target_biomass_start\n");}
+//            if (!biol_na & fishery_na & catch_na){
+//                out = unit_sum(biomass_start(biol_no, indices_min, indices_max)); 
+//            }
+//            else {
+//                Rcpp::stop("In operatingModel::eval_om. Asking for biomass_start target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
+//            }
+//            break;
+//        }
         case target_ssb_end: {
             if(verbose){Rprintf("target_ssb_end\n");}
             if (!biol_na & fishery_na & catch_na){
@@ -1128,7 +1123,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
                 // fbs is FALSE if spwn before fishing, OR if spwn is NA
                 bool fbs = fishing_before_spawn(biol_no, indices_min, indices_max); 
                 if (!fbs){
-                    Rcpp::stop("In operatingModel eval_om, ssb_spawn target. Either spawning happens before fishing (so fishing effort has no impact on SRP), or no spawning in timestep. Cannot solve. Stopping\n");
+                    Rcpp::warning("In operatingModel eval_om, ssb_spawn target. Either spawning happens before fishing (so fishing effort has no impact on SRP), or no spawning in timestep. Cannot solve.\n");
                 }
                 out = unit_sum(ssb_spawn(biol_no, indices_min, indices_max));
             }
@@ -1143,7 +1138,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
                 // fbs is FALSE if spwn before fishing, OR if spwn is NA
                 bool fbs = fishing_before_spawn(biol_no, indices_min, indices_max); 
                 if (!fbs){
-                    Rcpp::stop("In operatingModel eval_om, biomass_spawn target. Either spawning happens before fishing (so fishing effort has no impact on SRP), or no spawning in timestep. Cannot solve. Stopping\n");
+                    Rcpp::warning("In operatingModel eval_om, biomass_spawn target. Either spawning happens before fishing (so fishing effort has no impact on SRP), or no spawning in timestep. Cannot solve.\n");
                 }
                 out = unit_sum(biomass_spawn(biol_no, indices_min, indices_max));
             }
@@ -1889,32 +1884,40 @@ FLQuantAD operatingModel::ssb_flash(const int biol_no,  const std::vector<unsign
         out = ssb_spawn(biol_no, indices_min, indices_max);
     }
     // Otherwise get SSB at time of spawning in next timestep
+    // What if there is no next time step? Do nothing
     else {
         // SSB at time of spawning in next timestep
         // Update population in next timestep
         auto biol_dim = biols(biol_no).n().get_dim(); 
+        auto max_timestep = biol_dim[1] * biol_dim[3];
         // Set up indices for next timestep - really faffy!
         unsigned int timestep = 0;
         year_season_to_timestep(indices_min[0], indices_min[2], biol_dim[3], timestep);
         timestep++;
-        project_biols(timestep);
-        std::vector<unsigned int> next_indices_min = indices_min;
-        std::vector<unsigned int> next_indices_max = indices_max;
-        timestep_to_year_season(timestep, biol_dim[3], next_indices_min[0], next_indices_min[2]);
-        next_indices_max[0] = next_indices_min[0];
-        next_indices_max[2] = next_indices_min[2];
-        // Check for NA in spwn in next time step - if any value of spwn across indices range is NA - stop
-        std::vector<unsigned int> qindices_min = next_indices_min;
-        qindices_min.insert(qindices_min.begin(), 1);
-        std::vector<unsigned int> qindices_max = next_indices_max;
-        qindices_max.insert(qindices_max.begin(), 1);
-        FLQuant spwn = biols(biol_no).spwn(qindices_min, qindices_max);
-        for (const auto& it : spwn){
-            if (Rcpp::NumericVector::is_na(it)){
-                Rcpp::stop("In operatingModel::ssb_flash. spwn member in following time step has NA value in the indices range. Implies no spawning so cannot calculate SSB at time of spawning. Stopping\n");
-            }
+        if (timestep > max_timestep){
+            Rcpp::warning("In operatingModel::ssb_flash. Unable to get SSB in following timestep as no room\n");
+            out = ssb_spawn(biol_no, indices_min, indices_max);
         }
-        out = ssb_spawn(biol_no, next_indices_min, next_indices_max);
+        else {
+            project_biols(timestep);
+            std::vector<unsigned int> next_indices_min = indices_min;
+            std::vector<unsigned int> next_indices_max = indices_max;
+            timestep_to_year_season(timestep, biol_dim[3], next_indices_min[0], next_indices_min[2]);
+            next_indices_max[0] = next_indices_min[0];
+            next_indices_max[2] = next_indices_min[2];
+            // Check for NA in spwn in next time step - if any value of spwn across indices range is NA - stop
+            std::vector<unsigned int> qindices_min = next_indices_min;
+            qindices_min.insert(qindices_min.begin(), 1);
+            std::vector<unsigned int> qindices_max = next_indices_max;
+            qindices_max.insert(qindices_max.begin(), 1);
+            FLQuant spwn = biols(biol_no).spwn(qindices_min, qindices_max);
+            for (const auto& it : spwn){
+                if (Rcpp::NumericVector::is_na(it)){
+                    Rcpp::stop("In operatingModel::ssb_flash. spwn member in following time step has NA value in the indices range. Implies no spawning so cannot calculate SSB at time of spawning. Stopping\n");
+                }
+            }
+            out = ssb_spawn(biol_no, next_indices_min, next_indices_max);
+        }
     }
     return out;
 }
@@ -1949,28 +1952,35 @@ FLQuantAD operatingModel::biomass_flash(const int biol_no,  const std::vector<un
         // SSB at time of spawning in next timestep
         // Update population in next timestep
         auto biol_dim = biols(biol_no).n().get_dim(); 
+        auto max_timestep = biol_dim[1] * biol_dim[3];
         // Set up indices for next timestep - really faffy!
         unsigned int timestep = 0;
         year_season_to_timestep(indices_min[0], indices_min[2], biol_dim[3], timestep);
         timestep++;
-        project_biols(timestep);
-        std::vector<unsigned int> next_indices_min = indices_min;
-        std::vector<unsigned int> next_indices_max = indices_max;
-        timestep_to_year_season(timestep, biol_dim[3], next_indices_min[0], next_indices_min[2]);
-        next_indices_max[0] = next_indices_min[0];
-        next_indices_max[2] = next_indices_min[2];
-        // Check for NA in spwn in next time step - if any value of spwn across indices range is NA - stop
-        std::vector<unsigned int> qindices_min = next_indices_min;
-        qindices_min.insert(qindices_min.begin(), 1);
-        std::vector<unsigned int> qindices_max = next_indices_max;
-        qindices_max.insert(qindices_max.begin(), 1);
-        FLQuant spwn = biols(biol_no).spwn(qindices_min, qindices_max);
-        for (const auto& it : spwn){
-            if (Rcpp::NumericVector::is_na(it)){
-                Rcpp::stop("In operatingModel::biomass_flash. spwn member in following time step has NA value in the indices range. Implies no spawning so cannot calculate SSB at time of spawning. Stopping\n");
-            }
+        if (timestep > max_timestep){
+            Rcpp::warning("In operatingModel::ssb_flash. Unable to get SSB in following timestep as no room\n");
+            out = ssb_spawn(biol_no, indices_min, indices_max);
         }
-        out = biomass_spawn(biol_no, next_indices_min, next_indices_max);
+        else {
+            project_biols(timestep);
+            std::vector<unsigned int> next_indices_min = indices_min;
+            std::vector<unsigned int> next_indices_max = indices_max;
+            timestep_to_year_season(timestep, biol_dim[3], next_indices_min[0], next_indices_min[2]);
+            next_indices_max[0] = next_indices_min[0];
+            next_indices_max[2] = next_indices_min[2];
+            // Check for NA in spwn in next time step - if any value of spwn across indices range is NA - stop
+            std::vector<unsigned int> qindices_min = next_indices_min;
+            qindices_min.insert(qindices_min.begin(), 1);
+            std::vector<unsigned int> qindices_max = next_indices_max;
+            qindices_max.insert(qindices_max.begin(), 1);
+            FLQuant spwn = biols(biol_no).spwn(qindices_min, qindices_max);
+            for (const auto& it : spwn){
+                if (Rcpp::NumericVector::is_na(it)){
+                    Rcpp::stop("In operatingModel::biomass_flash. spwn member in following time step has NA value in the indices range. Implies no spawning so cannot calculate SSB at time of spawning. Stopping\n");
+                }
+            }
+            out = biomass_spawn(biol_no, next_indices_min, next_indices_max);
+        }
     }
     return out;
 }
