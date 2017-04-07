@@ -21,19 +21,21 @@ abstract:
 license: European Union Public Licence (EUPL) V.1.1
 ---
 
+<!--
 ```{r, pkgs, echo=FALSE, message=FALSE}
-library(Rcpp)
-library(FLasher)
-library(ggplotFL)
-library(knitr)
-opts_chunk$set(dev='png', cache=FALSE, fig.width=5, fig.height=4.5, tidy=TRUE, dpi=300)
-options(width=60)
+#library(Rcpp)
+#library(FLasher)
+#library(ggplotFL)
+#library(knitr)
+#opts_chunk$set(dev='png', cache=FALSE, fig.width=5, fig.height=4.5, tidy=TRUE, dpi=300)
+#options(width=60)
 ```
+-->
 
 
 # Introduction
 
-This document focuses on the details of the projection methods of the *FLasher* package. These are implemented in C++ using __RCpp__ amd __CppAD__.
+This document focuses on the details of the projection methods of the __FLasher__ package. These are implemented in C++ using __RCpp__ amd __CppAD__.
 It is not intended to teach people how to use __FLasher__ but to act as a reference for the package and describe how projections using __Flasher__ are carried out.
 Particular attention is paid to the **operatingModel** class, and how the components of an **operatingModel** object (**FLFisheries**, **fwdBiols** etc.) interact.
 
@@ -83,7 +85,7 @@ The **FLCatch** object contains the landing and discard numbers and weights alon
 They interact with the biological stocks by imposing fishing mortality.
 Fishing effort is defined at the level of the Fishery so that all Catches inside the same Fishery have the same effort.
 
-For example, if a fishery catches plaice and sole, there would be two `FLCatch` objects: one for plaice and one for sole. Each one would have different landing and discards weights, selectivity and catchability. However, they have the effort as fishing effort is defined at the fishery level not the catch level.
+For example, if a fishery catches plaice and sole, there would be two **FLCatch** objects: one for plaice and one for sole. Each one would have different landing and discards weights, selectivity and catchability. However, they have the effort as fishing effort is defined at the fishery level not the catch level.
 
 
 <!--
@@ -220,7 +222,7 @@ $N$ and $m$ are stored in the corresponding **fwdBiol** object.
 Landings and discards numbers are calculated by splitting the catch numbers using the discard ratio.
 When the **FLFishery** is created in C++ from the R objects, the discard ratio is calculated from the existing landings and discards numbers in the R-based object, i.e. the future discard ratio can be set up by entering the appropriate values in the future landings and discards numbers. These values are then written over with the actual landings and discards during the projection.
 
-$DR_{a,c} = D_{a,c} / / (D_{a,c} + L_{a,c})$
+$DR_{a,c} = D_{a,c} / (D_{a,c} + L_{a,c})$
 
 where $DR$ is the discard rate, $D$ is the discard numbers and $L$ is the landings numbers.
 
@@ -716,24 +718,39 @@ It is possible for the control target to have iterations. If there are no iterat
 
 Different target types require different combinations of Fishery, Catch and Biol to be specifed in the control object. The following table describes the requirements:
 
-Target type | Fishery | Catch | Biol | Notes
-------------| ------- | ----- | ---- | -----
-Catch       |    X    |   X   |      |
-            |         |       |   X  | Not possible if Biol is caught by a Catch that also catches another Biol
-Landings    |    X    |   X   |      |
-            |         |       |   X  | Not possible if Biol is caught by a Catch that also catches another Biol
-Discards    |    X    |   X   |      |
-            |         |       |   X  | Not possible if Biol is caught by a Catch that also catches another Biol
-F           |         |       |   X  | Total F on a biol
-            |    X    |   X   |   X  | Partial F of a Fishery and Catch on a Biol
-Effort      |    X    |       |      |
-Revenue     |    X    |       |      | Total revenue of the fishery
-            |    X    |   X   |      | Revenue from a single Catch
-SSB         |         |       |   X  | Various SSB targets are available (see below)
-Biomass     |         |       |   X  | Various biomass targets are available (see below)
-SRP         |         |       |   X  | 
+----------------------------------------------------------------------------
+Target type   Fishery   Catch   Biol   Notes
+-----------   -------   -----   ----   -------------------------------------
+Catch            X        X           
 
+                                  X    Not possible if Biol is caught by a Catch that also catches another Biol
 
+Landings         X        X           
+
+                                  X    Not possible if Biol is caught by a Catch that also catches another Biol
+
+Discards         X        X           
+
+                                  X    Not possible if Biol is caught by a Catch that also catches another Biol
+
+F                                 X    Total F on a biol
+
+                 X        X       X    Partial F of a Fishery and Catch on a Biol
+
+Effort           X                    
+
+Revenue          X                     Total revenue of the fishery
+
+                 X        X            Revenue from a single Catch
+
+SSB                               X    Various SSB targets are available (see below)
+
+Biomass                           X    Various biomass targets are available (see below)
+
+SRP                               X    
+----------------------------------------------------------------------------
+
+Table: Target type and Fishery, Catch, Biol requirements in the control object.
 
 
 ### Biological targets
