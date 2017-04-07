@@ -658,23 +658,27 @@ void operatingModel::project_biols(const int timestep){
         FLQuantAD new_abundance = surv;
         for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
             bool recruiting_now = biols(biol_counter).srr.does_recruitment_happen(ucount, year, season);
-            // If recruiting shift survivor ages, fix plus group and recruit
+            // If recruiting shift survivor ages, fix plus group. Recruitment calculated later after updating abundances.
             if (recruiting_now){
-                std::vector<adouble> rec = calc_rec(biol_counter, ucount, timestep);
                 for (unsigned int icount = 1; icount <= niter; ++icount){
                     for (unsigned int qcount = 2; qcount <= biol_dim[0]; ++qcount){
                         new_abundance(qcount,1,ucount,1,area,icount) = surv(qcount-1,1,ucount,1,area,icount);
                     }
                     // plus group
                     new_abundance(biol_dim[0], 1, ucount, 1, area, icount) = new_abundance(biol_dim[0], 1, ucount, 1, area, icount) + surv(biol_dim[0], 1, ucount, 1, 1, icount);
-                    // recruitment
-                    new_abundance(1,1,ucount,1,area,icount) = rec[icount-1];
                 }
             }
             // Update biol with survivors
             for (unsigned int icount = 1; icount <= niter; ++icount){
                 for (unsigned int qcount = 1; qcount <= biol_dim[0]; ++qcount){
                     biols(biol_counter).n(qcount, year, ucount, season, area, icount) = new_abundance(qcount, 1, ucount, 1, 1, icount);
+                }
+            }
+            // Insert recruitment - can only do after abundance has been updated in timestep as SRP might be from this timestep
+            if (recruiting_now){
+                std::vector<adouble> rec = calc_rec(biol_counter, ucount, timestep);
+                for (unsigned int icount = 1; icount <= niter; ++icount){
+                    biols(biol_counter).n(1, year, ucount, season, area, icount) = rec[icount-1];
                 }
             }
         }
