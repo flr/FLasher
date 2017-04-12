@@ -12,14 +12,15 @@ import(FLFishery)
 exportClasses(
 	"fwdControl")
 exportMethods(
-	"[",
-	"[<-",
-	"fwdControl",
-  "propagate",
-	"show",
-	"target",
-	"target<-",
-  "iters",
-  "iters<-"
+    "[",
+    "[<-",
+    "fwdControl",
+    "propagate",
+    "show",
+    "target",
+    "target<-",
+    "iters",
+    "iters<-",
+    "draw"
 	)
 exportPattern("^[[:alpha:]]+")
