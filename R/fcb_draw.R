@@ -181,7 +181,7 @@ setClass("FCBDrawing",
 #'
 #' Used to draw individual components or the whole FCB matrix
 #'
-#' @param object The object
+#' @param object The object - link{basicBlock}, link{biolBlock}, link{fisheryBlock}, link{catchBlock}, link{matrix}, link{FCBDrawing}
 #' @return Nothing. Just draws something
 #' @aliases draw draw-method
 #' @rdname draw-FCB
@@ -191,7 +191,6 @@ setGeneric("draw", function(object){
 
 #' Method for drawing the basic block of the FCB matrix 
 #'
-#' @param object A \link{basicBlock} object
 #' @aliases draw-basicBlock
 #' @rdname draw-FCB
 setMethod("draw", signature(object="basicBlock"),
@@ -207,7 +206,6 @@ setMethod("draw", signature(object="basicBlock"),
 
 #' Method for drawing the biological block of the FCB matrix 
 #'
-#' @param object A \link{biolBlock} object
 #' @aliases draw-biolBlock
 #' @rdname draw-FCB
 setMethod("draw", signature(object="biolBlock"),
@@ -222,7 +220,6 @@ setMethod("draw", signature(object="biolBlock"),
 
 #' Method for drawing the fishery block of the FCB matrix 
 #'
-#' @param object A \link{fisheryBlock} object
 #' @aliases draw-fisheryBlock
 #' @rdname draw-FCB
 setMethod("draw", signature(object="fisheryBlock"),
@@ -247,7 +244,6 @@ setMethod("draw", signature(object="fisheryBlock"),
 
 #' Method for drawing the catch block of the FCB matrix 
 #'
-#' @param object A \link{catchBlock} object
 #' @aliases draw-catchBlock
 #' @rdname draw-FCB
 setMethod("draw", signature(object="catchBlock"),
@@ -260,7 +256,6 @@ setMethod("draw", signature(object="catchBlock"),
 
 #' Method for drawing the \link{FCBDrawing} object
 #'
-#' @param object A \link{FCBDrawing} object
 #' @aliases draw-FCBDrawing
 #' @rdname draw-FCB
 setMethod("draw", signature(object="FCBDrawing"),
@@ -276,7 +271,6 @@ setMethod("draw", signature(object="FCBDrawing"),
 
 #' Method for drawing the FCB matric
 #'
-#' @param object The FCB matrix
 #' @aliases draw-matrix
 #' @rdname draw-FCB
 #' @examples
@@ -290,7 +284,7 @@ setMethod("draw", signature(object="matrix"),
 
 #' Generic constructor for making an \link{FCBDrawing} object
 #'
-#' @param object The object
+#' @param FCB The (FCB \link{matrix})
 #' @return An \link{FCBDrawing} object
 #' @aliases FCBDrawing FCBDrawing-method
 #' @rdname FCBDrawing
@@ -301,7 +295,6 @@ setGeneric("FCBDrawing", function(FCB){
 #' Constructor for making an \link{FCBDrawing} object
 #'
 #' Has to figure out the height, width and positions of the FCB components
-#' @param object The FCB \link{matrix}
 #' @aliases FCBDrawing-matrix
 #' @rdname FCBDrawing
 setMethod("FCBDrawing", signature(FCB="matrix"),

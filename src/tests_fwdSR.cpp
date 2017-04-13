@@ -7,24 +7,41 @@
 
 /*-------------------------------------------------------*/
 
+//'@title Tests for CPP implementation of fwdSR
+//
+//' Leviathan
+//'@param model_name a parameter
+//'@param params something
+//'@param residuals something
+//'@param residuals_mult something
+//'@param srp something
+//'@param param_indices something
+//'@param initial_params_indices something
+//'@param unit something
+//'@param year something
+//'@param season something
+//'@rdname fwdSR-cpp-tests
 // [[Rcpp::export]]
 void test_fwdSR_empty_constructor(){
 	fwdSR flsr;
 	return;
 }
 
+//'@rdname fwdSR-cpp-tests
 // [[Rcpp::export]]
 fwdSR test_fwdSR_constructor_wrap(const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult){
     fwdSR fwdsr(model_name, params, residuals, residuals_mult);
     return fwdsr;
 }
 
+//'@rdname fwdSR-cpp-tests
 // [[Rcpp::export]]
 int test_fwdSR_get_nparams(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult){
     fwdSR fwdsr(model_name, params, residuals, residuals_mult);
     return fwdsr.get_nparams();
 }
 
+//'@rdname fwdSR-cpp-tests
 // [[Rcpp::export]]
 double test_fwdSR_eval(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const double srp, const std::vector<unsigned int> param_indices){
     fwdSR fwdsr(model_name, params, residuals, residuals_mult);
@@ -32,6 +49,7 @@ double test_fwdSR_eval(std::string model_name, const FLQuant params, const FLQua
     return rec;
 }
 
+//'@rdname fwdSR-cpp-tests
 // [[Rcpp::export]]
 std::vector<double> test_fwdSR_get_params(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const std::vector<unsigned int> param_indices){
     fwdSR fwdsr(model_name, params, residuals, residuals_mult);
@@ -39,6 +57,7 @@ std::vector<double> test_fwdSR_get_params(std::string model_name, const FLQuant 
     return params_out;
 }
 
+//'@rdname fwdSR-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_fwdSR_copy_constructor(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const double srp){
     fwdSR fwdsr1(model_name, params, residuals, residuals_mult);
@@ -51,6 +70,7 @@ Rcpp::List test_fwdSR_copy_constructor(std::string model_name, const FLQuant par
 				Rcpp::Named("rec2",rec2));
 }
 
+//'@rdname fwdSR-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_fwdSR_assignment_operator(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const double srp){
     fwdSR fwdsr1(model_name, params, residuals, residuals_mult);
@@ -64,7 +84,7 @@ Rcpp::List test_fwdSR_assignment_operator(std::string model_name, const FLQuant 
 				Rcpp::Named("rec2",rec2));
 }
 
-
+//'@rdname fwdSR-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_fwdSR_predict_recruitment(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const FLQuant srp, const std::vector<unsigned int> initial_params_indices){
     fwdSR fwdsr(model_name, params, residuals, residuals_mult);
@@ -72,7 +92,7 @@ FLQuant test_fwdSR_predict_recruitment(std::string model_name, const FLQuant par
     return rec;
 }
 
-
+//'@rdname fwdSR-cpp-tests
 // [[Rcpp::export]]
 bool test_fwdSR_does_recruitment_happen(const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, unsigned int unit, unsigned int year, unsigned int season){
     fwdSR fwsr(model_name, params, residuals, residuals_mult);

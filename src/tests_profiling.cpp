@@ -18,6 +18,12 @@
 
 //--------- Conditional --------
 
+//'@title Tests for profiling
+//
+//' Not needed
+//'@param indep a parameter
+//'
+//'@rdname profiling-cpp-tests
 // [[Rcpp::export]]
 std::vector<double> test_max3(std::vector<double> indep){
     std::vector<adouble> indep_ad(1, indep[0]);
@@ -41,6 +47,7 @@ std::vector<double> test_max3(std::vector<double> indep){
 }
 
 // More complicated
+//'@rdname profiling-cpp-tests
 // [[Rcpp::export]]
 std::vector<double> test_max2(std::vector<double> indep){
     std::vector<adouble> indep_ad(1, indep[0]);
@@ -72,6 +79,7 @@ std::vector<double> test_max2(std::vector<double> indep){
 }
 
 
+//'@rdname profiling-cpp-tests
 // [[Rcpp::export]]
 std::vector<double> test_max(std::vector<double> indep){
     std::vector<adouble> indep_ad(1, indep[0]);
@@ -103,6 +111,7 @@ std::vector<double> test_max(std::vector<double> indep){
 
 
 // indep has a length of 1
+//'@rdname profiling-cpp-tests
 // [[Rcpp::export]]
 std::vector<double> test_standard_conditional(std::vector<double> indep){
     std::vector<adouble> indep_ad(1, indep[0]);
@@ -139,6 +148,7 @@ std::vector<double> test_standard_conditional(std::vector<double> indep){
     return out;
 }
 
+//'@rdname profiling-cpp-tests
 // [[Rcpp::export]]
 std::vector<double> test_cppad_conditional(std::vector<double> indep){
     std::vector<adouble> indep_ad(1, indep[0]);
@@ -197,7 +207,6 @@ std::vector<double> test_cppad_conditional(std::vector<double> indep){
 
 //// NAs passed in as a std::vector or converted to std::vector using as<> (same thing) is NOT detected by Rcpp::IntegerVector::is_na()
 //// But an unsigned int created from an Rcpp::IntegerVector IS detected (weird)
-//// [[Rcpp::export]]
 //void test_integer_NA(const Rcpp::IntegerVector vec1, const std::vector<unsigned int> vec2){
 //
 //    Rprintf("Testing integers\n");
@@ -242,7 +251,6 @@ std::vector<double> test_cppad_conditional(std::vector<double> indep){
 //
 ////--------- biomass --------------
 //
-//// [[Rcpp::export]]
 //void fwdBiolAD_biomass_subset_speed(fwdBiolAD fwdb, const unsigned int year, const int unsigned season, const int rep){
 //    //Rcpp::IntegerVector raw_dims = fwdb.biomass().get_dim();
 //    std::vector<unsigned int> dims = fwdb.biomass().get_dim();
@@ -273,7 +281,6 @@ std::vector<double> test_cppad_conditional(std::vector<double> indep){
 //
 ////--------- catch_q --------------
 //
-//// [[Rcpp::export]]
 //void catch_q_speed(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> dim_min, const std::vector<unsigned int> dim_max , const int rep){
 //    fwdBiolsAD biols(flbs_list_sexp);
 //    operatingModel om(flfs, biols, ctrl);
@@ -298,7 +305,6 @@ std::vector<double> test_cppad_conditional(std::vector<double> indep){
 //}
 //
 ////---------------------- get f speed -------
-//// [[Rcpp::export]]
 //void get_f_speed(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const int rep){
 //    Rprintf("in get f speed\n");
 //    clock_t start, end;
@@ -341,7 +347,6 @@ std::vector<double> test_cppad_conditional(std::vector<double> indep){
 //
 ////---------------------- quant indices accessor-------
 //
-//// [[Rcpp::export]]
 //void test_quant_indices_speed(fwdBiol fwdb, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max, const int rep){
 //    clock_t start, end;
 //    FLQuant test;
@@ -363,13 +368,11 @@ std::vector<double> test_cppad_conditional(std::vector<double> indep){
 //
 ////---------------------- Remove all stuff below this line -------
 //
-//// [[Rcpp::export]]
 //int useAuto() {
 //    auto val = 42;		// val will be of type int
 //    return val;
 //}
 //
-//// [[Rcpp::export]]
 //std::vector<int> init_list() {
 //    //std::vector<int> out = {1,2,3,4};
 //    auto out = {1,2,3,4}; // genius
@@ -377,7 +380,6 @@ std::vector<double> test_cppad_conditional(std::vector<double> indep){
 //}
 //using namespace Rcpp;
 //
-//// [[Rcpp::export]]
 //NumericVector transformEx2(NumericVector x, NumericVector y) {
 //    NumericVector z(x.size());
 //    std::transform(x.begin(), x.end(), y.begin(), z.begin(), 
@@ -410,7 +412,6 @@ std::vector<double> test_cppad_conditional(std::vector<double> indep){
 //        std::vector<int> v;
 //};
 //
-//// [[Rcpp::export]]
 //void begin_test(std::vector<int> init){
 //    A a(init);
 //    for( auto it : a )

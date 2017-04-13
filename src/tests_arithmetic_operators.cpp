@@ -36,36 +36,53 @@
  * 6 of them
  */
 
+//'@title Tests for CPP implementation of FLR arithmetic operators
+//
+//' Surrounded by thieves
+//'@param flq1 a parameter
+//'@param flq2 something
+//'@param flqad1 something
+//'@param flqad2 something
+//'@param value something
+//'@param flq something
+//'@param flqad something
+//'@param val something
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_FLQuant_multiplier_assignment_operator(FLQuant flq1, FLQuant flq2){
     flq1 *= flq2;
     return flq1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuant_multiplier_assignment_operator(FLQuantAD flqad1, FLQuant flq2){
     flqad1 *= flq2;
     return flqad1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuantAD_multiplier_assignment_operator(FLQuantAD flqad1, FLQuantAD flqad2){
     flqad1 *= flqad2;
     return flqad1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_double_multiplier_assignment_operator(FLQuant flq1, double value){
     flq1 *= value;
     return flq1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_double_multiplier_assignment_operator(FLQuantAD flqad1, double value){
     flqad1 *= value;
     return flqad1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_adouble_multiplier_assignment_operator(FLQuantAD flqad1, double value){
     adouble ad_value = value;
@@ -74,6 +91,7 @@ FLQuantAD test_FLQuantAD_adouble_multiplier_assignment_operator(FLQuantAD flqad1
 }
 
 /* Doesn't compile; which is good as it isn't supposed to. Just checking understanding of the member method.
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_FLQuantAD_multiplier_assignment_operator(FLQuant flq1, FLQuantAD flqad2){
     flq1 *= flqad2;
@@ -85,12 +103,14 @@ FLQuant test_FLQuant_FLQuantAD_multiplier_assignment_operator(FLQuant flq1, FLQu
  * 12 of them
  */
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_FLQuant_multiplier_operator(FLQuant flq1, FLQuant flq2){
     FLQuant flq3 = flq1 * flq2;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuant_multiplier_operator(FLQuantAD flqad1, FLQuant flq2){
     FLQuantAD flqad3;
@@ -98,6 +118,7 @@ FLQuantAD test_FLQuantAD_FLQuant_multiplier_operator(FLQuantAD flqad1, FLQuant f
     return flqad3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuant_FLQuantAD_multiplier_operator(FLQuant flq1, FLQuantAD flqad2){
     FLQuantAD flqad3;
@@ -105,6 +126,7 @@ FLQuantAD test_FLQuant_FLQuantAD_multiplier_operator(FLQuant flq1, FLQuantAD flq
     return flqad3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuantAD_multiplier_operator(FLQuantAD flqad1, FLQuantAD flqad2){
     FLQuantAD flqad3;
@@ -112,24 +134,28 @@ FLQuantAD test_FLQuantAD_FLQuantAD_multiplier_operator(FLQuantAD flqad1, FLQuant
     return flqad3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_double_multiplier_operator(FLQuant flq1, double value){
     FLQuant flq3 = flq1 * value;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_double_FLQuant_multiplier_operator(double value, FLQuant flq1){
     FLQuant flq3 = value * flq1;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_double_FLQuantAD_multiplier_operator(double value, FLQuantAD flq1){
     FLQuantAD flq3 = value * flq1;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_double_multiplier_operator(FLQuantAD flq1, double value){
     FLQuantAD flq3;
@@ -137,6 +163,7 @@ FLQuantAD test_FLQuantAD_double_multiplier_operator(FLQuantAD flq1, double value
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuant_adouble_multiplier_operator(FLQuant flq1, double value){
     adouble ad_value = value;
@@ -144,6 +171,7 @@ FLQuantAD test_FLQuant_adouble_multiplier_operator(FLQuant flq1, double value){
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_adouble_FLQuant_multiplier_operator(double value, FLQuant flq1){
     adouble ad_value = value;
@@ -151,6 +179,7 @@ FLQuantAD test_adouble_FLQuant_multiplier_operator(double value, FLQuant flq1){
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_adouble_multiplier_operator(FLQuantAD flq1, double value){
     adouble ad_value = value;
@@ -158,6 +187,7 @@ FLQuantAD test_FLQuantAD_adouble_multiplier_operator(FLQuantAD flq1, double valu
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_adouble_FLQuantAD_multiplier_operator(double value, FLQuantAD flq1){
     adouble ad_value = value;
@@ -171,36 +201,42 @@ FLQuantAD test_adouble_FLQuantAD_multiplier_operator(double value, FLQuantAD flq
  * 6 of them
  */
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_FLQuant_division_assignment_operator(FLQuant flq1, FLQuant flq2){
     flq1 /= flq2;
     return flq1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuant_division_assignment_operator(FLQuantAD flqad1, FLQuant flq2){
     flqad1 /= flq2;
     return flqad1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuantAD_division_assignment_operator(FLQuantAD flqad1, FLQuantAD flqad2){
     flqad1 /= flqad2;
     return flqad1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_double_division_assignment_operator(FLQuant flq1, double value){
     flq1 /= value;
     return flq1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_double_division_assignment_operator(FLQuantAD flqad1, double value){
     flqad1 /= value;
     return flqad1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_adouble_division_assignment_operator(FLQuantAD flqad1, double value){
     adouble ad_value = value;
@@ -212,12 +248,14 @@ FLQuantAD test_FLQuantAD_adouble_division_assignment_operator(FLQuantAD flqad1, 
  * 12 of them
  */
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_FLQuant_division_operator(FLQuant flq1, FLQuant flq2){
     FLQuant flq3 = flq1 / flq2;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuant_division_operator(FLQuantAD flqad1, FLQuant flq2){
     FLQuantAD flqad3;
@@ -225,6 +263,7 @@ FLQuantAD test_FLQuantAD_FLQuant_division_operator(FLQuantAD flqad1, FLQuant flq
     return flqad3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuant_FLQuantAD_division_operator(FLQuant flq1, FLQuantAD flqad2){
     FLQuantAD flqad3;
@@ -232,6 +271,7 @@ FLQuantAD test_FLQuant_FLQuantAD_division_operator(FLQuant flq1, FLQuantAD flqad
     return flqad3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuantAD_division_operator(FLQuantAD flqad1, FLQuantAD flqad2){
     FLQuantAD flqad3;
@@ -239,30 +279,35 @@ FLQuantAD test_FLQuantAD_FLQuantAD_division_operator(FLQuantAD flqad1, FLQuantAD
     return flqad3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_double_division_operator(FLQuant flq1, double value){
     FLQuant flq3 = flq1 / value;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_double_FLQuant_division_operator(double value, FLQuant flq1){
     FLQuant flq3 = value / flq1;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_double_FLQuantAD_division_operator(double value, FLQuantAD flq1){
     FLQuantAD flq3 = value / flq1;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_double_division_operator(FLQuantAD flq1, double value){
     FLQuantAD flq3 = flq1 / value;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuant_adouble_division_operator(FLQuant flq1, double value){
     adouble ad_value = value;
@@ -270,6 +315,7 @@ FLQuantAD test_FLQuant_adouble_division_operator(FLQuant flq1, double value){
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_adouble_FLQuant_division_operator(double value, FLQuant flq1){
     adouble ad_value = value;
@@ -277,6 +323,7 @@ FLQuantAD test_adouble_FLQuant_division_operator(double value, FLQuant flq1){
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_adouble_division_operator(FLQuantAD flq1, double value){
     adouble ad_value = value;
@@ -284,6 +331,7 @@ FLQuantAD test_FLQuantAD_adouble_division_operator(FLQuantAD flq1, double value)
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_adouble_FLQuantAD_division_operator(double value, FLQuantAD flq1){
     adouble ad_value = value;
@@ -297,36 +345,42 @@ FLQuantAD test_adouble_FLQuantAD_division_operator(double value, FLQuantAD flq1)
  * 6 of them
  */
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_FLQuant_subtraction_assignment_operator(FLQuant flq1, FLQuant flq2){
     flq1 -= flq2;
     return flq1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuant_subtraction_assignment_operator(FLQuantAD flqad1, FLQuant flq2){
     flqad1 -= flq2;
     return flqad1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuantAD_subtraction_assignment_operator(FLQuantAD flqad1, FLQuantAD flqad2){
     flqad1 -= flqad2;
     return flqad1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_double_subtraction_assignment_operator(FLQuant flq1, double value){
     flq1 -= value;
     return flq1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_double_subtraction_assignment_operator(FLQuantAD flqad1, double value){
     flqad1 -= value;
     return flqad1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_adouble_subtraction_assignment_operator(FLQuantAD flqad1, double value){
     adouble ad_value = value;
@@ -338,12 +392,14 @@ FLQuantAD test_FLQuantAD_adouble_subtraction_assignment_operator(FLQuantAD flqad
  * 12 of them
  */
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_FLQuant_subtraction_operator(FLQuant flq1, FLQuant flq2){
     FLQuant flq3 = flq1 - flq2;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuant_subtraction_operator(FLQuantAD flqad1, FLQuant flq2){
     FLQuantAD flqad3;
@@ -351,6 +407,7 @@ FLQuantAD test_FLQuantAD_FLQuant_subtraction_operator(FLQuantAD flqad1, FLQuant 
     return flqad3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuant_FLQuantAD_subtraction_operator(FLQuant flq1, FLQuantAD flqad2){
     FLQuantAD flqad3;
@@ -358,6 +415,7 @@ FLQuantAD test_FLQuant_FLQuantAD_subtraction_operator(FLQuant flq1, FLQuantAD fl
     return flqad3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuantAD_subtraction_operator(FLQuantAD flqad1, FLQuantAD flqad2){
     FLQuantAD flqad3;
@@ -365,30 +423,35 @@ FLQuantAD test_FLQuantAD_FLQuantAD_subtraction_operator(FLQuantAD flqad1, FLQuan
     return flqad3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_double_subtraction_operator(FLQuant flq1, double value){
     FLQuant flq3 = flq1 - value;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_double_FLQuant_subtraction_operator(double value, FLQuant flq1){
     FLQuant flq3 = value - flq1;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_double_FLQuantAD_subtraction_operator(double value, FLQuantAD flq1){
     FLQuantAD flq3 = value - flq1;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_double_subtraction_operator(FLQuantAD flq1, double value){
     FLQuantAD flq3 = flq1 - value;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuant_adouble_subtraction_operator(FLQuant flq1, double value){
     adouble ad_value = value;
@@ -396,6 +459,7 @@ FLQuantAD test_FLQuant_adouble_subtraction_operator(FLQuant flq1, double value){
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_adouble_FLQuant_subtraction_operator(double value, FLQuant flq1){
     adouble ad_value = value;
@@ -403,6 +467,7 @@ FLQuantAD test_adouble_FLQuant_subtraction_operator(double value, FLQuant flq1){
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_adouble_subtraction_operator(FLQuantAD flq1, double value){
     adouble ad_value = value;
@@ -410,6 +475,7 @@ FLQuantAD test_FLQuantAD_adouble_subtraction_operator(FLQuantAD flq1, double val
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_adouble_FLQuantAD_subtraction_operator(double value, FLQuantAD flq1){
     adouble ad_value = value;
@@ -423,36 +489,42 @@ FLQuantAD test_adouble_FLQuantAD_subtraction_operator(double value, FLQuantAD fl
  * 6 of them
  */
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_FLQuant_addition_assignment_operator(FLQuant flq1, FLQuant flq2){
     flq1 += flq2;
     return flq1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuant_addition_assignment_operator(FLQuantAD flqad1, FLQuant flq2){
     flqad1 += flq2;
     return flqad1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuantAD_addition_assignment_operator(FLQuantAD flqad1, FLQuantAD flqad2){
     flqad1 += flqad2;
     return flqad1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_double_addition_assignment_operator(FLQuant flq1, double value){
     flq1 += value;
     return flq1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_double_addition_assignment_operator(FLQuantAD flqad1, double value){
     flqad1 += value;
     return flqad1;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_adouble_addition_assignment_operator(FLQuantAD flqad1, double value){
     adouble ad_value = value;
@@ -464,12 +536,14 @@ FLQuantAD test_FLQuantAD_adouble_addition_assignment_operator(FLQuantAD flqad1, 
  * 12 of them
  */
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_FLQuant_addition_operator(FLQuant flq1, FLQuant flq2){
     FLQuant flq3 = flq1 + flq2;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuant_addition_operator(FLQuantAD flqad1, FLQuant flq2){
     FLQuantAD flqad3;
@@ -477,6 +551,7 @@ FLQuantAD test_FLQuantAD_FLQuant_addition_operator(FLQuantAD flqad1, FLQuant flq
     return flqad3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuant_FLQuantAD_addition_operator(FLQuant flq1, FLQuantAD flqad2){
     FLQuantAD flqad3;
@@ -484,6 +559,7 @@ FLQuantAD test_FLQuant_FLQuantAD_addition_operator(FLQuant flq1, FLQuantAD flqad
     return flqad3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_FLQuantAD_addition_operator(FLQuantAD flqad1, FLQuantAD flqad2){
     FLQuantAD flqad3;
@@ -491,24 +567,28 @@ FLQuantAD test_FLQuantAD_FLQuantAD_addition_operator(FLQuantAD flqad1, FLQuantAD
     return flqad3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_double_addition_operator(FLQuant flq1, double value){
     FLQuant flq3 = flq1 + value;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_double_FLQuant_addition_operator(double value, FLQuant flq1){
     FLQuant flq3 = value + flq1;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_double_FLQuantAD_addition_operator(double value, FLQuantAD flq1){
     FLQuantAD flq3 = value + flq1;
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_double_addition_operator(FLQuantAD flq1, double value){
     FLQuantAD flq3;
@@ -516,6 +596,7 @@ FLQuantAD test_FLQuantAD_double_addition_operator(FLQuantAD flq1, double value){
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuant_adouble_addition_operator(FLQuant flq1, double value){
     adouble ad_value = value;
@@ -523,6 +604,7 @@ FLQuantAD test_FLQuant_adouble_addition_operator(FLQuant flq1, double value){
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_adouble_FLQuant_addition_operator(double value, FLQuant flq1){
     adouble ad_value = value;
@@ -530,6 +612,7 @@ FLQuantAD test_adouble_FLQuant_addition_operator(double value, FLQuant flq1){
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_adouble_addition_operator(FLQuantAD flq1, double value){
     adouble ad_value = value;
@@ -537,6 +620,7 @@ FLQuantAD test_FLQuantAD_adouble_addition_operator(FLQuantAD flq1, double value)
     return flq3;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_adouble_FLQuantAD_addition_operator(double value, FLQuantAD flq1){
     adouble ad_value = value;
@@ -546,24 +630,28 @@ FLQuantAD test_adouble_FLQuantAD_addition_operator(double value, FLQuantAD flq1)
 
 //--------- log and exp functions ----------------------
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_log(FLQuant flq){
     FLQuant flq_out = log(flq);
     return flq_out;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_log(FLQuantAD flq){
     FLQuantAD flq_out = log(flq);
     return flq_out;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_exp(FLQuant flq){
     FLQuant flq_out = exp(flq);
     return flq_out;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_exp(FLQuantAD flq){
     FLQuantAD flq_out = exp(flq);
@@ -574,6 +662,7 @@ FLQuantAD test_FLQuantAD_exp(FLQuantAD flq){
 //----------- Composite tests -----------------
 // Can we string all these together?
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_composite_arithmetic_operators(FLQuantAD flqad, FLQuant flq, double value){
     FLQuantAD flqad_out;
@@ -584,12 +673,14 @@ FLQuantAD test_composite_arithmetic_operators(FLQuantAD flqad, FLQuant flq, doub
 //------------- Other mathematical functions ------------------
 
 // quant_sum
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_quant_sum(FLQuant flq){
     FLQuant flq_out = quant_sum(flq);
     return flq_out;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_quant_sum(FLQuantAD flq){
     FLQuantAD flq_out = quant_sum(flq);
@@ -597,12 +688,14 @@ FLQuantAD test_FLQuantAD_quant_sum(FLQuantAD flq){
 }
 
 // quant_mean
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_quant_mean(FLQuant flq){
     FLQuant flq_out = quant_mean(flq);
     return flq_out;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_quant_mean(FLQuantAD flq){
     FLQuantAD flq_out = quant_mean(flq);
@@ -610,12 +703,14 @@ FLQuantAD test_FLQuantAD_quant_mean(FLQuantAD flq){
 }
 
 // max_quant
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_max_quant(FLQuant flq){
     FLQuant flq_out = max_quant(flq);
     return flq_out;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_max_quant(FLQuantAD flq){
     FLQuantAD flq_out = max_quant(flq);
@@ -623,18 +718,21 @@ FLQuantAD test_FLQuantAD_max_quant(FLQuantAD flq){
 }
 
 // max_quant
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLQuant_scale_by_max_quant(FLQuant flq){
     FLQuant flq_out = scale_by_max_quant(flq);
     return flq_out;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_scale_by_max_quant(FLQuantAD flq){
     FLQuantAD flq_out = scale_by_max_quant(flq);
     return flq_out;
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_unit_sum(FLQuantAD flq){
     FLQuantAD flq_out = unit_sum(flq);
@@ -644,94 +742,112 @@ FLQuantAD test_FLQuantAD_unit_sum(FLQuantAD flq){
 //-------------------------------
 // Sweep
 // Mult
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_sweep_multADAD(FLQuantAD flq1, FLQuantAD flq2){
     return sweep_mult(flq1, flq2);
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_sweep_multDD(FLQuant flq1, FLQuant flq2){
     return sweep_mult(flq1, flq2);
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_sweep_multADD(FLQuantAD flq1, FLQuant flq2){
     return sweep_mult(flq1, flq2);
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_sweep_multDAD(FLQuant flq1, FLQuantAD flq2){
     return sweep_mult(flq1, flq2);
 }
 
 // Div
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_sweep_divADAD(FLQuantAD flq1, FLQuantAD flq2){
     return sweep_div(flq1, flq2);
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_sweep_divDD(FLQuant flq1, FLQuant flq2){
     return sweep_div(flq1, flq2);
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_sweep_divADD(FLQuantAD flq1, FLQuant flq2){
     return sweep_div(flq1, flq2);
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_sweep_divDAD(FLQuant flq1, FLQuantAD flq2){
     return sweep_div(flq1, flq2);
 }
 
 // Plus
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_sweep_plusADAD(FLQuantAD flq1, FLQuantAD flq2){
     return sweep_plus(flq1, flq2);
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_sweep_plusDD(FLQuant flq1, FLQuant flq2){
     return sweep_plus(flq1, flq2);
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_sweep_plusADD(FLQuantAD flq1, FLQuant flq2){
     return sweep_plus(flq1, flq2);
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_sweep_plusDAD(FLQuant flq1, FLQuantAD flq2){
     return sweep_plus(flq1, flq2);
 }
 
 // Minus
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_sweep_minusADAD(FLQuantAD flq1, FLQuantAD flq2){
     return sweep_minus(flq1, flq2);
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_sweep_minusDD(FLQuant flq1, FLQuant flq2){
     return sweep_minus(flq1, flq2);
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_sweep_minusADD(FLQuantAD flq1, FLQuant flq2){
     return sweep_minus(flq1, flq2);
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_sweep_minusDAD(FLQuant flq1, FLQuantAD flq2){
     return sweep_minus(flq1, flq2);
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 bool test_int_is_na(int val){
     return Rcpp::IntegerVector::is_na(val);
 }
 
+//'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 bool test_double_is_na(double val){
     return Rcpp::NumericVector::is_na(val);

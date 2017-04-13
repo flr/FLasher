@@ -2,41 +2,72 @@
  * Copyright 2014 FLR Team. Distributed under the GPL 2 or later
  * Maintainer: Finlay Scott, JRC
  */
-
+// @// \[\[Rcpp::export]]@//'\@rdname FLFishery-cpp-tests\r// \[\[Rcpp::export]]@g 
 #include "../../inst/include/FLFishery.h"
 
 /*-------------------------------------------------------*/
 // double
 
+//'@title Tests for CPP implementation of FLFishery and FLFisheries
+//
+//' Shit tonnes of them!
+//'
+//'@param flf_sexp something
+//'@param flf something
+//'@param flf1 something
+//'@param catches something
+//'@param quant something
+//'@param year something
+//'@param unit something
+//'@param season something
+//'@param area something
+//'@param iter something
+//'@param value something
+//'@param indices_min something
+//'@param indices_max something
+//'@param element something
+//'@param fishery something
+//'@param flfs_sexp1 something
+//'@param flfs something
+//'@param flfs1 something
+//'@param indices something
+//'@param fisheries something
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 void test_FLFishery_empty_constructor(){
     FLFishery flf;
     return;
 }
 
+//'@rdname FLFishery-cpp-tests
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 int test_simple_FLFishery_sexp_constructor(SEXP flf_sexp){
     FLFishery flf(flf_sexp);
 	return 0;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFishery test_FLFishery_sexp_constructor(SEXP flf_sexp){
 	FLFishery flf(flf_sexp);
 	return flf;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFishery test_FLFishery_as_wrap(FLFishery flf){
 	return flf;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFishery test_FLFishery_copy_constructor(FLFishery flf1){
 	FLFishery flf2(flf1); // uses copy constructor
     return flf2;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFishery test_FLFishery_assignment_operator(FLFishery flf1){
 	FLFishery flf2;
@@ -44,6 +75,7 @@ FLFishery test_FLFishery_assignment_operator(FLFishery flf1){
     return flf2;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::NumericVector test_FLFishery_const_catches_get_accessors(const FLFishery flf, int catches, int quant, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(13);
@@ -66,6 +98,7 @@ Rcpp::NumericVector test_FLFishery_const_catches_get_accessors(const FLFishery f
     return out;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::NumericVector test_FLFishery_catches_get_accessors(FLFishery flf, int catches, int quant, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(13);
@@ -88,6 +121,7 @@ Rcpp::NumericVector test_FLFishery_catches_get_accessors(FLFishery flf, int catc
     return out;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::NumericVector test_FLFishery_const_economics_get_accessors(const FLFishery flf, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(3);
@@ -97,32 +131,38 @@ Rcpp::NumericVector test_FLFishery_const_economics_get_accessors(const FLFishery
     return out;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 double test_FLFishery_const_get_hperiod(const FLFishery flf, int quant, int year, int unit, int season, int area, int iter){
     return flf.hperiod()(quant, year, unit, season, area, iter);
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 double test_FLFishery_get_hperiod(FLFishery flf, int quant, int year, int unit, int season, int area, int iter){
     return flf.hperiod()(quant, year, unit, season, area, iter);
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLFishery_set_hperiod(FLFishery flf, int quant, int year, int unit, int season, int area, int iter, double value){
     flf.hperiod()(quant, year, unit, season, area, iter) = value;
     return flf.hperiod();
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLFishery_get_effort_subset(const FLFishery flf, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
     return flf.effort(indices_min, indices_max);
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLFishery_get_effort(const FLFishery flf){
     return flf.effort();
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::NumericVector test_FLFishery_economics_get_accessors(FLFishery flf, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(3);
@@ -132,6 +172,7 @@ Rcpp::NumericVector test_FLFishery_economics_get_accessors(FLFishery flf, int ye
     return out;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFishery test_FLFishery_set_accessors(FLFishery flf, int catches, int quant, int year, int unit, int season, int area, int iter, double value){
     // catch members
@@ -150,6 +191,7 @@ FLFishery test_FLFishery_set_accessors(FLFishery flf, int catches, int quant, in
 
 
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFishery_copy_constructor2(FLFishery flf1, int element, int quant, int year, int unit, int season, int area, int iter, double value){
 	FLFishery flf2(flf1); // uses copy constructor
@@ -158,6 +200,7 @@ Rcpp::List test_FLFishery_copy_constructor2(FLFishery flf1, int element, int qua
 				Rcpp::Named("flf2",flf2));
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFishery_assignment_operator2(FLFishery flf1, int element, int quant, int year, int unit, int season, int area, int iter, double value){
 	FLFishery flf2;
@@ -170,35 +213,41 @@ Rcpp::List test_FLFishery_assignment_operator2(FLFishery flf1, int element, int 
 /*-------------------------------------------------------*/
 // adouble
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 void test_FLFisheryAD_empty_constructor(){
     FLFisheryAD flf;
     return;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 int test_simple_FLFisheryAD_sexp_constructor(SEXP flf_sexp){
     FLFisheryAD flf(flf_sexp);
 	return 0;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheryAD test_FLFisheryAD_sexp_constructor(SEXP flf_sexp){
 	FLFisheryAD flf(flf_sexp);
 	return flf;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheryAD test_FLFisheryAD_as_wrap(FLFisheryAD flf){
 	return flf;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheryAD test_FLFisheryAD_copy_constructor(FLFisheryAD flf1){
 	FLFisheryAD flf2(flf1); // uses copy constructor
     return flf2;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheryAD test_FLFisheryAD_assignment_operator(FLFisheryAD flf1){
 	FLFisheryAD flf2;
@@ -206,6 +255,7 @@ FLFisheryAD test_FLFisheryAD_assignment_operator(FLFisheryAD flf1){
     return flf2;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::NumericVector test_FLFisheryAD_const_catches_get_accessors(const FLFisheryAD flf, int catches, int quant, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(13);
@@ -227,6 +277,7 @@ Rcpp::NumericVector test_FLFisheryAD_const_catches_get_accessors(const FLFishery
     return out;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::NumericVector test_FLFisheryAD_catches_get_accessors(FLFisheryAD flf, int catches, int quant, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(13);
@@ -248,6 +299,7 @@ Rcpp::NumericVector test_FLFisheryAD_catches_get_accessors(FLFisheryAD flf, int 
     return out;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::NumericVector test_FLFisheryAD_const_economics_get_accessors(const FLFisheryAD flf, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(3);
@@ -257,6 +309,7 @@ Rcpp::NumericVector test_FLFisheryAD_const_economics_get_accessors(const FLFishe
     return out;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::NumericVector test_FLFisheryAD_economics_get_accessors(FLFisheryAD flf, int year, int unit, int season, int area, int iter){
     Rcpp::NumericVector out(3);
@@ -266,6 +319,7 @@ Rcpp::NumericVector test_FLFisheryAD_economics_get_accessors(FLFisheryAD flf, in
     return out;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheryAD test_FLFisheryAD_set_accessors(FLFisheryAD flf, int catches, int quant, int year, int unit, int season, int area, int iter, double value){
     adouble ad_value = value;
@@ -283,6 +337,7 @@ FLFisheryAD test_FLFisheryAD_set_accessors(FLFisheryAD flf, int catches, int qua
     return flf;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheryAD_copy_constructor2(FLFisheryAD flf1, int element, int quant, int year, int unit, int season, int area, int iter, double value){
     adouble ad_value = value;
@@ -292,6 +347,7 @@ Rcpp::List test_FLFisheryAD_copy_constructor2(FLFisheryAD flf1, int element, int
 				Rcpp::Named("flf2",flf2));
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheryAD_assignment_operator2(FLFisheryAD flf1, int element, int quant, int year, int unit, int season, int area, int iter, double value){
     adouble ad_value = value;
@@ -303,6 +359,7 @@ Rcpp::List test_FLFisheryAD_assignment_operator2(FLFisheryAD flf1, int element, 
 }
 
 // iterators
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheryAD_const_iterator(const FLFisheryAD fishery){
     Rcpp::List out;
@@ -312,6 +369,7 @@ Rcpp::List test_FLFisheryAD_const_iterator(const FLFisheryAD fishery){
     return out;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheryAD test_FLFisheryAD_iterator(FLFisheryAD fishery, int quant, int year, int unit, int season, int area, int iter, double value){
     for (auto& flcatch : fishery){
@@ -323,23 +381,27 @@ FLFisheryAD test_FLFisheryAD_iterator(FLFisheryAD fishery, int quant, int year, 
 //---------------------------------------------------------------------------------------
 // FLFisheries - double
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheries test_FLFisheries_sexp_constructor(SEXP flfs_sexp1){
 	FLFisheries flfs(flfs_sexp1);
 	return flfs;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheries test_FLFisheries_as_wrap(FLFisheries flfs){
     return flfs;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 int test_FLFisheries_get_nfisheries(FLFisheries flfs){
     int length = flfs.get_nfisheries();
 	return length;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheries test_FLFisheries_copy_constructor(FLFisheries flfs){
     FLFisheries out(flfs);
@@ -347,6 +409,7 @@ FLFisheries test_FLFisheries_copy_constructor(FLFisheries flfs){
 }
 
 // Checking that a deep copy has been made
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheries_copy_constructor2(FLFisheries flfs1, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value){
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
@@ -356,6 +419,7 @@ Rcpp::List test_FLFisheries_copy_constructor2(FLFisheries flfs1, const int fishe
                             Rcpp::Named("flfs2",flfs2));
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheries test_FLFisheries_assignment_operator(FLFisheries flfs){
     FLFisheries out;
@@ -364,6 +428,7 @@ FLFisheries test_FLFisheries_assignment_operator(FLFisheries flfs){
 }
 
 // Checking that a deep copy has been made
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheries_assignment_operator2(FLFisheries flfs1, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value){
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
@@ -375,6 +440,7 @@ Rcpp::List test_FLFisheries_assignment_operator2(FLFisheries flfs1, const int fi
 }
 
 // Const get everything
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheries_const_get_single(const FLFisheries flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices){
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
@@ -389,6 +455,7 @@ Rcpp::List test_FLFisheries_const_get_single(const FLFisheries flfs, const int f
 }
 
 // get everything
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheries_get_single(FLFisheries flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices){
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
@@ -403,6 +470,7 @@ Rcpp::List test_FLFisheries_get_single(FLFisheries flfs, const int fishery, cons
             Rcpp::Named("value", value));
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheries_const_get_double(const FLFisheries flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices){
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
@@ -416,6 +484,7 @@ Rcpp::List test_FLFisheries_const_get_double(const FLFisheries flfs, const int f
             Rcpp::Named("value", value));
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheries_get_double(FLFisheries flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices){
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
@@ -429,6 +498,7 @@ Rcpp::List test_FLFisheries_get_double(FLFisheries flfs, const int fishery, cons
             Rcpp::Named("value", value));
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheries test_FLFisheries_set_single(FLFisheries flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value){
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
@@ -436,6 +506,7 @@ FLFisheries test_FLFisheries_set_single(FLFisheries flfs, const int fishery, con
     return flfs;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheries test_FLFisheries_set_double(FLFisheries flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value){
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
@@ -443,11 +514,13 @@ FLFisheries test_FLFisheries_set_double(FLFisheries flfs, const int fishery, con
     return flfs;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLFishery_revenue(const FLFishery flf){
     return flf.revenue();
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLQuant test_FLFishery_revenue_subset(const FLFishery flf, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
     return flf.revenue(indices_min, indices_max);
@@ -456,23 +529,27 @@ FLQuant test_FLFishery_revenue_subset(const FLFishery flf, const std::vector<uns
 //---------------------------------------------------------------------------
 // FLFisheries - adouble
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheriesAD test_FLFisheriesAD_sexp_constructor(SEXP flfs_sexp1){
 	FLFisheriesAD flfs(flfs_sexp1);
 	return flfs;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheriesAD test_FLFisheriesAD_as_wrap(FLFisheriesAD flfs){
     return flfs;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 int test_FLFisheriesAD_get_nfisheries(FLFisheriesAD flfs){
     int length = flfs.get_nfisheries();
 	return length;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheriesAD test_FLFisheriesAD_copy_constructor(FLFisheriesAD flfs){
     FLFisheriesAD out(flfs);
@@ -480,6 +557,7 @@ FLFisheriesAD test_FLFisheriesAD_copy_constructor(FLFisheriesAD flfs){
 }
 
 // Checking that a deep copy has been made
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheriesAD_copy_constructor2(FLFisheriesAD flfs1, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value){
     adouble ad_value = value;
@@ -490,6 +568,7 @@ Rcpp::List test_FLFisheriesAD_copy_constructor2(FLFisheriesAD flfs1, const int f
                             Rcpp::Named("flfs2",flfs2));
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheriesAD test_FLFisheriesAD_assignment_operator(FLFisheriesAD flfs){
     FLFisheriesAD out;
@@ -498,6 +577,7 @@ FLFisheriesAD test_FLFisheriesAD_assignment_operator(FLFisheriesAD flfs){
 }
 
 // Checking that a deep copy has been made
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheriesAD_assignment_operator2(FLFisheriesAD flfs1, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value){
     adouble ad_value = value;
@@ -510,6 +590,7 @@ Rcpp::List test_FLFisheriesAD_assignment_operator2(FLFisheriesAD flfs1, const in
 }
 
 // Const get everything
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheriesAD_const_get_single(const FLFisheriesAD flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices){
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
@@ -525,6 +606,7 @@ Rcpp::List test_FLFisheriesAD_const_get_single(const FLFisheriesAD flfs, const i
 }
 
 // get everything
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheriesAD_get_single(FLFisheriesAD flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices){
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
@@ -539,6 +621,7 @@ Rcpp::List test_FLFisheriesAD_get_single(FLFisheriesAD flfs, const int fishery, 
             Rcpp::Named("value", value));
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheriesAD_const_get_double(const FLFisheriesAD flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices){
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
@@ -553,6 +636,7 @@ Rcpp::List test_FLFisheriesAD_const_get_double(const FLFisheriesAD flfs, const i
             Rcpp::Named("value", value));
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheriesAD_get_double(FLFisheriesAD flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices){
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
@@ -567,6 +651,7 @@ Rcpp::List test_FLFisheriesAD_get_double(FLFisheriesAD flfs, const int fishery, 
             Rcpp::Named("value", value));
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheriesAD test_FLFisheriesAD_set_single(FLFisheriesAD flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value){
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
@@ -574,6 +659,7 @@ FLFisheriesAD test_FLFisheriesAD_set_single(FLFisheriesAD flfs, const int fisher
     return flfs;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheriesAD test_FLFisheriesAD_set_double(FLFisheriesAD flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value){
     std::vector<int> std_indices = Rcpp::as<std::vector<int> > (indices);
@@ -582,6 +668,7 @@ FLFisheriesAD test_FLFisheriesAD_set_double(FLFisheriesAD flfs, const int fisher
 }
 
 // iterators
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLFisheriesAD_const_iterator(const FLFisheriesAD fisheries){
     Rcpp::List out;
@@ -591,6 +678,7 @@ Rcpp::List test_FLFisheriesAD_const_iterator(const FLFisheriesAD fisheries){
     return out;
 }
 
+//'@rdname FLFishery-cpp-tests
 // [[Rcpp::export]]
 FLFisheriesAD test_FLFisheriesAD_iterator(FLFisheriesAD fisheries, double value){
     for (auto& fishery : fisheries){

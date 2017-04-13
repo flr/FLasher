@@ -7,29 +7,35 @@
 
 // CppAD (QUANT) constructor
 
+
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_as_wrap(FLQuantAD flq){
 	return flq;
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 void test_FLQuantAD_basic_constructor(){
     FLQuantAD flq;
     return;
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_sexp_constructor(SEXP flq_sexp){
 	FLQuantAD flq(flq_sexp);
 	return flq;
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_dim_constructor(int nquant, int nyear, int nunit, int nseason, int narea, int niter){
     FLQuantAD flq(nquant, nyear, nunit, nseason, narea, niter);
     return flq;
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_copy_constructor(FLQuantAD flq){
     FLQuantAD out(flq);
@@ -37,6 +43,7 @@ FLQuantAD test_FLQuantAD_copy_constructor(FLQuantAD flq){
 }
 
 // Checking that a deep copy has been made
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLQuantAD_copy_constructor2(FLQuantAD flq1, int quant, int year, int unit, int season, int area, int iter, double value){
 	FLQuantAD flq2(flq1); 
@@ -46,6 +53,7 @@ Rcpp::List test_FLQuantAD_copy_constructor2(FLQuantAD flq1, int quant, int year,
                             Rcpp::Named("flq2",flq2));
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_assignment_operator(FLQuantAD flq){
     FLQuantAD out;
@@ -54,6 +62,7 @@ FLQuantAD test_FLQuantAD_assignment_operator(FLQuantAD flq){
 }
 
 // Checking that a deep copy has been made
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLQuantAD_assignment_operator2(FLQuantAD flq1, int quant, int year, int unit, int season, int area, int iter, double value){
 	FLQuantAD flq2;
@@ -64,6 +73,7 @@ Rcpp::List test_FLQuantAD_assignment_operator2(FLQuantAD flq1, int quant, int ye
 				Rcpp::Named("flq2",flq2));
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_from_FLQuant_constructor(FLQuant flq){
     FLQuantAD flqad(flq);
@@ -72,51 +82,61 @@ FLQuantAD test_FLQuantAD_from_FLQuant_constructor(FLQuant flq){
 
 //------------------ Accessors ----------------------
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 std::string test_FLQuantAD_get_units(FLQuantAD flq){
 	return flq.get_units();
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 std::vector<unsigned int> test_FLQuantAD_get_dim(FLQuantAD flq){
 	return flq.get_dim();
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_FLQuantAD_get_dimnames(FLQuantAD flq){
 	return flq.get_dimnames();
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 int test_FLQuantAD_get_size(FLQuantAD flq){
 	return flq.get_size();
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 int test_FLQuantAD_get_nquant(FLQuantAD flq){
 	return flq.get_nquant();
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 int test_FLQuantAD_get_nyear(FLQuantAD flq){
 	return flq.get_nyear();
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 int test_FLQuantAD_get_nunit(FLQuantAD flq){
 	return flq.get_nunit();
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 int test_FLQuantAD_get_nseason(FLQuantAD flq){
 	return flq.get_nseason();
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 int test_FLQuantAD_get_narea(FLQuantAD flq){
 	return flq.get_narea();
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 int test_FLQuantAD_get_niter(FLQuantAD flq){
 	return flq.get_niter();
@@ -124,6 +144,7 @@ int test_FLQuantAD_get_niter(FLQuantAD flq){
 
 //---------- () accessors -----------------
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 int test_FLQuantAD_get_data_element(const FLQuantAD flq, int quant, int year, int unit, int season, int area, int iter){
 	int out = 0;
@@ -131,6 +152,7 @@ int test_FLQuantAD_get_data_element(const FLQuantAD flq, int quant, int year, in
 	return out;
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 double test_FLQuantAD_get_const_single_index_accessor(const FLQuantAD flq, const int element){
 	adouble output = 0.0;
@@ -138,6 +160,7 @@ double test_FLQuantAD_get_const_single_index_accessor(const FLQuantAD flq, const
 	return Value(output);
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 double test_FLQuantAD_get_single_index_accessor(FLQuantAD flq, int element){
 	adouble output = 0.0;
@@ -145,6 +168,7 @@ double test_FLQuantAD_get_single_index_accessor(FLQuantAD flq, int element){
 	return Value(output);
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_set_single_index_accessor(FLQuantAD flq, int element, double value){
     adouble ad_value = value;
@@ -152,6 +176,7 @@ FLQuantAD test_FLQuantAD_set_single_index_accessor(FLQuantAD flq, int element, d
     return flq;
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 double test_FLQuantAD_const_get_accessor(const FLQuantAD flq, int quant, int year, int unit, int season, int area, int iter){
 	adouble output = 0.0;
@@ -159,6 +184,7 @@ double test_FLQuantAD_const_get_accessor(const FLQuantAD flq, int quant, int yea
 	return Value(output);
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 double test_FLQuantAD_get_accessor(FLQuantAD flq, int quant, int year, int unit, int season, int area, int iter){
 	adouble output = 0.0;
@@ -166,6 +192,7 @@ double test_FLQuantAD_get_accessor(FLQuantAD flq, int quant, int year, int unit,
 	return Value(output);
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_set_accessor(FLQuantAD flq, int quant, int year, int unit, int season, int area, int iter, double value){
     adouble ad_value = value;
@@ -173,16 +200,19 @@ FLQuantAD test_FLQuantAD_set_accessor(FLQuantAD flq, int quant, int year, int un
 	return flq;
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 double test_FLQuantAD_get_const_indices_accessor(const FLQuantAD flq, std::vector<unsigned int> indices){
 	return Value(flq(indices));
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 double test_FLQuantAD_get_indices_accessor(FLQuantAD flq, std::vector<unsigned int> indices){
 	return Value(flq(indices));
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_set_indices_accessor(FLQuantAD flq, std::vector<unsigned int> indices, double value){
     adouble ad_value = value;
@@ -191,6 +221,7 @@ FLQuantAD test_FLQuantAD_set_indices_accessor(FLQuantAD flq, std::vector<unsigne
 }
 //------------ Set methods -------------------------
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_set_dimnames(FLQuantAD flq, Rcpp::List new_dimnames){
     flq.set_dimnames(new_dimnames);
@@ -198,21 +229,25 @@ FLQuantAD test_FLQuantAD_set_dimnames(FLQuantAD flq, Rcpp::List new_dimnames){
 }
 
 //------------------ Others --------------------------------------
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 int test_FLQuantAD_FLQuantAD_match_dims(FLQuantAD flq1, FLQuantAD flq2){
     return flq1.match_dims(flq2);
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 int test_FLQuantAD_FLQuant_match_dims(FLQuantAD flq1, FLQuant flq2){
     return flq1.match_dims(flq2);
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 int test_FLQuant_FLQuantAD_match_dims(FLQuant flq1, FLQuantAD flq2){
     return flq1.match_dims(flq2);
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_fill(FLQuantAD flq, const double value) {
     adouble value_ad = value;
@@ -220,6 +255,7 @@ FLQuantAD test_FLQuantAD_fill(FLQuantAD flq, const double value) {
     return flq;
 }
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_fill_double(FLQuantAD flq, const double value) {
     flq.fill(value);

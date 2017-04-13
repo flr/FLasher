@@ -17,6 +17,17 @@ double test_euclid_norm(std::vector<double> xvec){
 
 // Multiple 1D quadratics solved independently but at the same time: a1 * x^2 + a2 * x + a3
 // Not simultaneous equations
+
+//'@title Tests for the CPP NR solver
+//
+//' Glamrock cops
+//'@param coefs a parameter
+//'@param initial_value something
+//'@param max_iters something
+//'@param indep_min something
+//'@param indep_max something
+//'@param tolerance something
+//'@rdname solver-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_NR_quad_iters(const Rcpp::NumericMatrix coefs, const double initial_value, const int max_iters, const double indep_min, const double indep_max, const double tolerance){
     unsigned int niters = coefs.nrow();
@@ -38,6 +49,7 @@ Rcpp::List test_NR_quad_iters(const Rcpp::NumericMatrix coefs, const double init
 // a21 x + a22 y + a23 z + ... + a24 = 0
 // a31 x + a32 y + a33 z + ... + a34 = 0
 // ... x + ... y + ... z + ... + ... = 0
+//'@rdname solver-cpp-tests
 // [[Rcpp::export]]
 Rcpp::List test_NR_linear(std::vector<double> initial_value, const Rcpp::NumericMatrix coefs, const int max_iters, const double indep_min, const double indep_max, const double tolerance){
     // Dim of coefs = n x (n+1)
