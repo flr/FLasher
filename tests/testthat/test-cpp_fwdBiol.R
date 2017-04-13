@@ -7,18 +7,18 @@ source("expect_funs.R")
 test_that("fwdBiol as and wrap",{
     flb_in <- random_FLBiolcpp_generator()
     flb_out <- test_fwdBiol_as_wrap(flb_in)
-    expect_identical(flb_in, flb_out)
+    expect_FLBiolcpp_equal(flb_in, flb_out)
     flb_out <- test_fwdBiolAD_as_wrap(flb_in)
-    expect_identical(flb_in, flb_out)
+    expect_FLBiolcpp_equal(flb_in, flb_out)
 })
 
 test_that("fwdBiol constructors - double",{
     flb_in <- random_FLBiolcpp_generator(min_dims=c(3,3,1,1,1,1))
     # SEXP constructors
     flb_out <- test_fwdBiol_sexp_constructor(flb_in)
-    expect_identical(flb_in, flb_out)
+    expect_FLBiolcpp_equal(flb_in, flb_out)
     flb_out <- test_fwdBiolAD_sexp_constructor(flb_in)
-    expect_identical(flb_in, flb_out)
+    expect_FLBiolcpp_equal(flb_in, flb_out)
     # FLBiolcpp fwdSR constructor
     data(ple4)
     ricker <- fmle(as.FLSR(ple4,model="ricker"), control  = list(trace=0))
@@ -28,58 +28,58 @@ test_that("fwdBiol constructors - double",{
     residuals_mult <- TRUE
     expect_error(test_fwdBiol_fwdSR_constructor(flb_in, "ricker", sr_params, too_small_residuals, residuals_mult))
     out <- test_fwdBiol_fwdSR_constructor(flb_in, "ricker", sr_params, residuals, residuals_mult)
-    expect_identical(out[["fwb"]], flb_in)
+    expect_FLBiolcpp_equal(out[["fwb"]], flb_in)
     expect_identical(c(out[["srr"]][["params"]]), c(sr_params))
     expect_identical(out[["srr"]][["residuals"]], residuals)
     expect_identical(out[["srr"]][["residuals_mult"]], residuals_mult)
     expect_error(test_fwdBiol_fwdSRAD_constructor(flb_in, "ricker", sr_params, too_small_residuals, residuals_mult))
     out <- test_fwdBiol_fwdSR_constructor(flb_in, "ricker", sr_params, residuals, residuals_mult)
-    expect_identical(out[["fwb"]], flb_in)
+    expect_FLBiolcpp_equal(out[["fwb"]], flb_in)
     expect_identical(c(out[["srr"]][["params"]]), c(sr_params))
     expect_identical(out[["srr"]][["residuals"]], residuals)
     expect_identical(out[["srr"]][["residuals_mult"]], residuals_mult)
     # FLBiolcpp SR bits constructor
     out <- test_fwdBiol_FLSR_bits_constructor(flb_in, "ricker", sr_params, residuals, residuals_mult)
-    expect_identical(out[["fwb"]], flb_in)
+    expect_FLBiolcpp_equal(out[["fwb"]], flb_in)
     expect_identical(c(out[["srr"]][["params"]]), c(sr_params))
     expect_identical(out[["srr"]][["residuals"]], residuals)
     expect_identical(out[["srr"]][["residuals_mult"]], residuals_mult)
     out <- test_fwdBiolAD_FLSR_bits_constructor(flb_in, "ricker", sr_params, residuals, residuals_mult)
-    expect_identical(out[["fwb"]], flb_in)
+    expect_FLBiolcpp_equal(out[["fwb"]], flb_in)
     expect_identical(c(out[["srr"]][["params"]]), c(sr_params))
     expect_identical(out[["srr"]][["residuals"]], residuals)
     expect_identical(out[["srr"]][["residuals_mult"]], residuals_mult)
     # Copy constructor
     flb_out <- test_fwdBiol_copy_constructor(flb_in)
-    expect_identical(flb_in, flb_out)
+    expect_FLBiolcpp_equal(flb_in, flb_out)
     flb_out <- test_fwdBiolAD_copy_constructor(flb_in)
-    expect_identical(flb_in, flb_out)
+    expect_FLBiolcpp_equal(flb_in, flb_out)
     # Copy constructor2
     indices <- round(runif(6,min=1, max = dim(n(flb_in))))
     value <- rnorm(1)
     # Makes a copy of flq_in, changes a value of flq_in, returns original and new FLQuant
     # Checks that the copy constuctor makes a 'deep' copy else changing a value in the copy FLQ will also change a value in the original FLQ
     flbs <-  test_fwdBiol_copy_constructor2(flb_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
-    expect_identical(flb_in, flbs[["fwdb1"]])
+    expect_FLBiolcpp_equal(flb_in, flbs[["fwdb1"]])
     expect_identical(c(n(flbs[["fwdb2"]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
     flbs <-  test_fwdBiolAD_copy_constructor2(flb_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
-    expect_identical(flb_in, flbs[["fwdb1"]])
+    expect_FLBiolcpp_equal(flb_in, flbs[["fwdb1"]])
     expect_identical(c(n(flbs[["fwdb2"]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
     # Assignment operator
     flb_out <- test_fwdBiol_assignment_operator(flb_in)
-    expect_identical(flb_in, flb_out)
+    expect_FLBiolcpp_equal(flb_in, flb_out)
     flb_out <- test_fwdBiolAD_assignment_operator(flb_in)
-    expect_identical(flb_in, flb_out)
+    expect_FLBiolcpp_equal(flb_in, flb_out)
     # Assignment operator2
     indices <- round(runif(6,min=1, max = dim(n(flb_in))))
     value <- rnorm(1)
     # Makes a copy of flq_in, changes a value of flq_in, returns original and new FLQuant
     # Checks that the assignment operator makes a 'deep' copy else changing a value in the copy FLQ will also change a value in the original FLQ
     flbs <-  test_fwdBiol_assignment_operator2(flb_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
-    expect_identical(flb_in, flbs[["fwdb1"]])
+    expect_FLBiolcpp_equal(flb_in, flbs[["fwdb1"]])
     expect_identical(c(n(flbs[["fwdb2"]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
     flbs <-  test_fwdBiolAD_assignment_operator2(flb_in, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)
-    expect_identical(flb_in, flbs[["fwdb1"]])
+    expect_FLBiolcpp_equal(flb_in, flbs[["fwdb1"]])
     expect_identical(c(n(flbs[["fwdb2"]])[indices[1], indices[2], indices[3], indices[4], indices[5], indices[6]]), value)
 })
 
@@ -262,9 +262,9 @@ test_that("fwdBiols constructors",{
     flbs_in <- lapply(biols, function(x) return(x[["biol"]]))
     # as constructor
     flbs_out <- test_fwdBiols_as_wrap(biols)
-    expect_identical(flbs_out, flbs_in)
+    expect_FLBiolcpps_equal(flbs_out, flbs_in)
     flbs_ad_out <- test_fwdBiolsAD_as_wrap(biols)
-    expect_identical(flbs_ad_out, flbs_in)
+    expect_FLBiolcpps_equal(flbs_ad_out, flbs_in)
     # fwdBiols constructor
     biol_no <- round(runif(1,min=1,max=length(biols)))
     flbs_out <- test_fwdBiolsAD_fwdBiolAD_constructor(biols[[biol_no]][["biol"]],
@@ -273,7 +273,7 @@ test_that("fwdBiols constructors",{
                                       biols[[biol_no]][["srr_residuals"]],
                                       biols[[biol_no]][["srr_residuals_mult"]])
     expect_identical(length(flbs_out), 1L)
-    expect_identical(flbs_out[[1]], flbs_in[[biol_no]])
+    expect_FLBiolcpp_equal(flbs_out[[1]], flbs_in[[biol_no]])
     # Copy constructor
     indices <- round(runif(6, min=1, max=dim(n(biols[[biol_no]][["biol"]]))))
     value <- abs(rnorm(1))
@@ -298,10 +298,10 @@ test_that("fwdBiols methods",{
     flbs_in <- lapply(biols, function(x) return(x[["biol"]]))
     # Get (const)
     flb_out <- test_fwdBiolsAD_const_get_single_index_accessor(biols, biol_no)
-    expect_identical(flb_out, flbs_in[[biol_no]])
+    expect_FLBiolcpp_equal(flb_out, flbs_in[[biol_no]])
     # Get 
     flb_out <- test_fwdBiolsAD_get_single_index_accessor(biols, biol_no)
-    expect_identical(flb_out, flbs_in[[biol_no]])
+    expect_FLBiolcpp_equal(flb_out, flbs_in[[biol_no]])
     # Get value const
     indices <- round(runif(6, min=1, max=dim(n(biols[[biol_no]][["biol"]]))))
     out <- test_fwdBiolsAD_const_get_value_accessor(biols, biol_no, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6])
@@ -315,7 +315,7 @@ test_that("fwdBiols methods",{
                                       biols[[biol_no2]][["srr_params"]],
                                       biols[[biol_no2]][["srr_residuals"]],
                                       biols[[biol_no2]][["srr_residuals_mult"]])
-    expect_identical(flbs_out[[biol_no]], flbs_in[[biol_no2]])
+    expect_FLBiolcpp_equal(flbs_out[[biol_no]], flbs_in[[biol_no2]])
     # Set value
     value <- abs(rnorm(1))
     flbs_out <- test_fwdBiolsAD_set_value_accessor(biols, biol_no, indices[1], indices[2], indices[3], indices[4], indices[5], indices[6], value)

@@ -30,8 +30,27 @@ expect_FLFishery_equal <- function(flf1, flf2){
 expect_FLFisheries_equal <- function(flfs1, flfs2){
     expect_identical(flfs1@desc, flfs2@desc)
     expect_identical(flfs1@names, flfs2@names)
-    for (i in 1:length(FLFisheries)){
+    for (i in 1:length(flfs1)){
         expect_FLFishery_equal(flfs1[[i]], flfs2[[i]])
     }
 }
+
+expect_FLBiolcpp_equal <- function(flb1, flb2){
+    expect_identical(flb1@n, flb2@n)
+    expect_identical(flb1@m, flb2@m)
+    expect_identical(flb1@wt, flb2@wt)
+    expect_identical(flb1@mat, flb2@mat)
+    expect_identical(flb1@fec, flb2@fec)
+    expect_identical(flb1@spwn, flb2@spwn)
+    expect_identical(flb1@name, flb2@name)
+    expect_identical(flb1@desc, flb2@desc)
+    expect_identical(flb1@range, flb2@range)
+}
+
+expect_FLBiolcpps_equal <- function(flbs1, flbs2){
+    for (i in 1:length(flbs1)){
+        expect_FLBiolcpp_equal(flbs1[[i]], flbs2[[i]])
+    }
+}
+
 
