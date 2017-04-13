@@ -1,4 +1,34 @@
 # Classes and methods for plotting FCB diagrams
+# fcb_draw.R
+# FLasher/R/fcb_draw.R
+
+# Copyright European Union, 2016
+# Author: Finlay Scott (EC JRC) <finlay.scott@ec.europa.eu>
+#
+# Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
+
+#' A base class for drawing FCB bits
+#'
+#' Look up and see the flying saucers cruising in the sky
+#' I saw one myself it ain't no lie
+#' Look down and see the road you're on as if you are on a marathon
+#' That's the spirit, victory or die
+#' 
+#' @name basicBlock
+#' @rdname basicBlock
+#' @aliases basicBlock basicBlock-class
+#'
+#' @section Slots:
+#'     \describe{
+#'     \item{height}{height of box}
+#'     \item{width}{width of box}
+#'     \item{x_centre}{x coordinate of centre of box}
+#'     \item{y_centre}{y coordinate of centre of box}
+#'     \item{name}{text to go in the box}
+#'     \item{name_cex}{size of text to go in the box}
+#' }
+#' @author Finlay Scott - EC JRC.
+#' @keywords classes
 setClass("basicBlock",
     representation(
         height = "numeric",
@@ -18,6 +48,25 @@ setClass("basicBlock",
     )
 )
 
+#' A class for drawing a biological stock
+#'
+#' @name biolBlock
+#' @rdname biolBlock
+#' @aliases biolBlock biolBlock-class
+#'
+#' @section Slots:
+#'     \describe{
+#'     \item{height}{height of box}
+#'     \item{width}{width of box}
+#'     \item{x_centre}{x coordinate of centre of box}
+#'     \item{y_centre}{y coordinate of centre of box}
+#'     \item{name}{text to go in the box}
+#'     \item{name_cex}{size of text to go in the box}
+#'     \item{neck_length}{neck length}
+#'     \item{circle_cex}{size of the circle bit}
+#' }
+#' @author Finlay Scott - EC JRC.
+#' @keywords classes
 setClass("biolBlock",
     representation(
         neck_length = "numeric",
@@ -30,6 +79,27 @@ setClass("biolBlock",
     contains = "basicBlock"
 )
 
+#' A class for drawing a fishery
+#'
+#' @name fisheryBlock
+#' @rdname fisheryBlock
+#' @aliases fisheryBlock fisheryBlock-class
+#'
+#' @section Slots:
+#'     \describe{
+#'     \item{height}{height of box}
+#'     \item{width}{width of box}
+#'     \item{x_centre}{x coordinate of centre of box}
+#'     \item{y_centre}{y coordinate of centre of box}
+#'     \item{name}{text to go in the box}
+#'     \item{name_cex}{size of text to go in the box}
+#'     \item{neck_length}{neck length}
+#'     \item{no_tails}{number of catches}
+#'     \item{tail_gap}{space between catches}
+#'     \item{tail_length}{tail length}
+#' }
+#' @author Finlay Scott - EC JRC.
+#' @keywords classes
 setClass("fisheryBlock",
     representation(
         no_tails = "integer",
@@ -47,6 +117,24 @@ setClass("fisheryBlock",
     contains = "basicBlock"
 )
 
+#' A class for drawing a catch
+#'
+#' @name catchBlock
+#' @rdname catchBlock
+#' @aliases catchBlock catchBlock-class
+#'
+#' @section Slots:
+#'     \describe{
+#'     \item{height}{height of box}
+#'     \item{width}{width of box}
+#'     \item{x_centre}{x coordinate of centre of box}
+#'     \item{y_centre}{y coordinate of centre of box}
+#'     \item{name}{text to go in the box}
+#'     \item{name_cex}{size of text to go in the box}
+#'     \item{tail_length}{tail length}
+#' }
+#' @author Finlay Scott - EC JRC.
+#' @keywords classes
 setClass("catchBlock",
     representation(
         tail_length = "numeric"
@@ -57,6 +145,22 @@ setClass("catchBlock",
     contains = "basicBlock"
 )
 
+#' A class for drawing the FCB matrix
+#'
+#' @name FCBDrawing
+#' @rdname FCBDrawing
+#' @aliases FCBDrawing FCBDrawing-class
+#'
+#' @section Slots:
+#'     \describe{
+#'     \item{biolBlocks}{A list of \link{biolBlock}s}
+#'     \item{fisheryBlocks}{A list of \link{fisheryBlock}s}
+#'     \item{catchBlocks}{A list of \link{catchBlock}s}
+#'     \item{CBConnectors}{A list of coordinates connecting catches and biols}
+#'     \item{FCB}{The FCB matrix}
+#' }
+#' @author Finlay Scott - EC JRC.
+#' @keywords classes
 setClass("FCBDrawing",
     representation(
         biolBlocks = "list",
@@ -73,10 +177,23 @@ setClass("FCBDrawing",
     )
 )
 
+#' Generic method for drawing components the FCB matrix
+#'
+#' Used to draw individual components or the whole FCB matrix
+#'
+#' @param object The object
+#' @return Nothing. Just draws something
+#' @aliases draw draw-method
+#' @rdname draw-FCB
 setGeneric("draw", function(object){
     standardGeneric("draw")
 })
 
+#' Method for drawing the basic block of the FCB matrix 
+#'
+#' @param object A \link{basicBlock} object
+#' @aliases draw-basicBlock
+#' @rdname draw-FCB
 setMethod("draw", signature(object="basicBlock"),
     function(object){
         # Draw the box round centre with height and width
@@ -88,6 +205,11 @@ setMethod("draw", signature(object="basicBlock"),
         text(x=object@x_centre, y=object@y_centre, labels=object@name, cex=object@name_cex)
 })
 
+#' Method for drawing the biological block of the FCB matrix 
+#'
+#' @param object A \link{biolBlock} object
+#' @aliases draw-biolBlock
+#' @rdname draw-FCB
 setMethod("draw", signature(object="biolBlock"),
     function(object){
         # Call the basic drawing method
@@ -98,6 +220,11 @@ setMethod("draw", signature(object="biolBlock"),
         points(x=object@x_centre, y=object@y_centre + (object@height/2) + object@neck_length, pch=21, cex=object@circle_cex, col="black", bg="white")
 })
 
+#' Method for drawing the fishery block of the FCB matrix 
+#'
+#' @param object A \link{fisheryBlock} object
+#' @aliases draw-fisheryBlock
+#' @rdname draw-FCB
 setMethod("draw", signature(object="fisheryBlock"),
     function(object){
         # Call the basic drawing method
@@ -118,6 +245,11 @@ setMethod("draw", signature(object="fisheryBlock"),
         }
 })
 
+#' Method for drawing the catch block of the FCB matrix 
+#'
+#' @param object A \link{catchBlock} object
+#' @aliases draw-catchBlock
+#' @rdname draw-FCB
 setMethod("draw", signature(object="catchBlock"),
     function(object){
         # Call the basic drawing method
@@ -126,11 +258,52 @@ setMethod("draw", signature(object="catchBlock"),
         lines(x=c(object@x_centre, object@x_centre), y=c(object@y_centre - (object@height/2), object@y_centre - (object@height/2) - object@tail_length)) 
 })
 
-# Constructor for FCBDrawing
+#' Method for drawing the \link{FCBDrawing} object
+#'
+#' @param object A \link{FCBDrawing} object
+#' @aliases draw-FCBDrawing
+#' @rdname draw-FCB
+setMethod("draw", signature(object="FCBDrawing"),
+    function(object){
+        plot(x=c(0,1), y=c(0,1), type="n", xlim=c(0,1), ylim=c(0,1), xaxt="n", yaxt="n", xlab="", ylab="", ,bty="n")
+        invisible(lapply(object@catchBlocks, draw))
+        invisible(lapply(object@fisheryBlocks, draw))
+        invisible(lapply(object@CBConnectors, function(coords){
+            lines(x=c(coords["catch_x"], coords["biol_x"]), y = c(coords["catch_y"], coords["biol_y"]))
+        }))
+        invisible(lapply(object@biolBlocks, draw))
+})
+
+#' Method for drawing the FCB matric
+#'
+#' @param object The FCB matrix
+#' @aliases draw-matrix
+#' @rdname draw-FCB
+#' @examples
+#' FCB <- matrix(c(1,1,1,1,2,2,2,1,2,2,2,3,2,2,4), nrow=5, byrow=TRUE)
+#' draw(FCB)
+setMethod("draw", signature(object="matrix"),
+    function(object){
+        fcbd <- FCBDrawing(object)
+        draw(fcbd)
+})
+
+#' Generic constructor for making an \link{FCBDrawing} object
+#'
+#' @param object The object
+#' @return An \link{FCBDrawing} object
+#' @aliases FCBDrawing FCBDrawing-method
+#' @rdname FCBDrawing
 setGeneric("FCBDrawing", function(FCB){
     standardGeneric("FCBDrawing")
 })
 
+#' Constructor for making an \link{FCBDrawing} object
+#'
+#' Has to figure out the height, width and positions of the FCB components
+#' @param object The FCB \link{matrix}
+#' @aliases FCBDrawing-matrix
+#' @rdname FCBDrawing
 setMethod("FCBDrawing", signature(FCB="matrix"),
     function(FCB){
         out <- new("FCBDrawing", FCB=FCB)
@@ -243,35 +416,3 @@ setMethod("FCBDrawing", signature(FCB="matrix"),
         out@CBConnectors <- connectors
         return(out)
 })
-
-setMethod("draw", signature(object="FCBDrawing"),
-    function(object){
-        plot(x=c(0,1), y=c(0,1), type="n", xlim=c(0,1), ylim=c(0,1), xaxt="n", yaxt="n", xlab="", ylab="", ,bty="n")
-        invisible(lapply(object@catchBlocks, draw))
-        invisible(lapply(object@fisheryBlocks, draw))
-        invisible(lapply(object@CBConnectors, function(coords){
-            lines(x=c(coords["catch_x"], coords["biol_x"]), y = c(coords["catch_y"], coords["biol_y"]))
-        }))
-        invisible(lapply(object@biolBlocks, draw))
-})
-
-setMethod("draw", signature(object="matrix"),
-    function(object){
-        fcbd <- FCBDrawing(object)
-        draw(fcbd)
-})
-
-# Examples
-#FCB1 <- matrix(c(1,1,1), nrow=1)
-#FCB2 <- matrix(c(1,2,1,1,1,1), nrow=2)
-#FCB3 <- matrix(c(1,1,1,1,2,2,2,1,2,2,2,3,2,2,4), nrow=5, byrow=TRUE)
-#FCB4 <- matrix(c(1,1,1,1,2,2,2,1,1,2,2,2), nrow=4, byrow=TRUE)
-#FCB5 <- matrix(c(1,1,1,1,2,2), nrow=2, byrow=TRUE)
-#
-#draw(FCB1)
-#draw(FCB2)
-#draw(FCB3)
-#draw(FCB4)
-#draw(FCB5)
-
-
