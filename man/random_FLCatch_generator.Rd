@@ -22,4 +22,3 @@ Used for automatic testing, particularly of the FLCatch class in CPP.
 flc <- random_FLCatch_generator()
 summary(flc)
 }
-

@@ -14,4 +14,3 @@ get_FLQuant_element(flq, indices)
 \description{
 Given an FLQuant and the indices, returns the 1D element accessor.
 }
-

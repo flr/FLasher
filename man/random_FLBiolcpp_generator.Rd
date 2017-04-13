@@ -22,4 +22,3 @@ Used for automatic testing, particularly of the fwdBiol class in CPP.
 flb <- random_FLBiolcpp_generator()
 summary(flb)
 }
-

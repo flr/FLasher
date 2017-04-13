@@ -27,4 +27,3 @@ flf <- random_FLFishery_generator(fixed_dims = c(NA,10,1,1,1,1))
 lapply(flf, summary)
 flf <- random_FLFishery_generator(fixed_dims = c(NA,10,1,1,1,1), max_dims = c(100,NA,NA,NA,NA,NA))
 }
-

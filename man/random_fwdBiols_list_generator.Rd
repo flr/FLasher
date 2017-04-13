@@ -25,4 +25,3 @@ Used for automatic testing, particularly of the fwdBiols<T> class in CPP.
 \examples{
 fwdBiols <- random_fwdBiols_list_generator()
 }
-

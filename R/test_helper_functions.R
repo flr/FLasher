@@ -346,7 +346,7 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
 #' @param fls The FLStock that the OM is based on
 #' @param FCB The FCB matrix
 #' @param nseasons The number of seasons
-#' @param spawning_seasons A vector of seasons in which spawning occurs (1 - 4)
+#' @param recruitment_seasons A vector of seasons in which recruitment occurs (1 - 4)
 #' @param recruitment_age The age of recruitment to the fishery
 #' @param niters The number of iterations. 
 #' @param sd The standard deviation when applying random lognormal noise to some of the slots.

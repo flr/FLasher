@@ -16,4 +16,3 @@ get_FLQuant_elements(flq, indices_min, indices_max)
 \description{
 Given an FLQuant and the indices range, returns the vector of indices
 }
-

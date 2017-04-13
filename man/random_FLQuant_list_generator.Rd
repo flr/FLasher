@@ -27,4 +27,3 @@ length(flq_list)
 summary(flq_list)
 lapply(flq_list, summary)
 }
-

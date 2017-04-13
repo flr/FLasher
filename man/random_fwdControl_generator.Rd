@@ -23,4 +23,3 @@ A fwdControl object
 \description{
 Creates a random fwdControl object for testing purposes
 }
-
