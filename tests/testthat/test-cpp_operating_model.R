@@ -17,7 +17,7 @@ test_that("operatingModel constructors",{
     fc <- random_fwdControl_generator(years = 1, niters = dim(flq)[6])
     # Test as and wrap
     out <- test_operatingModel_full_constructor(flfs, flbs, fc)
-    expect_identical(out[["biols"]], flbs_in)
+    expect_FLBiolcpps_equal(out[["biols"]], flbs_in)
     expect_FLFisheries_equal(out[["fisheries"]], flfs)
     expect_fwdControl_equal(out[["ctrl"]], fc)
 })
