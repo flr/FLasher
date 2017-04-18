@@ -10,6 +10,8 @@ fcb2int(fcb, biols, fisheries)
 \item{fcb}{The FCB matrix}
 
 \item{biols}{The biols}
+
+\item{fisheries}{The fisheries}
 }
 \description{
 Internal function not for public consumption

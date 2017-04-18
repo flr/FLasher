@@ -20,13 +20,13 @@
     fishery=c(TRUE, FALSE),catch=c(TRUE, FALSE), biol=c(FALSE, TRUE)),
   list(quant=.biol_quants, catch=FALSE, fishery=FALSE, biol=TRUE))
 
-foo <- function(x) {
+.foo <- function(x) {
   fcb <- as.data.frame(x[2:4])
   quant <- rep(x[[1]], each=nrow(fcb))
   return(cbind(data.frame(quant=quant), fcb[rep(seq(nrow(fcb)), length(x[[1]])),]))
 }
 
-.vfcb <- do.call(rbind, c(lapply(.fcb, foo), list(make.row.names = FALSE)))
+.vfcb <- do.call(rbind, c(lapply(.fcb, .foo), list(make.row.names = FALSE)))
 # }}}
 
 # fwdControl class {{{
@@ -46,7 +46,8 @@ foo <- function(x) {
 #' @section Slots:
 #'     \describe{
 #'     \item{target}{The table of quantities and time steps used as target (\code{data.frame}).}
-#'     \item{target}{The values and limits for each target quantity and time step (\code{array}).}
+#'     \item{iters}{The values and limits for each target quantity and time step (\code{array}).}
+#'     \item{FCB}{The matrix describing which FLCatch of which FLFishery catches which FLBiol. A \code{matrix} with 3 columns: F, C, and B.}
 #' }
 #'
 #' @section Validity: \describe{

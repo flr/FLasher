@@ -5,9 +5,9 @@
 \alias{FLasher}
 \alias{FLasher,}
 \alias{FLasher-package}
+\alias{FLasher-package}
 \title{Updating FLash}
 \description{
 Some guff on FLR and Rcpp and CppAD
 Very important
 }
-

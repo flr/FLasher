@@ -14,7 +14,7 @@
 #' Bare bones man pages. Better to look at the vignettes and tutorials.
 #' @param target The target. Can be a data.frame, a list or missing.
 #' @param iters target The iters. Can be an array, a numeric or missing.
-#' @param ...
+#' @param ... Something
 #' @rdname fwdControl
 #' @examples
 #'
@@ -28,6 +28,7 @@ setGeneric('fwdControl', function(target, iters, ...) standardGeneric("fwdContro
 #'
 #' Access and replace the target slot of a fwdControl object
 #' @param object The fwdControl object
+#' @param ... Other things.
 #' @rdname target
 setGeneric('target', function(object, ...) standardGeneric('target'))
 
@@ -42,6 +43,7 @@ setGeneric('target<-', function(object, ..., value) standardGeneric('target<-'))
 #' Access and replace the iters slot of the fwdControl
 #' @param object The fwdControl.
 #' @param value The iters array to replace the existing one with.
+#' @param ... Other things.
 #' @rdname iters
 setGeneric('iters<-', function(object, ..., value) standardGeneric('iters<-'))
 
@@ -66,4 +68,5 @@ setGeneric("fillchar", function(object) standardGeneric("fillchar"))
 #' @param end My beautiful friend
 #' @param fbar.nyears Number of years to average the F over (only used if object is an FLStock)
 #' @param f.rescale Rescale F (TRUE or FALSE - default is FALSE)
+#' @param ... Other things.
 setGeneric("stf", function(object,...) standardGeneric("stf"))

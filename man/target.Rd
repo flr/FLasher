@@ -19,6 +19,8 @@ target(object, ...) <- value
 \arguments{
 \item{object}{The fwdControl object}
 
+\item{...}{Other things.}
+
 \item{value}{The target object to replace the existing one with.}
 }
 \description{

@@ -6,39 +6,6 @@
 
 using namespace Rcpp;
 
-// get_dataframe_year
-Rcpp::IntegerVector get_dataframe_year(Rcpp::DataFrame ctrl);
-RcppExport SEXP FLasher_get_dataframe_year(SEXP ctrlSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type ctrl(ctrlSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_dataframe_year(ctrl));
-    return rcpp_result_gen;
-END_RCPP
-}
-// get_dataframe_value
-Rcpp::NumericVector get_dataframe_value(Rcpp::DataFrame ctrl);
-RcppExport SEXP FLasher_get_dataframe_value(SEXP ctrlSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type ctrl(ctrlSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_dataframe_value(ctrl));
-    return rcpp_result_gen;
-END_RCPP
-}
-// get_dataframe_quantity
-Rcpp::CharacterVector get_dataframe_quantity(Rcpp::DataFrame ctrl);
-RcppExport SEXP FLasher_get_dataframe_quantity(SEXP ctrlSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type ctrl(ctrlSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_dataframe_quantity(ctrl));
-    return rcpp_result_gen;
-END_RCPP
-}
 // operatingModelRun
 Rcpp::List operatingModelRun(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double effort_mult_initial, const double indep_min, const double indep_max, const int nr_iters);
 RcppExport SEXP FLasher_operatingModelRun(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP effort_mult_initialSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP nr_itersSEXP) {
@@ -53,16 +20,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type indep_max(indep_maxSEXP);
     Rcpp::traits::input_parameter< const int >::type nr_iters(nr_itersSEXP);
     rcpp_result_gen = Rcpp::wrap(operatingModelRun(flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max, nr_iters));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rcpp_hello_world
-List rcpp_hello_world();
-RcppExport SEXP FLasher_rcpp_hello_world() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpp_hello_world());
     return rcpp_result_gen;
 END_RCPP
 }

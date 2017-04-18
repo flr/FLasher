@@ -244,7 +244,7 @@ parsefwdList <- function(...) {
 #' Targets must be processed by FLasher in the correct order.
 #' Internal function. Ignore.
 #' @param target The target.
-#' @iters The iters.
+#' @param iters The iters.
 targetOrder <- function(target, iters) {
 
   # ORDER by timestep and value/minmax
@@ -293,7 +293,7 @@ fcb <- function(biols, fisheries) {
 #' Internal function not for public consumption
 #' @param fcb The FCB matrix
 #' @param biols The biols
-#' @fisheries The fisheries
+#' @param fisheries The fisheries
 fcb2int <- function(fcb, biols, fisheries) {
   
   # GET names

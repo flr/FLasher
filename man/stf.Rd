@@ -19,6 +19,8 @@ stf(object, ...)
 \arguments{
 \item{object}{The object (FLStock or FLBiol)}
 
+\item{...}{Other things.}
+
 \item{nyears}{Number of years to extend the object}
 
 \item{wts.nyears}{Number of years to average over to get the future mean weights at age.}

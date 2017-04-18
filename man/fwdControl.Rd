@@ -29,6 +29,8 @@ fwdControl(target, iters, ...)
 \item{target}{The target. Can be a data.frame, a list or missing.}
 
 \item{iters}{target The iters. Can be an array, a numeric or missing.}
+
+\item{...}{Something}
 }
 \description{
 The desired targets, limits and time steps used in fishery projections can be 
@@ -54,7 +56,8 @@ fwdControl constructor for mising and missing
 
     \describe{
     \item{target}{The table of quantities and time steps used as target (\code{data.frame}).}
-    \item{target}{The values and limits for each target quantity and time step (\code{array}).}
+    \item{iters}{The values and limits for each target quantity and time step (\code{array}).}
+    \item{FCB}{The matrix describing which FLCatch of which FLFishery catches which FLBiol. A \code{matrix} with 3 columns: F, C, and B.}
 }
 }
 

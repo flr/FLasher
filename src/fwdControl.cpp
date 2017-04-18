@@ -485,21 +485,21 @@ bool fwdControl::shared_catch(const unsigned int biol_no) const{
 
 /*------------------------------------------------------------------*/
 
-/* Just some tests to operate on data.frames */
-// [[Rcpp::export]]
-Rcpp::IntegerVector get_dataframe_year(Rcpp::DataFrame ctrl){
-    Rcpp::IntegerVector year = ctrl["year"];
-    return year;
-}
-
-// [[Rcpp::export]]
-Rcpp::NumericVector get_dataframe_value(Rcpp::DataFrame ctrl){
-    Rcpp::NumericVector value = ctrl["value"];
-    return value;
-}
-
-// [[Rcpp::export]]
-Rcpp::CharacterVector get_dataframe_quantity(Rcpp::DataFrame ctrl){
-    Rcpp::CharacterVector quantity = ctrl["quant"];
-    return quantity;
-}
+///* Just some tests to operate on data.frames */
+//// [[Rcpp::export]]
+//Rcpp::IntegerVector get_dataframe_year(Rcpp::DataFrame ctrl){
+//    Rcpp::IntegerVector year = ctrl["year"];
+//    return year;
+//}
+//
+//// [[Rcpp::export]]
+//Rcpp::NumericVector get_dataframe_value(Rcpp::DataFrame ctrl){
+//    Rcpp::NumericVector value = ctrl["value"];
+//    return value;
+//}
+//
+//// [[Rcpp::export]]
+//Rcpp::CharacterVector get_dataframe_quantity(Rcpp::DataFrame ctrl){
+//    Rcpp::CharacterVector quantity = ctrl["quant"];
+//    return quantity;
+//}

@@ -6,6 +6,11 @@
 #include "../../inst/include/solver.h"
 typedef CppAD::AD<double> adouble;
 
+//'@title Test the Euclid norm function
+//
+//' Metallic spheres
+//'@param xvec  A vector of doubles.
+//'@rdname solver-cpp-tests
 // [[Rcpp::export]]
 double test_euclid_norm(std::vector<double> xvec){
     double norm = euclid_norm(xvec);

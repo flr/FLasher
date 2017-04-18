@@ -7,6 +7,10 @@
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 # show {{{
+#' Show method for fwdControl
+#'
+#' More Gills Less Fishcakes
+#' @param object A fwdControl
 setMethod("show", signature("fwdControl"),
   function(object) {
     
@@ -43,10 +47,17 @@ setMethod("show", signature("fwdControl"),
 ) # }}}
 
 # [ {{{
+#' Set and replacement accessors for fwdControl
+#'
+#' We're Pastie to be Grill You
+#' @param x A fwdControl object
+#' @param i Row of both target and iters
+#' @param j Third dimenions of iters
+#' @rdname fwdControl-accessors
 setMethod("[", signature(x="fwdControl"),
   function(x, i, j) {
 
-    # 'i' applies to rows in both target ands iters
+    # 'i' applies to rows in both target and iters
     if(!missing(i)) {
       x@target <- x@target[i,,drop=FALSE]
       x@iters <- x@iters[i,,,drop=FALSE]
@@ -63,6 +74,10 @@ setMethod("[", signature(x="fwdControl"),
 # [<- {{{
 
 # vector
+#' Set and replacement accessors for fwdControl
+#' @param k The replacement.
+#' @param ... Some things.
+#' @rdname fwdControl-accessors
 setMethod("[<-", signature(x="fwdControl", value="vector"),
   function(x, i, j, k, ..., value) {
     
@@ -107,6 +122,9 @@ setMethod("[<-", signature(x="fwdControl", value="vector"),
 # }}}
 
 # $ {{{
+#' Set and replacement accessors for fwdControl
+#' @param name Column name of target or value column of iters.
+#' @rdname fwdControl-accessors
 setMethod("$", signature(x="fwdControl"),
   function(x, name) {
 
@@ -118,6 +136,9 @@ setMethod("$", signature(x="fwdControl"),
 ) # }}}
 
 # $<- {{{
+#' Set and replacement accessors for fwdControl
+#' @param value Replacement value
+#' @rdname fwdControl-accessors
 setMethod("$<-", signature(x="fwdControl", value="vector"),
   function(x, name, value) {
 
@@ -130,6 +151,12 @@ setMethod("$<-", signature(x="fwdControl", value="vector"),
 ) # }}}
 
 # propagate {{{
+#' Propagate the fwdControl
+#'
+#' Change the nuber of iterations in the iter slot of the fwdControl.
+#' @param object A fwdControl object.
+#' @param iter The number of iterations.
+#' @param fill.iter Fill the new iters with original values (TRUE) or NA (FALSE)
 setMethod("propagate", signature(object="fwdControl"),
   function(object, iter, fill.iter=TRUE) {
 

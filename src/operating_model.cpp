@@ -2020,6 +2020,18 @@ FLQuantAD operatingModel::biomass_flash(const int biol_no,  const std::vector<un
 ////
 
 
+//'@title Call the CPP operatingModel run method
+//
+//' Used to run the projections.
+//' Internal use only.
+//'@param flfs FLFisheries.
+//'@param biols List of the Biol bits.
+//'@param ctrl fwdControl.
+//'@param effort_mult_initial Initial effort multiplier.
+//'@param indep_min Minimum independent solver value.
+//'@param indep_max Maximum independent solver value.
+//'@param nr_iters Maximum number of iterations for solver.
+//'@rdname operatingModelRun
 // [[Rcpp::export]]
 Rcpp::List operatingModelRun(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double effort_mult_initial, const double indep_min, const double indep_max, const int nr_iters = 50){
     operatingModel om(flfs, biols, ctrl);
