@@ -5,8 +5,12 @@ importFrom(stats,
   runif)
 importFrom(utils,
   data)
-importFrom(methods,
-  as)
+importFrom("methods",
+    "as", "new", "callNextMethod", "is", "slot", "slot<-")
+importFrom("graphics",
+    "lines", "points", "rect", "text")
+importFrom("stats",
+    "mad")
 import(FLCore)
 import(FLFishery)
 exportClasses(

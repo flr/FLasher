@@ -24,7 +24,7 @@ setAs("FLQuants", "fwdControl",
       return(fwdControl(target))
 		} else {
 
-			target <- cbind(df[df$iter == df$iter[1],][,c('year', 'data')], quant=quant)
+			target <- cbind(target[target$iter == target$iter[1],][,c('year', 'data')], quant=quant)
 			names(target)[grep('data', names(target))] <- 'value'
 
 			arrt <- array(NA, dim=c(dim(target)[1], 3, dim(flq)[6]),

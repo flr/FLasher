@@ -87,6 +87,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   #  trg[,"biol"] <- 1L
 
   # CONVERT 'years' and 'relYear' to position indices
+  year <- relYear <- NULL # quiet R CMD check about no visible binding for gloabl variable
   mny <- min(dib[,"minyear"]) - 1
   trg <- transform(trg, year=year - mny)
   trg <- transform(trg, relYear=relYear - mny)
