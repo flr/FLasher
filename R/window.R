@@ -6,9 +6,11 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
-setGeneric("fwdWindow", function(x, y, ...) standardGeneric("fwdWindow"))
+# setGeneric("fwdWindow", function(x, y, ...) standardGeneric("fwdWindow"))
 
 ## stf(FLStock) {{{
+#' stf for FLStock
+#' @rdname stf
 setMethod('stf', signature(object='FLStock'),
   function(object, nyears=3, wts.nyears=3, fbar.nyears=wts.nyears, f.rescale=FALSE,
     arith.mean=TRUE, na.rm=TRUE, end=dims(object)$maxyear + nyears)
@@ -73,6 +75,8 @@ setMethod('stf', signature(object='FLStock'),
 ) # }}}
 
 ## stf(FLBiol) {{{
+#' stf for FLBiol
+#' @rdname stf
 setMethod('stf', signature(object='FLBiol'),
   function(object, nyears=3, wts.nyears=3, arith.mean=TRUE, na.rm=TRUE,
     end=dims(object)$maxyear + nyears)

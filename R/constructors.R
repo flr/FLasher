@@ -7,13 +7,8 @@
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 # fwdControl(target='data.frame', iters='array') {{{
-#' @name fwdControl
+#' fwdControl constructor for data.frame and array
 #' @rdname fwdControl
-#' @examples
-#'
-#' # Construct from data.frame and array
-#' fcn <- fwdControl(data.frame(year=2000:2005, quant='f', value=0.5))
-
 setMethod('fwdControl', signature(target='data.frame', iters='array'),
   function(target, iters, ...) {
     
@@ -79,6 +74,8 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
 # }}}
 
 # fwdControl(target='data.frame', iters='numeric') {{{
+#' fwdControl constructor for data.frame and numeric
+#' @rdname fwdControl
 setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
   function(target, iters) {
 
@@ -99,6 +96,8 @@ setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
 ) # }}}
 
 # fwdControl(target='data.frame', iters='missing') {{{
+#' fwdControl constructor for data.frame and missing
+#' @rdname fwdControl
 setMethod('fwdControl', signature(target='data.frame', iters='missing'),
   function(target) {
     
@@ -122,6 +121,8 @@ setMethod('fwdControl', signature(target='data.frame', iters='missing'),
 # }}}
 
 # fwdControl(target='list', iters='missing') {{{
+#' fwdControl constructor for list and missing
+#' @rdname fwdControl
 setMethod('fwdControl', signature(target='list', iters='missing'),
   function(target) {
 
@@ -171,6 +172,8 @@ setMethod('fwdControl', signature(target='list', iters='missing'),
 ) # }}}
 
 # fwdControl(target='missing', iters='missing') {{{
+#' fwdControl constructor for mising and missing
+#' @rdname fwdControl
 setMethod('fwdControl', signature(target='missing', iters='missing'),
   function(...) {
 
@@ -200,6 +203,10 @@ setMethod('fwdControl', signature(target='missing', iters='missing'),
 
 # parsefwdList {{{
 # RETURNS iters as aperm(c('val', 'iter' ,'row')) for processing
+#' Parse the list argument to fwd to make a fwdControl object
+#'
+#' Internal function that is not for internal consumption.
+#' @param ... Things
 parsefwdList <- function(...) {
 
     args <- list(...)
@@ -232,6 +239,12 @@ parsefwdList <- function(...) {
   } # }}}
 
 # targetOrder(object) {{{
+#' Get the order of targets in a fwdControl
+#'
+#' Targets must be processed by FLasher in the correct order.
+#' Internal function. Ignore.
+#' @param target The target.
+#' @iters The iters.
 targetOrder <- function(target, iters) {
 
   # ORDER by timestep and value/minmax
@@ -251,6 +264,12 @@ targetOrder <- function(target, iters) {
 # FCB {{{
 
 # FCB <- fcb(biols, fisheries)
+#' Generate the FCB matrix
+#'
+#' Tries to generate FCB matrix based on names.
+#' Internal function. Ignore.
+#' @param biols The FLBiols.
+#' @param fisheries The FLFisheries.
 fcb <- function(biols, fisheries) {
 
   # GET names
@@ -269,6 +288,12 @@ fcb <- function(biols, fisheries) {
 }
 
 # fcb2int(fcb, biols, fisheries)
+#' fcb2int function
+#'
+#' Internal function not for public consumption
+#' @param fcb The FCB matrix
+#' @param biols The biols
+#' @fisheries The fisheries
 fcb2int <- function(fcb, biols, fisheries) {
   
   # GET names

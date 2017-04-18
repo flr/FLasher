@@ -7,6 +7,8 @@
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 # target
+#' Access target slot of fwdControl
+#' @rdname target
 setMethod("target", signature(object="fwdControl"),
 	function(object) {
 		return(object@target)
@@ -14,6 +16,8 @@ setMethod("target", signature(object="fwdControl"),
 )
 
 # target<-
+#' Set target slot of fwdControl
+#' @rdname target
 setReplaceMethod("target", signature(object="fwdControl", value="data.frame"),
 	function(object, value) {
     object@target <- value
@@ -22,6 +26,8 @@ setReplaceMethod("target", signature(object="fwdControl", value="data.frame"),
 )
 
 # iters
+#' Access the iters slot of the fwdControl
+#' @rdname iters
 setMethod("iters", signature(object="fwdControl"),
 	function(object) {
 		return(object@iters)
@@ -29,6 +35,8 @@ setMethod("iters", signature(object="fwdControl"),
 )
 
 # iters<-
+#' Set the iters slot of the fwdControl
+#' @rdname iters
 setReplaceMethod("iters", signature(object="fwdControl", value="array"),
 	function(object, value) {
 		object@iters <- value

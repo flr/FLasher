@@ -9,6 +9,12 @@
 # calc_F {{{
 # F = alpha * Biomass ^ -beta * sel * effort
 # operating_model.cpp: * F = effort * selectivity * alpha * biomass ^ -beta
+#' Calculate fishing mortality
+#'
+#' Calculate F in the same way as the internal C++ does
+#' @param catch The FLCatch
+#' @param biol The FLBiol
+#' @param effort The fishing effort
 calc_F <- function(catch, biol, effort){
     biomass <- quantSums(biol@n * biol@wt)
     F <- catch@catch.q['alpha',] * biomass ^ (-catch@catch.q['beta',]) %*% effort %*% catch@catch.sel
@@ -16,6 +22,8 @@ calc_F <- function(catch, biol, effort){
 } # }}}
 
 # fillchar {{{
+#' fillchar for FLFisheries
+#' @rdname fillchar
 setMethod("fillchar", signature("FLFisheries"),
   function(object) {
 
@@ -39,7 +47,8 @@ setMethod("fillchar", signature("FLFisheries"),
   }
 )
 
-
+#' fillchar for FLBiols
+#' @rdname fillchar
 setMethod("fillchar", signature("FLBiols"),
   function(object) {
 
