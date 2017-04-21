@@ -30,7 +30,7 @@ class fwdSR_base {
 		fwdSR_base(const fwdSR_base& fwdSR_base_source); // copy constructor to ensure that copy is a deep copy - used when passing into functions
 		fwdSR_base& operator = (const fwdSR_base& fwdSR_base_source); // Assignment operator for a deep copy
 
-        std::vector<double> get_params(int year, int unit, int season, int area, int iter) const;
+        std::vector<double> get_params(unsigned int year, unsigned int unit, unsigned int season, unsigned int area, unsigned int iter) const;
         // Evaluate the model only 1 value at a time
         T eval_model(const T srp, int year, int unit, int season, int area, int iter) const;
         T eval_model(const T srp, const std::vector<unsigned int> params_indices) const;

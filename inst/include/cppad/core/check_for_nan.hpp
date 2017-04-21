@@ -157,10 +157,10 @@ void put_check_for_nan(const CppAD::vector<Base>& vec, std::string& file_name)
 	const char* char_ptr   = reinterpret_cast<const char*>( vec.data() );
 # if CPPAD_HAS_MKSTEMP
 	char pattern[] = "/tmp/fileXXXXXX";
-	int fd = mkstemp(pattern);
+	//int fd = mkstemp(pattern);
 	file_name = pattern;
-	auto temp = write(fd, char_ptr, char_size);
-	close(fd);
+	//auto temp = write(fd, char_ptr, char_size);
+	//close(fd);
 # else
 # if CPPAD_HAS_TMPNAM_S
 		std::vector<char> name(L_tmpnam_s);

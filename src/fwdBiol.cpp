@@ -227,7 +227,7 @@ FLQuant_base<T> fwdBiol_base<T>::biomass() const {
 // Subset biomass
 template <typename T>
 FLQuant_base<T> fwdBiol_base<T>::biomass(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const { 
-    if(indices_min.size() != 5 | indices_max.size() != 5){
+    if((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In fwdBiol biomass subset. indices not of length 5\n");
     }
     std::vector<unsigned int> dim = n().get_dim();

@@ -405,9 +405,9 @@ In this example we simulate two different fisheries (beam trawl and gillnet) tha
 
 ```{r,set_up_2f1s}
 # Two fisheries on a single stock 
-bt3 <- FLFishery(solBT=flfs[["bt"]][["solBT"]])
+bt3 <- FLFishery(solBT=flfs[["bt"]][["solBT"]], desc="")
 bt3@effort[] <- 1
-gn3 <- FLFishery(solGN=flfs[["gn"]][["solGN"]])
+gn3 <- FLFishery(solGN=flfs[["gn"]][["solGN"]], desc="")
 gn3@effort[] <- 1
 flfs3 <- FLFisheries(bt=bt3, gn=gn3)
 biols3 <- FLBiols(sol=biols[["sol"]])

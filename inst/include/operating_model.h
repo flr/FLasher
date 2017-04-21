@@ -65,7 +65,7 @@ class operatingModel {
         std::vector<adouble> calc_rec(const unsigned int biol_no, const unsigned int unit, const unsigned int rec_timestep) const;
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD get_f(const int fishery_no, const int catch_no, const int biol_no) const; 
-        FLQuantAD get_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD get_f(const unsigned int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD get_f(const int biol_no) const;
         FLQuantAD get_nunit_z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD get_nunit_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;

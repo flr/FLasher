@@ -66,7 +66,7 @@ std::vector<double> test_max2(std::vector<double> indep){
     std::vector<double> dep(1, 0.0);
     std::vector<double> jac(1, 0.0);
 
-    for (auto i=0; i<indep.size(); ++i){
+    for (unsigned int i=0; i<indep.size(); ++i){
         std::vector<double> indep_temp(1);
         indep_temp[0] = indep[i];
         dep = fun.Forward(0, indep_temp); 
@@ -96,7 +96,7 @@ std::vector<double> test_max(std::vector<double> indep){
     std::vector<double> dep(1, 0.0);
     std::vector<double> jac(1, 0.0);
 
-    for (auto i=0; i<indep.size(); ++i){
+    for (unsigned int i=0; i<indep.size(); ++i){
         std::vector<double> indep_temp(1);
         indep_temp[0] = indep[i];
         dep = fun.Forward(0, indep_temp); 

@@ -109,9 +109,10 @@ inline void forward_pri_0(
 	const Base*   parameter   ,
 	size_t        cap_order   ,
 	const Base*   taylor      )
-{	Base pos, var;
-	const char* before;
-	const char* after;
+{	Base pos;
+	//, var;
+	//const char* before;
+	//const char* after;
 	CPPAD_ASSERT_NARG_NRES(PriOp, 5, 0);
 
 	// pos
@@ -125,20 +126,21 @@ inline void forward_pri_0(
 
 	// before
 	CPPAD_ASSERT_UNKNOWN( size_t(arg[2]) < num_text );
-	before = text + arg[2];
+	//before = text + arg[2];
 
 	// var
 	if( arg[0] & 2 )
-	{	var = taylor[ arg[3] * cap_order + 0 ];
+	{
+	//	var = taylor[ arg[3] * cap_order + 0 ];
 	}
 	else
 	{	CPPAD_ASSERT_UNKNOWN( size_t(arg[3]) < num_par );
-		var = parameter[ arg[3] ];
+		//var = parameter[ arg[3] ];
 	}
 
 	// after
 	CPPAD_ASSERT_UNKNOWN( size_t(arg[4]) < num_text );
-	after = text + arg[4];
+	//after = text + arg[4];
 
 	if( ! GreaterThanZero( pos ) )
     {

@@ -116,7 +116,7 @@ fwdSR_base<T>& fwdSR_base<T>::operator = (const fwdSR_base<T>& fwdSR_source){
  * \param iter The iter of the SR parameters to use.
  */
 template <typename T>
-std::vector<double> fwdSR_base<T>::get_params(int year, int unit, int season, int area, int iter) const{
+std::vector<double> fwdSR_base<T>::get_params(unsigned int year, unsigned int unit, unsigned int season, unsigned int area, unsigned int iter) const{
     const int nparams = get_nparams();
     std::vector<double> model_params(nparams);
     // Parameters get recycled, i.e.  if requested year is bigger than years in the params FLQuant then we just take the first one.

@@ -34,12 +34,12 @@ double test_euclid_norm(std::vector<double> xvec){
 //'@param tolerance something
 //'@rdname solver-cpp-tests
 // [[Rcpp::export]]
-Rcpp::List test_NR_quad_iters(const Rcpp::NumericMatrix coefs, const double initial_value, const int max_iters, const double indep_min, const double indep_max, const double tolerance){
+Rcpp::List test_NR_quad_iters(const Rcpp::NumericMatrix coefs, const double initial_value, const unsigned int max_iters, const double indep_min, const double indep_max, const double tolerance){
     unsigned int niters = coefs.nrow();
     std::vector<adouble> x(niters,initial_value); 
     CppAD::Independent(x); // Tape on
     std::vector<adouble> y(niters); 
-    for (auto i=0; i<niters; ++i){
+    for (unsigned int i=0; i<niters; ++i){
         y[i] = coefs(i,0)*pow(x[i],2) + coefs(i,1)*x[i] + coefs(i,2); 
     }
     CppAD::ADFun<double> fun(x, y); // Tape off
@@ -56,7 +56,7 @@ Rcpp::List test_NR_quad_iters(const Rcpp::NumericMatrix coefs, const double init
 // ... x + ... y + ... z + ... + ... = 0
 //'@rdname solver-cpp-tests
 // [[Rcpp::export]]
-Rcpp::List test_NR_linear(std::vector<double> initial_value, const Rcpp::NumericMatrix coefs, const int max_iters, const double indep_min, const double indep_max, const double tolerance){
+Rcpp::List test_NR_linear(std::vector<double> initial_value, const Rcpp::NumericMatrix coefs, const unsigned int max_iters, const double indep_min, const double indep_max, const double tolerance){
     // Dim of coefs = n x (n+1)
     // Number of indeps = nrow coefs
     auto nindeps = coefs.nrow();

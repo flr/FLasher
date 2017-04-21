@@ -37,9 +37,9 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsA
     std::vector<unsigned int> landings_dim11 = fisheries_in(1,1).landings_n().get_dim();
     std::vector<unsigned int> discards_dim11 = fisheries_in(1,1).discards_n().get_dim();
     std::vector<unsigned int> effort_dim1 = fisheries_in(1).effort().get_dim();
-    for (int fishery_no=1; fishery_no <= fisheries_in.get_nfisheries(); ++fishery_no){
+    for (unsigned int fishery_no=1; fishery_no <= fisheries_in.get_nfisheries(); ++fishery_no){
         std::vector<unsigned int> effort_dim = fisheries_in(fishery_no).effort().get_dim();
-        for (int catch_no=1; catch_no <= fisheries_in(fishery_no).get_ncatches(); ++catch_no){
+        for (unsigned int catch_no=1; catch_no <= fisheries_in(fishery_no).get_ncatches(); ++catch_no){
             std::vector<unsigned int> landings_dim = fisheries_in(fishery_no,catch_no).landings_n().get_dim();
             std::vector<unsigned int> discards_dim = fisheries_in(fishery_no,catch_no).discards_n().get_dim();
             if ((landings_dim11[1] != landings_dim[1]) | (landings_dim11[3] != landings_dim[3])){
@@ -51,7 +51,7 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsA
         }
     }
     // Then the biols
-    for (int biol_no=1; biol_no <= biols_in.get_nbiols();  ++biol_no){
+    for (unsigned int biol_no=1; biol_no <= biols_in.get_nbiols();  ++biol_no){
         std::vector<unsigned int> biol_dim = biols_in(biol_no).n().get_dim();
         if ((landings_dim11[1] != biol_dim[1]) | (landings_dim11[3] != biol_dim[3])){
             Rcpp::stop("In operatingModel constructor. All biols and catches must have the same year and season range.\n");
@@ -86,7 +86,7 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsA
         }
     }
     // Iterations in the control object must be 1 or n
-    int ctrl_iters = ctrl_in.get_niter();
+    unsigned int ctrl_iters = ctrl_in.get_niter();
     if ((ctrl_iters != effort_dim1[5]) & (ctrl_iters != 1)){
         Rcpp::stop("In operatingModel constructor. Iterations in control object must be 1 or same as effort iterations.\n");
     }
@@ -156,7 +156,7 @@ unsigned int operatingModel::get_niter() const{
  */
 bool operatingModel::spawn_before_fishing(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
     // Check indices_min and indices_max are of length 6
-    if (indices_min.size() != 5 | indices_max.size() != 5){
+    if ((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel::spawn_before_fishing subsetter. Indices not of length 5\n");
     }
     auto sbf = false;
@@ -193,7 +193,7 @@ bool operatingModel::spawn_before_fishing(const int biol_no, const std::vector<u
  */
 bool operatingModel::fishing_before_spawn(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
     // Check indices_min and indices_max are of length 6
-    if (indices_min.size() != 5 | indices_max.size() != 5){
+    if ((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel::spawn_before_fishing subsetter. Indices not of length 5\n");
     }
     auto fbs = false;
@@ -231,7 +231,7 @@ bool operatingModel::fishing_before_spawn(const int biol_no, const std::vector<u
  */
 FLQuantAD operatingModel::get_exp_z_pre_spwn(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
     // Check indices_min and indices_max are of length 6
-    if (indices_min.size() != 6 | indices_max.size() != 6){
+    if ((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In operatingModel::get_z_pre_spwn subsetter. Indices not of length 6\n");
     }
     // Make dim of the Fprespwn object: max - min + 1
@@ -246,7 +246,7 @@ FLQuantAD operatingModel::get_exp_z_pre_spwn(const int biol_no, const std::vecto
     const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
     std::vector<unsigned int> indices_min5 = {indices_min[1], indices_min[2], indices_min[3], indices_min[4], indices_min[5]}; 
     std::vector<unsigned int> indices_max5 = {indices_max[1], indices_max[2], indices_max[3], indices_max[4], indices_max[5]}; 
-    for (unsigned int f_counter=0; f_counter < FC.nrow(); ++f_counter){
+    for (int f_counter=0; f_counter < FC.nrow(); ++f_counter){
         FLQuantAD tempf = get_f(FC(f_counter,0), FC(f_counter,1), biol_no, indices_min, indices_max); 
         FLQuant temp_prop_spwn = f_prop_spwn(FC(f_counter,0), biol_no, indices_min5, indices_max5);
         FLQuantAD temp_propf = sweep_mult(tempf, temp_prop_spwn);
@@ -264,14 +264,14 @@ FLQuantAD operatingModel::get_exp_z_pre_spwn(const int biol_no, const std::vecto
     // So we find NA in spwn and replace in exp_z_pre_spwn with 0.0
     FLQuant spwn_temp = biols(biol_no).spwn(indices_min, spwn_indices_max);
     // Hacky because exp_z is age structured and spwn is not
-    for (auto iter_count = 1; iter_count <= qdim[5]; ++iter_count){
-        for (auto area_count = 1; area_count <= qdim[4]; ++area_count){
-            for (auto season_count = 1; season_count <= qdim[3]; ++season_count){
-                for (auto unit_count = 1; unit_count <= qdim[2]; ++unit_count){
-                    for (auto year_count = 1; year_count <= qdim[1]; ++year_count){
+    for (unsigned int iter_count = 1; iter_count <= qdim[5]; ++iter_count){
+        for (unsigned int area_count = 1; area_count <= qdim[4]; ++area_count){
+            for (unsigned int season_count = 1; season_count <= qdim[3]; ++season_count){
+                for (unsigned int unit_count = 1; unit_count <= qdim[2]; ++unit_count){
+                    for (unsigned int year_count = 1; year_count <= qdim[1]; ++year_count){
                         // If spwn is NA set all ages of pre_spwn to 0.0
                         if (Rcpp::NumericVector::is_na(spwn_temp(1,year_count, unit_count, season_count, area_count, iter_count))){
-                            for (auto age_count = 1; age_count <= qdim[0]; ++age_count){
+                            for (unsigned int age_count = 1; age_count <= qdim[0]; ++age_count){
                                 exp_z_pre_spwn(age_count, year_count, unit_count, season_count, area_count, iter_count) = 0.0;
                             }
                         }
@@ -290,7 +290,7 @@ FLQuantAD operatingModel::get_exp_z_pre_spwn(const int biol_no, const std::vecto
  * \param indices_max The maximum indices: year, unit, season, area, iter (length 5).
  */
 FLQuantAD operatingModel::total_srp(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
-    if (indices_min.size() != 5 | indices_max.size() != 5){
+    if ((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel::total_srp subsetter. Indices not of length 5 (no age index)\n");
     }
     FLQuantAD usrp = srp(biol_no, indices_min, indices_max);
@@ -311,7 +311,7 @@ FLQuantAD operatingModel::total_srp(const int biol_no, const std::vector<unsigne
  */
 FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
     // Check indices_min and indices_max are of length 5
-    if (indices_min.size() != 5 | indices_max.size() != 5){
+    if ((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel::srp subsetter. Indices not of length 5\n");
     }
     // Add age range to input indices
@@ -340,7 +340,7 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
  */
 FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
     // Check indices_min and indices_max are of length 5
-    if (indices_min.size() != 5 | indices_max.size() != 5){
+    if ((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel::f_prop_spwn subsetter. Indices not of length 5\n");
     }
     // Make an object to dump the result into
@@ -435,7 +435,7 @@ std::vector<adouble> operatingModel::calc_rec(const unsigned int biol_no, const 
  * \param indices_max The maximum indices quant, year, unit etc (length 6)
 */
 FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if (indices_min.size() != 6 | indices_max.size() != 6){
+    if ((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In operatingModel get_f subsetter. Indices not of length 6\n");
     }
     // Lop off the first value from the indices to get indices without quant - needed for effort and catch_q
@@ -485,9 +485,9 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
  * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
-FLQuantAD operatingModel::get_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
-    unsigned int fishery_no;
-    unsigned int catch_no;
+FLQuantAD operatingModel::get_f(const unsigned int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+    //unsigned int fishery_no;
+    //unsigned int catch_no;
     if (biol_no > biols.get_nbiols()){
         Rcpp::stop("In OM get_f biol. biol_no is greater than number of biols\n");
     }
@@ -496,7 +496,7 @@ FLQuantAD operatingModel::get_f(const int biol_no, const std::vector<unsigned in
     // What happens if no-one is fishing that biol? FC.nrow() == 0 so loop never triggers
     FLQuantAD total_f(indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1, indices_max[5] - indices_min[5] + 1); 
     total_f.fill(0.0);
-    for (unsigned int f_counter=0; f_counter < FC.nrow(); ++f_counter){
+    for (int f_counter=0; f_counter < FC.nrow(); ++f_counter){
         total_f = total_f + get_f(FC(f_counter,0), FC(f_counter,1), biol_no, indices_min, indices_max);
     }
     return total_f;
@@ -532,7 +532,7 @@ FLQuantAD operatingModel::get_f(const int biol_no) const {
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
 FLQuantAD operatingModel::get_nunit_z(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if (indices_min.size() != 6 | indices_max.size() != 6){
+    if ((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In operatingModel get_unit_z subsetter. Indices not of length 6\n");
     }
     FLQuantAD n = biols(biol_no).n(indices_min, indices_max);
@@ -569,7 +569,7 @@ FLQuantAD operatingModel::get_nunit_z(const int biol_no, const std::vector<unsig
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
 FLQuantAD operatingModel::get_nunit_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if (indices_min.size() != 6 | indices_max.size() != 6){
+    if ((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In operatingModel get_nunit_f B subsetter. Indices not of length 6\n");
     }
     // Test for shared catch
@@ -590,7 +590,7 @@ FLQuantAD operatingModel::get_nunit_f(const int biol_no, const std::vector<unsig
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
 FLQuantAD operatingModel::get_nunit_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if (indices_min.size() != 6 | indices_max.size() != 6){
+    if ((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In operatingModel get_nunit_f FCB subsetter. Indices not of length 6\n");
     }
     // Test for shared catch
@@ -614,7 +614,7 @@ FLQuantAD operatingModel::get_nunit_f(const int fishery_no, const int catch_no, 
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
 FLQuantAD operatingModel::survivors(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
-    if (indices_min.size() != 6 | indices_max.size() != 6){
+    if ((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In operatingModel survivors subsetter. Indices not of length 6\n");
     }
     FLQuantAD z_temp = get_f(biol_no, indices_min, indices_max) + biols(biol_no).m(indices_min, indices_max);
@@ -714,7 +714,7 @@ void operatingModel::project_fisheries(const int timestep){
     // Get the Total Z for every biol - order is order of biols in biols list (maybe different to FCB order)
     std::vector<FLQuantAD> total_z(biols.get_nbiols());
     // Fill it up with natural mortality to start with
-    for (int biol_count=1; biol_count <= biols.get_nbiols(); ++biol_count){
+    for (unsigned int biol_count=1; biol_count <= biols.get_nbiols(); ++biol_count){
         std::vector<unsigned int> indices_min{1, year, 1, season, area, 1};
         std::vector<unsigned int> biol_dim = biols(biol_count).n().get_dim();
         std::vector<unsigned int> indices_max{biol_dim[0], year, biol_dim[2], season, area, niter};
@@ -725,7 +725,7 @@ void operatingModel::project_fisheries(const int timestep){
     //Rprintf("Getting total Z and partial F\n");
     Rcpp::IntegerMatrix FCB = ctrl.get_FCB();
     std::vector<FLQuantAD> partial_f(FCB.nrow());
-    for (unsigned int FCB_counter=0; FCB_counter < FCB.nrow(); ++FCB_counter){
+    for (int FCB_counter=0; FCB_counter < FCB.nrow(); ++FCB_counter){
         //Rprintf("FCB counter %i Biol %i\n", FCB_counter, FCB(FCB_counter, 2)); 
         // Indices for subsetting the timestep
         std::vector<unsigned int> indices_min{1, year, 1, season, area, 1};
@@ -740,8 +740,8 @@ void operatingModel::project_fisheries(const int timestep){
     FLQuantAD landings;
     FLQuantAD discards;
     FLQuantAD discards_ratio_temp;
-    for (int fishery_count=1; fishery_count <= fisheries.get_nfisheries(); ++fishery_count){
-        for (int catch_count=1; catch_count <= fisheries(fishery_count).get_ncatches(); ++catch_count){
+    for (unsigned int fishery_count=1; fishery_count <= fisheries.get_nfisheries(); ++fishery_count){
+        for (unsigned int catch_count=1; catch_count <= fisheries(fishery_count).get_ncatches(); ++catch_count){
             //Rprintf("fishery_count: %i catch_count: %i\n", fishery_count, catch_count);
             // Indices for subsetting the timestep
             std::vector<unsigned int> catch_dim = fisheries(fishery_count, catch_count).landings_n().get_dim();
@@ -753,7 +753,7 @@ void operatingModel::project_fisheries(const int timestep){
             FLQuantAD catch_temp(catch_temp_dims, 0.0);
             // Loop over each biol that the FC fishes - a catch can fish more than one biol
             auto biols_fished = ctrl.get_B(fishery_count, catch_count);
-            for (int biol_count=0; biol_count < biols_fished.size(); ++biol_count){
+            for (unsigned int biol_count=0; biol_count < biols_fished.size(); ++biol_count){
                 // Index of total Z
                 unsigned int biol_no = biols_fished[biol_count];
                 // Index of partial f
@@ -821,7 +821,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
     // Loop over targets and solve all simultaneous targets in that target set
     // e.g. With 2 fisheries with 2 efforts, we can set 2 catch targets to be solved at the same time
     // Indexing of targets starts at 1
-    for (auto target_count = 1; target_count <= ntarget; ++target_count){
+    for (unsigned int target_count = 1; target_count <= ntarget; ++target_count){
         if(verbose){Rprintf("\nProcessing target: %i\n", target_count);}
         auto nsim_targets = ctrl.get_nsim_target(target_count);
         if(verbose){Rprintf("Number of simultaneous targets: %i\n", nsim_targets);}
@@ -847,8 +847,8 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         // Update fisheries.effort() with effort multiplier in the effort timestep (area and unit effectively ignored)
         if(verbose){Rprintf("Updating effort with multipler\n");}
         if(verbose){Rprintf("Effort before updating: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));}
-        for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
-            for (int iter_count = 1; iter_count <= niter; ++ iter_count){
+        for (unsigned int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
+            for (unsigned int iter_count = 1; iter_count <= niter; ++ iter_count){
                 fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) = 
                     fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) * 
                     effort_mult_ad[(fisheries_count - 1) * niter + iter_count - 1];
@@ -900,13 +900,13 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         // Check nr_out - if not all 1 then something has gone wrong - flag up warning
         // Each iter has a success code for all sim targets - put them into a matrix
         // Ntarget x iter
-        for (auto iter_count = 0; iter_count < niter; ++iter_count){
+        for (unsigned int iter_count = 0; iter_count < niter; ++iter_count){
             solver_codes(target_count - 1, iter_count) = nr_out[iter_count];
         }
         if(verbose){Rprintf("effort_mult: %f\n", effort_mult[0]);}
         if(verbose){Rprintf("Updating effort with solved effort mult\n");}
-        for (int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
-            for (int iter_count = 1; iter_count <= niter; ++ iter_count){
+        for (unsigned int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
+            for (unsigned int iter_count = 1; iter_count <= niter; ++ iter_count){
                 fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) = 
                    fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) * 
                     effort_mult[(fisheries_count - 1) * niter + iter_count - 1] / effort_mult_initial;
@@ -1192,7 +1192,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
 std::vector<adouble> operatingModel::get_target_value_hat(const int target_no) {
     auto nsim_target = ctrl.get_nsim_target(target_no);
     std::vector<adouble> value;
-    for (auto sim_target_count = 1; sim_target_count <= nsim_target; ++sim_target_count){
+    for (unsigned int sim_target_count = 1; sim_target_count <= nsim_target; ++sim_target_count){
         auto sim_target_value = get_target_value_hat(target_no, sim_target_count);
         value.insert(value.end(), sim_target_value.begin(), sim_target_value.end());
     }
@@ -1282,7 +1282,7 @@ void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_m
     // Are these NAs?
     bool year_na = Rcpp::IntegerVector::is_na(year);
     bool season_na = Rcpp::IntegerVector::is_na(season);
-    bool fishery_na = Rcpp::IntegerVector::is_na(fishery_no);
+    //bool fishery_na = Rcpp::IntegerVector::is_na(fishery_no);
     bool catch_na = Rcpp::IntegerVector::is_na(catch_no);
     bool biol_na = Rcpp::IntegerVector::is_na(biol_no);
     bool min_age_na = Rcpp::IntegerVector::is_na(min_age);
@@ -1365,7 +1365,7 @@ void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_m
 std::vector<double> operatingModel::get_target_value(const int target_no) {
     auto nsim_target = ctrl.get_nsim_target(target_no);
     std::vector<double> value;
-    for (auto sim_target_count = 1; sim_target_count <= nsim_target; ++sim_target_count){
+    for (unsigned int sim_target_count = 1; sim_target_count <= nsim_target; ++sim_target_count){
         auto sim_target_value = get_target_value(target_no, sim_target_count);
         value.insert(value.end(), sim_target_value.begin(), sim_target_value.end());
     }
@@ -1452,7 +1452,7 @@ std::vector<double> operatingModel::get_target_value(const int target_no, const 
  * \param indices_max The maximum indices quant, year, unit etc (length 6)
 */
 FLQuantAD operatingModel::fbar(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 6 | indices_max.size() != 6){
+    if((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In operatingModel fbar FCB method. indices_min and max must be of length 6\n");
     }
     FLQuantAD fbar;
@@ -1475,7 +1475,7 @@ FLQuantAD operatingModel::fbar(const int fishery_no, const int catch_no, const i
  * \param indices_max The maximum indices quant, year, unit etc (length 6)
  */
 FLQuantAD operatingModel::fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 6 | indices_max.size() != 6){
+    if((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In operatingModel fbar B method. indices_min and max must be of length 6\n");
     }
     FLQuantAD fbar;
@@ -1504,7 +1504,7 @@ FLQuantAD operatingModel::fbar(const int biol_no, const std::vector<unsigned int
  * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
  */
 FLQuantAD operatingModel::landings(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 5 | indices_max.size() != 5){
+    if((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel landings on a biol subset method. indices_min and max must be of length 5\n");
     }
     // Indices for the full FLQ, i.e. including first dimension
@@ -1542,7 +1542,7 @@ FLQuantAD operatingModel::landings(const int biol_no, const std::vector<unsigned
  * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
  */
 FLQuantAD operatingModel::discards(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 5 | indices_max.size() != 5){
+    if((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel discards on a biol subset method. indices_min and max must be of length 5\n");
     }
     // Indices for the full FLQ, i.e. including first dimension
@@ -1581,7 +1581,7 @@ FLQuantAD operatingModel::discards(const int biol_no, const std::vector<unsigned
  * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
  */
 FLQuantAD operatingModel::catches(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 5 | indices_max.size() != 5){
+    if((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel catches on a biol subset method. indices_min and max must be of length 5\n");
     }
     FLQuantAD total_catches = landings(biol_no, indices_min, indices_max) + discards(biol_no, indices_min, indices_max);
@@ -1599,7 +1599,7 @@ FLQuantAD operatingModel::catches(const int biol_no, const std::vector<unsigned 
  * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 6)
  */
 FLQuantAD operatingModel::landings_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 6 | indices_max.size() != 6){
+    if((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In operatingModel landings_n on a biol subset method. indices_min and max must be of length 6\n");
     }
     // Empty quant for storage
@@ -1631,7 +1631,7 @@ FLQuantAD operatingModel::landings_n(const int biol_no, const std::vector<unsign
  * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 6)
  */
 FLQuantAD operatingModel::discards_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 6 | indices_max.size() != 6){
+    if((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In operatingModel discards_n on a biol subset method. indices_min and max must be of length 6\n");
     }
     // Empty quant for storage
@@ -1663,7 +1663,7 @@ FLQuantAD operatingModel::discards_n(const int biol_no, const std::vector<unsign
  * \param indices_max maximum indices for subsetting (age - iter, integer vector of length 6)
  */
 FLQuantAD operatingModel::catch_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 6 | indices_max.size() != 6){
+    if((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In operatingModel catch_n on a biol subset method. indices_min and max must be of length 6\n");
     }
     FLQuantAD total_catch_n = landings_n(biol_no, indices_min, indices_max) + discards_n(biol_no, indices_min, indices_max);
@@ -1683,7 +1683,7 @@ FLQuantAD operatingModel::catch_n(const int biol_no, const std::vector<unsigned 
  * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
  */
 FLQuantAD operatingModel::ssb_start(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 5 | indices_max.size() != 5){
+    if((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel ssb_start. indices_min and max must be of length 6\n");
     }
     // Need bigger indices
@@ -1711,7 +1711,7 @@ FLQuantAD operatingModel::ssb_start(const int biol_no,  const std::vector<unsign
  * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
  */
 FLQuantAD operatingModel::biomass_start(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 5 | indices_max.size() != 5){
+    if((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel ssb_start. indices_min and max must be of length 6\n");
     }
     // Need bigger indices
@@ -1739,7 +1739,7 @@ FLQuantAD operatingModel::biomass_start(const int biol_no,  const std::vector<un
  * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
  */
 FLQuantAD operatingModel::ssb_end(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 5 | indices_max.size() != 5){
+    if((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel ssb_end. indices_min and max must be of length 6\n");
     }
     // Need bigger indices
@@ -1768,7 +1768,7 @@ FLQuantAD operatingModel::ssb_end(const int biol_no,  const std::vector<unsigned
  * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
  */
 FLQuantAD operatingModel::biomass_end(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if(indices_min.size() != 5 | indices_max.size() != 5){
+    if((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel biomass_end. indices_min and max must be of length 6\n");
     }
     // Check that only one timestep is asked for
@@ -1800,7 +1800,7 @@ FLQuantAD operatingModel::biomass_end(const int biol_no,  const std::vector<unsi
  */
 FLQuantAD operatingModel::ssb_spawn(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
     // Check indices_min and indices_max are of length 5
-    if (indices_min.size() != 5 | indices_max.size() != 5){
+    if ((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel::ssb_spawn subsetter. Indices not of length 5\n");
     }
     // Check for NA in spwn - if any value of spwn across indices range is NA - stop
@@ -1837,7 +1837,7 @@ FLQuantAD operatingModel::ssb_spawn(const int biol_no,  const std::vector<unsign
  */
 FLQuantAD operatingModel::biomass_spawn(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
     // Check indices_min and indices_max are of length 5
-    if (indices_min.size() != 5 | indices_max.size() != 5){
+    if ((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel::biomass_spawn subsetter. Indices not of length 5\n");
     }
     // Check for NA in spwn - if any value of spwn across indices range is NA - stop
@@ -1875,7 +1875,7 @@ FLQuantAD operatingModel::biomass_spawn(const int biol_no,  const std::vector<un
  */
 FLQuantAD operatingModel::ssb_flash(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) {
     // Check indices_min and indices_max are of length 5
-    if (indices_min.size() != 5 | indices_max.size() != 5){
+    if ((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel::ssb_flash subsetter. Indices not of length 5\n");
     }
     // Check a single timestep
@@ -1939,7 +1939,7 @@ FLQuantAD operatingModel::ssb_flash(const int biol_no,  const std::vector<unsign
  */
 FLQuantAD operatingModel::biomass_flash(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) {
     // Check indices_min and indices_max are of length 5
-    if (indices_min.size() != 5 | indices_max.size() != 5){
+    if ((indices_min.size() != 5) | (indices_max.size() != 5)){
         Rcpp::stop("In operatingModel::biomass_flash subsetter. Indices not of length 5\n");
     }
     // Check a single timestep

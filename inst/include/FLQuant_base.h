@@ -68,7 +68,7 @@ class FLQuant_base {
 		unsigned int get_nseason() const;
 		unsigned int get_narea() const;
 		unsigned int get_niter() const;
-		int get_data_element(const int quant, const int year, const int unit, const int season, const int area, int iter) const;
+		unsigned int get_data_element(const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, unsigned int iter) const;
         int get_first_age() const;
 
 		/* Set accessors */

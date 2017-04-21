@@ -288,7 +288,7 @@ unsigned int FLQuant_base<T>::get_niter() const{
 
 // Note that elements start at 1 NOT 0!
 template <typename T>
-int FLQuant_base<T>::get_data_element(const int quant, const int year, const int unit, const int season, const int area, int iter) const{
+unsigned int FLQuant_base<T>::get_data_element(const unsigned int quant, const unsigned int year, const unsigned int unit, const unsigned int season, const unsigned int area, unsigned int iter) const{
     // Check that quant etc > 0
     if ((quant <= 0) || (year <= 0) || (unit <= 0) || (season <= 0) || (area <= 0) || (iter <= 0)){
             Rcpp::stop("In FLQuant accessor. quant etc must be > 0\n");
@@ -408,12 +408,12 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const unsigned int quant_min, cons
 
     FLQuant_base<T> out(new_dim[0], new_dim[1], new_dim[2], new_dim[3], new_dim[4], new_dim[5]);
     out.set_units(get_units());
-    for (int quant_count = 1; quant_count <= new_dim[0]; ++quant_count){
-        for (int year_count = 1; year_count <= new_dim[1]; ++year_count){
-            for (int unit_count = 1; unit_count <= new_dim[2]; ++unit_count){
-                for (int season_count = 1; season_count <= new_dim[3]; ++season_count){
-                    for (int area_count = 1; area_count <= new_dim[4]; ++area_count){
-                        for (int iter_count = 1; iter_count <= new_dim[5]; ++iter_count){
+    for (unsigned int quant_count = 1; quant_count <= new_dim[0]; ++quant_count){
+        for (unsigned int year_count = 1; year_count <= new_dim[1]; ++year_count){
+            for (unsigned int unit_count = 1; unit_count <= new_dim[2]; ++unit_count){
+                for (unsigned int season_count = 1; season_count <= new_dim[3]; ++season_count){
+                    for (unsigned int area_count = 1; area_count <= new_dim[4]; ++area_count){
+                        for (unsigned int iter_count = 1; iter_count <= new_dim[5]; ++iter_count){
                             unsigned int element_orig = get_data_element(quant_count + quant_min - 1, year_count + year_min - 1, unit_count + unit_min - 1, season_count + season_min - 1, area_count + area_min - 1, iter_count + iter_min - 1);
                             out(quant_count, year_count, unit_count, season_count, area_count, iter_count) = data[element_orig];
     }}}}}}
@@ -428,7 +428,7 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const unsigned int quant_min, cons
     for (int dim_counter = 0; dim_counter < 6; ++dim_counter){ // counts over dims
         temp_old_dimname = Rcpp::as<std::vector<std::string> >(old_dimnames[dim_counter]);
         temp_new_dimname.resize(new_dim[dim_counter]); 
-        for (int counter = 0; counter < new_dim[dim_counter]; ++counter){ // counts along dims
+        for (unsigned int counter = 0; counter < new_dim[dim_counter]; ++counter){ // counts along dims
             temp_new_dimname[counter] = temp_old_dimname[counter + min_dim[dim_counter] - 1];
         }
         new_dimnames[dim_counter] = temp_new_dimname;
@@ -445,7 +445,7 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const unsigned int quant_min, cons
  */
 template <typename T>
 FLQuant_base<T> FLQuant_base<T>::operator () (const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
-    if (indices_min.size() != 6 | indices_max.size() != 6){
+    if ((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In neat FLQuant subsetter. Size of indices_min or max not equal to 6\n");
     }
     return (*this)(indices_min[0], indices_max[0], indices_min[1], indices_max[1], indices_min[2], indices_max[2], indices_min[3], indices_max[3], indices_min[4], indices_max[4], indices_min[5], indices_max[5]);
@@ -474,7 +474,7 @@ void FLQuant_base<T>::set_data(const std::vector<T>& data_in){
 template <typename T>
 void FLQuant_base<T>::set_dimnames(const Rcpp::List& dimnames_in){
     Rcpp::CharacterVector name;
-    int dim_length = 0;
+    unsigned int dim_length = 0;
     for (int i = 0; i <= 5; ++i){
         name = dimnames_in[i];
         dim_length = name.size();
@@ -537,7 +537,7 @@ void FLQuant_base<adouble>::fill(const double value){
  */
 template<typename T>
 void FLQuant_base<T>::insert(const FLQuant_base<T> flq, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max){
-    if (indices_min.size() != 6 | indices_max.size() != 6){
+    if ((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In neat FLQuant subsetter. Size of indices_min or max not equal to 6\n");
     }
     auto dim = get_dim();
@@ -1349,13 +1349,13 @@ FLQuant_base<T> quant_sum(const FLQuant_base<T>& flq){
     // Old school summing - looks ugly
     // Cannot use accumulate() as not defined for adouble
     T sum = 0;
-    for (int iters=1; iters <= flq.get_niter(); ++iters){
-        for (int areas=1; areas <= flq.get_narea(); ++areas){
-            for (int seasons=1; seasons <= flq.get_nseason(); ++seasons){
-                for (int units=1; units <= flq.get_nunit(); ++units){
-                    for (int years=1; years <= flq.get_nyear(); ++years){
+    for (unsigned int iters=1; iters <= flq.get_niter(); ++iters){
+        for (unsigned int areas=1; areas <= flq.get_narea(); ++areas){
+            for (unsigned int seasons=1; seasons <= flq.get_nseason(); ++seasons){
+                for (unsigned int units=1; units <= flq.get_nunit(); ++units){
+                    for (unsigned int years=1; years <= flq.get_nyear(); ++years){
                         sum = 0;
-                        for (int quants=1; quants <= flq.get_nquant(); ++quants){
+                        for (unsigned int quants=1; quants <= flq.get_nquant(); ++quants){
                             sum += flq(quants, years, units, seasons, areas, iters);
                         }
                         sum_flq(1, years, units, seasons, areas, iters) = sum;
@@ -1385,13 +1385,13 @@ FLQuant_base<T> unit_sum(const FLQuant_base<T>& flq){
     // Old school summing - looks ugly
     // Cannot use accumulate() as not defined for adouble
     T sum = 0;
-    for (int iters=1; iters <= flq.get_niter(); ++iters){
-        for (int areas=1; areas <= flq.get_narea(); ++areas){
-            for (int seasons=1; seasons <= flq.get_nseason(); ++seasons){
-                for (int years=1; years <= flq.get_nyear(); ++years){
-                    for (int quants=1; quants <= flq.get_nquant(); ++quants){
+    for (unsigned int iters=1; iters <= flq.get_niter(); ++iters){
+        for (unsigned int areas=1; areas <= flq.get_narea(); ++areas){
+            for (unsigned int seasons=1; seasons <= flq.get_nseason(); ++seasons){
+                for (unsigned int years=1; years <= flq.get_nyear(); ++years){
+                    for (unsigned int quants=1; quants <= flq.get_nquant(); ++quants){
                         sum = 0;
-                        for (int units=1; units <= flq.get_nunit(); ++units){
+                        for (unsigned int units=1; units <= flq.get_nunit(); ++units){
                             sum += flq(quants, years, units, seasons, areas, iters);
                         }
                         sum_flq(quants, years, 1, seasons, areas, iters) = sum;
@@ -1403,11 +1403,11 @@ template <typename T>
 FLQuant_base<T> quant_mean(const FLQuant_base<T>& flq){
     FLQuant_base<T> flq_mean = quant_sum(flq);
     // Divide by dim
-    for (int iters=1; iters <= flq.get_niter(); ++iters){
-        for (int areas=1; areas <= flq.get_narea(); ++areas){
-            for (int seasons=1; seasons <= flq.get_nseason(); ++seasons){
-                for (int units=1; units <= flq.get_nunit(); ++units){
-                    for (int years=1; years <= flq.get_nyear(); ++years){
+    for (unsigned int iters=1; iters <= flq.get_niter(); ++iters){
+        for (unsigned int areas=1; areas <= flq.get_narea(); ++areas){
+            for (unsigned int seasons=1; seasons <= flq.get_nseason(); ++seasons){
+                for (unsigned int units=1; units <= flq.get_nunit(); ++units){
+                    for (unsigned int years=1; years <= flq.get_nyear(); ++years){
                         flq_mean(1, years, units, seasons, areas, iters) = flq_mean(1, years, units, seasons, areas, iters) / flq.get_nquant();
     }}}}}
     return flq_mean;
@@ -1432,13 +1432,13 @@ FLQuant_base<T> max_quant(const FLQuant_base<T>& flq){
     max_flq.set_units(flq.get_units());
     // Old school summing - looks ugly
     T max = 0;
-    for (int iters=1; iters <= flq.get_niter(); ++iters){
-        for (int areas=1; areas <= flq.get_narea(); ++areas){
-            for (int seasons=1; seasons <= flq.get_nseason(); ++seasons){
-                for (int units=1; units <= flq.get_nunit(); ++units){
-                    for (int years=1; years <= flq.get_nyear(); ++years){
+    for (unsigned int iters=1; iters <= flq.get_niter(); ++iters){
+        for (unsigned int areas=1; areas <= flq.get_narea(); ++areas){
+            for (unsigned int seasons=1; seasons <= flq.get_nseason(); ++seasons){
+                for (unsigned int units=1; units <= flq.get_nunit(); ++units){
+                    for (unsigned int years=1; years <= flq.get_nyear(); ++years){
                         max = flq(1, years, units, seasons, areas, iters);
-                        for (int quants=1; quants <= flq.get_nquant(); ++quants){
+                        for (unsigned int quants=1; quants <= flq.get_nquant(); ++quants){
                             //max = fmax(max, flq(quants, years, units, seasons, areas, iters));
                             max = CppAD::CondExpGe(max,flq(quants, years, units, seasons, areas, iters),max, flq(quants, years, units, seasons, areas, iters));
                         }
@@ -1455,12 +1455,12 @@ FLQuant_base<T> scale_by_max_quant(const FLQuant_base<T>& flq){
     // Copy the original FLQ to get the right dim
     FLQuant_base<T> scaled_flq = flq;
     // max_flq.set_units(flq.get_units()); // units should be set to ""
-    for (int iters=1; iters <= flq.get_niter(); ++iters){
-        for (int areas=1; areas <= flq.get_narea(); ++areas){
-            for (int seasons=1; seasons <= flq.get_nseason(); ++seasons){
-                for (int units=1; units <= flq.get_nunit(); ++units){
-                    for (int years=1; years <= flq.get_nyear(); ++years){
-                        for (int quants=1; quants <= flq.get_nquant(); ++quants){
+    for (unsigned int iters=1; iters <= flq.get_niter(); ++iters){
+        for (unsigned int areas=1; areas <= flq.get_narea(); ++areas){
+            for (unsigned int seasons=1; seasons <= flq.get_nseason(); ++seasons){
+                for (unsigned int units=1; units <= flq.get_nunit(); ++units){
+                    for (unsigned int years=1; years <= flq.get_nyear(); ++years){
+                        for (unsigned int quants=1; quants <= flq.get_nquant(); ++quants){
                             scaled_flq(quants, years, units, seasons, areas, iters)  = flq(quants, years, units, seasons, areas, iters) / max_quant_flq(1, years, units, seasons, areas, iters);
                         }
     }}}}}

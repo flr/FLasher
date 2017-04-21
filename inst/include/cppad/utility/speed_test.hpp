@@ -372,7 +372,7 @@ inline void SpeedTest(
 	size_t    size;
 	size_t    repeat;
 	size_t    rate;
-	size_t    digit;
+	//size_t    digit;
 	size_t    ndigit;
 	size_t    pow10;
 	size_t    maxSize;
@@ -443,7 +443,7 @@ inline void SpeedTest(
 		while( ndigit > 0 )
 		{
 			pow10 /= 10;
-			digit  = rate / pow10;
+			//digit  = rate / pow10;
 
 			// convert int(size_t) to avoid warning on _MSC_VER sys
 

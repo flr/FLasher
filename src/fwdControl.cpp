@@ -215,7 +215,7 @@ std::vector<double> fwdControl::get_target_value(const int target_no, const int 
     unsigned int target_element = 0;
     unsigned int target_row = 0;
     target_row = get_target_row(target_no, sim_target_no); // target row is posn. on first dim
-    for (unsigned int iter_count = 0; iter_count < dim[2]; ++iter_count){
+    for (int iter_count = 0; iter_count < dim[2]; ++iter_count){
         target_element = (dim[1] * dim[0] * (iter_count)) + (dim[0] * (col - 1)) + target_row; 
         out[iter_count] = target_iters(target_element);
     }
@@ -352,7 +352,7 @@ Rcpp::IntegerMatrix fwdControl::get_FCB() const{
 // Given the Biol no, what fishery / catch fish it?
 Rcpp::IntegerMatrix fwdControl::get_FC(const int biol_no) const{
     std::vector<int> rows;
-    for (unsigned int row_counter=0; row_counter < FCB.nrow(); ++row_counter){
+    for (int row_counter=0; row_counter < FCB.nrow(); ++row_counter){
         if(FCB(row_counter,2) == biol_no){
             rows.push_back(row_counter);
         }
@@ -366,9 +366,9 @@ Rcpp::IntegerMatrix fwdControl::get_FC(const int biol_no) const{
 }
 
 // Given the Fishery / catch no, what Biols do they fish?
-std::vector<unsigned int> fwdControl::get_B(const unsigned int fishery_no, const unsigned int catch_no) const{
+std::vector<unsigned int> fwdControl::get_B(const int fishery_no, const int catch_no) const{
     std::vector<unsigned int> rows;
-    for (unsigned int row_counter=0; row_counter < FCB.nrow(); ++row_counter){
+    for (int row_counter=0; row_counter < FCB.nrow(); ++row_counter){
         if(FCB(row_counter,0) == fishery_no){
             if(FCB(row_counter,1) == catch_no){
                 rows.push_back(row_counter);
@@ -383,9 +383,9 @@ std::vector<unsigned int> fwdControl::get_B(const unsigned int fishery_no, const
 }
 
 // Given the Biol, what unique Fisheries fish it
-std::vector<unsigned int> fwdControl::get_F(const unsigned int biol_no) const{
+std::vector<unsigned int> fwdControl::get_F(const int biol_no) const{
     std::vector<unsigned int> Fs;
-    for (unsigned int row_counter=0; row_counter < FCB.nrow(); ++row_counter){
+    for (int row_counter=0; row_counter < FCB.nrow(); ++row_counter){
         if(FCB(row_counter,2) == biol_no){
                 Fs.push_back(FCB(row_counter,0));
         }
@@ -412,7 +412,7 @@ unsigned int fwdControl::get_FCB_nrow() const{
  * \param catch_no The position of the catch in the catches list.
  * \param biol_no The position of the biol in the biols list.
  */
-unsigned int fwdControl::get_FCB_row_no(const unsigned int fishery_no, const unsigned int catch_no, const unsigned int biol_no) const{
+unsigned int fwdControl::get_FCB_row_no(const int fishery_no, const int catch_no, const int biol_no) const{
     unsigned int nrow = FCB.nrow();
     unsigned int row_counter = 0;
     bool success = false;
