@@ -363,7 +363,7 @@ setMethod("FCBDrawing", signature(FCB="matrix"),
         for (i in 1:no_catches){
             name <- paste("Catch",i,sep="")
             nchar_name <-  nchar(name)
-            name_cex <- (width * 50) / nchar_name
+            name_cex <- (width * 40) / nchar_name
             catches[[i]] <- new("catchBlock", height = height, width = width, x_centre = x_centres[i], y_centre = y_centre, tail_length=tail_length, name = name, name_cex=name_cex) 
         }
 
@@ -381,7 +381,7 @@ setMethod("FCBDrawing", signature(FCB="matrix"),
             tail_gap <- catches_xrange[2] - catches_xrange[1]
             name <- paste("Fishery",i,sep="")
             nchar_name <-  nchar(name)
-            name_cex <- (width * 50) / nchar_name
+            name_cex <- (width * 40) / nchar_name
             fisheries[[i]] <- new("fisheryBlock", height = height, width = width, x_centre = x_centre, y_centre = y_centre, no_tails = length(FCs), tail_gap = tail_gap, neck_length=neck_length, tail_length=tail_length, name = name, name_cex=name_cex) 
         }
 
@@ -396,7 +396,7 @@ setMethod("FCBDrawing", signature(FCB="matrix"),
         for (i in 1:no_biols){
             name <- paste("Biology",i,sep="")
             nchar_name <-  nchar(name)
-            name_cex <- (width * 50) / nchar_name
+            name_cex <- (width * 40) / nchar_name
             biols[[i]] <- new("biolBlock", height = height, width = width, x_centre = x_centres[i], y_centre = y_centre, neck_length = neck_length, circle_cex = circle_cex, name = name, name_cex=name_cex) 
         }
 

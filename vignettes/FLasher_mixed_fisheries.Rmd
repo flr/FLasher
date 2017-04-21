@@ -26,7 +26,7 @@ library(Rcpp)
 library(FLasher)
 library(ggplotFL)
 library(knitr)
-opts_chunk$set(dev='png', cache=FALSE, fig.width=5, fig.height=4.5, tidy=TRUE, dpi=300, fig.pos='!h')
+opts_chunk$set(dev='png', cache=FALSE, fig.width=6, fig.height=6, tidy=TRUE, dpi=300, fig.pos='!h')
 options(width=60)
 ```
 
@@ -186,7 +186,7 @@ The operating model only has one iteration for clarity.
 The objects have already been created and are loaded here:
 
 ```{r, load_om}
-load("../data/mixed_fishery_example_om.RData")
+data(mixed_fishery_example_om)
 ```
 
 ## Exploring the biological stocks
@@ -194,7 +194,7 @@ load("../data/mixed_fishery_example_om.RData")
 The plaice and sole stocks are based on the life history of plaice and sole in the North Sea.
 They have have Ricker stock-recruitment relationships that are already parameterised.
 
-```{r, plotSRRs, echo=FALSE}
+```{r, plotSRRs, echo=FALSE, fig.cap = "The stock-recruitment relationships of the plaice and sole stocks"}
 ssb <- seq(from=0, to=80000, length=100)
 rec_ple <- predict(biols[["ple"]]@rec@model, biols[["ple"]]@rec@params, ssb=ssb)
 rec_sol <- predict(biols[["sol"]]@rec@model, biols[["sol"]]@rec@params, ssb=ssb)
@@ -249,8 +249,6 @@ Sole is assumed to be 5 times as expensive as plaice.
 Before we do anything complicated, we show a simple example with only a single fishery (the beam trawl) catching a single stock (plaice).
 As there is only 1 fishery, we only have 1 independent variable (the fishing effort) to solve each year to hit the target.
 
-FIGURE
-
 First we make the simple fishery and biology objects based on the ones created above:
 
 ```{r, make_single_f_s}
@@ -264,7 +262,7 @@ biols1 <- FLBiols(ple=biols[["ple"]])
 
 In this first example we set a constant total catch target for 20 years (we assume that there is no fishing in year 1).
 
-```{r, project1}
+```{r}
 catch_target <- 100000
 flasher_ctrl_target <- data.frame(year = 2:20,
                         quant = "catch",
@@ -272,9 +270,19 @@ flasher_ctrl_target <- data.frame(year = 2:20,
                         value = catch_target)
 flasher_ctrl <- fwdControl(flasher_ctrl_target)
 flasher_ctrl@FCB <- matrix(1, nrow=1, ncol=3, dimnames=list(1,c("F","C","B")))
-test <- fwd(object=biols1, fishery=flfs1, control=flasher_ctrl)
 ```
 
+We can draw the fishery system using the *draw()* method:
+
+```{r, fig.cap="A single Fishery with 1 Catch fishing on a single Biol"}
+draw(flasher_ctrl)
+```
+
+We run the projection calling *fwd()*:
+
+```{r, project1}
+test <- fwd(object=biols1, fishery=flfs1, control=flasher_ctrl)
+```
 We can see that the constant catch target has been hit in the target years. 
 The plot also shows the resulting fishing mortality, relative effort, revenue of the fishery and biomass of the stock.
 The biomass is also driven by the stock-recruitment relationship of the stock and the initial dynamics will be affected by the initial age structure.
@@ -291,8 +299,6 @@ plot_biomass(test[["biols"]][[1]],stock_name="Plaice")
 # Example: A single fishery with two stocks
 
 Here, we build on the previous example and introduce the sole stock as an additional catch. 
-
-FIGURE
 
 We still only have one fishery so we still have only one independent variable (the fishing effort) in each year.
 The same fishing effort is applied to both stocks as they are caught by the same fishery.
@@ -317,8 +323,20 @@ flasher_ctrl_target <- data.frame(year = 2:20,
 flasher_ctrl <- fwdControl(flasher_ctrl_target)
 flasher_ctrl@FCB <- matrix(c(1,1,1,2,1,2), nrow=2, ncol=3,
     dimnames=list(1:2,c("F","C","B")))
+```
+
+Take a look at the fishery system:
+
+```{r, fig.cap="A single Fishery with 2 Catches, each fishing on a single Biol"}
+draw(flasher_ctrl)
+```
+
+And project:
+
+```{r}
 test <- fwd(object=biols, fishery=flfs2, control=flasher_ctrl)
 ```
+
 
 We can see that the plaice catch target has been hit. 
 We also look at the resulting sole catches, Fs, relative effort, revenue and biomasses that resulted from fishing at the effort that yielded the plaice target catch.
@@ -414,8 +432,20 @@ flasher_ctrl_target <- data.frame(year = rep(2:20, each=2),
 flasher_ctrl <- fwdControl(flasher_ctrl_target)
 flasher_ctrl@FCB <- matrix(c(1,2,1,1,1,1), nrow=2, ncol=3,
     dimnames=list(1:2,c("F","C","B")))
+```
+Take a look at the fishery system:
+
+
+```{r, fig.cap="Two Fisheries with one Catch each fishing on a single Biol"}
+draw(flasher_ctrl)
+```
+
+And project:
+
+```{r}
 test <- fwd(object=biols3, fishery=flfs3, control=flasher_ctrl)
 ```
+
 
 Both catch targets been hit although this has resulted in increasing fishing mortality on the stock. 
 The plot also shows the partial fishing mortality from each fishery and it can be seen that the most of the fishing mortality comes from the beam trawl fishery.
@@ -479,8 +509,6 @@ Also, the total catches from both fisheries is the same as the total catch targe
 
 In this example we have a full mixed fishery consisting of two fisheries (a beam trawl and a gill net) each of which catch from two stocks (plaice and sole).
 
-FIGURE
-
 We have two independent variables (the fishing effort of the two fisheries) so we need to set two targets for each timestep of the projection.
 However, there is no guarantee that the targets can be met.
 For example, setting a very low total catch of sole and a high total catch of plaice cannot be achieved simultaneously because catching plaice means sole are also caught.
@@ -514,8 +542,20 @@ flasher_ctrl_target <- rbind(flasher_ctrl_target1, flasher_ctrl_target2)
 flasher_ctrl <- fwdControl(flasher_ctrl_target)
 flasher_ctrl@FCB <- matrix(c(1,1,1,1,2,2,2,1,1,2,2,2), byrow=TRUE, ncol=3,
     dimnames=list(1:4,c("F","C","B")))
+```
+
+Take a look at the fishery system:
+
+```{r, fig.cap="Two Fisheries, each with 2 Catches fishing on two Biols"}
+draw(flasher_ctrl)
+```
+
+And project:
+
+```{r}
 test <- fwd(object=biols, fishery=flfs, control=flasher_ctrl)
 ```
+
 
 The total sole catch target from both fisheries has been hit with the gillnet fishery taking more of it.
 The target of relative catches between the fisheries of plaice has also been hit. The beam trawl takes more plaice than the gillnet and this difference is enough to mean that the revenue of the beam trawl is higher than for the gillnet, despite the sole catches of the gillnet being higher than for the beam trawl.
