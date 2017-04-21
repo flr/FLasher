@@ -16,6 +16,8 @@
 \alias{draw-FCBDrawing}
 \alias{draw,matrix-method}
 \alias{draw-matrix}
+\alias{draw,fwdControl-method}
+\alias{draw-fwdControl}
 \title{Generic method for drawing components the FCB matrix}
 \usage{
 draw(object)
@@ -31,6 +33,8 @@ draw(object)
 \S4method{draw}{FCBDrawing}(object)
 
 \S4method{draw}{matrix}(object)
+
+\S4method{draw}{fwdControl}(object)
 }
 \arguments{
 \item{object}{The object - link{basicBlock}, link{biolBlock}, link{fisheryBlock}, link{catchBlock}, link{matrix}, link{FCBDrawing}}
@@ -52,6 +56,8 @@ Method for drawing the catch block of the FCB matrix
 Method for drawing the \link{FCBDrawing} object
 
 Method for drawing the FCB matric
+
+Method for drawing the FCB matric in the \link{fwdControl}
 }
 \examples{
 FCB <- matrix(c(1,1,1,1,2,2,2,1,2,2,2,3,2,2,4), nrow=5, byrow=TRUE)

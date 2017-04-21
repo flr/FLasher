@@ -282,6 +282,17 @@ setMethod("draw", signature(object="matrix"),
         draw(fcbd)
 })
 
+#' Method for drawing the FCB matric in the \link{fwdControl}
+#'
+#' @aliases draw-fwdControl
+#' @rdname draw-FCB
+setMethod("draw", signature(object="fwdControl"),
+    function(object){
+        fcbd <- FCBDrawing(object@FCB)
+        draw(fcbd)
+})
+
+
 #' Generic constructor for making an \link{FCBDrawing} object
 #'
 #' @param FCB The (FCB \link{matrix})
