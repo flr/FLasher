@@ -43,3 +43,19 @@ If you chose 32 bit and 64 bit options during installation of R, when you instal
 
 - RCMD INSTALL --no-multiarch FLasher_XXX
 
+# Notes for distribution
+
+The built package has a size of about 20 Mb making it rather large to distribute as well as producing a Note when R CMD check is run.
+The package size can be reduced to about 10 Mb by removing the Cpp tests (unfortunately, it still triggers the Note from check).
+To remove the Cpp tests prior to building and distributing you must:
+
+* Inside the /src folder, remove all \*.cpp files that begin with *tests*, e.g. tests_FLQuant.cpp.
+* Inside the /tests/testthat folder, remove all the \*.R files that begin with *test-cpp_*, e.g. test-cpp_FLQuant.R
+* Open an R terminal and set the working directory to be the one that has the FLasher source code in it.
+* Run these commands (assuming you have the **devtools** package):
+    + library(devtools)
+    + load_all("FLasher")
+    + document("FLasher, roclets="rd")
+
+You can now rebuild the package without the Cpp tests.
+
