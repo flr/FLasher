@@ -55,7 +55,7 @@ To remove the Cpp tests prior to building and distributing you must:
 * Run these commands (assuming you have the **devtools** package):
     + library(devtools)
     + load_all("FLasher")
-    + document("FLasher, roclets="rd")
+    + document("FLasher", roclets="rd")
 
 You can now rebuild the package without the Cpp tests.
 
