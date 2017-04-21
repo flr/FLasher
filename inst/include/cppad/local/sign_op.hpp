@@ -1,12 +1,12 @@
-/* $Id: sign_op.hpp 3301 2014-05-24 05:20:21Z bradbell $ */
-# ifndef CPPAD_SIGN_OP_INCLUDED
-# define CPPAD_SIGN_OP_INCLUDED
+// $Id: sign_op.hpp 3865 2017-01-19 01:57:55Z bradbell $
+# ifndef CPPAD_LOCAL_SIGN_OP_HPP
+# define CPPAD_LOCAL_SIGN_OP_HPP
 
 /* --------------------------------------------------------------------------
-CppAD: C++ Algorithmic Differentiation: Copyright (C) 2003-14 Bradley M. Bell
+CppAD: C++ Algorithmic Differentiation: Copyright (C) 2003-17 Bradley M. Bell
 
 CppAD is distributed under multiple licenses. This distribution is under
-the terms of the 
+the terms of the
                     GNU General Public License Version 3.
 
 A copy of this license is included in the COPYING file of this distribution.
@@ -14,7 +14,7 @@ Please visit http://www.coin-or.org/CppAD/ for information on other licenses.
 -------------------------------------------------------------------------- */
 
 
-namespace CppAD { // BEGIN_CPPAD_NAMESPACE
+namespace CppAD { namespace local { // BEGIN_CPPAD_LOCAL_NAMESPACE
 /*!
 \file sign_op.hpp
 Forward and reverse mode calculations for z = sign(x).
@@ -28,7 +28,7 @@ The C++ source code corresponding to this operation is
 	z = sign(x)
 \endverbatim
 
-\copydetails forward_unary1_op
+\copydetails CppAD::local::forward_unary1_op
 */
 template <class Base>
 inline void forward_sign_op(
@@ -36,13 +36,12 @@ inline void forward_sign_op(
 	size_t q           ,
 	size_t i_z         ,
 	size_t i_x         ,
-	size_t cap_order   , 
+	size_t cap_order   ,
 	Base*  taylor      )
 {
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(SignOp) == 1 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(SignOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( i_x < i_z );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 	CPPAD_ASSERT_UNKNOWN( p <= q );
 
@@ -65,7 +64,7 @@ The C++ source code corresponding to this operation is
 	z = sign(x)
 \endverbatim
 
-\copydetails forward_unary1_op_dir
+\copydetails CppAD::local::forward_unary1_op_dir
 */
 template <class Base>
 inline void forward_sign_op_dir(
@@ -73,13 +72,12 @@ inline void forward_sign_op_dir(
 	size_t r           ,
 	size_t i_z         ,
 	size_t i_x         ,
-	size_t cap_order   , 
+	size_t cap_order   ,
 	Base*  taylor      )
 {
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(SignOp) == 1 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(SignOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( i_x < i_z );
 	CPPAD_ASSERT_UNKNOWN( 0 < q );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 
@@ -100,20 +98,19 @@ The C++ source code corresponding to this operation is
 	z = sign(x)
 \endverbatim
 
-\copydetails forward_unary1_op_0
+\copydetails CppAD::local::forward_unary1_op_0
 */
 template <class Base>
 inline void forward_sign_op_0(
 	size_t i_z         ,
 	size_t i_x         ,
-	size_t cap_order   , 
+	size_t cap_order   ,
 	Base*  taylor      )
 {
 
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(SignOp) == 1 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(SignOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( i_x < i_z );
 	CPPAD_ASSERT_UNKNOWN( 0 < cap_order );
 
 	// Taylor coefficients corresponding to argument and result
@@ -130,7 +127,7 @@ The C++ source code corresponding to this operation is
 	z = sign(x)
 \endverbatim
 
-\copydetails reverse_unary1_op
+\copydetails CppAD::local::reverse_unary1_op
 */
 
 template <class Base>
@@ -138,15 +135,14 @@ inline void reverse_sign_op(
 	size_t      d            ,
 	size_t      i_z          ,
 	size_t      i_x          ,
-	size_t      cap_order    , 
+	size_t      cap_order    ,
 	const Base* taylor       ,
 	size_t      nc_partial   ,
 	Base*       partial      )
-{	
+{
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(SignOp) == 1 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(SignOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( i_x < i_z );
 	CPPAD_ASSERT_UNKNOWN( d < cap_order );
 	CPPAD_ASSERT_UNKNOWN( d < nc_partial );
 
@@ -154,5 +150,5 @@ inline void reverse_sign_op(
 	return;
 }
 
-} // END_CPPAD_NAMESPACE
+} } // END_CPPAD_LOCAL_NAMESPACE
 # endif

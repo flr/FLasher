@@ -1,12 +1,12 @@
-/* $Id: sin_op.hpp 3301 2014-05-24 05:20:21Z bradbell $ */
-# ifndef CPPAD_SIN_OP_INCLUDED
-# define CPPAD_SIN_OP_INCLUDED
+// $Id: sin_op.hpp 3865 2017-01-19 01:57:55Z bradbell $
+# ifndef CPPAD_LOCAL_SIN_OP_HPP
+# define CPPAD_LOCAL_SIN_OP_HPP
 
 /* --------------------------------------------------------------------------
-CppAD: C++ Algorithmic Differentiation: Copyright (C) 2003-14 Bradley M. Bell
+CppAD: C++ Algorithmic Differentiation: Copyright (C) 2003-17 Bradley M. Bell
 
 CppAD is distributed under multiple licenses. This distribution is under
-the terms of the 
+the terms of the
                     GNU General Public License Version 3.
 
 A copy of this license is included in the COPYING file of this distribution.
@@ -14,7 +14,7 @@ Please visit http://www.coin-or.org/CppAD/ for information on other licenses.
 -------------------------------------------------------------------------- */
 
 
-namespace CppAD { // BEGIN_CPPAD_NAMESPACE
+namespace CppAD { namespace local { // BEGIN_CPPAD_LOCAL_NAMESPACE
 /*!
 \file sin_op.hpp
 Forward and reverse mode calculations for z = sin(x).
@@ -35,7 +35,7 @@ The auxillary result is
 The value of y, and its derivatives, are computed along with the value
 and derivatives of z.
 
-\copydetails forward_unary2_op
+\copydetails CppAD::local::forward_unary2_op
 */
 template <class Base>
 inline void forward_sin_op(
@@ -43,13 +43,12 @@ inline void forward_sin_op(
 	size_t q           ,
 	size_t i_z         ,
 	size_t i_x         ,
-	size_t cap_order   , 
+	size_t cap_order   ,
 	Base*  taylor      )
-{	
+{
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(SinOp) == 1 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(SinOp) == 2 );
-	CPPAD_ASSERT_UNKNOWN( i_x + 1 < i_z );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 	CPPAD_ASSERT_UNKNOWN( p <= q );
 
@@ -93,7 +92,7 @@ The auxillary result is
 The value of y, and its derivatives, are computed along with the value
 and derivatives of z.
 
-\copydetails forward_unary2_op_dir
+\copydetails CppAD::local::forward_unary2_op_dir
 */
 template <class Base>
 inline void forward_sin_op_dir(
@@ -101,13 +100,12 @@ inline void forward_sin_op_dir(
 	size_t r           ,
 	size_t i_z         ,
 	size_t i_x         ,
-	size_t cap_order   , 
+	size_t cap_order   ,
 	Base*  taylor      )
-{	
+{
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(SinOp) == 1 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(SinOp) == 2 );
-	CPPAD_ASSERT_UNKNOWN( i_x + 1 < i_z );
 	CPPAD_ASSERT_UNKNOWN( 0 < q );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 
@@ -148,19 +146,18 @@ The auxillary result is
 \endverbatim
 The value of y is computed along with the value of z.
 
-\copydetails forward_unary2_op_0
+\copydetails CppAD::local::forward_unary2_op_0
 */
 template <class Base>
 inline void forward_sin_op_0(
 	size_t i_z         ,
 	size_t i_x         ,
-	size_t cap_order   , 
+	size_t cap_order   ,
 	Base*  taylor      )
 {
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(SinOp) == 1 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(SinOp) == 2 );
-	CPPAD_ASSERT_UNKNOWN( i_x + 1 < i_z );
 	CPPAD_ASSERT_UNKNOWN( 0 < cap_order );
 
 	// Taylor coefficients corresponding to argument and result
@@ -185,7 +182,7 @@ The auxillary result is
 \endverbatim
 The value of y is computed along with the value of z.
 
-\copydetails reverse_unary2_op
+\copydetails CppAD::local::reverse_unary2_op
 */
 
 template <class Base>
@@ -193,7 +190,7 @@ inline void reverse_sin_op(
 	size_t      d            ,
 	size_t      i_z          ,
 	size_t      i_x          ,
-	size_t      cap_order    , 
+	size_t      cap_order    ,
 	const Base* taylor       ,
 	size_t      nc_partial   ,
 	Base*       partial      )
@@ -201,7 +198,6 @@ inline void reverse_sin_op(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(SinOp) == 1 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(SinOp) == 2 );
-	CPPAD_ASSERT_UNKNOWN( i_x + 1 < i_z );
 	CPPAD_ASSERT_UNKNOWN( d < cap_order );
 	CPPAD_ASSERT_UNKNOWN( d < nc_partial );
 
@@ -217,6 +213,7 @@ inline void reverse_sin_op(
 	const Base* c  = s  - cap_order; // called y in documentation
 	Base* pc       = ps - nc_partial;
 
+
 	// rest of this routine is identical for the following cases:
 	// reverse_sin_op, reverse_cos_op, reverse_sinh_op, reverse_cosh_op.
 	size_t j = d;
@@ -227,18 +224,18 @@ inline void reverse_sin_op(
 		pc[j]   /= Base(j);
 		for(k = 1; k <= j; k++)
 		{
-			px[k]   += ps[j] * Base(k) * c[j-k];
-			px[k]   -= pc[j] * Base(k) * s[j-k];
-	
-			ps[j-k] -= pc[j] * Base(k) * x[k];
-			pc[j-k] += ps[j] * Base(k) * x[k];
+			px[k]   += Base(k) * azmul(ps[j], c[j-k]);
+			px[k]   -= Base(k) * azmul(pc[j], s[j-k]);
+
+			ps[j-k] -= Base(k) * azmul(pc[j], x[k]);
+			pc[j-k] += Base(k) * azmul(ps[j], x[k]);
 
 		}
 		--j;
 	}
-	px[0] += ps[0] * c[0];
-	px[0] -= pc[0] * s[0];
+	px[0] += azmul(ps[0], c[0]);
+	px[0] -= azmul(pc[0], s[0]);
 }
 
-} // END_CPPAD_NAMESPACE
+} } // END_CPPAD_LOCAL_NAMESPACE
 # endif

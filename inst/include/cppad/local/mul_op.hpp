@@ -1,19 +1,19 @@
-/* $Id: mul_op.hpp 3301 2014-05-24 05:20:21Z bradbell $ */
-# ifndef CPPAD_MUL_OP_INCLUDED
-# define CPPAD_MUL_OP_INCLUDED
+// $Id: mul_op.hpp 3865 2017-01-19 01:57:55Z bradbell $
+# ifndef CPPAD_LOCAL_MUL_OP_HPP
+# define CPPAD_LOCAL_MUL_OP_HPP
 
 /* --------------------------------------------------------------------------
-CppAD: C++ Algorithmic Differentiation: Copyright (C) 2003-14 Bradley M. Bell
+CppAD: C++ Algorithmic Differentiation: Copyright (C) 2003-17 Bradley M. Bell
 
 CppAD is distributed under multiple licenses. This distribution is under
-the terms of the 
+the terms of the
                     GNU General Public License Version 3.
 
 A copy of this license is included in the COPYING file of this distribution.
 Please visit http://www.coin-or.org/CppAD/ for information on other licenses.
 -------------------------------------------------------------------------- */
 
-namespace CppAD { // BEGIN_CPPAD_NAMESPACE
+namespace CppAD { namespace local { // BEGIN_CPPAD_LOCAL_NAMESPACE
 /*!
 \file mul_op.hpp
 Forward and reverse mode calculations for z = x * y.
@@ -31,13 +31,13 @@ In the documentation below,
 this operations is for the case where both x and y are variables
 and the argument \a parameter is not used.
 
-\copydetails forward_binary_op
+\copydetails CppAD::local::forward_binary_op
 */
 
 template <class Base>
 inline void forward_mulvv_op(
-	size_t        p           , 
-	size_t        q           , 
+	size_t        p           ,
+	size_t        q           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
@@ -47,8 +47,6 @@ inline void forward_mulvv_op(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(MulvvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(MulvvOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[0]) < i_z );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 	CPPAD_ASSERT_UNKNOWN( p <= q );
 
@@ -75,13 +73,13 @@ In the documentation below,
 this operations is for the case where both x and y are variables
 and the argument \a parameter is not used.
 
-\copydetails forward_binary_op_dir
+\copydetails CppAD::local::forward_binary_op_dir
 */
 
 template <class Base>
 inline void forward_mulvv_op_dir(
-	size_t        q           , 
-	size_t        r           , 
+	size_t        q           ,
+	size_t        r           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
@@ -91,8 +89,6 @@ inline void forward_mulvv_op_dir(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(MulvvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(MulvvOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[0]) < i_z );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
 	CPPAD_ASSERT_UNKNOWN( 0 < q );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 
@@ -105,7 +101,7 @@ inline void forward_mulvv_op_dir(
 	size_t k, ell, m;
 	for(ell = 0; ell < r; ell++)
 	{	m = (q-1)*r + ell + 1;
-		z[m] = x[0] * y[m] + x[m] * y[0]; 
+		z[m] = x[0] * y[m] + x[m] * y[0];
 		for(k = 1; k < q; k++)
 			z[m] += x[(q-k-1)*r + ell + 1] * y[(k-1)*r + ell + 1];
 	}
@@ -122,7 +118,7 @@ In the documentation below,
 this operations is for the case where both x and y are variables
 and the argument \a parameter is not used.
 
-\copydetails forward_binary_op_0
+\copydetails CppAD::local::forward_binary_op_0
 */
 
 template <class Base>
@@ -136,8 +132,6 @@ inline void forward_mulvv_op_0(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(MulvvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(MulvvOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[0]) < i_z );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
 
 	// Taylor coefficients corresponding to arguments and result
 	Base* x = taylor + arg[0] * cap_order;
@@ -158,12 +152,12 @@ In the documentation below,
 this operations is for the case where both x and y are variables
 and the argument \a parameter is not used.
 
-\copydetails reverse_binary_op
+\copydetails CppAD::local::reverse_binary_op
 */
 
 template <class Base>
 inline void reverse_mulvv_op(
-	size_t        d           , 
+	size_t        d           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
@@ -175,8 +169,6 @@ inline void reverse_mulvv_op(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(MulvvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(MulvvOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[0]) < i_z );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
 	CPPAD_ASSERT_UNKNOWN( d < cap_order );
 	CPPAD_ASSERT_UNKNOWN( d < nc_partial );
 
@@ -196,9 +188,9 @@ inline void reverse_mulvv_op(
 	while(j)
 	{	--j;
 		for(k = 0; k <= j; k++)
-		{	
-			px[j-k] += pz[j] * y[k];
-			py[k]   += pz[j] * x[j-k];
+		{
+			px[j-k] += azmul(pz[j], y[k]);
+			py[k]   += azmul(pz[j], x[j-k]);
 		}
 	}
 }
@@ -213,13 +205,13 @@ The C++ source code corresponding to this operation is
 In the documentation below,
 this operations is for the case where x is a parameter and y is a variable.
 
-\copydetails forward_binary_op
+\copydetails CppAD::local::forward_binary_op
 */
 
 template <class Base>
 inline void forward_mulpv_op(
-	size_t        p           , 
-	size_t        q           , 
+	size_t        p           ,
+	size_t        q           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
@@ -229,7 +221,6 @@ inline void forward_mulpv_op(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(MulpvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(MulpvOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 	CPPAD_ASSERT_UNKNOWN( p <= q );
 
@@ -253,13 +244,13 @@ The C++ source code corresponding to this operation is
 In the documentation below,
 this operations is for the case where x is a parameter and y is a variable.
 
-\copydetails forward_binary_op_dir
+\copydetails CppAD::local::forward_binary_op_dir
 */
 
 template <class Base>
 inline void forward_mulpv_op_dir(
-	size_t        q           , 
-	size_t        r           , 
+	size_t        q           ,
+	size_t        r           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
@@ -269,7 +260,6 @@ inline void forward_mulpv_op_dir(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(MulpvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(MulpvOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
 	CPPAD_ASSERT_UNKNOWN( 0 < q );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 
@@ -295,7 +285,7 @@ The C++ source code corresponding to this operation is
 In the documentation below,
 this operations is for the case where x is a parameter and y is a variable.
 
-\copydetails forward_binary_op_0
+\copydetails CppAD::local::forward_binary_op_0
 */
 
 template <class Base>
@@ -309,7 +299,6 @@ inline void forward_mulpv_op_0(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(MulpvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(MulpvOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
 
 	// Paraemter value
 	Base x = parameter[ arg[0] ];
@@ -331,12 +320,12 @@ The C++ source code corresponding to this operation is
 In the documentation below,
 this operations is for the case where x is a parameter and y is a variable.
 
-\copydetails reverse_binary_op
+\copydetails CppAD::local::reverse_binary_op
 */
 
 template <class Base>
 inline void reverse_mulpv_op(
-	size_t        d           , 
+	size_t        d           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
@@ -346,9 +335,8 @@ inline void reverse_mulpv_op(
 	Base*         partial     )
 {
 	// check assumptions
-	CPPAD_ASSERT_UNKNOWN( NumArg(MulvvOp) == 2 );
-	CPPAD_ASSERT_UNKNOWN( NumRes(MulvvOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
+	CPPAD_ASSERT_UNKNOWN( NumArg(MulpvOp) == 2 );
+	CPPAD_ASSERT_UNKNOWN( NumRes(MulpvOp) == 1 );
 	CPPAD_ASSERT_UNKNOWN( d < cap_order );
 	CPPAD_ASSERT_UNKNOWN( d < nc_partial );
 
@@ -363,10 +351,10 @@ inline void reverse_mulpv_op(
 	size_t j = d + 1;
 	while(j)
 	{	--j;
-		py[j] += pz[j] * x;
+		py[j] += azmul(pz[j], x);
 	}
 }
 
 
-} // END_CPPAD_NAMESPACE
+} } // END_CPPAD_LOCAL_NAMESPACE
 # endif

@@ -1,19 +1,19 @@
-/* $Id: pow_op.hpp 3301 2014-05-24 05:20:21Z bradbell $ */
-# ifndef CPPAD_POW_OP_INCLUDED
-# define CPPAD_POW_OP_INCLUDED
+// $Id: pow_op.hpp 3865 2017-01-19 01:57:55Z bradbell $
+# ifndef CPPAD_LOCAL_POW_OP_HPP
+# define CPPAD_LOCAL_POW_OP_HPP
 
 /* --------------------------------------------------------------------------
-CppAD: C++ Algorithmic Differentiation: Copyright (C) 2003-14 Bradley M. Bell
+CppAD: C++ Algorithmic Differentiation: Copyright (C) 2003-17 Bradley M. Bell
 
 CppAD is distributed under multiple licenses. This distribution is under
-the terms of the 
+the terms of the
                     GNU General Public License Version 3.
 
 A copy of this license is included in the COPYING file of this distribution.
 Please visit http://www.coin-or.org/CppAD/ for information on other licenses.
 -------------------------------------------------------------------------- */
 
-namespace CppAD { // BEGIN_CPPAD_NAMESPACE
+namespace CppAD { namespace local { // BEGIN_CPPAD_LOCAL_NAMESPACE
 /*!
 \file pow_op.hpp
 Forward and reverse mode calculations for z = pow(x, y).
@@ -27,13 +27,13 @@ In the documentation below,
 this operations is for the case where both x and y are variables
 and the argument \a parameter is not used.
 
-\copydetails forward_pow_op
+\copydetails CppAD::local::forward_pow_op
 */
 
 template <class Base>
 inline void forward_powvv_op(
-	size_t        p           , 
-	size_t        q           , 
+	size_t        p           ,
+	size_t        q           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
@@ -46,8 +46,6 @@ inline void forward_powvv_op(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(PowvvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(PowvvOp) == 3 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[0]) < i_z );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 	CPPAD_ASSERT_UNKNOWN( p <= q );
 
@@ -84,13 +82,13 @@ The C++ source code corresponding to this operation is
 In the documentation below,
 this operations is for the case where x is a variable and y is a parameter.
 
-\copydetails forward_pow_op_dir
+\copydetails CppAD::local::forward_pow_op_dir
 */
 
 template <class Base>
 inline void forward_powvv_op_dir(
-	size_t        q           , 
-	size_t        r           , 
+	size_t        q           ,
+	size_t        r           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
@@ -103,7 +101,6 @@ inline void forward_powvv_op_dir(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(PowvvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(PowvvOp) == 3 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[0]) < i_z );
 	CPPAD_ASSERT_UNKNOWN( 0 < q );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 
@@ -130,7 +127,7 @@ In the documentation below,
 this operations is for the case where both x and y are variables
 and the argument \a parameter is not used.
 
-\copydetails forward_pow_op_0
+\copydetails CppAD::local::forward_pow_op_0
 */
 
 template <class Base>
@@ -147,8 +144,6 @@ inline void forward_powvv_op_0(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(PowvvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(PowvvOp) == 3 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[0]) < i_z );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
 
 	// Taylor coefficients corresponding to arguments and result
 	Base* x   = taylor + arg[0] * cap_order;
@@ -174,12 +169,12 @@ In the documentation below,
 this operations is for the case where both x and y are variables
 and the argument \a parameter is not used.
 
-\copydetails reverse_pow_op
+\copydetails CppAD::local::reverse_pow_op
 */
 
 template <class Base>
 inline void reverse_powvv_op(
-	size_t        d           , 
+	size_t        d           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
@@ -194,8 +189,6 @@ inline void reverse_powvv_op(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(PowvvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(PowvvOp) == 3 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[0]) < i_z );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
 	CPPAD_ASSERT_UNKNOWN( d < cap_order );
 	CPPAD_ASSERT_UNKNOWN( d < nc_partial );
 
@@ -229,13 +222,13 @@ The C++ source code corresponding to this operation is
 In the documentation below,
 this operations is for the case where x is a parameter and y is a variable.
 
-\copydetails forward_pow_op
+\copydetails CppAD::local::forward_pow_op
 */
 
 template <class Base>
 inline void forward_powpv_op(
-	size_t        p           , 
-	size_t        q           , 
+	size_t        p           ,
+	size_t        q           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
@@ -248,7 +241,6 @@ inline void forward_powpv_op(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(PowpvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(PowpvOp) == 3 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 	CPPAD_ASSERT_UNKNOWN( p <= q );
 
@@ -267,11 +259,11 @@ inline void forward_powpv_op(
 	// z_1 = z_0 * y
 	addr_t adr[2];
 	// offset of z_i in taylor (as if it were a parameter); i.e., log(x)
-	adr[0] = i_z * cap_order; 
+	adr[0] = i_z * cap_order;
 	// offset of y in taylor (as a variable)
 	adr[1] = arg[1];
 
-	// Trick: use taylor both for the parameter vector and variable values 
+	// Trick: use taylor both for the parameter vector and variable values
 	forward_mulpv_op(p, q, i_z+1, adr, taylor, cap_order, taylor);
 
 	// z_2 = exp(z_1)
@@ -295,26 +287,25 @@ The C++ source code corresponding to this operation is
 In the documentation below,
 this operations is for the case where x is a parameter and y is a variable.
 
-\copydetails forward_pow_op_dir
+\copydetails CppAD::local::forward_pow_op_dir
 */
 
 template <class Base>
 inline void forward_powpv_op_dir(
-	size_t        q           , 
-	size_t        r           , 
+	size_t        q           ,
+	size_t        r           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
 	size_t        cap_order   ,
 	Base*         taylor      )
-{	
+{
 	// convert from final result to first result
 	i_z -= 2; // 2 = NumRes(PowpvOp) - 1;
 
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(PowpvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(PowpvOp) == 3 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
 	CPPAD_ASSERT_UNKNOWN( 0 < q );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 
@@ -334,7 +325,7 @@ inline void forward_powpv_op_dir(
 	// ofset of y in taylor (as a variable)
 	adr[1] = arg[1];
 
-	// Trick: use taylor both for the parameter vector and variable values 
+	// Trick: use taylor both for the parameter vector and variable values
 	forward_mulpv_op_dir(q, r, i_z+1, adr, taylor, cap_order, taylor);
 
 	// z_2 = exp(z_1)
@@ -350,7 +341,7 @@ The C++ source code corresponding to this operation is
 In the documentation below,
 this operations is for the case where x is a parameter and y is a variable.
 
-\copydetails forward_pow_op_0
+\copydetails CppAD::local::forward_pow_op_0
 */
 
 template <class Base>
@@ -367,7 +358,6 @@ inline void forward_powpv_op_0(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(PowpvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(PowpvOp) == 3 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
 
 	// Paraemter value
 	Base x = parameter[ arg[0] ];
@@ -399,12 +389,12 @@ The C++ source code corresponding to this operation is
 In the documentation below,
 this operations is for the case where x is a parameter and y is a variable.
 
-\copydetails reverse_pow_op
+\copydetails CppAD::local::reverse_pow_op
 */
 
 template <class Base>
 inline void reverse_powpv_op(
-	size_t        d           , 
+	size_t        d           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
@@ -419,7 +409,6 @@ inline void reverse_powpv_op(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(PowvvOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(PowvvOp) == 3 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < i_z );
 	CPPAD_ASSERT_UNKNOWN( d < cap_order );
 	CPPAD_ASSERT_UNKNOWN( d < nc_partial );
 
@@ -430,7 +419,7 @@ inline void reverse_powpv_op(
 
 	// z_1 = z_0 * y
 	addr_t adr[2];
-	adr[0] = i_z * cap_order; // offset of z_0[0] in taylor 
+	adr[0] = i_z * cap_order; // offset of z_0[0] in taylor
 	adr[1] = arg[1];          // index of y in taylor and partial
 	// use taylor both for parameter and variable values
 	reverse_mulpv_op(
@@ -452,13 +441,13 @@ The C++ source code corresponding to this operation is
 In the documentation below,
 this operations is for the case where x is a variable and y is a parameter.
 
-\copydetails forward_pow_op
+\copydetails CppAD::local::forward_pow_op
 */
 
 template <class Base>
 inline void forward_powvp_op(
-	size_t        p           , 
-	size_t        q           , 
+	size_t        p           ,
+	size_t        q           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
@@ -471,7 +460,6 @@ inline void forward_powvp_op(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(PowvpOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(PowvpOp) == 3 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[0]) < i_z );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 	CPPAD_ASSERT_UNKNOWN( p <= q );
 
@@ -506,13 +494,13 @@ The C++ source code corresponding to this operation is
 In the documentation below,
 this operations is for the case where x is a variable and y is a parameter.
 
-\copydetails forward_pow_op_dir
+\copydetails CppAD::local::forward_pow_op_dir
 */
 
 template <class Base>
 inline void forward_powvp_op_dir(
-	size_t        q           , 
-	size_t        r           , 
+	size_t        q           ,
+	size_t        r           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
@@ -525,7 +513,6 @@ inline void forward_powvp_op_dir(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(PowvpOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(PowvpOp) == 3 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[0]) < i_z );
 	CPPAD_ASSERT_UNKNOWN( 0 < q );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 
@@ -552,7 +539,7 @@ The C++ source code corresponding to this operation is
 In the documentation below,
 this operations is for the case where x is a variable and y is a parameter.
 
-\copydetails forward_pow_op_0
+\copydetails CppAD::local::forward_pow_op_0
 */
 
 template <class Base>
@@ -569,7 +556,6 @@ inline void forward_powvp_op_0(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(PowvpOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(PowvpOp) == 3 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[0]) < i_z );
 
 	// Paraemter value
 	Base y = parameter[ arg[1] ];
@@ -601,12 +587,12 @@ The C++ source code corresponding to this operation is
 In the documentation below,
 this operations is for the case where x is a variable and y is a parameter.
 
-\copydetails reverse_pow_op
+\copydetails CppAD::local::reverse_pow_op
 */
 
 template <class Base>
 inline void reverse_powvp_op(
-	size_t        d           , 
+	size_t        d           ,
 	size_t        i_z         ,
 	const addr_t* arg         ,
 	const Base*   parameter   ,
@@ -621,7 +607,6 @@ inline void reverse_powvp_op(
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(PowvpOp) == 2 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(PowvpOp) == 3 );
-	CPPAD_ASSERT_UNKNOWN( size_t(arg[0]) < i_z );
 	CPPAD_ASSERT_UNKNOWN( d < cap_order );
 	CPPAD_ASSERT_UNKNOWN( d < nc_partial );
 
@@ -644,5 +629,5 @@ inline void reverse_powvp_op(
 	);
 }
 
-} // END_CPPAD_NAMESPACE
+} } // END_CPPAD_LOCAL_NAMESPACE
 # endif

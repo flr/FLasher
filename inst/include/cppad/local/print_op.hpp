@@ -1,12 +1,12 @@
-/* $Id: print_op.hpp 3301 2014-05-24 05:20:21Z bradbell $ */
-# ifndef CPPAD_PRINT_OP_INCLUDED
-# define CPPAD_PRINT_OP_INCLUDED
+// $Id: print_op.hpp 3845 2016-11-19 01:50:47Z bradbell $
+# ifndef CPPAD_LOCAL_PRINT_OP_HPP
+# define CPPAD_LOCAL_PRINT_OP_HPP
 
 /* --------------------------------------------------------------------------
-CppAD: C++ Algorithmic Differentiation: Copyright (C) 2003-14 Bradley M. Bell
+CppAD: C++ Algorithmic Differentiation: Copyright (C) 2003-16 Bradley M. Bell
 
 CppAD is distributed under multiple licenses. This distribution is under
-the terms of the 
+the terms of the
                     GNU General Public License Version 3.
 
 A copy of this license is included in the COPYING file of this distribution.
@@ -14,7 +14,7 @@ Please visit http://www.coin-or.org/CppAD/ for information on other licenses.
 -------------------------------------------------------------------------- */
 
 
-namespace CppAD { // BEGIN_CPPAD_NAMESPACE
+namespace CppAD { namespace local { // BEGIN_CPPAD_LOCAL_NAMESPACE
 /*!
 Print operation for parameters; i.e., op = PriOp.
 
@@ -29,15 +29,11 @@ and the print occurs during the zero order forward mode computation.
 
 \tparam Base
 base type for the operator; i.e., this operation was recorded
-using AD< \a Base > and computations by this routine are done using type 
+using AD< \a Base > and computations by this routine are done using type
 \a Base .
 
 \param s_out
 the results are printed on this output stream.
-
-\param i_z
-is the index of the next variable on the tape
-(only used for error checking).
 
 \param arg
 \a arg[0] & 1
@@ -100,13 +96,12 @@ Contains the value of variables.
 \li NumRes(PriOp)  == 0
 \li text          !=  CPPAD_NULL
 \li arg[1]         <  num_text
-\li if \a pos is a variable, arg[1] < i_z, otherwise arg[1] < num_par
-\li if \a var is a variable, arg[3] < i_z, otherwise arg[3] < num_par
+\li if \a pos is a parameter, arg[1] < num_par
+\li if \a var is a parameter, arg[3] < num_par
 */
 template <class Base>
 inline void forward_pri_0(
-	std::ostream& s_out       ,
-	size_t        i_z         ,
+//	std::ostream& s_out       ,
 	const addr_t* arg         ,
 	size_t        num_text    ,
 	const char*   text        ,
@@ -121,8 +116,7 @@ inline void forward_pri_0(
 
 	// pos
 	if( arg[0] & 1 )
-	{	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) <= i_z );
-		pos = taylor[ arg[1] * cap_order + 0 ];
+	{	pos = taylor[ arg[1] * cap_order + 0 ];
 	}
 	else
 	{	CPPAD_ASSERT_UNKNOWN( size_t(arg[1]) < num_par );
@@ -135,8 +129,7 @@ inline void forward_pri_0(
 
 	// var
 	if( arg[0] & 2 )
-	{	CPPAD_ASSERT_UNKNOWN( size_t(arg[3]) <= i_z );
-		var = taylor[ arg[3] * cap_order + 0 ];
+	{	var = taylor[ arg[3] * cap_order + 0 ];
 	}
 	else
 	{	CPPAD_ASSERT_UNKNOWN( size_t(arg[3]) < num_par );
@@ -148,8 +141,10 @@ inline void forward_pri_0(
 	after = text + arg[4];
 
 	if( ! GreaterThanZero( pos ) )
-		s_out << before << var << after;
+    {
+	//	s_out << before << var << after;
+    	}
 }
 
-} // END_CPPAD_NAMESPACE
+} } // END_CPPAD_LOCAL_NAMESPACE
 # endif

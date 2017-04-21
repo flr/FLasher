@@ -1,19 +1,19 @@
-/* $Id: log_op.hpp 3301 2014-05-24 05:20:21Z bradbell $ */
-# ifndef CPPAD_LOG_OP_INCLUDED
-# define CPPAD_LOG_OP_INCLUDED
+// $Id: log_op.hpp 3865 2017-01-19 01:57:55Z bradbell $
+# ifndef CPPAD_LOCAL_LOG_OP_HPP
+# define CPPAD_LOCAL_LOG_OP_HPP
 
 /* --------------------------------------------------------------------------
-CppAD: C++ Algorithmic Differentiation: Copyright (C) 2003-14 Bradley M. Bell
+CppAD: C++ Algorithmic Differentiation: Copyright (C) 2003-17 Bradley M. Bell
 
 CppAD is distributed under multiple licenses. This distribution is under
-the terms of the 
+the terms of the
                     GNU General Public License Version 3.
 
 A copy of this license is included in the COPYING file of this distribution.
 Please visit http://www.coin-or.org/CppAD/ for information on other licenses.
 -------------------------------------------------------------------------- */
 
-namespace CppAD { // BEGIN_CPPAD_NAMESPACE
+namespace CppAD { namespace local { // BEGIN_CPPAD_LOCAL_NAMESPACE
 /*!
 \file log_op.hpp
 Forward and reverse mode calculations for z = log(x).
@@ -27,7 +27,7 @@ The C++ source code corresponding to this operation is
 	z = log(x)
 \endverbatim
 
-\copydetails forward_unary1_op
+\copydetails CppAD::local::forward_unary1_op
 */
 template <class Base>
 inline void forward_log_op(
@@ -35,15 +35,14 @@ inline void forward_log_op(
 	size_t q           ,
 	size_t i_z         ,
 	size_t i_x         ,
-	size_t cap_order   , 
+	size_t cap_order   ,
 	Base*  taylor      )
-{	
+{
 	size_t k;
 
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(LogOp) == 1 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(LogOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( i_x < i_z );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 	CPPAD_ASSERT_UNKNOWN( p <= q );
 
@@ -80,7 +79,7 @@ The C++ source code corresponding to this operation is
 	z = log(x)
 \endverbatim
 
-\copydetails forward_unary1_op_dir
+\copydetails CppAD::local::forward_unary1_op_dir
 */
 template <class Base>
 inline void forward_log_op_dir(
@@ -88,14 +87,13 @@ inline void forward_log_op_dir(
 	size_t r           ,
 	size_t i_z         ,
 	size_t i_x         ,
-	size_t cap_order   , 
+	size_t cap_order   ,
 	Base*  taylor      )
-{	
+{
 
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(LogOp) == 1 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(LogOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( i_x < i_z );
 	CPPAD_ASSERT_UNKNOWN( 0 < q );
 	CPPAD_ASSERT_UNKNOWN( q < cap_order );
 
@@ -110,7 +108,7 @@ inline void forward_log_op_dir(
 		for(size_t k = 1; k < q; k++)
 			z[m+ell] -= Base(k) * z[(k-1)*r+1+ell] * x[(q-k-1)*r+1+ell];
 		z[m+ell] /= (Base(q) * x[0]);
-	}	
+	}
 }
 
 /*!
@@ -121,20 +119,19 @@ The C++ source code corresponding to this operation is
 	z = log(x)
 \endverbatim
 
-\copydetails forward_unary1_op_0
+\copydetails CppAD::local::forward_unary1_op_0
 */
 template <class Base>
 inline void forward_log_op_0(
 	size_t i_z         ,
 	size_t i_x         ,
-	size_t cap_order   , 
+	size_t cap_order   ,
 	Base*  taylor      )
 {
 
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(LogOp) == 1 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(LogOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( i_x < i_z );
 	CPPAD_ASSERT_UNKNOWN( 0 < cap_order );
 
 	// Taylor coefficients corresponding to argument and result
@@ -152,7 +149,7 @@ The C++ source code corresponding to this operation is
 	z = log(x)
 \endverbatim
 
-\copydetails reverse_unary1_op
+\copydetails CppAD::local::reverse_unary1_op
 */
 
 template <class Base>
@@ -160,16 +157,15 @@ inline void reverse_log_op(
 	size_t      d            ,
 	size_t      i_z          ,
 	size_t      i_x          ,
-	size_t      cap_order    , 
+	size_t      cap_order    ,
 	const Base* taylor       ,
 	size_t      nc_partial   ,
 	Base*       partial      )
-{	size_t j, k;	
+{	size_t j, k;
 
 	// check assumptions
 	CPPAD_ASSERT_UNKNOWN( NumArg(LogOp) == 1 );
 	CPPAD_ASSERT_UNKNOWN( NumRes(LogOp) == 1 );
-	CPPAD_ASSERT_UNKNOWN( i_x < i_z );
 	CPPAD_ASSERT_UNKNOWN( d < cap_order );
 	CPPAD_ASSERT_UNKNOWN( d < nc_partial );
 
@@ -181,25 +177,27 @@ inline void reverse_log_op(
 	const Base* z  = taylor  + i_z * cap_order;
 	Base* pz       = partial + i_z * nc_partial;
 
+	Base inv_x0 = Base(1) / x[0];
+
 	j = d;
 	while(j)
 	{	// scale partial w.r.t z[j]
-		pz[j]   /= x[0];
+		pz[j]   = azmul(pz[j]   , inv_x0);
 
-		px[0]   -= pz[j] * z[j];
+		px[0]   -= azmul(pz[j], z[j]);
 		px[j]   += pz[j];
 
 		// further scale partial w.r.t. z[j]
 		pz[j]   /= Base(j);
 
 		for(k = 1; k < j; k++)
-		{	pz[k]   -= pz[j] * Base(k) * x[j-k];
-			px[j-k] -= pz[j] * Base(k) * z[k];
+		{	pz[k]   -= Base(k) * azmul(pz[j], x[j-k]);
+			px[j-k] -= Base(k) * azmul(pz[j], z[k]);
 		}
 		--j;
 	}
-	px[0] += pz[0] / x[0];
+	px[0] += azmul(pz[0], inv_x0);
 }
 
-} // END_CPPAD_NAMESPACE
+} } // END_CPPAD_LOCAL_NAMESPACE
 # endif
