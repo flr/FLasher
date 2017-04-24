@@ -252,6 +252,11 @@ test_that("FLQuant and FLQuantAD summary functions", {
     expect_identical(dimnames(flq_out), dimnames(flq_sum))
     expect_identical(units(flq_out), units(flq_sum))
     expect_equal(flq_out, flq_sum) 
+    # Year sum
+    flq_in <- random_FLQuant_generator(min_dims=c(2,2,2,2,2,2))
+    flq_out <- test_FLQuant_year_sum(flq_in)
+    flq_sum <- yearSums(flq_in)
+    expect_FLQuant_equal(flq_out, flq_sum)
     # Adolc unit_sum
     flq_out <- test_FLQuantAD_unit_sum(flq_in)
     flq_sum <- unitSums(flq_in)
@@ -268,6 +273,11 @@ test_that("FLQuant and FLQuantAD summary functions", {
     expect_identical(dimnames(flq_out), dimnames(flq_mean))
     expect_identical(units(flq_out), units(flq_mean))
     expect_equal(flq_out, flq_mean) # Not using identical as small numeric differences as + mathematical operation - see above
+    # year mean
+    flq_in <- random_FLQuant_generator()
+    flq_out <- test_FLQuant_year_mean(flq_in)
+    flq_mean <- yearMeans(flq_in)
+    expect_FLQuant_equal(flq_out, flq_mean)
     # Adolc quant mean
     flq_out <- test_FLQuantAD_quant_mean(flq_in)
     flq_mean <- quantMeans(flq_in)

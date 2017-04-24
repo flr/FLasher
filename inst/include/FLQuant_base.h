@@ -3,7 +3,8 @@
  * Maintainer: Finlay Scott, JRC
  */
 
-#include <cppad/cppad.hpp> // CppAD package http://www.coin-or.org/CppAD/
+//#include <cppad/cppad.hpp> // CppAD package http://www.coin-or.org/CppAD/
+#include "cppad/cppad.hpp" // CppAD package http://www.coin-or.org/CppAD/
 
 #include <Rcpp.h>
 
@@ -328,6 +329,9 @@ FLQuant_base<T> unit_sum(const FLQuant_base<T>& flq);
 // Means over various dimensions
 template <typename T>
 FLQuant_base<T> quant_mean(const FLQuant_base<T>& flq);  // collapse the quant dimension
+
+template <typename T>
+FLQuant_base<T> year_mean(const FLQuant_base<T>& flq);  // collapse the year dimension
 
 template <typename T>
 FLQuant_base<T> max_quant(const FLQuant_base<T>& flq);

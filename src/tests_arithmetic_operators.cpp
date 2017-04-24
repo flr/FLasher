@@ -695,6 +695,23 @@ FLQuant test_FLQuant_quant_mean(FLQuant flq){
     return flq_out;
 }
 
+// year_sum
+//'@rdname FLR-arithmetic-cpp-tests
+// [[Rcpp::export]]
+FLQuant test_FLQuant_year_sum(FLQuant flq){
+    FLQuant flq_out = year_sum(flq);
+    return flq_out;
+}
+
+// year_mean
+//'@rdname FLR-arithmetic-cpp-tests
+// [[Rcpp::export]]
+FLQuant test_FLQuant_year_mean(FLQuant flq){
+    FLQuant flq_out = year_mean(flq);
+    return flq_out;
+}
+
+
 //'@rdname FLR-arithmetic-cpp-tests
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_quant_mean(FLQuantAD flq){

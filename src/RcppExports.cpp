@@ -977,6 +977,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// test_FLQuant_year_sum
+FLQuant test_FLQuant_year_sum(FLQuant flq);
+RcppExport SEXP FLasher_test_FLQuant_year_sum(SEXP flqSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_FLQuant_year_sum(flq));
+    return rcpp_result_gen;
+END_RCPP
+}
+// test_FLQuant_year_mean
+FLQuant test_FLQuant_year_mean(FLQuant flq);
+RcppExport SEXP FLasher_test_FLQuant_year_mean(SEXP flqSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< FLQuant >::type flq(flqSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_FLQuant_year_mean(flq));
+    return rcpp_result_gen;
+END_RCPP
+}
 // test_FLQuantAD_quant_mean
 FLQuantAD test_FLQuantAD_quant_mean(FLQuantAD flq);
 RcppExport SEXP FLasher_test_FLQuantAD_quant_mean(SEXP flqSEXP) {

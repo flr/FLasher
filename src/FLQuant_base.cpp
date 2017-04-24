@@ -1321,17 +1321,27 @@ FLQuant_base<adouble> sweep_minus(const FLQuant_base<double>& flq1, const FLQuan
 /*------------- Shortcut methods ----------------*/
 template <typename T>
 FLQuant_base<T> year_sum(const FLQuant_base<T>& flq){
-    Rprintf("In year_sum\n");
     //Rcpp::IntegerVector dim = flq.get_dim();
     std::vector<unsigned int> dim = flq.get_dim();
     // Need to make an empty FLQ with the right dim
-    // New constructor?
     FLQuant_base<T> sum_flq(dim[0], 1, dim[2], dim[3], dim[4], dim[5]);
-
     Rcpp::List dimnames = flq.get_dimnames();
     dimnames["year"] = Rcpp::CharacterVector::create("1");
     // Set dimnames
     sum_flq.set_dimnames(dimnames);
+    // Old school summing - looks ugly
+    T sum = 0;
+    for (unsigned int iters=1; iters <= flq.get_niter(); ++iters){
+        for (unsigned int areas=1; areas <= flq.get_narea(); ++areas){
+            for (unsigned int seasons=1; seasons <= flq.get_nseason(); ++seasons){
+                for (unsigned int units=1; units <= flq.get_nunit(); ++units){
+                    for (unsigned int quants=1; quants <= flq.get_nquant(); ++quants){
+                        sum = 0;
+                        for (unsigned int years=1; years <= flq.get_nyear(); ++years){
+                            sum += flq(quants, years, units, seasons, areas, iters);
+                        }
+                        sum_flq(quants, 1, units, seasons, areas, iters) = sum;
+    }}}}}
     return sum_flq;
 }
 
@@ -1409,6 +1419,20 @@ FLQuant_base<T> quant_mean(const FLQuant_base<T>& flq){
                 for (unsigned int units=1; units <= flq.get_nunit(); ++units){
                     for (unsigned int years=1; years <= flq.get_nyear(); ++years){
                         flq_mean(1, years, units, seasons, areas, iters) = flq_mean(1, years, units, seasons, areas, iters) / flq.get_nquant();
+    }}}}}
+    return flq_mean;
+}
+
+template <typename T>
+FLQuant_base<T> year_mean(const FLQuant_base<T>& flq){
+    FLQuant_base<T> flq_mean = year_sum(flq);
+    // Divide by dim
+    for (unsigned int iters=1; iters <= flq.get_niter(); ++iters){
+        for (unsigned int areas=1; areas <= flq.get_narea(); ++areas){
+            for (unsigned int seasons=1; seasons <= flq.get_nseason(); ++seasons){
+                for (unsigned int units=1; units <= flq.get_nunit(); ++units){
+                    for (unsigned int quants=1; quants <= flq.get_nquant(); ++quants){
+                        flq_mean(quants, 1, units, seasons, areas, iters) = flq_mean(quants, 1, units, seasons, areas, iters) / flq.get_nyear();
     }}}}}
     return flq_mean;
 }
@@ -1611,8 +1635,11 @@ template FLQuant_base<double> log(const FLQuant_base<double>& flq);
 template FLQuant_base<adouble> log(const FLQuant_base<adouble>& flq);
 template FLQuant_base<double> exp(const FLQuant_base<double>& flq);
 template FLQuant_base<adouble> exp(const FLQuant_base<adouble>& flq);
+
 template FLQuant_base<double> year_sum(const FLQuant_base<double>& flq);
 template FLQuant_base<adouble> year_sum(const FLQuant_base<adouble>& flq);
+template FLQuant_base<double> year_mean(const FLQuant_base<double>& flq);
+template FLQuant_base<adouble> year_mean(const FLQuant_base<adouble>& flq);
 
 template FLQuant_base<double> quant_sum(const FLQuant_base<double>& flq);
 template FLQuant_base<adouble> quant_sum(const FLQuant_base<adouble>& flq);

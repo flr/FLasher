@@ -431,6 +431,16 @@ test_FLQuant_quant_mean <- function(flq) {
 }
 
 #'@rdname FLR-arithmetic-cpp-tests
+test_FLQuant_year_sum <- function(flq) {
+    .Call('FLasher_test_FLQuant_year_sum', PACKAGE = 'FLasher', flq)
+}
+
+#'@rdname FLR-arithmetic-cpp-tests
+test_FLQuant_year_mean <- function(flq) {
+    .Call('FLasher_test_FLQuant_year_mean', PACKAGE = 'FLasher', flq)
+}
+
+#'@rdname FLR-arithmetic-cpp-tests
 test_FLQuantAD_quant_mean <- function(flq) {
     .Call('FLasher_test_FLQuantAD_quant_mean', PACKAGE = 'FLasher', flq)
 }
