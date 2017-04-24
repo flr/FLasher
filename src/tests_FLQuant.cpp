@@ -435,6 +435,33 @@ FLQuant test_FLQuant_lambda(FLQuant flq1, FLQuant flq2){
 
 //'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
+FLQuant test_DD_pow(const FLQuant flq, const double power){
+    FLQuant out = pow(flq, power);
+    return out;
+}
+
+//'@rdname FLQuant-cpp-tests
+// [[Rcpp::export]]
+FLQuantAD test_DAD_pow(const FLQuant flq, const double power){
+    adouble adpower = power;
+    return pow(flq, adpower);
+}
+
+//'@rdname FLQuant-cpp-tests
+// [[Rcpp::export]]
+FLQuantAD test_ADD_pow(const FLQuantAD flq, const double power){
+    return pow(flq, power);
+}
+
+//'@rdname FLQuant-cpp-tests
+// [[Rcpp::export]]
+FLQuantAD test_ADAD_pow(const FLQuantAD flq, const double power){
+    adouble adpower = power;
+    return pow(flq, adpower);
+}
+
+//'@rdname FLQuant-cpp-tests
+// [[Rcpp::export]]
 FLQuantAD test_input_subsetter_ADAD(FLQuantAD flq1, FLQuantAD flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max){
     flq1.insert(flq2, indices_min, indices_max);
     return flq1;

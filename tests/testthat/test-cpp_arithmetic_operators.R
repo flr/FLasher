@@ -578,3 +578,11 @@ test_that("sweep operations",{
     expect_error(test_sweep_multADAD(flq1, flq2))
 })
 
+test_that("pow",{
+    flq <- random_FLQuant_generator()
+    power <- rnorm(1)
+    expect_FLQuant_equal(test_DD_pow(flq, power), flq^power)
+    expect_FLQuant_equal(test_ADAD_pow(flq, power), flq^power)
+    expect_FLQuant_equal(test_DAD_pow(flq, power), flq^power)
+    expect_FLQuant_equal(test_ADD_pow(flq, power), flq^power)
+})

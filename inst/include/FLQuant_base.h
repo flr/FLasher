@@ -292,6 +292,13 @@ FLQuant_base<T> log(const FLQuant_base<T>& flq);
 template <typename T>
 FLQuant_base<T> exp(const FLQuant_base<T>& flq);
 
+// Power is a bit more complicated:
+// AD ^ AD = AD,  AD ^ D = AD, D ^ AD = AD, D ^ D = AD
+template <typename T>
+FLQuant_base<T> pow(const FLQuant_base<T>& flq, const T power);
+FLQuant_base<adouble> pow(const FLQuant_base<double>& flq, const adouble power);
+FLQuant_base<adouble> pow(const FLQuant_base<adouble>& flq, const double power);
+
 // Sweep methods (for applying mathematical operations on 2 different sized FLQuants)
 // T1 is the type of the function func (should be std::whatever<>)
 // typename T1::result_type is the return type of the function func (i.e. either double or adouble)

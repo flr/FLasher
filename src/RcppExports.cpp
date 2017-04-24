@@ -4198,6 +4198,54 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// test_DD_pow
+FLQuant test_DD_pow(const FLQuant flq, const double power);
+RcppExport SEXP FLasher_test_DD_pow(SEXP flqSEXP, SEXP powerSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const FLQuant >::type flq(flqSEXP);
+    Rcpp::traits::input_parameter< const double >::type power(powerSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_DD_pow(flq, power));
+    return rcpp_result_gen;
+END_RCPP
+}
+// test_DAD_pow
+FLQuantAD test_DAD_pow(const FLQuant flq, const double power);
+RcppExport SEXP FLasher_test_DAD_pow(SEXP flqSEXP, SEXP powerSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const FLQuant >::type flq(flqSEXP);
+    Rcpp::traits::input_parameter< const double >::type power(powerSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_DAD_pow(flq, power));
+    return rcpp_result_gen;
+END_RCPP
+}
+// test_ADD_pow
+FLQuantAD test_ADD_pow(const FLQuantAD flq, const double power);
+RcppExport SEXP FLasher_test_ADD_pow(SEXP flqSEXP, SEXP powerSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const FLQuantAD >::type flq(flqSEXP);
+    Rcpp::traits::input_parameter< const double >::type power(powerSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_ADD_pow(flq, power));
+    return rcpp_result_gen;
+END_RCPP
+}
+// test_ADAD_pow
+FLQuantAD test_ADAD_pow(const FLQuantAD flq, const double power);
+RcppExport SEXP FLasher_test_ADAD_pow(SEXP flqSEXP, SEXP powerSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const FLQuantAD >::type flq(flqSEXP);
+    Rcpp::traits::input_parameter< const double >::type power(powerSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_ADAD_pow(flq, power));
+    return rcpp_result_gen;
+END_RCPP
+}
 // test_input_subsetter_ADAD
 FLQuantAD test_input_subsetter_ADAD(FLQuantAD flq1, FLQuantAD flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max);
 RcppExport SEXP FLasher_test_input_subsetter_ADAD(SEXP flq1SEXP, SEXP flq2SEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {

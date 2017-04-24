@@ -1211,6 +1211,29 @@ int dim5_matcher(const std::vector<unsigned int> dims_a, const std::vector<unsig
     return 1; // Else all is good
 }
 
+/*------------- pow method ----------------*/
+template <typename T>
+FLQuant_base<T> pow(const FLQuant_base<T>& flq, const T power){
+    FLQuant_base<T> out(flq);
+    std::transform(flq.begin(), flq.end(), out.begin(),
+            [power](T x) {return pow(x, power);});
+    return  out;
+}
+
+FLQuant_base<adouble> pow(const FLQuant_base<adouble>& flq, const double power){
+    FLQuant_base<adouble> out(flq);
+    std::transform(flq.begin(), flq.end(), out.begin(),
+            [power](adouble x) {return pow(x, power);});
+    return  out;
+}
+
+FLQuant_base<adouble> pow(const FLQuant_base<double>& flq, const adouble power){
+    FLQuant_base<adouble> out(flq);
+    std::transform(flq.begin(), flq.end(), out.begin(),
+            [power](double x) {return pow(x, power);});
+    return  out;
+}
+
 /*------------- Sweep methods ----------------*/
 
 /*! \brief Performs a binary function operation on 2 FLQuants of possibly different size
@@ -1629,6 +1652,10 @@ template FLQuant_base<adouble> sweep_plus(const FLQuant_base<adouble>& flq1, con
 template FLQuant_base<double> sweep_plus(const FLQuant_base<double>& flq1, const FLQuant_base<double>& flq2);
 template FLQuant_base<adouble> sweep_minus(const FLQuant_base<adouble>& flq1, const FLQuant_base<adouble>& flq2);
 template FLQuant_base<double> sweep_minus(const FLQuant_base<double>& flq1, const FLQuant_base<double>& flq2);
+
+// Pow
+template FLQuant_base<double> pow(const FLQuant_base<double>& flq, const double power);
+template FLQuant_base<adouble> pow(const FLQuant_base<adouble>& flq, const adouble power);
 
 // Explicit instantiation of other functions
 template FLQuant_base<double> log(const FLQuant_base<double>& flq);

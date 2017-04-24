@@ -1763,6 +1763,26 @@ test_FLQuant_lambda <- function(flq1, flq2) {
 }
 
 #'@rdname FLQuant-cpp-tests
+test_DD_pow <- function(flq, power) {
+    .Call('FLasher_test_DD_pow', PACKAGE = 'FLasher', flq, power)
+}
+
+#'@rdname FLQuant-cpp-tests
+test_DAD_pow <- function(flq, power) {
+    .Call('FLasher_test_DAD_pow', PACKAGE = 'FLasher', flq, power)
+}
+
+#'@rdname FLQuant-cpp-tests
+test_ADD_pow <- function(flq, power) {
+    .Call('FLasher_test_ADD_pow', PACKAGE = 'FLasher', flq, power)
+}
+
+#'@rdname FLQuant-cpp-tests
+test_ADAD_pow <- function(flq, power) {
+    .Call('FLasher_test_ADAD_pow', PACKAGE = 'FLasher', flq, power)
+}
+
+#'@rdname FLQuant-cpp-tests
 test_input_subsetter_ADAD <- function(flq1, flq2, indices_min, indices_max) {
     .Call('FLasher_test_input_subsetter_ADAD', PACKAGE = 'FLasher', flq1, flq2, indices_min, indices_max)
 }
