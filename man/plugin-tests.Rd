@@ -13,10 +13,6 @@ eval_user_gradient(xpsexp, params)
 \item{xpsexp}{Function pointer}
 
 \item{params}{params}
-
-\item{xpsexp}{Function pointer}
-
-\item{params}{params}
 }
 \description{
 Gahhhhhh

@@ -9,6 +9,7 @@
 //'@title Tests for CPP implementation of FLQuant and some others
 //
 //' A metric fuck-tonne of them!
+//'@param power do you have it?
 //'@param flq something
 //'@param flp something
 //'@param flq_sexp something

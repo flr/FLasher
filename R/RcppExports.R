@@ -1287,6 +1287,7 @@ test_FLFisheriesAD_iterator <- function(fisheries, value) {
 }
 
 #'@rdname FLQuant-cpp-tests
+#'@param flq FLQuant
 test_FLQuantAD_as_wrap <- function(flq) {
     .Call('FLasher_test_FLQuantAD_as_wrap', PACKAGE = 'FLasher', flq)
 }
@@ -1465,6 +1466,7 @@ test_FLQuantAD_fill_double <- function(flq, value) {
 NULL
 
 #' A metric fuck-tonne of them!
+#'@param power do you have it?
 #'@param flq something
 #'@param flp something
 #'@param flq_sexp something
@@ -2876,8 +2878,6 @@ eval_user_function <- function(xpsexp, params) {
 }
 
 #' Doesn't work
-#'@param xpsexp Function pointer 
-#'@param params params
 #'@rdname plugin-tests
 eval_user_gradient <- function(xpsexp, params) {
     .Call('FLasher_eval_user_gradient', PACKAGE = 'FLasher', xpsexp, params)

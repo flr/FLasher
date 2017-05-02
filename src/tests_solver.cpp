@@ -111,8 +111,6 @@ std::vector<double> eval_user_function(SEXP xpsexp, std::vector<double> params) 
 //'@title Eval user gradient function pointer
 //
 //' Doesn't work
-//'@param xpsexp Function pointer 
-//'@param params params
 //'@rdname plugin-tests
 // [[Rcpp::export]]
 std::vector<double> eval_user_gradient(SEXP xpsexp, std::vector<double> params){
