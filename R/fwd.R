@@ -148,17 +148,16 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
     fishery@desc <- character(1)
   if(length(object@desc) == 0)
     object@desc <- character(1)
-
+  
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control,
-    effort_mult_initial = 1.0, indep_min = 0.0, indep_max = 1e12, nr_iters = 50)
-
+    effort_mult_initial = 1.0, indep_min = 0.0, indep_max = 100, nr_iters = 50)
   # UPDATE object w/ new biolscpp@n
   for(i in names(object))
     n(object[[i]]) <- out$om$biols[[i]]@n
 
   # RETURN list(object, fishery, control)
-  out <- list(biols=object, fisheries=out$om$fisheries, control=control)
+  out <- list(biols=object, fisheries=out$om$fisheries, control=control, flag=out$solver_codes)
 
   return(out)
   }
@@ -309,7 +308,6 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
         relYear_rows <- !is.na(control@target$relYear)
         control@target$relBiol[relYear_rows] <- 1
     }
-
 
     # RUN
     out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals))
