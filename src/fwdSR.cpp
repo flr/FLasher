@@ -343,9 +343,8 @@ T bevholtSS3(const T srp, const std::vector<double> params){
     double s = params[0];
     double R0 = params[1];
     double v = params[2];
-    T srp_sex = srp * 0.5;
     T rec;
-    rec = (4.0 * s * R0 * srp_sex) / (v * (1 - s) + srp_sex * (5 * s - 1.0));
+    rec = (4.0 * s * R0 * srp) / (v * (1 - s) + srp * (5 * s - 1.0));
     return rec;
 }
 
