@@ -27,6 +27,7 @@ void fwdSR_base<T>::init_model_map(){
     map_model_name_to_function["geomean"] = &constant;
     map_model_name_to_function["Geomean"] = &constant;
     map_model_name_to_function["bevholtSS3"] = &bevholtSS3;
+    map_model_name_to_function["bevholtss3"] = &bevholtSS3;
     map_model_name_to_function["BevholtSS3"] = &bevholtSS3;
     return;
 }
