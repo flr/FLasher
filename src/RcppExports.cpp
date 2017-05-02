@@ -6910,3 +6910,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// eval_user_function
+std::vector<double> eval_user_function(SEXP xpsexp, std::vector<double> params);
+RcppExport SEXP FLasher_eval_user_function(SEXP xpsexpSEXP, SEXP paramsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type xpsexp(xpsexpSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type params(paramsSEXP);
+    rcpp_result_gen = Rcpp::wrap(eval_user_function(xpsexp, params));
+    return rcpp_result_gen;
+END_RCPP
+}
+// eval_user_gradient
+std::vector<double> eval_user_gradient(SEXP xpsexp, std::vector<double> params);
+RcppExport SEXP FLasher_eval_user_gradient(SEXP xpsexpSEXP, SEXP paramsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type xpsexp(xpsexpSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type params(paramsSEXP);
+    rcpp_result_gen = Rcpp::wrap(eval_user_gradient(xpsexp, params));
+    return rcpp_result_gen;
+END_RCPP
+}

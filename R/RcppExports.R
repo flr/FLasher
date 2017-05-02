@@ -2837,6 +2837,12 @@ NULL
 #'@title Tests for the CPP NR solver
 NULL
 
+#'@title Eval user function pointer
+NULL
+
+#'@title Eval user gradient function pointer
+NULL
+
 #' Metallic spheres
 #'@param xvec  A vector of doubles.
 #'@rdname solver-cpp-tests
@@ -2859,5 +2865,21 @@ test_NR_quad_iters <- function(coefs, initial_value, max_iters, indep_min, indep
 #'@rdname solver-cpp-tests
 test_NR_linear <- function(initial_value, coefs, max_iters, indep_min, indep_max, tolerance) {
     .Call('FLasher_test_NR_linear', PACKAGE = 'FLasher', initial_value, coefs, max_iters, indep_min, indep_max, tolerance)
+}
+
+#' Gahhhhhh
+#'@param xpsexp Function pointer 
+#'@param params params
+#'@rdname plugin-tests
+eval_user_function <- function(xpsexp, params) {
+    .Call('FLasher_eval_user_function', PACKAGE = 'FLasher', xpsexp, params)
+}
+
+#' Doesn't work
+#'@param xpsexp Function pointer 
+#'@param params params
+#'@rdname plugin-tests
+eval_user_gradient <- function(xpsexp, params) {
+    .Call('FLasher_eval_user_gradient', PACKAGE = 'FLasher', xpsexp, params)
 }
 

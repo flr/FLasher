@@ -87,6 +87,10 @@
 \alias{test_FLQuant_for_iterator}
 \alias{test_FLQuant_for_iterator_const}
 \alias{test_FLQuant_lambda}
+\alias{test_DD_pow}
+\alias{test_DAD_pow}
+\alias{test_ADD_pow}
+\alias{test_ADAD_pow}
 \alias{test_input_subsetter_ADAD}
 \alias{test_input_subsetter_DD}
 \alias{test_input_subsetter_ADD}
@@ -276,6 +280,14 @@ test_FLQuant_for_iterator(flq, rn)
 test_FLQuant_for_iterator_const(flq, rn)
 
 test_FLQuant_lambda(flq1, flq2)
+
+test_DD_pow(flq, power)
+
+test_DAD_pow(flq, power)
+
+test_ADD_pow(flq, power)
+
+test_ADAD_pow(flq, power)
 
 test_input_subsetter_ADAD(flq1, flq2, indices_min, indices_max)
 

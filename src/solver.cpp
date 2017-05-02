@@ -51,9 +51,9 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
     //Rprintf("indep.size(): %i niter: %i, nsim_targets: %i\n",indep.size(), niter, nsim_targets);
     if(verbose){Rprintf("\nIn Newton Raphson\n");}
     // Check that product of niter and nsim_targets = length of indep (otherwise something has gone wrong)
-    if (indep.size() != (niter * nsim_targets)){
-        Rcpp::stop("In newton_raphson: length of indep does not equal product of niter and nsim_targets\n");
-    }
+    //if (indep.size() != (niter * nsim_targets)){
+    //    Rcpp::stop("In newton_raphson: length of indep does not equal product of niter and nsim_targets\n");
+    //}
 
     double logdet = 0.0; // Not sure what this actually does but is used in the CppAD LUsolve function
     std::vector<double> y(niter * nsim_targets, 1000.0);
@@ -154,4 +154,5 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
     if(verbose){Rprintf("Leaving solver after %i iterations.\n\n", nr_count);}
     return success_code;
 }
+
 

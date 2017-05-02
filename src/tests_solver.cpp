@@ -79,3 +79,63 @@ Rcpp::List test_NR_linear(std::vector<double> initial_value, const Rcpp::Numeric
 }
 
 
+//----------------------------------------------------------------------
+typedef std::vector<double> (*funcPtr)(std::vector<double> params); 
+typedef std::vector<adouble> (*funcPtrAD)(std::vector<adouble> params); 
+
+
+
+//using funcPtr = std::vector<double>(*)(std::vector<double>);
+//using funcPtrAD = std::vector<adouble>(*)(std::vector<adouble>);
+
+//'@title Eval user function pointer
+//
+//' Gahhhhhh
+//'@param xpsexp Function pointer 
+//'@param params params
+//'@rdname plugin-tests
+// [[Rcpp::export]]
+std::vector<double> eval_user_function(SEXP xpsexp, std::vector<double> params) {
+    Rcpp::XPtr<funcPtr> xpfun(xpsexp);
+    funcPtr myfunc = *xpfun;
+    return myfunc(params);
+}
+
+//std::vector<adouble> banana(std::vector<adouble> x){
+//    std::vector<adouble> res(1, 0.0);
+//    res[0] = 100 * pow((x[1] - x[0] * x[0]), 2.0) + pow((1 - x[0]), 2.0);
+//    return res;
+//}
+
+// This function seems to work but the gradients for a function pointer are 0
+//'@title Eval user gradient function pointer
+//
+//' Doesn't work
+//'@param xpsexp Function pointer 
+//'@param params params
+//'@rdname plugin-tests
+// [[Rcpp::export]]
+std::vector<double> eval_user_gradient(SEXP xpsexp, std::vector<double> params){
+    Rcpp::XPtr<funcPtrAD> xpfun(xpsexp);
+    funcPtrAD func = *xpfun;
+    std::vector<adouble> x(params.begin(), params.end());
+    CppAD::Independent(x);
+    std::vector<adouble> res = func(x); // Use function pointer - not work
+    //std::vector<adouble> res = banana(x); // Use function above - works OK
+    CppAD::ADFun<double> fun(x, res);
+    return fun.Jacobian(params);
+}
+
+//// [[Rcpp::export]]
+//std::vector<double> eval_hessian(SEXP xpsexp, std::vector<double> params, unsigned int var = 0){
+//    // Retrieve user function from pointer
+//    Rcpp::XPtr<funcPtrAD> xpfun(xpsexp);
+//    funcPtrAD myfunc = *xpfun;
+//    std::vector<adouble> params_ad(params.begin(), params.end());
+//    CppAD::Independent(params_ad);
+//    std::vector<adouble> res = myfunc(params_ad);
+//    CppAD::ADFun<double> adfun(params_ad, res);
+//    return adfun.Hessian(params, var);
+//}
+//
+

@@ -81,6 +81,8 @@
 \alias{test_FLQuant_quant_sum}
 \alias{test_FLQuantAD_quant_sum}
 \alias{test_FLQuant_quant_mean}
+\alias{test_FLQuant_year_sum}
+\alias{test_FLQuant_year_mean}
 \alias{test_FLQuantAD_quant_mean}
 \alias{test_FLQuant_max_quant}
 \alias{test_FLQuantAD_max_quant}
@@ -266,6 +268,10 @@ test_FLQuant_quant_sum(flq)
 test_FLQuantAD_quant_sum(flq)
 
 test_FLQuant_quant_mean(flq)
+
+test_FLQuant_year_sum(flq)
+
+test_FLQuant_year_mean(flq)
 
 test_FLQuantAD_quant_mean(flq)
 
