@@ -49,14 +49,15 @@ fwdSR_base<T>::fwdSR_base(){
  * \param residuals_mult_ip Are the residuals multiplicative (true) or additive (false).
  */
 template <typename T>
-fwdSR_base<T>::fwdSR_base(const std::string model_name, const FLQuant params_ip, const FLQuant residuals_ip, const bool residuals_mult_ip) {
+fwdSR_base<T>::fwdSR_base(const std::string model_name_ip, const FLQuant params_ip, const FLQuant residuals_ip, const bool residuals_mult_ip) {
+    model_name = model_name_ip;
     params = params_ip;
     residuals = residuals_ip;
     residuals_mult = residuals_mult_ip;
     init_model_map();
 
     // Set the model pointer
-    typename model_map_type::const_iterator model_pair_found = map_model_name_to_function.find(model_name);
+    typename model_map_type::const_iterator model_pair_found = map_model_name_to_function.find(model_name_ip);
     if (model_pair_found != map_model_name_to_function.end()){
         model = model_pair_found->second; // pulls out value - the address of the SR function
     }
@@ -249,6 +250,16 @@ FLQuant_base<T> fwdSR_base<T>::predict_recruitment(const FLQuant_base<T> srp, co
                         rec(1, year_counter, unit_counter, season_counter, area_counter, iter_counter) = rec_temp;
                     }}}}}
     return rec;
+}
+
+template <typename T>
+FLQuant_base<double> fwdSR_base<T>::get_params() const{
+    return params;
+}
+
+template <typename T>
+std::string fwdSR_base<T>::get_model_name() const{
+    return model_name;
 }
 
 /*! \brief Number of SR parameters.

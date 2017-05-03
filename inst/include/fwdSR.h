@@ -25,7 +25,7 @@ class fwdSR_base {
     public:
         // /* Constructors */
 		fwdSR_base();
-		fwdSR_base(const std::string model_name, const FLQuant params_ip, const FLQuant residuals_ip, const bool residuals_mult_ip);  // Construct using model name
+		fwdSR_base(const std::string model_name_ip, const FLQuant params_ip, const FLQuant residuals_ip, const bool residuals_mult_ip);  // Construct using model name
         operator SEXP() const; // Used as intrusive 'wrap' - returns a list
 		fwdSR_base(const fwdSR_base& fwdSR_base_source); // copy constructor to ensure that copy is a deep copy - used when passing into functions
 		fwdSR_base& operator = (const fwdSR_base& fwdSR_base_source); // Assignment operator for a deep copy
@@ -43,6 +43,8 @@ class fwdSR_base {
         void init_model_map();
 
         // Accessors and setters
+        FLQuant_base<double> get_params() const;
+        std::string get_model_name() const;
         std::vector<double> get_params(unsigned int year, unsigned int unit, unsigned int season, unsigned int area, unsigned int iter) const;
         int get_nparams() const; // No of params in a time step - the length of the first dimension
         FLQuant_base<double> get_residuals() const;
@@ -54,6 +56,7 @@ class fwdSR_base {
 
     private:
         T (*model) (const T, const std::vector<double>); // Pointer to SRR function
+        std::string model_name;
         FLQuant_base<double> params;
         FLQuant_base<double> residuals;
         bool residuals_mult;
