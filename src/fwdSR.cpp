@@ -278,6 +278,15 @@ bool fwdSR_base<T>::get_residuals_mult() const{
     return residuals_mult;
 }
 
+template <typename T>
+void fwdSR_base<T>::set_residuals(const FLQuant_base<double> new_residuals){
+    residuals = new_residuals;
+}
+
+template <typename T>
+void fwdSR_base<T>::set_residuals_mult(const bool new_residuals_mult){
+    residuals_mult = new_residuals_mult;
+}
 
 //! Does recruitment happen for a unit in that timestep
 /*!

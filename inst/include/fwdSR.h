@@ -30,7 +30,6 @@ class fwdSR_base {
 		fwdSR_base(const fwdSR_base& fwdSR_base_source); // copy constructor to ensure that copy is a deep copy - used when passing into functions
 		fwdSR_base& operator = (const fwdSR_base& fwdSR_base_source); // Assignment operator for a deep copy
 
-        std::vector<double> get_params(unsigned int year, unsigned int unit, unsigned int season, unsigned int area, unsigned int iter) const;
         // Evaluate the model only 1 value at a time
         T eval_model(const T srp, int year, int unit, int season, int area, int iter) const;
         T eval_model(const T srp, const std::vector<unsigned int> params_indices) const;
@@ -43,9 +42,13 @@ class fwdSR_base {
         typedef std::map<std::string, srr_model_ptr> model_map_type;
         void init_model_map();
 
+        // Accessors and setters
+        std::vector<double> get_params(unsigned int year, unsigned int unit, unsigned int season, unsigned int area, unsigned int iter) const;
         int get_nparams() const; // No of params in a time step - the length of the first dimension
         FLQuant_base<double> get_residuals() const;
         bool get_residuals_mult() const;
+        void set_residuals(const FLQuant_base<double> new_residuals);
+        void set_residuals_mult(const bool new_residuals_mult);
 
         bool does_recruitment_happen(unsigned int unit, unsigned int year, unsigned int season) const;
 
