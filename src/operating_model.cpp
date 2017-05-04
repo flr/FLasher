@@ -412,7 +412,7 @@ std::vector<adouble> operatingModel::calc_rec(const unsigned int biol_no, const 
     unsigned int initial_params_season = 0;
     timestep_to_year_season(rec_timestep, biol_dim[3], initial_params_year, initial_params_season);
     std::vector<unsigned int> initial_params_indices{initial_params_year, unit, initial_params_season, area, 1};
-    FLQuantAD rec = biols(biol_no).srr.predict_recruitment(srpq, initial_params_indices);
+    FLQuantAD rec = biols(biol_no).predict_recruitment(srpq, initial_params_indices);
     return rec.get_data();
 }
 
@@ -657,7 +657,7 @@ void operatingModel::project_biols(const int timestep){
         //FLQuantAD surv = survivors(biol_counter, timestep-1);
         FLQuantAD new_abundance = surv;
         for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
-            bool recruiting_now = biols(biol_counter).srr.does_recruitment_happen(ucount, year, season);
+            bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, year, season);
             // If recruiting shift survivor ages, fix plus group. Recruitment calculated later after updating abundances.
             if (recruiting_now){
                 for (unsigned int icount = 1; icount <= niter; ++icount){

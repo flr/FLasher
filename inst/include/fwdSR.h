@@ -6,9 +6,7 @@
 // Necessary check to avoid the redefinition of FLQuant_base in the RcppExports.cpp
 #ifndef _FLQuant_base_
 #define _FLQuant_base_
-
 #include "FLQuant_base.h"
-
 #endif
 #define _fwdSR_
 
@@ -18,7 +16,6 @@
  */
 
 /*-------------------------------------------------------------------*/
-
 
 template <typename T>
 class fwdSR_base {
@@ -62,7 +59,6 @@ class fwdSR_base {
         bool residuals_mult;
         model_map_type map_model_name_to_function; // Map for the SRR models
 };
-
 
 typedef fwdSR_base<double> fwdSR;
 typedef fwdSR_base<adouble> fwdSRAD;

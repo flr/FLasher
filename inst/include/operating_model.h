@@ -17,16 +17,6 @@
 #include "fwdBiol.h"
 #endif 
 
-#ifndef _fwdSR_
-#define _fwdSR_
-#include "fwdSR.h"
-#endif 
-
-#ifndef _FLQuant_multidim_
-#define _FLQuant_multidim_
-#include "FLQuant_multidim.h"
-#endif
-
 #include "fwdControl.h"
 #include "solver.h"
 
@@ -107,16 +97,10 @@ class operatingModel {
         FLQuantAD discards_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD catch_n(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
 
-        // Total biomass from a biol
-        //FLQuantAD biomass(const int biol_no) const;
-
-
     private:
         FLFisheriesAD fisheries;
         fwdControl ctrl;
-
-    protected:
-        fwdBiolsAD biols; // This is protected because operatingModel is a friend of fwdBiol so we can access the SRR
+        fwdBiolsAD biols;
 };
 
 

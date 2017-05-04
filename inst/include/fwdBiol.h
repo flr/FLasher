@@ -6,16 +6,12 @@
 // Necessary check to avoid the redefinition of FLQuant_base in the RcppExports.cpp
 #ifndef _FLQuant_base_
 #define _FLQuant_base_
-
 #include "FLQuant_base.h"
-
 #endif
 
 #ifndef _fwdSR_
 #define _fwdSR_
-
 #include "fwdSR.h"
-
 #endif
 
 #define _fwdBiol_
@@ -27,10 +23,6 @@
  */
 
 /*-------------------------------------------------------------------*/
-// Necessary to declare this here so that operatingModel class can have access to fwdSR as a friend
-template <typename T>
-class operatingModel_base;
-
 template <typename T>
 class fwdBiol_base {
     public:
@@ -74,13 +66,14 @@ class fwdBiol_base {
         FLQuant& fec();
         FLQuant& mat();
 
+        // SRR accessors
+        FLQuant_base<T> predict_recruitment(const FLQuant_base<T> srp, const std::vector<unsigned int> initial_params_indices);
+        bool does_recruitment_happen(unsigned int unit, unsigned int year, unsigned int season) const;
+
         // Summary and other methods
         FLQuant_base<T> biomass() const;
         FLQuant_base<T> biomass(const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; // subsetting
         unsigned int srp_timelag() const;
-
-        // Added a friend so that operating model can access the SRR
-        friend class operatingModel;
 
     private:
         std::string name;

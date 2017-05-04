@@ -293,6 +293,17 @@ unsigned int fwdBiol_base<T>::srp_timelag() const{
     return timelag;
 }
 
+// SRR accessors - avoids friends
+template <typename T>
+FLQuant_base<T> fwdBiol_base<T>::predict_recruitment(const FLQuant_base<T> srp, const std::vector<unsigned int> initial_params_indices){ 
+    return srr.predict_recruitment(srp, initial_params_indices);
+}
+
+template <typename T>
+bool fwdBiol_base<T>::does_recruitment_happen(unsigned int unit, unsigned int year, unsigned int season) const{
+    return srr.does_recruitment_happen(unit, year, season);
+}
+
 /*------------------------------------------------------------*/
 // fwdBiols class
 
