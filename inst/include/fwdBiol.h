@@ -36,11 +36,12 @@ class fwdBiol_base {
     public:
         /* Constructors */
 		fwdBiol_base();
-		fwdBiol_base(const SEXP flb_sexp); // Used as intrusive 'as', takes an FLBiol but with no SRR
+		fwdBiol_base(const SEXP flb_sexp); // Used as intrusive 'as', takes an FLBiolcpp but with no SRR residuals information
         fwdBiol_base(const SEXP flb_sexp, const fwdSR_base<T> srr_in);  // Pass in FLBiol and fwdSR
         fwdBiol_base(const SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult); // Pass in FLBiol and bits of fwdSR
+        fwdBiol_base(const SEXP flb_sexp, const FLQuant residuals, const bool residuals_mult); // Pass in FLBiol and bits of fwdSR
         
-        operator SEXP() const; // Used as intrusive 'wrap' - returns an FLBiol
+        operator SEXP() const; // Used as intrusive 'wrap' - returns an FLBiolcpp
 
 		fwdBiol_base(const fwdBiol_base& fwdBiol_base_source); // copy constructor to ensure that copy is a deep copy - used when passing FLSs into functions
 		fwdBiol_base& operator = (const fwdBiol_base& fwdBiol_base_source); // Assignment operator for a deep copy

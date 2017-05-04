@@ -55,7 +55,6 @@ fwdSR_base<T>::fwdSR_base(const std::string model_name_ip, const FLQuant params_
     residuals = residuals_ip;
     residuals_mult = residuals_mult_ip;
     init_model_map();
-
     // Set the model pointer
     typename model_map_type::const_iterator model_pair_found = map_model_name_to_function.find(model_name_ip);
     if (model_pair_found != map_model_name_to_function.end()){
@@ -71,6 +70,7 @@ fwdSR_base<T>::fwdSR_base(const std::string model_name_ip, const FLQuant params_
 template <typename T>
 fwdSR_base<T>::operator SEXP() const{
     return Rcpp::List::create(Rcpp::Named("params", params),
+                            Rcpp::Named("model_name", model_name),
                             Rcpp::Named("residuals",residuals),
                             Rcpp::Named("residuals_mult",residuals_mult));
 }
@@ -85,6 +85,7 @@ fwdSR_base<T>::operator SEXP() const{
 template <typename T>
 fwdSR_base<T>::fwdSR_base(const fwdSR_base<T>& fwdSR_source){
     model = fwdSR_source.model; // Copy the pointer - we want it to point to the same place so copying should be fine.
+    model_name = fwdSR_source.model_name;
     params = fwdSR_source.params;
     residuals = fwdSR_source.residuals;
     residuals_mult = fwdSR_source.residuals_mult;
@@ -100,6 +101,7 @@ template <typename T>
 fwdSR_base<T>& fwdSR_base<T>::operator = (const fwdSR_base<T>& fwdSR_source){
 	if (this != &fwdSR_source){
         model = fwdSR_source.model; // Copy the pointer - we want it to point to the same place so copying should be fine.
+        model_name = fwdSR_source.model_name;
         params = fwdSR_source.params;
         residuals = fwdSR_source.residuals;
         residuals_mult = fwdSR_source.residuals_mult;

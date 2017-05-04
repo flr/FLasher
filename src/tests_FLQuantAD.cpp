@@ -9,7 +9,6 @@
 
 
 //'@rdname FLQuant-cpp-tests
-//'@param flq FLQuant
 // [[Rcpp::export]]
 FLQuantAD test_FLQuantAD_as_wrap(FLQuantAD flq){
 	return flq;

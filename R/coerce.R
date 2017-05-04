@@ -45,8 +45,6 @@ setAs("FLBiol", "list",
 
     list(
       biol = as(from, "FLBiolcpp"),
-      srr_model_name = SRModelName(from@rec@model),
-      srr_params = as(from@rec@params, "FLQuant"),
       srr_residuals = FLQuant(),
       srr_residuals_mult = TRUE)
   }) # }}}

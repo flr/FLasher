@@ -19,6 +19,17 @@ test_that("fwdBiol constructors - double",{
     expect_FLBiolcpp_equal(flb_in, flb_out)
     flb_out <- test_fwdBiolAD_sexp_constructor(flb_in)
     expect_FLBiolcpp_equal(flb_in, flb_out)
+    # FLBiolcpp residuals constructor
+    residuals <- FLQuant(1, dim=c(1, dim(n(flb_in))[2], dim(n(flb_in))[3], dim(n(flb_in))[4], dim(n(flb_in))[5], 1)) 
+    residuals_mult <- TRUE
+    out <- test_fwdBiolAD_FLSR_residuals_constructor(flb_in, residuals, residuals_mult)
+    expect_FLBiolcpp_equal(flb_in, out[["fwb"]])
+    expect_equal(out[["srr"]][["params"]], flb_in@srparams)
+    expect_equal(out[["srr"]][["model_name"]], flb_in@srmodel)
+    expect_equal(out[["srr"]][["residuals"]], residuals)
+    expect_equal(out[["srr"]][["residuals_mult"]], residuals_mult)
+    too_small_residuals <- FLQuant(1, dim=c(1, dim(n(flb_in))[2]-1, dim(n(flb_in))[3], dim(n(flb_in))[4], dim(n(flb_in))[5], 1)) 
+    expect_error(test_fwdBiolAD_FLSR_residuals_constructor(flb_in, too_small_residuals, residuals_mult))
     # FLBiolcpp fwdSR constructor
     data(ple4)
     ricker <- fmle(as.FLSR(ple4,model="ricker"), control  = list(trace=0))
@@ -28,24 +39,33 @@ test_that("fwdBiol constructors - double",{
     residuals_mult <- TRUE
     expect_error(test_fwdBiol_fwdSR_constructor(flb_in, "ricker", sr_params, too_small_residuals, residuals_mult))
     out <- test_fwdBiol_fwdSR_constructor(flb_in, "ricker", sr_params, residuals, residuals_mult)
-    expect_FLBiolcpp_equal(out[["fwb"]], flb_in)
+    expect_FLBiolcpp_equal(out[["fwb"]], flb_in, ignore_sr=TRUE) 
+    expect_identical(c(out[["fwb"]]@srparams), c(sr_params))
+    expect_identical(c(out[["fwb"]]@srmodel), "ricker")
     expect_identical(c(out[["srr"]][["params"]]), c(sr_params))
     expect_identical(out[["srr"]][["residuals"]], residuals)
     expect_identical(out[["srr"]][["residuals_mult"]], residuals_mult)
-    expect_error(test_fwdBiol_fwdSRAD_constructor(flb_in, "ricker", sr_params, too_small_residuals, residuals_mult))
-    out <- test_fwdBiol_fwdSR_constructor(flb_in, "ricker", sr_params, residuals, residuals_mult)
-    expect_FLBiolcpp_equal(out[["fwb"]], flb_in)
+    expect_error(test_fwdBiol_fwdSR_constructor(flb_in, "ricker", sr_params, too_small_residuals, residuals_mult))
+    out <- test_fwdBiolAD_fwdSRAD_constructor(flb_in, "ricker", sr_params, residuals, residuals_mult)
+    expect_FLBiolcpp_equal(out[["fwb"]], flb_in, ignore_sr=TRUE) 
+    expect_identical(c(out[["fwb"]]@srparams), c(sr_params))
+    expect_identical(c(out[["fwb"]]@srmodel), "ricker")
     expect_identical(c(out[["srr"]][["params"]]), c(sr_params))
     expect_identical(out[["srr"]][["residuals"]], residuals)
     expect_identical(out[["srr"]][["residuals_mult"]], residuals_mult)
+    expect_error(test_fwdBiolAD_fwdSRAD_constructor(flb_in, "ricker", sr_params, too_small_residuals, residuals_mult))
     # FLBiolcpp SR bits constructor
     out <- test_fwdBiol_FLSR_bits_constructor(flb_in, "ricker", sr_params, residuals, residuals_mult)
-    expect_FLBiolcpp_equal(out[["fwb"]], flb_in)
+    expect_FLBiolcpp_equal(out[["fwb"]], flb_in, ignore_sr=TRUE) 
+    expect_identical(c(out[["fwb"]]@srparams), c(sr_params))
+    expect_identical(c(out[["fwb"]]@srmodel), "ricker")
     expect_identical(c(out[["srr"]][["params"]]), c(sr_params))
     expect_identical(out[["srr"]][["residuals"]], residuals)
     expect_identical(out[["srr"]][["residuals_mult"]], residuals_mult)
     out <- test_fwdBiolAD_FLSR_bits_constructor(flb_in, "ricker", sr_params, residuals, residuals_mult)
-    expect_FLBiolcpp_equal(out[["fwb"]], flb_in)
+    expect_FLBiolcpp_equal(out[["fwb"]], flb_in, ignore_sr=TRUE) 
+    expect_identical(c(out[["fwb"]]@srparams), c(sr_params))
+    expect_identical(c(out[["fwb"]]@srmodel), "ricker")
     expect_identical(c(out[["srr"]][["params"]]), c(sr_params))
     expect_identical(out[["srr"]][["residuals"]], residuals)
     expect_identical(out[["srr"]][["residuals_mult"]], residuals_mult)
@@ -268,8 +288,6 @@ test_that("fwdBiols constructors",{
     # fwdBiols constructor
     biol_no <- round(runif(1,min=1,max=length(biols)))
     flbs_out <- test_fwdBiolsAD_fwdBiolAD_constructor(biols[[biol_no]][["biol"]],
-                                      biols[[biol_no]][["srr_model_name"]],
-                                      biols[[biol_no]][["srr_params"]],
                                       biols[[biol_no]][["srr_residuals"]],
                                       biols[[biol_no]][["srr_residuals_mult"]])
     expect_identical(length(flbs_out), 1L)
@@ -311,8 +329,6 @@ test_that("fwdBiols methods",{
     # Set biol
     biol_no2 <- round(runif(1,min=1,max=length(biols)))
     flbs_out <- test_fwdBiolsAD_set_single_index_accessor(biols, biol_no, biols[[biol_no2]][["biol"]],
-                                      biols[[biol_no2]][["srr_model_name"]],
-                                      biols[[biol_no2]][["srr_params"]],
                                       biols[[biol_no2]][["srr_residuals"]],
                                       biols[[biol_no2]][["srr_residuals_mult"]])
     expect_FLBiolcpp_equal(flbs_out[[biol_no]], flbs_in[[biol_no2]])

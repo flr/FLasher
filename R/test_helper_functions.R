@@ -75,6 +75,7 @@ random_FLQuant_list_generator <- function(min_elements = 1, max_elements = 10, .
 random_FLBiolcpp_generator <- function(sd=100, ...){
     flq <- abs(random_FLQuant_generator(sd=sd, ...))
     biol <- FLBiol(n = flq)
+    iters <- dim(n(biol))[6]
     biol <- as(biol, "FLBiolcpp")
     biol@n <- biol@n * 1000000
     biol@m[] <- abs(rnorm(prod(dim(flq)),sd=sd)) / sd
@@ -82,6 +83,8 @@ random_FLBiolcpp_generator <- function(sd=100, ...){
     biol@fec[] <- abs(rnorm(prod(dim(flq)),sd=sd))
     biol@mat[] <- abs(rnorm(prod(dim(flq)),sd=sd))
     biol@spwn[] <- runif(prod(dim(biol@spwn)), min=0, max=1)
+    biol@srmodel = "ricker"
+    biol@srparams = FLQuant(abs(rnorm(2*iters)), dimnames=list(params=c("a","b"), iter=1:iters))
     name(biol) <- as.character(signif(rnorm(1)*1000,3))
     desc(biol) <- as.character(signif(rnorm(1)*1000,3))
     # Set the units to something sensible
@@ -239,8 +242,6 @@ random_fwdBiols_list_generator <- function(min_biols = 1, max_biols = 5, ...){
     for (i in 1:nbiols){
         biol_bits <- list()
         biol_bits[["biol"]] <- random_FLBiolcpp_generator(...)
-        biol_bits[["srr_model_name"]] <- "bevholt"
-        biol_bits[["srr_params"]] <- FLQuant(abs(rnorm(2)), dimnames=list(params=c("a","b")))
         biol_bits[["srr_residuals"]] <- n(biol_bits[["biol"]])[1,]
         biol_bits[["srr_residuals_mult"]] <- TRUE
         biols[[as.character(signif(abs(runif(1,min=100,max=999)),3))]] <- biol_bits
@@ -367,21 +368,8 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
     dmns$iter <- as.character(1:niters)
     seed_flq <- FLQuant(NA, dimnames=dmns)
     # Make the biols
-    # Same SRR for all
+    # Same SRR model for all - but uncertainty is different
     srr <- fmle(as.FLSR(fls, model="bevholt"),control = list(trace=0))
-    res_temp <- window(exp(residuals(srr)), start = 1957)
-    res_temp[,"1957"] <- res_temp[,"1958"]
-    res_temp <- propagate(res_temp, niters)
-    res_dmns <- dmns
-    res_dmns$age <- "all"
-    res <- FLQuant(NA, dimnames = res_dmns)
-    res[] <- res_temp
-    res <- res * abs(rnorm(prod(dim(res)), mean = 1, sd = sd))
-    srr_params <- FLQuant(NA, dimnames=list(params = c("a","b"), unit = 1:nunits, season = 1:nseasons, iter=1:niters))
-    for (unit_count in 1:length(recruitment_seasons)){
-        srr_params[,,unit_count,recruitment_seasons[unit_count]] <- params(srr)
-    }
-    srr_params <- srr_params * abs(rnorm(prod(dim(srr_params)), mean = 1, sd = sd))
     biols <- list()
     for (bno in 1:nbiols){
         newb <- FLBiol(n=seed_flq)
@@ -415,10 +403,27 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
         newb <- as(newb, "FLBiolcpp")
         name(newb) <- paste("biol", bno, sep="")
         desc(newb) <- paste("biol", bno, sep="")
+        # Each biol has randomness based on fit above
+        res_temp <- window(exp(residuals(srr)), start = 1957)
+        res_temp[,"1957"] <- res_temp[,"1958"]
+        res_temp <- propagate(res_temp, niters)
+        res_dmns <- dmns
+        res_dmns$age <- "all"
+        res <- FLQuant(NA, dimnames = res_dmns)
+        res[] <- res_temp
+        res <- res * abs(rnorm(prod(dim(res)), mean = 1, sd = sd))
+        srr_params <- FLQuant(NA, dimnames=list(params = c("a","b"), unit = 1:nunits, season = 1:nseasons, iter=1:niters))
+        for (unit_count in 1:length(recruitment_seasons)){
+            srr_params[,,unit_count,recruitment_seasons[unit_count]] <- params(srr)
+        }
+        srr_params <- srr_params * abs(rnorm(prod(dim(srr_params)), mean = 1, sd = sd))
+        newb@srmodel <- "bevholt"
+        newb@srparams <- srr_params
         # Add noise to residuals
         res_temp <- res * abs(rnorm(prod(dim(res)), mean = 1, sd = sd))
         # Make the list of FLBiolcpp bits
-        biol_bits <- list(biol = newb, srr_model_name = "bevholt", srr_params = srr_params, srr_residuals = res_temp, srr_residuals_mult = TRUE)
+        #biol_bits <- list(biol = newb, srr_model_name = "bevholt", srr_params = srr_params, srr_residuals = res_temp, srr_residuals_mult = TRUE)
+        biol_bits <- list(biol = newb, srr_residuals = res_temp, srr_residuals_mult = TRUE)
         biols[[paste("biol", bno, sep="")]] <- biol_bits
     }
     # Make the fisheries

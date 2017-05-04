@@ -285,7 +285,7 @@ test_that("operatingModel calc_rec annual OM", {
     niters <- 20
     for (recruitment_age in 0:3){
         om <- make_test_operatingModel(ple4, FCB, nseasons = 1, recruitment_age = recruitment_age, niters = niters, sd = 0.1)
-        pars <- om[["biols"]][[1]][["srr_params"]]
+        pars <- om[["biols"]][[1]][["biol"]]@srparams
         res <- om[["biols"]][[1]][["srr_residuals"]]
         om[["biols"]][[1]][["srr_residuals_mult"]] <- TRUE
         rec_year <- round(runif(1, min=5, max=10))
@@ -314,7 +314,7 @@ test_that("operatingModel calc_rec seasonal OM - 1 recruitment event", {
         # Seasonal model
         for (recruitment_age in 0:3){ # recruitment age 0 is special case
             om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = recruitment_season, recruitment_age = recruitment_age, niters = niters, sd = 0.1)
-            pars <- om[["biols"]][[1]][["srr_params"]]
+            pars <- om[["biols"]][[1]][["biol"]]@srparams
             res <- om[["biols"]][[1]][["srr_residuals"]]
             rec_year <- round(runif(1, min=5, max=10))
             for(season in 1:4){
@@ -349,7 +349,7 @@ test_that("operatingModel calc_rec seasonal OM - multiple recruitment event", {
     recruitment_seasons <- c(1,3)
     for (recruitment_age in 0:3){
         om <- make_test_operatingModel(ple4, FCB, nseasons = 4, recruitment_seasons = recruitment_seasons, recruitment_age = recruitment_age, niters = niters, sd = 0.1)
-        pars <- om[["biols"]][[1]][["srr_params"]]
+        pars <- om[["biols"]][[1]][["biol"]]@srparams
         res <- om[["biols"]][[1]][["srr_residuals"]]
         rec_year <- round(runif(1, min=5, max=10))
         for(season in 1:4){

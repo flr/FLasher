@@ -1287,7 +1287,6 @@ test_FLFisheriesAD_iterator <- function(fisheries, value) {
 }
 
 #'@rdname FLQuant-cpp-tests
-#'@param flq FLQuant
 test_FLQuantAD_as_wrap <- function(flq) {
     .Call('FLasher_test_FLQuantAD_as_wrap', PACKAGE = 'FLasher', flq)
 }
@@ -2195,6 +2194,11 @@ test_fwdBiol_FLSR_bits_constructor <- function(flb_sexp, model_name, params, res
 }
 
 #'@rdname fwdBiol-cpp-tests
+test_fwdBiolAD_FLSR_residuals_constructor <- function(flb_sexp, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiolAD_FLSR_residuals_constructor', PACKAGE = 'FLasher', flb_sexp, residuals, residuals_mult)
+}
+
+#'@rdname fwdBiol-cpp-tests
 test_fwdBiolAD_FLSR_bits_constructor <- function(flb_sexp, model_name, params, residuals, residuals_mult) {
     .Call('FLasher_test_fwdBiolAD_FLSR_bits_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, residuals, residuals_mult)
 }
@@ -2310,8 +2314,8 @@ test_fwdBiolsAD_as_wrap <- function(biols_in) {
 }
 
 #'@rdname fwdBiol-cpp-tests
-test_fwdBiolsAD_fwdBiolAD_constructor <- function(flb_sexp, model_name, params, residuals, residuals_mult) {
-    .Call('FLasher_test_fwdBiolsAD_fwdBiolAD_constructor', PACKAGE = 'FLasher', flb_sexp, model_name, params, residuals, residuals_mult)
+test_fwdBiolsAD_fwdBiolAD_constructor <- function(flb_sexp, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiolsAD_fwdBiolAD_constructor', PACKAGE = 'FLasher', flb_sexp, residuals, residuals_mult)
 }
 
 #'@rdname fwdBiol-cpp-tests
@@ -2335,8 +2339,8 @@ test_fwdBiolsAD_get_value_accessor <- function(fwbs, biol_no, quant, year, unit,
 }
 
 #'@rdname fwdBiol-cpp-tests
-test_fwdBiolsAD_set_single_index_accessor <- function(fwbs, element, flb_sexp, model_name, params, residuals, residuals_mult) {
-    .Call('FLasher_test_fwdBiolsAD_set_single_index_accessor', PACKAGE = 'FLasher', fwbs, element, flb_sexp, model_name, params, residuals, residuals_mult)
+test_fwdBiolsAD_set_single_index_accessor <- function(fwbs, element, flb_sexp, residuals, residuals_mult) {
+    .Call('FLasher_test_fwdBiolsAD_set_single_index_accessor', PACKAGE = 'FLasher', fwbs, element, flb_sexp, residuals, residuals_mult)
 }
 
 #'@rdname fwdBiol-cpp-tests

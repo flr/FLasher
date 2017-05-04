@@ -89,6 +89,14 @@ Rcpp::List test_fwdBiol_FLSR_bits_constructor(SEXP flb_sexp, const std::string m
 
 //'@rdname fwdBiol-cpp-tests
 // [[Rcpp::export]]
+Rcpp::List test_fwdBiolAD_FLSR_residuals_constructor(SEXP flb_sexp, const FLQuant residuals, const bool residuals_mult){
+    fwdBiolAD fwb(flb_sexp, residuals, residuals_mult);
+	return Rcpp::List::create(Rcpp::Named("fwb", fwb),
+				Rcpp::Named("srr",fwb.get_srr()));
+}
+
+//'@rdname fwdBiol-cpp-tests
+// [[Rcpp::export]]
 Rcpp::List test_fwdBiolAD_FLSR_bits_constructor(SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult){
     fwdBiolAD fwb(flb_sexp, model_name, params, residuals, residuals_mult);
 	return Rcpp::List::create(Rcpp::Named("fwb", fwb),
@@ -310,8 +318,8 @@ fwdBiolsAD test_fwdBiolsAD_as_wrap(const fwdBiolsAD biols_in){
 // fwdBiol constructor
 //'@rdname fwdBiol-cpp-tests
 // [[Rcpp::export]]
-fwdBiolsAD test_fwdBiolsAD_fwdBiolAD_constructor(SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult){
-    fwdBiolAD fwb(flb_sexp, model_name, params, residuals, residuals_mult);
+fwdBiolsAD test_fwdBiolsAD_fwdBiolAD_constructor(SEXP flb_sexp, const FLQuant residuals, const bool residuals_mult){
+    fwdBiolAD fwb(flb_sexp, residuals, residuals_mult);
     fwdBiolsAD fwbs(fwb);
     return fwbs;
 }
@@ -347,8 +355,8 @@ double test_fwdBiolsAD_get_value_accessor(fwdBiolsAD fwbs, const int biol_no, in
 
 //'@rdname fwdBiol-cpp-tests
 // [[Rcpp::export]]
-fwdBiolsAD test_fwdBiolsAD_set_single_index_accessor(fwdBiolsAD fwbs, const int element, SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult){
-    fwdBiolAD fwb(flb_sexp, model_name, params, residuals, residuals_mult);
+fwdBiolsAD test_fwdBiolsAD_set_single_index_accessor(fwdBiolsAD fwbs, const int element, SEXP flb_sexp, const FLQuant residuals, const bool residuals_mult){
+    fwdBiolAD fwb(flb_sexp, residuals, residuals_mult);
     fwbs(element) = fwb;
     return fwbs;
 }

@@ -8,6 +8,7 @@
 \alias{test_fwdBiol_fwdSR_constructor}
 \alias{test_fwdBiolAD_fwdSRAD_constructor}
 \alias{test_fwdBiol_FLSR_bits_constructor}
+\alias{test_fwdBiolAD_FLSR_residuals_constructor}
 \alias{test_fwdBiolAD_FLSR_bits_constructor}
 \alias{test_fwdBiol_copy_constructor}
 \alias{test_fwdBiolAD_copy_constructor}
@@ -60,6 +61,8 @@ test_fwdBiolAD_fwdSRAD_constructor(flb_sexp, model_name, params, residuals,
 
 test_fwdBiol_FLSR_bits_constructor(flb_sexp, model_name, params, residuals,
   residuals_mult)
+
+test_fwdBiolAD_FLSR_residuals_constructor(flb_sexp, residuals, residuals_mult)
 
 test_fwdBiolAD_FLSR_bits_constructor(flb_sexp, model_name, params, residuals,
   residuals_mult)
@@ -115,8 +118,7 @@ test_fwdBiols_as_wrap(biols_in)
 
 test_fwdBiolsAD_as_wrap(biols_in)
 
-test_fwdBiolsAD_fwdBiolAD_constructor(flb_sexp, model_name, params, residuals,
-  residuals_mult)
+test_fwdBiolsAD_fwdBiolAD_constructor(flb_sexp, residuals, residuals_mult)
 
 test_fwdBiolsAD_const_get_single_index_accessor(fwbs, element)
 
@@ -128,8 +130,8 @@ test_fwdBiolsAD_const_get_value_accessor(fwbs, biol_no, quant, year, unit,
 test_fwdBiolsAD_get_value_accessor(fwbs, biol_no, quant, year, unit, season,
   area, iter)
 
-test_fwdBiolsAD_set_single_index_accessor(fwbs, element, flb_sexp, model_name,
-  params, residuals, residuals_mult)
+test_fwdBiolsAD_set_single_index_accessor(fwbs, element, flb_sexp, residuals,
+  residuals_mult)
 
 test_fwdBiolsAD_set_value_accessor(fwbs, biol_no, quant, year, unit, season,
   area, iter, value)

@@ -310,7 +310,7 @@ test_timestep_to_year_season_FLQuant_adouble(flqad, timestep)
 test_timestep_to_year_season(flq, timestep)
 }
 \arguments{
-\item{flq}{FLQuant}
+\item{flq}{something}
 
 \item{flq_sexp}{something}
 
@@ -395,8 +395,6 @@ test_timestep_to_year_season(flq, timestep)
 \item{power}{do you have it?}
 
 \item{timestep}{something}
-
-\item{flq}{something}
 }
 \description{
 A metric fuck-tonne of them!

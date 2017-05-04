@@ -5183,6 +5183,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// test_fwdBiolAD_FLSR_residuals_constructor
+Rcpp::List test_fwdBiolAD_FLSR_residuals_constructor(SEXP flb_sexp, const FLQuant residuals, const bool residuals_mult);
+RcppExport SEXP FLasher_test_fwdBiolAD_FLSR_residuals_constructor(SEXP flb_sexpSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type flb_sexp(flb_sexpSEXP);
+    Rcpp::traits::input_parameter< const FLQuant >::type residuals(residualsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP);
+    rcpp_result_gen = Rcpp::wrap(test_fwdBiolAD_FLSR_residuals_constructor(flb_sexp, residuals, residuals_mult));
+    return rcpp_result_gen;
+END_RCPP
+}
 // test_fwdBiolAD_FLSR_bits_constructor
 Rcpp::List test_fwdBiolAD_FLSR_bits_constructor(SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult);
 RcppExport SEXP FLasher_test_fwdBiolAD_FLSR_bits_constructor(SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
@@ -5524,17 +5537,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_fwdBiolsAD_fwdBiolAD_constructor
-fwdBiolsAD test_fwdBiolsAD_fwdBiolAD_constructor(SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult);
-RcppExport SEXP FLasher_test_fwdBiolsAD_fwdBiolAD_constructor(SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
+fwdBiolsAD test_fwdBiolsAD_fwdBiolAD_constructor(SEXP flb_sexp, const FLQuant residuals, const bool residuals_mult);
+RcppExport SEXP FLasher_test_fwdBiolsAD_fwdBiolAD_constructor(SEXP flb_sexpSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type flb_sexp(flb_sexpSEXP);
-    Rcpp::traits::input_parameter< const std::string >::type model_name(model_nameSEXP);
-    Rcpp::traits::input_parameter< const FLQuant >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< const FLQuant >::type residuals(residualsSEXP);
     Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP);
-    rcpp_result_gen = Rcpp::wrap(test_fwdBiolsAD_fwdBiolAD_constructor(flb_sexp, model_name, params, residuals, residuals_mult));
+    rcpp_result_gen = Rcpp::wrap(test_fwdBiolsAD_fwdBiolAD_constructor(flb_sexp, residuals, residuals_mult));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -5599,19 +5610,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_fwdBiolsAD_set_single_index_accessor
-fwdBiolsAD test_fwdBiolsAD_set_single_index_accessor(fwdBiolsAD fwbs, const int element, SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult);
-RcppExport SEXP FLasher_test_fwdBiolsAD_set_single_index_accessor(SEXP fwbsSEXP, SEXP elementSEXP, SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
+fwdBiolsAD test_fwdBiolsAD_set_single_index_accessor(fwdBiolsAD fwbs, const int element, SEXP flb_sexp, const FLQuant residuals, const bool residuals_mult);
+RcppExport SEXP FLasher_test_fwdBiolsAD_set_single_index_accessor(SEXP fwbsSEXP, SEXP elementSEXP, SEXP flb_sexpSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< fwdBiolsAD >::type fwbs(fwbsSEXP);
     Rcpp::traits::input_parameter< const int >::type element(elementSEXP);
     Rcpp::traits::input_parameter< SEXP >::type flb_sexp(flb_sexpSEXP);
-    Rcpp::traits::input_parameter< const std::string >::type model_name(model_nameSEXP);
-    Rcpp::traits::input_parameter< const FLQuant >::type params(paramsSEXP);
     Rcpp::traits::input_parameter< const FLQuant >::type residuals(residualsSEXP);
     Rcpp::traits::input_parameter< const bool >::type residuals_mult(residuals_multSEXP);
-    rcpp_result_gen = Rcpp::wrap(test_fwdBiolsAD_set_single_index_accessor(fwbs, element, flb_sexp, model_name, params, residuals, residuals_mult));
+    rcpp_result_gen = Rcpp::wrap(test_fwdBiolsAD_set_single_index_accessor(fwbs, element, flb_sexp, residuals, residuals_mult));
     return rcpp_result_gen;
 END_RCPP
 }
