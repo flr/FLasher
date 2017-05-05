@@ -654,7 +654,6 @@ void operatingModel::project_biols(const int timestep){
         std::vector<unsigned int> prev_indices_max{biol_dim[0], prev_year, biol_dim[2], prev_season, area, niter};
         // Get abundance at end of preceding timestep
         FLQuantAD surv = survivors(biol_counter, prev_indices_min, prev_indices_max);
-        //FLQuantAD surv = survivors(biol_counter, timestep-1);
         FLQuantAD new_abundance = surv;
         for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
             bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, year, season);
@@ -679,6 +678,15 @@ void operatingModel::project_biols(const int timestep){
                 std::vector<adouble> rec = calc_rec(biol_counter, ucount, timestep);
                 for (unsigned int icount = 1; icount <= niter; ++icount){
                     biols(biol_counter).n(1, year, ucount, season, area, icount) = rec[icount-1];
+                }
+            }
+
+            // If abundances are too small, set at minimum - avoid numerical issues in solver
+            adouble min_abundance = 1e-6;
+            for (unsigned int icount = 1; icount <= niter; ++icount){
+                for (unsigned int qcount = 1; qcount <= biol_dim[0]; ++qcount){
+                    biols(biol_counter).n(qcount, year, ucount, season, area, icount) = CppAD::CondExpLt(biols(biol_counter).n(qcount, year, ucount, season, area, icount), min_abundance, min_abundance, biols(biol_counter).n(qcount, year, ucount, season, area, icount));
+                    Rprintf("abund: %f\n", Value(biols(biol_counter).n(qcount, year, ucount, season, area, icount)));
                 }
             }
         }
