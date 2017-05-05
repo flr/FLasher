@@ -686,7 +686,6 @@ void operatingModel::project_biols(const int timestep){
             for (unsigned int icount = 1; icount <= niter; ++icount){
                 for (unsigned int qcount = 1; qcount <= biol_dim[0]; ++qcount){
                     biols(biol_counter).n(qcount, year, ucount, season, area, icount) = CppAD::CondExpLt(biols(biol_counter).n(qcount, year, ucount, season, area, icount), min_abundance, min_abundance, biols(biol_counter).n(qcount, year, ucount, season, area, icount));
-                    Rprintf("abund: %f\n", Value(biols(biol_counter).n(qcount, year, ucount, season, area, icount)));
                 }
             }
         }
