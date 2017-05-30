@@ -249,13 +249,13 @@ Rcpp::IntegerVector fwdControl::get_target_int_col(const int target_no, const st
     }
     return subset;
 }
-
 /*! \brief Pull out a value of an integer column in the control object by the target and simultaneous target nos
  *
  * The returned unsigned int is still able to handle NA values as it is pulled from an Rcpp::IntegerVector.
  * Can be used on non-Integer columns (no check is made) but who knows what the result will be?!?!
  * \param target_no References the target column in the control dataframe.
  * \param sim_target_no The simultaneous target number
+ * \param col The name of the integer column in the control dataframe.
  */
 unsigned int fwdControl::get_target_int_col(const int target_no, const int sim_target_no, const std::string col) const {
     Rcpp::IntegerVector values = get_target_int_col(target_no, col);
@@ -265,6 +265,34 @@ unsigned int fwdControl::get_target_int_col(const int target_no, const int sim_t
     return values[sim_target_no-1];
 }
 //@}
+
+// For multiple Biols in the biol column
+// The column is a list - return it
+Rcpp::List fwdControl::get_target_list_int_col(const int target_no, const std::string col) const {
+    // Check that column exists in data.frame
+    std::vector<std::string> names = target.attr("names");
+    auto it = std::find(names.begin(), names.end(), col);
+    if (it == names.end()){
+        Rcpp::stop("In fwdControl::get_target_list_int_col. Column name '%s' not found,\n", col);
+    }
+    Rcpp::List all = target[col];
+    std::vector<unsigned int> rows = get_target_row(target_no);
+    Rcpp::List subset(rows.size());
+    for (auto i=0; i < subset.size(); i++){
+        subset[i] = all[rows[i]];
+    }
+    return subset;
+}
+
+// For multiple Biols in the biol column
+// The column is a list - each element is a vector of ints
+Rcpp::IntegerVector fwdControl::get_target_list_int_col(const int target_no, const int sim_target_no, const std::string col) const {
+    Rcpp::List values = get_target_list_int_col(target_no, col);
+    if (sim_target_no > values.size()){
+        Rcpp::stop("In fwdControl::get_target_list_int_col. sim_target_no is too big\n");
+    }
+    return values[sim_target_no-1];
+}
 
 /*! \name Get the value(s) of a numeric column in the control dataframe
  */

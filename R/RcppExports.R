@@ -2439,6 +2439,16 @@ test_fwdControl_get_target_int_col2 <- function(control, target_no, sim_target_n
 }
 
 #'@rdname fwdControl-cpp-tests
+test_fwdControl_get_target_list_int_col <- function(control, target_no, col) {
+    .Call('FLasher_test_fwdControl_get_target_list_int_col', PACKAGE = 'FLasher', control, target_no, col)
+}
+
+#'@rdname fwdControl-cpp-tests
+test_fwdControl_get_target_list_int_col2 <- function(control, target_no, sim_target_no, col) {
+    .Call('FLasher_test_fwdControl_get_target_list_int_col2', PACKAGE = 'FLasher', control, target_no, sim_target_no, col)
+}
+
+#'@rdname fwdControl-cpp-tests
 test_fwdControl_get_target_num_col <- function(control, target_no, col) {
     .Call('FLasher_test_fwdControl_get_target_num_col', PACKAGE = 'FLasher', control, target_no, col)
 }
