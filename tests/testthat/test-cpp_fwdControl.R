@@ -62,6 +62,7 @@ test_that("fwdControl accessors", {
     # a single sim target
     values <- test_fwdControl_get_target_value2(fc, target_no, sim_target_no, col_no)
     expect_equal(unname(fc@iters[target_rows[sim_target_no],col_no,]), values)
+
     # int_col - attempt a column that isn't there
     expect_error(test_fwdControl_get_target_int_col(fc, target_no, "balls")) # column name not in control
     # year and season
@@ -77,11 +78,11 @@ test_that("fwdControl accessors", {
     expect_equal(fc@target$relSeason[target_rows], as.integer(test_fwdControl_get_target_int_col(fc, target_no, "relSeason")))
     fc@target$relSeason <- 1:(1+length(fc@target$relSeason)-1)
     expect_equal(fc@target$relSeason[target_rows], test_fwdControl_get_target_int_col(fc, target_no, "relSeason"))
-
     # fishery, catch, biol - just pull out 1 value - Need to force to be int in case it's an NA - throws warnings - bit annoying
     expect_equal(fc@target$fishery[row_no], test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "fishery"))
     expect_equal(fc@target$catch[row_no], test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "catch")) 
-    expect_equal(fc@target$biol[row_no] ,test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "biol"))
+    # For biol - use list int
+    #expect_equal(fc@target$biol[row_no] ,test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "biol"))
 
     # Do these work with NA?
     fc@target$fishery[1] <- as.integer(NA)
@@ -98,6 +99,26 @@ test_that("fwdControl accessors", {
     # age range    
     age_range <- test_fwdControl_get_age_range(fc, target_no, sim_target_no)
     expect_equal(unname(unlist( fc@target[row_no,c("minAge", "maxAge")])), age_range)
+})
+
+test_that("fwdControl get_list_int methods", {
+    fc <- random_fwdControl_generator()
+    fc@target$order <- sample(1:nrow(fc@target), nrow(fc@target))
+    target_no <- fc@target$order[round(runif(1, min=1, max=length(fc@target$order)))]
+    nsim_target <- sum(fc@target$order == target_no)
+    sim_target_no <- round(runif(1, min=1, max=nsim_target))
+    row_no <- which(fc@target$order==target_no)[sim_target_no]
+    # Set up the control to have multiple biols
+    # Pick a row to add multiple biols
+    nbiols <- round(runif(1,min=1, max=5))
+    biols <- sample(1:5, nbiols)
+    fc@target$biol[row_no] <- I(list(biols))
+    # What happens if we expect the biol column to be an int - error
+    expect_error(test_fwdControl_get_target_int_col2(fc, target_no, sim_target_no, "biol"))
+    # Get the list - just one element
+    expect_equal(length(test_fwdControl_get_target_list_int_col(fc, target_no, "biol")), 1)
+    expect_equal(test_fwdControl_get_target_list_int_col(fc, target_no, "biol")[[1]], biols)
+    expect_equal(test_fwdControl_get_target_list_int_col2(fc, target_no, sim_target_no, "biol"), biols)
 })
 
 test_that("fwdControl get_FCB methods", {
