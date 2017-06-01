@@ -68,7 +68,7 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
     ite <- ite[idx,,,drop=FALSE]
     rownames(ite) <- seq(len=nrow(trg))
 
-    return(new('fwdControl', target=trg, iters=ite))
+    return(new('fwdControl', target=trg, iters=ite, ...))
   }
 ) 
 # }}}
@@ -77,13 +77,13 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
 #' fwdControl constructor for data.frame and numeric
 #' @rdname fwdControl
 setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
-  function(target, iters) {
+  function(target, iters, ...) {
 
   if(length(iters) > 1)
     stop("'iters' must be of length 1 or of class 'array'")
 
   # CREATE w/ empty iters
-  res <- fwdControl(target=target)
+  res <- fwdControl(target=target, ...)
   # then EXTEND
   resits <- res@iters[,,rep(1, iters), drop=FALSE]
   # HACK: fix iters dimnames$iter
@@ -99,7 +99,7 @@ setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
 #' fwdControl constructor for data.frame and missing
 #' @rdname fwdControl
 setMethod('fwdControl', signature(target='data.frame', iters='missing'),
-  function(target) {
+  function(target, ...) {
     
     # CREATE iters
     dti <- dim(target)
@@ -115,7 +115,7 @@ setMethod('fwdControl', signature(target='data.frame', iters='missing'),
     # DROP value, min, max
     target <- target[!colnames(target) %in% vns[nms]]
     
-    return(fwdControl(target=target, iters=ite))
+    return(fwdControl(target=target, iters=ite, ...))
   }
 )
 # }}}
@@ -124,7 +124,7 @@ setMethod('fwdControl', signature(target='data.frame', iters='missing'),
 #' fwdControl constructor for list and missing
 #' @rdname fwdControl
 setMethod('fwdControl', signature(target='list', iters='missing'),
-  function(target) {
+  function(target, ...) {
 
     # target is LIST of LISTS
     if(is(target[[1]], 'list')) {
@@ -132,7 +132,13 @@ setMethod('fwdControl', signature(target='list', iters='missing'),
       inp <- lapply(target, function(x) do.call('parsefwdList', x))
       
       # target
-      trg <- do.call('rbind', lapply(inp, '[[', 'target'))
+      trg <- do.call('rbind', c(lapply(inp, '[[', 'target'), stringsAsFactors=FALSE))
+
+      # TODO: CONVERT NA in charcater columns to ""
+      if(is(trg$biol, "character"))
+        trg$biol[is.na(trg$biol)] <- ""
+      if(is(trg$biolGroup, "character"))
+        trg$biolGroup[is.na(trg$biolGroup)] <- ""
 
       # iters
       ites <- lapply(inp, '[[', 'iters')
@@ -160,14 +166,30 @@ setMethod('fwdControl', signature(target='list', iters='missing'),
       # APERM to 'row', 'val', 'iter'
       ite <- aperm(ite, c(3, 1, 2))
 
-      return(fwdControl(target=trg, iters=ite))
+      return(fwdControl(target=trg, iters=ite, ...))
 
     } else {
       
       inp <- do.call('parsefwdList', target)
 
-    return(do.call('fwdControl', inp))
+    return(do.call('fwdControl', inp, ...))
     }
+  }
+) # }}}
+
+# fwdControl(target='list', iters='list') {{{
+#' fwdControl constructor for a series of list
+#' @rdname fwdControl
+setMethod('fwdControl', signature(target='list', iters='list'),
+  function(target, iters, ...) {
+    
+    args <- list(...)
+
+    # DROP groups and FCB
+    target <- c(list(target, iters), args[!names(args) %in% c("groups", "FCB")])
+    
+    return(do.call('fwdControl',
+      c(list(target=target), args[names(args) %in% c("groups", "FCB")])))
   }
 ) # }}}
 
@@ -178,7 +200,11 @@ setMethod('fwdControl', signature(target='missing', iters='missing'),
   function(...) {
 
     args <- list(...)
-    
+
+    # EMPTY
+    if(length(args) == 0)
+      return(new("fwdControl"))
+
     # SEPARATE df and
     df <- as.data.frame(args[!names(args) %in% 'value'])
     
@@ -209,34 +235,35 @@ setMethod('fwdControl', signature(target='missing', iters='missing'),
 #' @param ... Things
 parsefwdList <- function(...) {
 
-    args <- list(...)
-  
-    # SEPARATE df and ...
-    df <- as.data.frame(args[!names(args) %in% c('value', 'min', 'max')])
+  args <- list(...)
+    
+  # SEPARATE df and ...
+  df <- as.data.frame(args[!names(args) %in% c('value', 'min', 'max')],
+    stringsAsFactors = FALSE)
 
-    #  ... array components
-    val <- args[names(args) %in% c('value', 'min', 'max')]
+  #  ... array components
+  val <- args[names(args) %in% c('value', 'min', 'max')]
 
-    # TURN val into matrix
-    if(is(val, 'list')) {
-      mat <- do.call(rbind, val)
-    } else {
-      mat <- t(matrix(val))
-    }
+  # TURN val into matrix
+  if(is(val, 'list')) {
+    mat <- do.call(rbind, val)
+  } else {
+    mat <- t(matrix(val))
+  }
 
-    # NEW target
-    trg <- new('fwdControl')@target[rep(1, nrow(df)),]
-    trg[names(df)] <- df
+  # NEW target
+  trg <- new('fwdControl')@target[rep(1, nrow(df)),]
+  trg[names(df)] <- df
 
-    # NEW iters
-    ite <- array(NA, dim=c(nrow(trg), 3, ncol(mat)),
-      dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'), iter=seq(ncol(mat))))
+  # NEW iters
+  ite <- array(NA, dim=c(nrow(trg), 3, ncol(mat)),
+    dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'), iter=seq(ncol(mat))))
 
-    ite[,match(rownames(mat), dimnames(ite)$val),] <- c(mat)
+  ite[,match(rownames(mat), dimnames(ite)$val),] <- c(mat)
 
-    # RETURNS permutated array!
-    return(list(target=trg, iters=ite))
-  } # }}}
+  # RETURNS permutated array!
+  return(list(target=trg, iters=ite))
+} # }}}
 
 # targetOrder(object) {{{
 #' Get the order of targets in a fwdControl
@@ -310,4 +337,25 @@ fcb2int <- function(fcb, biols, fisheries) {
     fcbint[fcb[,"f"] == i, "c"] <- match(fcb[fcb[,"f"] == i, "c"], nmc[[i]])
 
   return(fcbint)
+} # }}}
+
+# tagGroups {{{
+tagGroups <- function(control) {
+
+  # FIND number of biol(s) in each biolGroup
+  count <- rle(as.character(control@groups$biolGroup))
+
+  # HACK: DROP "" in biolGroup
+  count$values <- count$values[count$values != ""]
+  count$lengths <- count$values[count$values != ""]
+
+  # SUBSET those with more than 1 biol
+  bgrs <- as.list(setNames(count$values[count$lengths > 1], count$values[count$lengths > 1]))
+  bgrs <- lapply(bgrs, function(x) control@groups$biol[control@groups$biolGroup %in% x])
+
+  # CHANGE biol rows for biolGroup into vector
+  for(i in seq(length(bgrs)))
+    control@target$biol[control@target$biolGroup %in% names(bgrs[i])] <- bgrs[i]
+
+  return(control)
 } # }}}

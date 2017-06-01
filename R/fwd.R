@@ -88,6 +88,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   mny <- min(dib[,"minyear"]) - 1
   trg <- transform(trg, year=year - mny)
   trg <- transform(trg, relYear=relYear - mny)
+
+  # TODO: CONVERT biol column to integer if character
  
   # TODO CHECK rel*
   # Allow all NA
@@ -148,7 +150,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control,
-    effort_mult_initial = 1.0, indep_min = 0.0, indep_max = 100, nr_iters = 50)
+    effort_mult_initial = 1.0, indep_min = 0.0, indep_max = 2.5, nr_iters = 50)
   # UPDATE object w/ new biolscpp@n
   for(i in names(object))
     n(object[[i]]) <- out$om$biols[[i]]@n
@@ -271,7 +273,9 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 
     # COERCE to FLBiols
     B <- as(object, "FLBiol")
-    if(is(sr, "predictModel") | is(sr, "FLSR"))
+    if(is(sr, "predictModel"))
+      rec(B) <- sr
+    else if(is(sr, "FLSR"))
       rec(B) <- predictModel(model=model(sr), params=params(sr))
     else if(is(sr, "list")) {
       B@rec@model <- do.call(sr$model, list())[["model"]]

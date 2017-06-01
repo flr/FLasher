@@ -91,22 +91,38 @@ setClass("fwdControl",
   slots=c(
     target="data.frame",
     iters="array",
-    FCB="array"),
+    FCB="array",
+    groups="data.frame"),
 
   # PROTOTYPE
-  # year quant season area unit relYear relSeason relFishery relCatch relBiol minAge maxAge fishery catch biol
+  # year quant season area unit relYear relSeason relFishery relCatch relBiol
+  #   minAge maxAge fishery catch biol group
   prototype=list(
-    target=data.frame(year=1, quant=factor(NA, levels=.qlevels),
-      season="all", area="unique", unit="unique",
-      relYear=as.integer(NA), relSeason=as.integer(NA),
-      relFishery=as.integer(NA), relCatch=as.integer(NA), relBiol=as.integer(NA),
-      relMinAge=as.integer(NA), relMaxAge=as.integer(NA),
-      minAge=as.integer(NA), maxAge=as.integer(NA),
-      fishery=as.integer(NA), catch=as.integer(NA), biol=as.integer(NA),
-      stringsAsFactors=FALSE),
+    target=data.frame(
+      year=1,
+      quant=factor(NA, levels=.qlevels), 
+      season="all",
+      area="unique", 
+      unit="unique",
+      relYear=as.integer(NA), 
+      relSeason=as.integer(NA),
+      relFishery=as.integer(NA), 
+      relCatch=as.integer(NA), 
+      relBiol=as.integer(NA),
+      relMinAge=as.integer(NA), 
+      relMaxAge=as.integer(NA),
+      minAge=as.integer(NA), 
+      maxAge=as.integer(NA),
+      fishery=as.integer(NA), 
+      catch=as.integer(NA),
+      biol=as.integer(NA),
+      biolGroup=as.integer(NA),
+        stringsAsFactors=FALSE),
     iters=array(NA, dimnames=list(row=1, val=c("min", "value", "max"), iter=1),
       dim=c(1,3,1)),
-    FCB=array(c(NA), dim=c(1,3), dimnames=list(1, c("F", "C", "B")))),
+    FCB=array(c(NA), dim=c(1,3), dimnames=list(1, c("F", "C", "B"))),
+    groups=data.frame(biol=as.integer(NA), biolGroup=as.integer(NA),
+      stringsAsFactors=FALSE)),
 
   # VALIDITY
   validity=function(object) {
@@ -131,6 +147,24 @@ setClass("fwdControl",
       return("colnames of FCB slot are incorrect, must be 'F', 'C', 'B'")
     if(length(dim(object@FCB)) != 2)
       return("@FCB array must have 2 dimensions")
+
+    return(TRUE)
+
+    # biol | biolGroup, not both ...
+    if(any(!is.na(object@target$biol + object@target$biolGroup)))
+      return("Cannot specify biol and biolGroup at the same time in target")
+    
+    # ... but at least one of them
+    if(any(is.na(pmax(object@target$biol, object@target$biolGroup, na.rm=TRUE))))
+      return("Either biol or biolGroup must be specified for every single target")
+
+    # biol and biolGroup, when used, in target and groups match
+    if(any(!is.na(object@target$biolGroup))) {
+         tbg <- object@target$biolGroup 
+         gbg <- object@groups$biolGroup
+      if(!all(tbg[!is.na(tbg)] %in% gbg[!is.na(gbg)]))
+        return("Mismatching biolGroup values in target and groups slots")
+    }
 
     # levels in "quant"
     if(!all(as.character(object@target$quant) %in% .qlevels))
