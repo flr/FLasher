@@ -64,3 +64,8 @@ setMethod("fillchar", signature("FLBiols"),
     })
   }
 ) # }}}
+
+# G {{{
+G <- function(...)
+  return(I(list(unlist(list(...)))))
+# }}}
