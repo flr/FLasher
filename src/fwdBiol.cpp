@@ -324,7 +324,7 @@ fwdBiols_base<T>::fwdBiols_base(SEXP flbs_sexp){
     for (Rcpp::List flb_list: flbs_list){
         fwdBiol_base<T> flb(flb_list["biol"], flb_list["srr_residuals"], flb_list["srr_residuals_mult"]);
         biols.emplace_back(flb);
-    }
+}
     names = flbs_list.names();
 }
 
