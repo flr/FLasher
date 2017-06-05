@@ -134,12 +134,6 @@ setMethod('fwdControl', signature(target='list', iters='missing'),
       # target
       trg <- do.call('rbind', c(lapply(inp, '[[', 'target'), stringsAsFactors=FALSE))
 
-      # TODO: CONVERT NA in charcater columns to ""
-      if(is(trg$biol, "character"))
-        trg$biol[is.na(trg$biol)] <- ""
-      if(is(trg$biolGroup, "character"))
-        trg$biolGroup[is.na(trg$biolGroup)] <- ""
-
       # iters
       ites <- lapply(inp, '[[', 'iters')
       
@@ -185,11 +179,11 @@ setMethod('fwdControl', signature(target='list', iters='list'),
     
     args <- list(...)
 
-    # DROP groups and FCB
-    target <- c(list(target, iters), args[!names(args) %in% c("groups", "FCB")])
+    # DROP FCB
+    target <- c(list(target, iters), args[!names(args) %in% c("FCB")])
     
     return(do.call('fwdControl',
-      c(list(target=target), args[names(args) %in% c("groups", "FCB")])))
+      c(list(target=target), args[names(args) %in% c("FCB")])))
   }
 ) # }}}
 
@@ -231,15 +225,21 @@ setMethod('fwdControl', signature(target='missing', iters='missing'),
 # RETURNS iters as aperm(c('val', 'iter' ,'row')) for processing
 #' Parse the list argument to fwd to make a fwdControl object
 #'
-#' Internal function that is not for internal consumption.
+#' Internal function
 #' @param ... Things
 parsefwdList <- function(...) {
 
   args <- list(...)
-    
-  # SEPARATE df and ...
-  df <- as.data.frame(args[!names(args) %in% c('value', 'min', 'max')],
-    stringsAsFactors = FALSE)
+ 
+  if(is(args$biol, 'list') | is(args$biol, 'AsIs')) {
+    df <- as.data.frame(args[!names(args) %in% c('value', 'min', 'max', 'biol')],
+      stringsAsFactors = FALSE)
+    df$biol <- I(args$biol)
+  } else {
+    df <- as.data.frame(args[!names(args) %in% c('value', 'min', 'max')],
+      stringsAsFactors = FALSE)
+  }
+
 
   #  ... array components
   val <- args[names(args) %in% c('value', 'min', 'max')]
@@ -337,25 +337,4 @@ fcb2int <- function(fcb, biols, fisheries) {
     fcbint[fcb[,"f"] == i, "c"] <- match(fcb[fcb[,"f"] == i, "c"], nmc[[i]])
 
   return(fcbint)
-} # }}}
-
-# tagGroups {{{
-tagGroups <- function(control) {
-
-  # FIND number of biol(s) in each biolGroup
-  count <- rle(as.character(control@groups$biolGroup))
-
-  # HACK: DROP "" in biolGroup
-  count$values <- count$values[count$values != ""]
-  count$lengths <- count$values[count$values != ""]
-
-  # SUBSET those with more than 1 biol
-  bgrs <- as.list(setNames(count$values[count$lengths > 1], count$values[count$lengths > 1]))
-  bgrs <- lapply(bgrs, function(x) control@groups$biol[control@groups$biolGroup %in% x])
-
-  # CHANGE biol rows for biolGroup into vector
-  for(i in seq(length(bgrs)))
-    control@target$biol[control@target$biolGroup %in% names(bgrs[i])] <- bgrs[i]
-
-  return(control)
 } # }}}

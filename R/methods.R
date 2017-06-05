@@ -20,8 +20,9 @@ setMethod("show", signature("fwdControl"),
     nms <- names(object@target)
 
     # FIND relevant cols (!unique)
-    idx <- apply(object@target[,-c(1:5)], 2, function(x) length(unique(x))==1)
-    nms <- c(nms[1:5], nms[-c(1:5)][!idx])
+    idx <- apply(object@target[,-c(1,2,15,16,17)], 2, function(x) length(unique(x))==1)
+    idx2 <- apply(object@target[,c(15,16,17)], 2, function(x) all(is.na(x)))
+    nms <- c(nms[c(1,2)], nms[-c(1,2)][!c(idx, idx2)])
     
     # SELECT cols
     df <- object@target[, nms]
@@ -93,7 +94,7 @@ setMethod("[<-", signature(x="fwdControl", value="vector"),
     if(!missing(j)) {
       # ONLY one column
       if(length(j) > 1)
-        stop("vector can only be assigned to a single column, none selected")
+        stop("vector can only be assigned to a single column")
       arge[[2]] <- j
       if(any(j %in% c('min', 'value', 'max') | j %in% c(3:5))) {
         argi[[2]] <- j[j %in% c('min', 'value', 'max') | j %in% c(3:5)]
@@ -103,11 +104,10 @@ setMethod("[<-", signature(x="fwdControl", value="vector"),
     if(!missing(k)) {
       argi[[3]] <- k
     }
-
+    
     # if min, value or max changed
-    if(any(j %in% c('min', 'value', 'max') | j %in% c(3:5))) {
+    if(any(j %in% c('min', 'value', 'max'))) {
       x@iters <- do.call('[<-', c(list(x@iters), argi, list(value=value)))
-      # UPDATE target
       x@target <- do.call('[<-', c(list(x@target), arge,
         list(value=mean(do.call('[', c(list(x@iters), argi)), na.rm=TRUE))))
     # other columns
@@ -115,6 +115,22 @@ setMethod("[<-", signature(x="fwdControl", value="vector"),
       x@target <- do.call('[<-', c(list(x@target), arge, list(value=value)))
     }
 
+    return(x)
+  }
+)
+
+setMethod("[<-", signature(x="fwdControl", value="ANY"),
+  function(x, i, j, k, ..., value) {
+    
+    if(j == "biol") {
+      if(missing(i)) {
+        x@target$biol <- value
+      } else {
+        biol <- x@target$biol
+        biol[i] <- value
+        x@target$biol <- biol
+      }
+    }
     return(x)
   }
 )
@@ -141,11 +157,17 @@ setMethod("$", signature(x="fwdControl"),
 #' @rdname fwdControl-accessors
 setMethod("$<-", signature(x="fwdControl", value="vector"),
   function(x, name, value) {
-
-    if(name == "value")
-      x@iters[,"value",] <- value
+    if(name %in% c("min", "value", "max"))
+      x@iters[,name,] <- value
     else
       x@target[,name] <- value
+    return(x)
+  }
+)
+
+setMethod("$<-", signature(x="fwdControl", value="AsIs"),
+  function(x, name, value) {
+    x@target <- do.call("$<-", list(x=x@target, name=name, value=value))
     return(x)
   }
 ) # }}}

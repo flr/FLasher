@@ -151,52 +151,29 @@ iters <- array(runif(60000, 0.3, 0.8), dim=c(76,1,10))
 fwdControl(target, iters)
 
 
-ctrl <- fwdControl(
-  list(year=2005, quant="catch", biol=1, value=1000),
-  list(year=2005, quant="catch", biol=2, value=1000),
-  list(year=2005, quant="catch", biolGroup=1, value=1000),
-  list(year=2005, quant="catch", biolGroup=2, value=1000),
-  list(year=2006, quant="catch", biol=1, value=500),
-  list(year=2006, quant="catch", biol=2, value=500),
-  list(year=2006, quant="catch", biolGroup=1, value=500),
-  list(year=2006, quant="catch", biolGroup=2, value=500),
-    groups=data.frame(biol=seq(7), biolGroup=c(NA, NA, 1, 1, 2, 2, 2)))
+# no biolGroup
 
-# biolGroup
-
-ctrl <- fwdControl(list(
-  list(year=2005, quant="catch", biol=1, value=1000),
-  list(year=2005, quant="catch", biol=2, value=1000),
-  list(year=2005, quant="catch", biolGroup=1, value=1000),
-  list(year=2005, quant="catch", biolGroup=2, value=1000),
-  list(year=2006, quant="catch", biol=1, value=500),
-  list(year=2006, quant="catch", biol=2, value=500),
-  list(year=2006, quant="catch", biolGroup=1, value=500),
-  list(year=2006, quant="catch", biolGroup=2, value=500)),
-    groups=data.frame(biol=seq(7), biolGroup=c(NA, NA, 1, 1, 2, 2, 2)))
-
-# TODO text labels
-
-ctrl <- fwdControl(list(
-  list(year=2005, quant="catch", biol="PLE", value=1000),
-  list(year=2005, quant="catch", biol="SOL", value=1000),
-  list(year=2005, quant="catch", biolGroup="A", value=1000),
-  list(year=2005, quant="catch", biolGroup="B", value=1000),
-  list(year=2006, quant="catch", biol="PLE", value=500),
-  list(year=2006, quant="catch", biol="SOL", value=500),
-  list(year=2006, quant="catch", biolGroup="A", value=500),
-  list(year=2006, quant="catch", biolGroup="B", value=500)),
-    groups=data.frame(biol=c("PLE", "SOL", 1:5),
-      biolGroup=c("", "", "A", "A", "B", "B", "B"), stringsAsFactors = FALSE))
+# data.frame()
 
 
-ctrl <- fwdControl(data.frame(year=2000, quant="catch", value=1000,
-  biol=c("PLE", ""), biolGroup=c("", "A"), stringsAsFactors=FALSE),
-  groups=data.frame(biol=c("PLE", "SOL", "TUR"), biolGroup=c("", "A", "A"),
-    stringsAsFactors=FALSE))
+
+x <- fwdControl(data.frame(year=2000:2001, value=200, quant="catch", biol=1))
+
+# Accessor
 
 
-validObject(
-  tagGroups(ctrl)
-)
+x[1, 'biol'] <- 3
+x[1, 'biol'] <- G(1,2)
+
+x$biol <- G(1,2)
+
+
+fwdControl(list(year=2000:2001, value=200, quant="catch", biol=G(1,2)),
+  list(year=2002:2003, value=100, quant="catch", biol=c(1,2)))
+
+fwdControl(list(year=2000:2001, value=200, quant="catch", biol=I(list(c(1,2)))))
+
+fwdControl(list(year=2000:2001, value=200, quant="catch", biol=c(1,2)))
+
+
 
