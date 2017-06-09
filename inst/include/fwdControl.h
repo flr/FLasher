@@ -59,6 +59,8 @@ class fwdControl {
         // Rcpp::NumericVector to ensure that NA is properly handled (std::vector does not work properly with Rcpp::NumericVector::is_na())
         Rcpp::NumericVector get_target_num_col(const int target_no, const std::string col) const;
         double get_target_num_col(const int target_no, const int sim_target_no, const std::string col) const;
+        Rcpp::List get_target_list_int_col(const int target_no, const std::string col) const;
+        Rcpp::IntegerVector get_target_list_int_col(const int target_no, const int sim_target_no, const std::string col) const;
         std::vector<double> get_target_value(const int target_no, const int col) const; // gets all iters for all simultaneous targets. col: 1 = min, 2 = value, 3 = max
         std::vector<double> get_target_value(const int target_no, const int sim_target_no, const int col) const; // gets all iters for one simultaneous target. col: 1 = min, 2 = value, 3 = max
         std::string get_target_quantity(const int target_no, const int sim_target_no, const bool relative=false) const;

@@ -149,3 +149,31 @@ target <- data.frame(year=1950:2025, quant='f')
 iters <- array(runif(60000, 0.3, 0.8), dim=c(76,1,10))
 
 fwdControl(target, iters)
+
+
+# no biolGroup
+
+# data.frame()
+
+
+
+x <- fwdControl(data.frame(year=2000:2001, value=200, quant="catch", biol=1))
+
+# Accessor
+
+
+x[1, 'biol'] <- 3
+x[1, 'biol'] <- G(1,2)
+
+x$biol <- G(1,2)
+
+
+fwdControl(list(year=2000:2001, value=200, quant="catch", biol=G(1,2)),
+  list(year=2002:2003, value=100, quant="catch", biol=c(1,2)))
+
+fwdControl(list(year=2000:2001, value=200, quant="catch", biol=I(list(c(1,2)))))
+
+fwdControl(list(year=2000:2001, value=200, quant="catch", biol=c(1,2)))
+
+
+

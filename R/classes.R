@@ -94,16 +94,28 @@ setClass("fwdControl",
     FCB="array"),
 
   # PROTOTYPE
-  # year quant season area unit relYear relSeason relFishery relCatch relBiol minAge maxAge fishery catch biol
+  # year quant season area unit relYear relSeason relFishery relCatch relBiol
+  #   minAge maxAge fishery catch biol
   prototype=list(
-    target=data.frame(year=1, quant=factor(NA, levels=.qlevels),
-      season="all", area="unique", unit="unique",
-      relYear=as.integer(NA), relSeason=as.integer(NA),
-      relFishery=as.integer(NA), relCatch=as.integer(NA), relBiol=as.integer(NA),
-      relMinAge=as.integer(NA), relMaxAge=as.integer(NA),
-      minAge=as.integer(NA), maxAge=as.integer(NA),
-      fishery=as.integer(NA), catch=as.integer(NA), biol=as.integer(NA),
-      stringsAsFactors=FALSE),
+    target=data.frame(
+      year=1,
+      quant=factor(NA, levels=.qlevels), 
+      season="all",
+      area="unique", 
+      unit="unique",
+      relYear=as.integer(NA), 
+      relSeason=as.integer(NA),
+      relFishery=as.integer(NA), 
+      relCatch=as.integer(NA), 
+      relBiol=as.integer(NA),
+      relMinAge=as.integer(NA), 
+      relMaxAge=as.integer(NA),
+      minAge=as.integer(NA), 
+      maxAge=as.integer(NA),
+      fishery=as.integer(NA), 
+      catch=as.integer(NA),
+      biol=as.integer(NA),
+        stringsAsFactors=FALSE),
     iters=array(NA, dimnames=list(row=1, val=c("min", "value", "max"), iter=1),
       dim=c(1,3,1)),
     FCB=array(c(NA), dim=c(1,3), dimnames=list(1, c("F", "C", "B")))),
@@ -132,6 +144,12 @@ setClass("fwdControl",
     if(length(dim(object@FCB)) != 2)
       return("@FCB array must have 2 dimensions")
 
+    # multiple biol targets
+    if(is(object@target$biol, "list")) {
+      if(any(as.character(object@target$quant)
+        [unlist(lapply(object@target$biol, length)) > 1] != "catch"))
+        return("Only 'catch' targets allowed for multiple biols")
+    }
     # levels in "quant"
     if(!all(as.character(object@target$quant) %in% .qlevels))
       return("Specified 'quant' currently not available as target in fwd")

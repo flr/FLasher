@@ -95,6 +95,18 @@ int test_fwdControl_get_target_int_col2(const fwdControl control, const int targ
 
 //'@rdname fwdControl-cpp-tests
 // [[Rcpp::export]]
+Rcpp::List test_fwdControl_get_target_list_int_col(const fwdControl control, const int target_no, const std::string col){
+    return control.get_target_list_int_col(target_no, col);
+}
+
+//'@rdname fwdControl-cpp-tests
+// [[Rcpp::export]]
+Rcpp::IntegerVector test_fwdControl_get_target_list_int_col2(const fwdControl control, const int target_no, const int sim_target_no, const std::string col){
+    return control.get_target_list_int_col(target_no, sim_target_no, col);
+}
+
+//'@rdname fwdControl-cpp-tests
+// [[Rcpp::export]]
 Rcpp::NumericVector test_fwdControl_get_target_num_col(const fwdControl control, const int target_no, const std::string col){
     return control.get_target_num_col(target_no, col);
 }
