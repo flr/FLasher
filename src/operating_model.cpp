@@ -788,7 +788,6 @@ void operatingModel::project_fisheries(const int timestep){
  * \param indep_max The maximum value of effort multipliers
  */
 Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters){
-
     bool verbose = false;
     if(verbose){
         Rprintf("Running\n");
@@ -1221,32 +1220,59 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     if(verbose){Rprintf("sim_target_no: %i\n", sim_target_no);}
     std::vector<unsigned int> indices_min(1,6);
     std::vector<unsigned int> indices_max(1,6);
-    get_target_hat_indices(indices_min, indices_max, target_no, sim_target_no, false);
-    // Target type
-    fwdControlTargetType target_type = ctrl.get_target_type(target_no, sim_target_no, false);
-    std::vector<unsigned int> FCB_nos;
-    FCB_nos = ctrl.get_FCB_nos(target_no, sim_target_no, false, false);
-    // Evaluate the OM at that 
-    if(verbose){Rprintf("In get_target_value_hat. Fishery: %i Catch: %i Biol: %i\n", FCB_nos[0], FCB_nos[1], FCB_nos[2]);}
-    FLQuantAD target_value = eval_om(target_type, FCB_nos[0], FCB_nos[1], FCB_nos[2], indices_min, indices_max);
-    // Do we have a relative target?
+
+    // A target may have multiple target components from multiple biols - e.g. joint TACs
+    // Loop over ntarget_components (start at 0)
+    // Get the indices range using get_target_hat_indices(indices_min, indices_max, target_no, sim_target_no, target_component, false);
+    // Get the Fishery, Catch, Biol[target_component] no
+    // store result of evalOM
+    // Sum results of evalOM
+    auto fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
+    auto catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
+    auto Bnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "biol");
+    auto no_target_components = Bnos.size();
+    auto niters = get_niter();
+    FLQuantAD target_value(1,1,1,1,1,niters); // target values are not structured by age, time or unit - only by iter
+    fwdControlTargetType target_type;
+    for (auto target_component=0; target_component < no_target_components; ++target_component){
+        // Indices of target
+        get_target_hat_indices(indices_min, indices_max, target_no, sim_target_no, target_component, false);
+        // Target type
+        target_type = ctrl.get_target_type(target_no, sim_target_no, false);
+        // Evaluate the OM
+        target_value = target_value + eval_om(target_type, fishery_no, catch_no, Bnos[target_component], indices_min, indices_max);
+    }
+
+   // Do we have a relative target?
     unsigned int rel_year = ctrl.get_target_int_col(target_no, sim_target_no, "relYear"); 
     unsigned int rel_season = ctrl.get_target_int_col(target_no, sim_target_no, "relSeason");
     bool rel_year_na = Rcpp::IntegerVector::is_na(rel_year);
     bool rel_season_na = Rcpp::IntegerVector::is_na(rel_season);
-    std::vector<unsigned int> rel_FCB_nos;
-    rel_FCB_nos = ctrl.get_FCB_nos(target_no, sim_target_no, true, false);
-    bool rel_fishery_na = Rcpp::IntegerVector::is_na(rel_FCB_nos[0]);
-    bool rel_catch_na = Rcpp::IntegerVector::is_na(rel_FCB_nos[1]);
-    bool rel_biol_na = Rcpp::IntegerVector::is_na(rel_FCB_nos[2]);
-    if (!rel_year_na | !rel_season_na | !rel_fishery_na | !rel_catch_na | !rel_biol_na){
+
+   // std::vector<unsigned int> rel_FCB_nos;
+   // rel_FCB_nos = ctrl.get_FCB_nos(target_no, sim_target_no, true, false);
+   // bool rel_fishery_na = Rcpp::IntegerVector::is_na(rel_FCB_nos[0]);
+   // bool rel_catch_na = Rcpp::IntegerVector::is_na(rel_FCB_nos[1]);
+   // bool rel_biol_na = Rcpp::IntegerVector::is_na(rel_FCB_nos[2]);
+   // if (!rel_year_na | !rel_season_na | !rel_fishery_na | !rel_catch_na | !rel_biol_na){
+   // Relative target given only by year and season - not F, C or B
+    if (!rel_year_na | !rel_season_na){
         if(verbose){Rprintf("Relative target\n");}
-        std::vector<unsigned int> rel_indices_min(1,6);
-        std::vector<unsigned int> rel_indices_max(1,6);
-        get_target_hat_indices(rel_indices_min, rel_indices_max, target_no, sim_target_no, true);
-        FLQuantAD rel_target_value = eval_om(target_type, rel_FCB_nos[0], rel_FCB_nos[1], rel_FCB_nos[2], rel_indices_min, rel_indices_max);
+        auto rel_fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "relFishery");
+        auto rel_catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "relCatch");
+        auto rel_Bnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relBiol");
+        auto no_target_components = rel_Bnos.size();
+        FLQuantAD rel_target_value(1,1,1,1,1,niters); // target values are not structured by age, time or unit - only by iter
+        for (auto target_component=0; target_component < no_target_components; ++target_component){
+            // Indices of rel target
+            // CHECK THIS IS OK FOR RELATIVE TARGETS
+            get_target_hat_indices(indices_min, indices_max, target_no, sim_target_no, target_component, true);
+            // Evaluate the OM
+            rel_target_value = rel_target_value + eval_om(target_type, rel_fishery_no, rel_catch_no, rel_Bnos[target_component], indices_min, indices_max);
+        }
         target_value = target_value / rel_target_value;
     }
+
     std::vector<adouble> value = target_value.get_data();
     return value;
 } 
@@ -1263,18 +1289,27 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
  * \param indices_max Vector of the maximum indices.
  * \param target_no References the target column in the control dataframe. Starts at 1.
  * \param sim_target_no References the target column in the control dataframe. Starts at 1.
+ * \param target_component_no If we have multiple biols in a target (stored as a list), which element of that list are we dealing with. Indexing starts at 0.
  * \param relative Are we getting the relative target indices.
  */
-void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_min, std::vector<unsigned int>& indices_max, const int target_no, const int sim_target_no, const bool relative) {
+void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_min, std::vector<unsigned int>& indices_max, const int target_no, const int sim_target_no, const int target_component_no,  const bool relative) {
     // Get the key information
     unsigned int year, season, fishery_no, catch_no, biol_no, min_age, max_age;
     // Get and check FCB nos
     std::vector<unsigned int> FCB_nos;
     const bool check_FCB = true;
-    FCB_nos = ctrl.get_FCB_nos(target_no, sim_target_no, relative, check_FCB);
-    fishery_no = FCB_nos[0];
-    catch_no = FCB_nos[1];
-    biol_no = FCB_nos[2];
+
+    // Problem here as Biol column is now a list with possibly multiple biols
+    //FCB_nos = ctrl.get_FCB_nos(target_no, sim_target_no, relative, check_FCB);
+    //fishery_no = FCB_nos[0];
+    //catch_no = FCB_nos[1];
+    //biol_no = FCB_nos[2];
+
+    fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
+    catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
+    auto biol_nos = ctrl.get_target_list_int_col(target_no, sim_target_no, "biol");
+    biol_no = biol_nos[target_component_no];
+
     if (relative){
         year = ctrl.get_target_int_col(target_no, sim_target_no, "relYear"); 
         season = ctrl.get_target_int_col(target_no, sim_target_no, "relSeason");
