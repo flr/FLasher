@@ -37,8 +37,8 @@ Depends:
 Imports:
     methods,
     Rcpp (>= 0.12.0)
-SystemRequirements: C++11
 LinkingTo: Rcpp
+SystemRequirements: C++11
 Additional_repositories: http://flr-project.org/R
 Remotes: github::iagomosqueira/FLFishery
 Suggests:

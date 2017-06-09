@@ -894,6 +894,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         //if(verbose){Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", target_value[1], Value(target_value_hat[1]), Value(error[1]));}
         // Stop recording
         CppAD::ADFun<double> fun(effort_mult_ad, error);
+        fun.optimize();
         //if(verbose){Rprintf("Turned off tape\n\n");}
         // Solve the target
         // double version of effort mult used in solver

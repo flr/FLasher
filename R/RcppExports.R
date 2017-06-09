@@ -1461,6 +1461,10 @@ test_FLQuantAD_fill_double <- function(flq, value) {
     .Call('FLasher_test_FLQuantAD_fill_double', PACKAGE = 'FLasher', flq, value)
 }
 
+testFLCppAD <- function(scalar) {
+    invisible(.Call('FLasher_testFLCppAD', PACKAGE = 'FLasher', scalar))
+}
+
 #'@title Tests for CPP implementation of FLQuant and some others
 NULL
 
