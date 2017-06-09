@@ -261,3 +261,47 @@ FLQuantAD test_FLQuantAD_fill_double(FLQuantAD flq, const double value) {
     flq.fill(value);
     return flq;
 }
+
+//------------------ Others --------------------------------------
+
+
+// [[Rcpp::export]]
+void testFLCppAD(double scalar){
+    std::vector<adouble> xad = {1.0};
+
+    //adouble scalarad = scalar; // 1. OK
+    //FLQuantAD scalarad(1,1,1,1,1,1, scalar); // 2. OK - used in calc but not to recieve output
+    FLQuantAD scalarad(1,1,1,1,1,1, scalar); // 3. Works OK now - not in sourceCpp
+    //FLQuantAD scalarad(1,1,1,1,1,1, scalar); // 4. OK - accepts direct input of AD via ()
+    //FLQuantAD yflqad(1,1,1,1,1,1); // 4. OK
+
+    CppAD::Independent(xad);
+    std::vector<adouble> yad(1);
+
+
+    //yad[0] = xad[0] * xad[0] + xad[0] * scalarad - 6.0; // 1. OK
+    //yad[0] = xad[0] * xad[0] + xad[0] * scalarad(1,1,1,1,1,1) - 6.0; // 2. OK
+    FLQuantAD yflqad = xad[0] * xad[0] + xad[0] * scalarad - 6.0; // 3. OK Now - not in sourceCpp
+    yad[0] = yflqad(1,1,1,1,1,1); // 3. OK Now
+    //yflqad(1,1,1,1,1,1) = xad[0] * xad[0] + xad[0] * scalarad(1,1,1,1,1,1) - 6.0; // 4. OK
+    //yad[0] = yflqad(1,1,1,1,1,1); // 4. OK
+
+    CppAD::ADFun<double> fun(xad, yad);
+
+    // Solve
+    std::vector<double> x = {1.0}; 
+    std::vector<double> y;
+    std::vector<double> jac;
+    for (int nrcount = 0; nrcount < 8; ++nrcount){
+        y = fun.Forward(0, x); 
+        jac = fun.Jacobian(x);
+        Rprintf("x: %f. y: %f. jac: %f\n", x[0], y[0], jac[0]);
+        x[0] = x[0] - y[0] / jac[0];
+    }
+
+
+}
+
+
+
+

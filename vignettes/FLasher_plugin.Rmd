@@ -70,6 +70,7 @@ std::vector<int> rbl_demo(std::vector<int> v){
     }
     return v;
     }',
+    verbose=TRUE, rebuild=TRUE,
     plugins="cpp11"
 )
 ```
@@ -117,19 +118,31 @@ C++11 code can be included using the C++11 plugin:
 ```{r, warning=FALSE}
 
 source_code <- "
-    // [[Rcpp::plugins(cpp11)]]     
     #include <Rcpp.h>
+    // [[Rcpp::plugins(cpp11)]]     
 
-    // [[Rcpp::export]]
-    std::vector<double> rbl_demo2(std::vector<double> v){
-        for (auto& i : v){
-            i = i * 2.0;
-        }
-        return v;
-    }
+//    // [[Rcpp::export]]
+//    std::vector<double> rbl_demo2(std::vector<double> v){
+//        for (auto& i : v){
+//            i = i * 2.0;
+//        }
+//        return v;
+//    }
+
+// [[Rcpp::export]]
+void nothing(){
+    std::vector<double> x;
+    return;
+}
+
 "
 cat(source_code, file=paste(tempdir(),"test.cpp", sep="/"))
-sourceCpp(file=paste(tempdir(),"test.cpp", sep="/"))
+sourceCpp(file=paste(tempdir(),"test.cpp", sep="/"), verbose=TRUE, rebuild=TRUE)
+
+
+
+
+
 ```
 
 ```{r}

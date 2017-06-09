@@ -3550,6 +3550,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// testFLCppAD
+void testFLCppAD(double scalar);
+RcppExport SEXP FLasher_testFLCppAD(SEXP scalarSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type scalar(scalarSEXP);
+    testFLCppAD(scalar);
+    return R_NilValue;
+END_RCPP
+}
 // FLPar_units
 std::string FLPar_units(SEXP flp);
 RcppExport SEXP FLasher_FLPar_units(SEXP flpSEXP) {
