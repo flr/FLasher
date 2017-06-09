@@ -2732,8 +2732,8 @@ test_operatingModel_get_target_value2 <- function(flfs, biols, ctrl, target_no) 
 }
 
 #'@rdname operatingModel-cpp-tests
-test_operatingModel_get_target_hat_indices <- function(flfs, biols, ctrl, target_no, sim_target_no, relative) {
-    .Call('FLasher_test_operatingModel_get_target_hat_indices', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no, sim_target_no, relative)
+test_operatingModel_get_target_hat_indices <- function(flfs, biols, ctrl, target_no, sim_target_no, target_component, relative) {
+    .Call('FLasher_test_operatingModel_get_target_hat_indices', PACKAGE = 'FLasher', flfs, biols, ctrl, target_no, sim_target_no, target_component, relative)
 }
 
 #'@rdname operatingModel-cpp-tests

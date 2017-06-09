@@ -73,7 +73,7 @@ class operatingModel {
         // The target value we are trying to hit - either directly from the control object or a min / max calculation using the current OM
         std::vector<double> get_target_value(const int target_no); // All iters for all sim targets
         std::vector<double> get_target_value(const int target_no, const int sim_target_no); // All iters for a sim target
-        void get_target_hat_indices(std::vector<unsigned int>& indices_min, std::vector<unsigned int>& indices_max, const int target_no, const int sim_target_no, const bool relative);
+        void get_target_hat_indices(std::vector<unsigned int>& indices_min, std::vector<unsigned int>& indices_max, const int target_no, const int sim_target_no, const int target_component_no, const bool relative);
         
         // The target value calculations
         // Partial fbar of a single catch on a single biol

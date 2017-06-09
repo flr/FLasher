@@ -6577,8 +6577,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // test_operatingModel_get_target_hat_indices
-Rcpp::List test_operatingModel_get_target_hat_indices(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const bool relative);
-RcppExport SEXP FLasher_test_operatingModel_get_target_hat_indices(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP relativeSEXP) {
+Rcpp::List test_operatingModel_get_target_hat_indices(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const unsigned int target_component, const bool relative);
+RcppExport SEXP FLasher_test_operatingModel_get_target_hat_indices(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP target_componentSEXP, SEXP relativeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6587,8 +6587,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type target_no(target_noSEXP);
     Rcpp::traits::input_parameter< const unsigned int >::type sim_target_no(sim_target_noSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type target_component(target_componentSEXP);
     Rcpp::traits::input_parameter< const bool >::type relative(relativeSEXP);
-    rcpp_result_gen = Rcpp::wrap(test_operatingModel_get_target_hat_indices(flfs, biols, ctrl, target_no, sim_target_no, relative));
+    rcpp_result_gen = Rcpp::wrap(test_operatingModel_get_target_hat_indices(flfs, biols, ctrl, target_no, sim_target_no, target_component, relative));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -7471,7 +7472,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"FLasher_test_operatingModel_get_target_value_hat2", (DL_FUNC) &FLasher_test_operatingModel_get_target_value_hat2, 4},
     {"FLasher_test_operatingModel_get_target_value", (DL_FUNC) &FLasher_test_operatingModel_get_target_value, 5},
     {"FLasher_test_operatingModel_get_target_value2", (DL_FUNC) &FLasher_test_operatingModel_get_target_value2, 4},
-    {"FLasher_test_operatingModel_get_target_hat_indices", (DL_FUNC) &FLasher_test_operatingModel_get_target_hat_indices, 6},
+    {"FLasher_test_operatingModel_get_target_hat_indices", (DL_FUNC) &FLasher_test_operatingModel_get_target_hat_indices, 7},
     {"FLasher_test_operatingModel_catches_subset", (DL_FUNC) &FLasher_test_operatingModel_catches_subset, 6},
     {"FLasher_test_operatingModel_landings_subset", (DL_FUNC) &FLasher_test_operatingModel_landings_subset, 6},
     {"FLasher_test_operatingModel_discards_subset", (DL_FUNC) &FLasher_test_operatingModel_discards_subset, 6},
