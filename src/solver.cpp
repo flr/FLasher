@@ -9,7 +9,7 @@
 #include "../inst/include/solver.h"
 
 double euclid_norm(std::vector<double> x){
-    double xsum = std::inner_product(x.begin(), x.end(), x.begin(), 0.0); // must be 0.0 else automatically casts to int (argh)
+    double xsum = std::inner_product(x.begin(), x.end(), x.begin(), 0.0);
     xsum = sqrt(xsum);
     return xsum;
 }
@@ -50,11 +50,10 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
     bool verbose = false;
     //Rprintf("indep.size(): %i niter: %i, nsim_targets: %i\n",indep.size(), niter, nsim_targets);
     if(verbose){Rprintf("\nIn Newton Raphson\n");}
-    // Check that product of niter and nsim_targets = length of indep (otherwise something has gone wrong)
-    //if (indep.size() != (niter * nsim_targets)){
-    //    Rcpp::stop("In newton_raphson: length of indep does not equal product of niter and nsim_targets\n");
-    //}
-
+    // Check that product of niter and nsim_targets = length of indep (Jacobian must be square - otherwise cannot do LU Solve)
+    if (indep.size() != (niter * nsim_targets)){
+        Rcpp::stop("In newton_raphson: length of indep does not equal product of niter and nsim_targets\n");
+    }
     double logdet = 0.0; // Not sure what this actually does but is used in the CppAD LUsolve function
     std::vector<double> y(niter * nsim_targets, 1000.0);
     std::vector<double> delta_indep(niter * nsim_targets, 0.0); // For updating indep in final step
@@ -74,15 +73,10 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
     // Keep looping until all sim_targets have been solved, or number of iterations (NR iterations, not FLR iterations) has been hit
     while((std::accumulate(iter_solved.begin(), iter_solved.end(), start_accum) < niter) & (nr_count < max_iters)){ 
         ++nr_count;
-        if(verbose){Rprintf("nr_count: %i\n", nr_count);}
+        if(verbose){Rprintf("\nnr_count: %i\n", nr_count);}
         // Get y = f(x0)
-        //if(verbose){Rprintf("Forward\n");}
-        //if(verbose){Rprintf("indep1: %f\n", indep[0]);}
+        if(verbose){Rprintf("Forward\n");}
         y = fun.Forward(0, indep); 
-        if(verbose){Rprintf("indep1: %f\n", indep[0]);}
-        //if(verbose){Rprintf("indep2: %f\n", indep[1]);}
-        if(verbose){Rprintf("y0: %f\n", y[0]);}
-        //if(verbose){Rprintf("y: %f\n", y[1]);}
         // Get f'(x0) -  gets Jacobian for all simultaneous targets
         //if(verbose){Rprintf("Getting SparseJacobian\n");}
         //jac = fun.SparseJacobian(indep);
@@ -91,14 +85,12 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
         //std::vector<double> weight(1);
         //weight[0] = 1.0;
         //jac   = fun.Reverse(1, weight);
-        //if(verbose){Rprintf("jac[0]: %f\n", jac[0]);}
         // Get w (f(x0) / f'(x0)) for each iteration if necessary
         // Loop over simultaneous targets, solving if necessary
         for (unsigned int iter_count = 0; iter_count < niter; ++iter_count){
-            //if(verbose){Rprintf("iter_count: %i\n", iter_count);}
             // Only solve if that iter has not been solved
             if(iter_solved[iter_count] == 0){
-                //if(verbose){Rprintf("Iter %i not yet solved\n", iter_count);}
+            if(verbose){Rprintf("iter_count: %i\n", iter_count);}
                 // Subsetting y and Jacobian for that iter only
                 for(unsigned int jac_count_row = 0; jac_count_row < nsim_targets; ++jac_count_row){
                     iter_y[jac_count_row] = y[iter_count * nsim_targets + jac_count_row];
@@ -108,15 +100,42 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
                         iter_jac[jac_count_row + (jac_count_col * nsim_targets)] = jac[jac_element];
                     }
                 }
+                if(verbose){
+                    Rprintf("Current X:\n");
+                    for(auto x_count = 0; x_count<nsim_targets; ++x_count){
+                        Rprintf("%f\t", indep[x_count + (iter_count * nsim_targets)]);
+                    }
+                    Rprintf("\nCurrent Y:\n");
+                    for(auto y_count = 0; y_count<nsim_targets; ++y_count){
+                        Rprintf("%f\t", iter_y[y_count]);
+                    }
+                    Rprintf("\nJacobian of iter %i:\n", iter_count);
+                    for (auto print_jac_row=0; print_jac_row < nsim_targets; ++print_jac_row){
+                        for (auto print_jac_col=0; print_jac_col < nsim_targets; ++print_jac_col){
+                            Rprintf("%f\t", iter_jac[print_jac_row * nsim_targets + print_jac_col]);
+                        }
+                        Rprintf("\n");
+                    }
+                }
                 // Solve to get w = f(x0) / f'(x0)
                 // Puts resulting w (delta_indep) into iter_y
-                //if(verbose){Rprintf("nsim_targets: %i\n", nsim_targets);}
-                if(verbose){Rprintf("iter_jac: %f\n", iter_jac[0]);}
-                //if(verbose){Rprintf("iter_y: %f\n", iter_y[0]);}
+                if(verbose){Rprintf("LU Sove\n");}
+                // Solve A. X = B for X given B and A
+                // A is n x n, X is n x m, B is n x m
+                // n, m, A, B, X, logdet - result placed in X
+                // Jacobian must be square - i.e no of indeps must equal no. deps
                 CppAD::LuSolve(nsim_targets, nsim_targets, iter_jac, iter_y, iter_y, logdet); 
-                //if(verbose){Rprintf("Done LU Solving\n");}
+                if(verbose){Rprintf("Done LU Solving\n");}
+                if(verbose){
+                    Rprintf("Delta x:\n");
+                    for(auto dx_count = 0; dx_count<nsim_targets; ++dx_count){
+                        Rprintf("%f\t", iter_y[dx_count]);
+                    }
+                    Rprintf("\n");
+                }
                 // Has iter now been solved? If so, set the flag to 1
                 if (euclid_norm(iter_y) < tolerance){
+                    //Rprintf("Solved iter\n");
                     iter_solved[iter_count] = 1;
                     success_code[iter_count] = 1;
                     // Set that iter_y to 0 as we want to stop updating all the solved iterations when solving the remainder
@@ -130,9 +149,7 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
         }
         // Update x = x - w
         // Ideally should only update the iterations that have not hit the tolerance
-        //if(verbose){Rprintf("delta_indep[0]: %f\n", delta_indep[0]);}
         std::transform(indep.begin(),indep.end(),delta_indep.begin(),indep.begin(),std::minus<double>());
-        //if(verbose){Rprintf("new indep[0]: %f\n", indep[0]);}
         // Bluntly enforce limits
         // indep cannot be less than minimum value or greater than maximum value
         // Limit during solving loop to prevent the solver going off to weird places? Yes

@@ -636,6 +636,7 @@ void operatingModel::project_biols(const int timestep){
         Rcpp::stop("In operatingModel::project_biols. Uses effort in previous timestep so timestep must be at least 2.");
     }
     for (unsigned int biol_counter=1; biol_counter <= biols.get_nbiols(); ++biol_counter){
+        //Rprintf("Projecting biol: %i\n", biol_counter);
         std::vector<unsigned int> biol_dim = biols(biol_counter).n().get_dim();
         unsigned int year = 1;
         unsigned int season = 1;
@@ -817,6 +818,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
     if(verbose){Rprintf("Projecting biols for the first timestep to update abundances\n"); }
     project_biols(min_target_timestep);
     // Get maximum timestep of OM. If room, we update Biol in final timestep at the end
+    if(verbose){Rprintf("Back from projecting biols\n");}
     std::vector<unsigned int> biol1_dim = biols(1).n().get_dim();
     unsigned int max_timestep = biol1_dim[1] * biol1_dim[3];
     // Each target is solved independently (but a target can be made up of multiple simultaneous targets)
@@ -880,17 +882,24 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         if(verbose){Rprintf("Getting current state of operating model\n");}
         // Get current state of operating model
         std::vector<adouble> target_value_hat = get_target_value_hat(target_count); 
-        if(verbose){Rprintf("target_value_hat [0]: %f\n", Value(target_value_hat[0]));}
+        if(verbose){
+            Rprintf("target_value_hat [0]: %f\n", Value(target_value_hat[0]));
+            Rprintf("target_value_hat [1]: %f\n", Value(target_value_hat[1]));
+        }
         // Check they are the same length? 
         if (target_value_hat.size() != target_value.size()){
-            Rcpp::stop("In operatingModel run. target_value_hat and target_value are not the same size. Something has gone wrong. Aggghhh!\n");
+            Rcpp::stop("In operatingModel run. target_value_hat and target_value are not the same size. Something has gone wrong.\n");
         }
         std::vector<adouble> error(target_value_hat.size());
         if(verbose){Rprintf("Calculating error\n");}
         std::transform(target_value.begin(), target_value.end(), target_value_hat.begin(), error.begin(),
-                [](double x, adouble y){return x - y;});
+                //[](double x, adouble y){return x - y;});
+                [](double x, adouble y){return y - x;});
                 //[](adouble x, adouble y){return (x - y) * (x - y);}); // squared error - not as effective
-        if(verbose){Rprintf("target 1. target_value: %f target_value_hat: %f error: %f\n", target_value[0], Value(target_value_hat[0]), Value(error[0]));}
+        if(verbose){
+            Rprintf("target 1. target_value: %f target_value_hat: %f error: %f\n", target_value[0], Value(target_value_hat[0]), Value(error[0]));
+            Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", target_value[1], Value(target_value_hat[1]), Value(error[1]));
+        }
         //if(verbose){Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", target_value[1], Value(target_value_hat[1]), Value(error[1]));}
         // Stop recording
         CppAD::ADFun<double> fun(effort_mult_ad, error);
@@ -1018,6 +1027,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             if (!biol_na & fishery_na & catch_na){
                 if(verbose){Rprintf("catch is total catch from biol %i\n", biol_no);}
                 out =  unit_sum(catches(biol_no, indices_min, indices_max));
+                Rprintf("Total catch iter 1: %f\n", Value(out(1,1,1,1,1,1)));
             }
             // Catch taken from the Fishery and Catch objects
             else if (biol_na & !fishery_na & !catch_na){
@@ -1234,7 +1244,7 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     FLQuantAD target_value(1,1,1,1,1,niters); // target values are not structured by age, time or unit - only by iter
     fwdControlTargetType target_type;
     for (auto target_component=0; target_component < no_target_components; ++target_component){
-        Rprintf("target_component: %i\n", target_component);
+        //Rprintf("target_component: %i\n", target_component);
         // Indices of target
         get_target_hat_indices(indices_min, indices_max, target_no, sim_target_no, target_component, false);
         // Target type
