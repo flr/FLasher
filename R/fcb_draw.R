@@ -375,10 +375,13 @@ setMethod("FCBDrawing", signature(FCB="matrix"),
             # Catches out of all catches that fishery has
             FCs <- unique(FCB[FCB[,"F"]==i,"catch_posn"])
             # Block should sit between them
-            catches_xrange <- range(unlist(lapply(catches[FCs], function(x) x@x_centre)))
-            x_centre <- ((catches_xrange[2] - catches_xrange[1]) / 2) + catches_xrange[1]
+            catches_xrange <- unlist(lapply(catches[FCs], function(x) x@x_centre))
+            x_centre <- ((max(catches_xrange) - min(catches_xrange)) / 2) + catches_xrange[1]
             # tail_gap
-            tail_gap <- catches_xrange[2] - catches_xrange[1]
+            tail_gap <- (max(catches_xrange) - min(catches_xrange)) / (length(FCs)-1)
+            if(is.nan(tail_gap)){ # If single catch
+                tail_gap <- 0.0
+            }
             name <- paste("Fishery",i,sep="")
             nchar_name <-  nchar(name)
             name_cex <- (width * 40) / nchar_name
