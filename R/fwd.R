@@ -134,6 +134,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
         }
     }
 
+  # ENSURE biol is a list
+
+  trg$biol <- list(trg$biol)
   # REPLACE target
   target(control) <- trg
 

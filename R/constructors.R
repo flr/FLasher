@@ -288,9 +288,8 @@ targetOrder <- function(target, iters) {
 }
 # }}}
 
-# FCB {{{
+# fcb {{{
 
-# FCB <- fcb(biols, fisheries)
 #' Generate the FCB matrix
 #'
 #' Tries to generate FCB matrix based on names.
