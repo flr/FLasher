@@ -11,6 +11,7 @@
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
     function(object, fishery, control, residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
 
+
   # CHECK length and names of biols and residuals
   if(!all.equal(names(object), names(residuals)))
     stop("Names of biols and residuals must match exactly")
@@ -77,8 +78,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   }
   
   # ... and 'biol'
-  if (!is.numeric(trg$biol))
+  if (is.character(trg$biol))
     trg[,"biol"] <- match(trg[,"biol"], rownames(dib))
+
   # If we have 2 fisheries on 1 catch, catch target is set through catch / fishery only, not biol AND catch / fishery
   #if(nrow(dib) == 1 & all(is.na(trg["biol"])))
   #  trg[,"biol"] <- 1L
@@ -153,7 +155,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control,
-    effort_mult_initial = 1.0, indep_min = 0.0, indep_max = 2.5, nr_iters = 50)
+    effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 5.0, nr_iters = 50)
   # UPDATE object w/ new biolscpp@n
   for(i in names(object))
     n(object[[i]]) <- out$om$biols[[i]]@n

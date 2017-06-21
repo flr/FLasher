@@ -185,7 +185,7 @@ setClass("FCBDrawing",
 #' @return Nothing. Just draws something
 #' @aliases draw draw-method
 #' @rdname draw-FCB
-setGeneric("draw", function(object){
+setGeneric("draw", function(object, ...){
     standardGeneric("draw")
 })
 
@@ -277,8 +277,8 @@ setMethod("draw", signature(object="FCBDrawing"),
 #' FCB <- matrix(c(1,1,1,1,2,2,2,1,2,2,2,3,2,2,4), nrow=5, byrow=TRUE)
 #' draw(FCB)
 setMethod("draw", signature(object="matrix"),
-    function(object){
-        fcbd <- FCBDrawing(object)
+    function(object, fisheryNames=NULL, catchNames=NULL, biolNames=NULL){
+        fcbd <- FCBDrawing(object, fisheryNames, catchNames, biolNames)
         draw(fcbd)
 })
 
@@ -287,8 +287,8 @@ setMethod("draw", signature(object="matrix"),
 #' @aliases draw-fwdControl
 #' @rdname draw-FCB
 setMethod("draw", signature(object="fwdControl"),
-    function(object){
-        fcbd <- FCBDrawing(object@FCB)
+    function(object, fisheryNames=NULL, catchNames=NULL, biolNames=NULL){
+        fcbd <- FCBDrawing(object@FCB, fisheryNames, catchNames, biolNames)
         draw(fcbd)
 })
 
@@ -299,7 +299,7 @@ setMethod("draw", signature(object="fwdControl"),
 #' @return An \link{FCBDrawing} object
 #' @aliases FCBDrawing FCBDrawing-method
 #' @rdname FCBDrawing
-setGeneric("FCBDrawing", function(FCB){
+setGeneric("FCBDrawing", function(FCB, ...){
     standardGeneric("FCBDrawing")
 })
 
@@ -309,9 +309,8 @@ setGeneric("FCBDrawing", function(FCB){
 #' @aliases FCBDrawing-matrix
 #' @rdname FCBDrawing
 setMethod("FCBDrawing", signature(FCB="matrix"),
-    function(FCB){
+    function(FCB, fisheryNames=NULL, catchNames=NULL, biolNames=NULL){
         out <- new("FCBDrawing", FCB=FCB)
-
         # Sort out the FCB
         FCB <- data.frame(FCB)
         colnames(FCB) <- c("F","C","B")
@@ -354,6 +353,17 @@ setMethod("FCBDrawing", signature(FCB="matrix"),
         width <- height
         tail_length <- neck_length
 
+        # Fix names
+        if(is.null(biolNames)){
+            biolNames <- paste("Biology", 1:no_biols, sep="")
+        }
+        if(is.null(fisheryNames)){
+            fisheryNames <- paste("Fishery", 1:no_fisheries, sep="")
+        }
+        if(is.null(catchNames)){
+            catchNames <- paste("Catch", 1:no_catches, sep="")
+        }
+
         # Make the catches
         catches <- list()
         gap_width <- (plot_width - (no_catches * width)) / (no_catches +1)
@@ -361,7 +371,7 @@ setMethod("FCBDrawing", signature(FCB="matrix"),
         # Spread boxes equally across plotting space
         x_centres <- ((1:no_catches) * gap_width) + (((1:no_catches)-1) * width) + (width / 2)
         for (i in 1:no_catches){
-            name <- paste("Catch",i,sep="")
+            name <- catchNames[i]
             nchar_name <-  nchar(name)
             name_cex <- (width * 40) / nchar_name
             catches[[i]] <- new("catchBlock", height = height, width = width, x_centre = x_centres[i], y_centre = y_centre, tail_length=tail_length, name = name, name_cex=name_cex) 
@@ -375,11 +385,14 @@ setMethod("FCBDrawing", signature(FCB="matrix"),
             # Catches out of all catches that fishery has
             FCs <- unique(FCB[FCB[,"F"]==i,"catch_posn"])
             # Block should sit between them
-            catches_xrange <- range(unlist(lapply(catches[FCs], function(x) x@x_centre)))
-            x_centre <- ((catches_xrange[2] - catches_xrange[1]) / 2) + catches_xrange[1]
+            catches_xrange <- unlist(lapply(catches[FCs], function(x) x@x_centre))
+            x_centre <- ((max(catches_xrange) - min(catches_xrange)) / 2) + catches_xrange[1]
             # tail_gap
-            tail_gap <- catches_xrange[2] - catches_xrange[1]
-            name <- paste("Fishery",i,sep="")
+            tail_gap <- (max(catches_xrange) - min(catches_xrange)) / (length(FCs)-1)
+            if(is.nan(tail_gap)){ # If single catch
+                tail_gap <- 0.0
+            }
+            name <- fisheryNames[i]
             nchar_name <-  nchar(name)
             name_cex <- (width * 40) / nchar_name
             fisheries[[i]] <- new("fisheryBlock", height = height, width = width, x_centre = x_centre, y_centre = y_centre, no_tails = length(FCs), tail_gap = tail_gap, neck_length=neck_length, tail_length=tail_length, name = name, name_cex=name_cex) 
@@ -394,7 +407,7 @@ setMethod("FCBDrawing", signature(FCB="matrix"),
         x_centres <- ((1:no_biols) * gap_width) + (((1:no_biols)-1) * width) + (width / 2)
         # name_cex based on nchar
         for (i in 1:no_biols){
-            name <- paste("Biology",i,sep="")
+            name <- biolNames[i]
             nchar_name <-  nchar(name)
             name_cex <- (width * 40) / nchar_name
             biols[[i]] <- new("biolBlock", height = height, width = width, x_centre = x_centres[i], y_centre = y_centre, neck_length = neck_length, circle_cex = circle_cex, name = name, name_cex=name_cex) 
