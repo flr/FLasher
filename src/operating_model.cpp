@@ -1027,7 +1027,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             if (!biol_na & fishery_na & catch_na){
                 if(verbose){Rprintf("catch is total catch from biol %i\n", biol_no);}
                 out =  unit_sum(catches(biol_no, indices_min, indices_max));
-                Rprintf("Total catch iter 1: %f\n", Value(out(1,1,1,1,1,1)));
+                //Rprintf("Total catch iter 1: %f\n", Value(out(1,1,1,1,1,1)));
             }
             // Catch taken from the Fishery and Catch objects
             else if (biol_na & !fishery_na & !catch_na){
