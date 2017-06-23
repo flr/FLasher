@@ -332,8 +332,8 @@ setMethod("FCBDrawing", signature(FCB="matrix"),
         no_biols <- max(FCB[,"B"])
         max_blocks <- max(no_fisheries, no_catches, no_biols)
         # Width based on biggest layer
-        gap_width_block_width <- 1.1
-        width <- plot_width / (gap_width_block_width * (max_blocks + 1) + max_blocks)
+        block_gap_width_ratio <- 2.0
+        width <- 1 / (max_blocks + max_blocks / block_gap_width_ratio - 1)
 
         # Height cannot be too big, else cannot fit vertical space in
         height_neck <- 4 # The ideal height / neck ratio - ideally, height is 4 x neck
