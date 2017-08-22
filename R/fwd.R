@@ -11,14 +11,14 @@
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
     function(object, fishery, control, residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
 
-
   # CHECK length and names of biols and residuals
   if(!all.equal(names(object), names(residuals)))
     stop("Names of biols and residuals must match exactly")
 
   # CHECK years and dimensions match
   dib <- do.call(rbind, lapply(object, function(x) as.data.frame(dims(x))))
-  dif <- do.call(rbind, lapply(fishery, function(x) as.data.frame(dims(x))))
+  dif <- do.call(rbind, lapply(fishery, function(x) data.frame(season=1, area=1)))
+  # dif <- do.call(rbind, lapply(fishery, function(x) as.data.frame(dims(x))))
   dnb <- dimnames(n(object[[1]]))
   
   # ERROR if seasons are different in FLBiols or FLFisheries
@@ -270,7 +270,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
   
   function(object, control, sr=predictModel(model=rec~a, params=FLPar(a=1)),
     residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {
-
+    
     # DEAL with iters
     its <- dims(object)$iter
     if(its > 1)
