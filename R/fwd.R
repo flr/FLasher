@@ -11,7 +11,6 @@
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
     function(object, fishery, control, residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
 
-
   # CHECK length and names of biols and residuals
   if(!all.equal(names(object), names(residuals)))
     stop("Names of biols and residuals must match exactly")
@@ -272,7 +271,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
   
   function(object, control, sr=predictModel(model=rec~a, params=FLPar(a=1)),
     residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {
-
+    
     # DEAL with iters
     its <- dims(object)$iter
     if(its > 1)
