@@ -17,8 +17,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # CHECK years and dimensions match
   dib <- do.call(rbind, lapply(object, function(x) as.data.frame(dims(x))))
-  dif <- do.call(rbind, lapply(fishery, function(x) data.frame(season=1, area=1)))
-  # dif <- do.call(rbind, lapply(fishery, function(x) as.data.frame(dims(x))))
+  dif <- do.call(rbind, lapply(fishery,
+    function(x) data.frame(dims(effort(x))[c("season", "area")])))
   dnb <- dimnames(n(object[[1]]))
   
   # ERROR if seasons are different in FLBiols or FLFisheries
@@ -137,7 +137,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     }
 
   # ENSURE biol is a list
-
   trg$biol <- as.list(trg$biol)
   trg$relBiol <- as.list(trg$relBiol)
   # REPLACE target
@@ -223,7 +222,8 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
     control@FCB <- matrix(1, ncol=3, nrow=1, dimnames=list(1, c("F", "C", "B")))
 
     # SET @target[fcb]
-    control@target[c("fishery", "catch", "biol")] <- rep(c(NA, NA, 1), each=dim(control@target)[1])
+    control@target[c("fishery", "catch", "biol")] <- rep(c(NA, NA, 1),
+      each=dim(control@target)[1])
 
     # RUN
     out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals))
