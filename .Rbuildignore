@@ -6,6 +6,3 @@ src/Doxyfile
 Makefile
 .git/
 .editorconfig
-*.o
-*.so
-*.a
