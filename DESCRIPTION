@@ -5,15 +5,12 @@ Description: Projection of future population and fishery dynamics is carried out
     for a given set of management targets. A system of equations is solved, using
     Automatic Differentation (AD), for the levels of effort by fishery/fleet that
     will result in the required abundances, catches or fishing mortalities.
-Version: 0.0.2.9006
-Date: 2017-05-31
+Version: 0.0.2.9007
+Date: 2017-08-23
 Authors@R: c(person(given = 'Finlay', family = 'Scott', role = c('aut'),
-            email = 'finlay.scott@jrc.ec.europa.eu'),
+            email = 'finlay.scott@ec.europa.eu'),
 		person(given = 'Iago', family = 'Mosqueira', role = c('aut', 'cre'),
-            email = 'iago.mosqueira@jrc.ec.europa.eu'))
-Author: Finlay Scott [aut, cre],
-    Iago Mosqueira [aut, cre]
-Maintainer: Iago Mosqueira <iago.mosqueira@jrc.ec.europa.eu>
+            email = 'iago.mosqueira@ec.europa.eu'))
 Copyright: European Union
 Collate:
     classes.R
@@ -45,7 +42,7 @@ Suggests:
     testthat,
     knitr,
     ggplotFL
-License: file LICENSE
+License: EUPL
 VignetteBuilder: knitr
 LazyLoad: Yes
 LazyData: No
