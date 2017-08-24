@@ -20,7 +20,7 @@
 \alias{draw-fwdControl}
 \title{Generic method for drawing components the FCB matrix}
 \usage{
-draw(object)
+draw(object, ...)
 
 \S4method{draw}{basicBlock}(object)
 
@@ -32,12 +32,22 @@ draw(object)
 
 \S4method{draw}{FCBDrawing}(object)
 
-\S4method{draw}{matrix}(object)
+\S4method{draw}{matrix}(object, fisheryNames = NULL, catchNames = NULL,
+  biolNames = NULL)
 
-\S4method{draw}{fwdControl}(object)
+\S4method{draw}{fwdControl}(object, fisheryNames = NULL, catchNames = NULL,
+  biolNames = NULL)
 }
 \arguments{
 \item{object}{The object - link{basicBlock}, link{biolBlock}, link{fisheryBlock}, link{catchBlock}, link{matrix}, link{FCBDrawing}}
+
+\item{...}{Other arguments}
+
+\item{fisheryNames}{A vector of names of the FLFishery blocks}
+
+\item{catchNames}{A vector of names of the FLCatch blocks}
+
+\item{biolNames}{A vector of names of the FLBiol blocks}
 }
 \value{
 Nothing. Just draws something

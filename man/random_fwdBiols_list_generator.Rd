@@ -18,7 +18,7 @@ A list object
 }
 \description{
 The fwdBiols constructor takes a list (fwdbiols_list). Each element of fwdbiols_list is a list of:
-FLBiolcpp, SRR model name, SRR params, SRR timelag, SRR residuals and SRR residuals mult.
+FLBiolcpp, SRR residuals and SRR residuals mult.
 This function generates randomly filled FLBiolcpp objects. Objects may be of different sizes unless appropriate arguments to random_FLBiolcpp_generator() are specified.
 Used for automatic testing, particularly of the fwdBiols<T> class in CPP.
 }

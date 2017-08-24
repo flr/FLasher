@@ -118,7 +118,7 @@ test_operatingModel_get_target_value(flfs, biols, ctrl, target_no,
 test_operatingModel_get_target_value2(flfs, biols, ctrl, target_no)
 
 test_operatingModel_get_target_hat_indices(flfs, biols, ctrl, target_no,
-  sim_target_no, relative)
+  sim_target_no, target_component, relative)
 
 test_operatingModel_catches_subset(flfs, biols, ctrl, biol_no, indices_min,
   indices_max)
@@ -204,6 +204,8 @@ test_operatingModel_fishing_before_spawn(flfs, biols, ctrl, biol_no,
 \item{target_no}{something}
 
 \item{sim_target_no}{something}
+
+\item{target_component}{The Endmills}
 
 \item{relative}{something}
 

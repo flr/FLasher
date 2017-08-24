@@ -22,5 +22,4 @@ Used for automatic testing, particularly of the FLFisheries_base<T> class in CPP
 }
 \examples{
 flf <- random_FLFisheries_generator(fixed_dims = c(NA,10,1,1,1,1))
-lapply(flf, summary)
 }

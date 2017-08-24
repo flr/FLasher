@@ -4,17 +4,23 @@
 \name{[,fwdControl,ANY,ANY,ANY-method}
 \alias{[,fwdControl,ANY,ANY,ANY-method}
 \alias{[<-,fwdControl,ANY,ANY,vector-method}
+\alias{[<-,fwdControl,ANY,ANY,ANY-method}
 \alias{$,fwdControl-method}
 \alias{$<-,fwdControl,vector-method}
+\alias{$<-,fwdControl,AsIs-method}
 \title{Set and replacement accessors for fwdControl}
 \usage{
 \S4method{[}{fwdControl,ANY,ANY,ANY}(x, i, j)
 
 \S4method{[}{fwdControl,ANY,ANY,vector}(x, i, j, k, ...) <- value
 
+\S4method{[}{fwdControl,ANY,ANY,ANY}(x, i, j, k, ...) <- value
+
 \S4method{$}{fwdControl}(x, name)
 
 \S4method{$}{fwdControl,vector}(x, name) <- value
+
+\S4method{$}{fwdControl,AsIs}(x, name) <- value
 }
 \arguments{
 \item{x}{A fwdControl object}

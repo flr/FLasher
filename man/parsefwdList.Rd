@@ -10,5 +10,5 @@ parsefwdList(...)
 \item{...}{Things}
 }
 \description{
-Internal function that is not for internal consumption.
+Internal function
 }

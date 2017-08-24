@@ -10,12 +10,21 @@
 \alias{FCBDrawing-matrix}
 \title{A class for drawing the FCB matrix}
 \usage{
-FCBDrawing(FCB)
+FCBDrawing(FCB, ...)
 
-\S4method{FCBDrawing}{matrix}(FCB)
+\S4method{FCBDrawing}{matrix}(FCB, fisheryNames = NULL, catchNames = NULL,
+  biolNames = NULL)
 }
 \arguments{
 \item{FCB}{The (FCB \link{matrix})}
+
+\item{...}{Other arguments}
+
+\item{fisheryNames}{A vector of names of the FLFishery blocks}
+
+\item{catchNames}{A vector of names of the FLCatch blocks}
+
+\item{biolNames}{A vector of names of the FLBiol blocks}
 }
 \value{
 An \link{FCBDrawing} object

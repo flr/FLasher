@@ -51,6 +51,7 @@
 //'@param iters something
 //'@param flq2 something
 //'@param rn something
+//'@param scalar Atmosblisters
 //'@param timestep something
 //'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]

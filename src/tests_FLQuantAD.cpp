@@ -265,6 +265,7 @@ FLQuantAD test_FLQuantAD_fill_double(FLQuantAD flq, const double value) {
 //------------------ Others --------------------------------------
 
 
+//'@rdname FLQuant-cpp-tests
 // [[Rcpp::export]]
 void testFLCppAD(double scalar){
     std::vector<adouble> xad = {1.0};

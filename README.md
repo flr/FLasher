@@ -1,61 +1,40 @@
+
 # FLasher
+- Version: 0.0.2.9908
+- Date: 2017-08-24
+- Author: Finlay Scott and Iago Mosqueira, EC JRC.
+- Maintainer: Finaly Scott <finlay.scott@ec.europa.eu>
+- Repository: <https://github.com/flr/FLasher/>
+- Bug reports: <https://github.com/flr/FLasher/issues>
 
+## Overview
 
-install_github("flr/FLCore", ref='NewFLBiol')
-install_github("iagomosqueira/FLFishery")
-install_github("iagomosqueira/FLasher") 
+Projection of future population and fishery dynamics is carried out for a given set of management targets. A system of equations is solved, using Automatic Differentation (AD), for the levels of effort by fishery/fleet that will result in the required abundances, catches or fishing mortalities.
 
+To install this package, start R and enter:
 
-FLasher provides the necessary classes and methods for carrying out
-stochastic and deterministic projections of fisheries, both fish stocks
-and fish population plus fleets.
+	install.packages("FLasher", repos="http://flr-project.org/R")
 
-This packages uses the excellent CppAD package for differentiation of C++ Algorithms: http://www.coin-or.org/CppAD/
+or download from the [FLR releases page](https://github.com/flr/FLR/releases/latest)
 
-- PROJECTION
+**WARNING**: FLasher requires a 64 bit installation of R.
 
-- CLASSES
+## Documentation
+- [Help pages](http://flr-project.org/FLasher)
 
-- METHODS
+## Bibliography
 
-- MORE INFO
+## Build Status
+[![Travis Build Status](https://travis-ci.org/flr/FLasher.svg?branch=master)](https://travis-ci.org/flr/FLasher)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/flr/FLasher?branch=master&svg=true)](https://ci.appveyor.com/project/flr/FLasher)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/FLasher)](https://cran.r-project.org/package=FLasher)
 
-year quant season area unit relYear relSeason relFishery relCatch relBiol minAge maxAge fishery catch biol
+## License
+Copyright (c) 2016-17 European Union. Released under the [EUPL v1.2](https://joinup.ec.europa.eu/sites/default/files/eupl_v1.2_en.pdf).
 
+## Contact
+You are welcome to:
 
-min value max
-
-
-target timestep
-
-# Notes for Windows installation
-
-FLasher is 64 bit only and uses features from C++11.
-
-Use latest Rtools (e.g. for R 3.3.1 use Rtools34).
-Put Rtools\bin and Rtools\mingw_64\bin in the path (e.g. add c:\Rtools\bin;c:\Rtools\mingw_64\bin to the path)
-
-Build package as normal at the command line:
-
-- RCMD build FLasher
-
-If you chose 32 bit and 64 bit options during installation of R, when you install FLasher you need to specify 64 bit only using --no-multiarch flag:
-
-- RCMD INSTALL --no-multiarch FLasher_XXX
-
-# Notes for distribution
-
-The built package has a size of about 20 Mb making it rather large to distribute as well as producing a Note when R CMD check is run.
-The package size can be reduced to about 10 Mb by removing the Cpp tests (unfortunately, it still triggers the Note from check).
-To remove the Cpp tests prior to building and distributing you must:
-
-* Inside the /src folder, remove all \*.cpp files that begin with *tests*, e.g. tests_FLQuant.cpp.
-* Inside the /tests/testthat folder, remove all the \*.R files that begin with *test-cpp_*, e.g. test-cpp_FLQuant.R
-* Open an R terminal and set the working directory to be the one that has the FLasher source code in it.
-* Run these commands (assuming you have the **devtools** package):
-    + library(devtools)
-    + load_all("FLasher")
-    + document("FLasher", roclets="rd")
-
-You can now rebuild the package without the Cpp tests.
-
+- Submit suggestions and bug-reports at: <https://github.com/flr/FLasher/issues>
+- Send a pull request on: <https://github.com/flr/FLasher/>
+- Compose a friendly e-mail to: <finlay.scott@ec.europa.eu>
