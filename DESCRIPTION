@@ -7,6 +7,8 @@ Description: Projection of future population and fishery dynamics is carried out
     will result in the required abundances, catches or fishing mortalities.
 Version: 0.0.2.9007
 Date: 2017-08-23
+Author: Finlay Scott and Iago Mosqueira
+Maintainer: Finlay Scott <finlay.scott@ec.europa.eu> and Iago Mosqueira <iago.mosqueira@ec.europa.eu>
 Authors@R: c(person(given = 'Finlay', family = 'Scott', role = c('aut'),
             email = 'finlay.scott@ec.europa.eu'),
 		person(given = 'Iago', family = 'Mosqueira', role = c('aut', 'cre'),

@@ -12,6 +12,8 @@
 \alias{test_fwdControl_get_target_rows}
 \alias{test_fwdControl_get_target_int_col}
 \alias{test_fwdControl_get_target_int_col2}
+\alias{test_fwdControl_get_target_list_int_col}
+\alias{test_fwdControl_get_target_list_int_col2}
 \alias{test_fwdControl_get_target_num_col}
 \alias{test_fwdControl_get_target_num_col2}
 \alias{test_fwdControl_get_target_value}
@@ -48,6 +50,10 @@ test_fwdControl_get_target_rows(control, target_no)
 test_fwdControl_get_target_int_col(control, target_no, col)
 
 test_fwdControl_get_target_int_col2(control, target_no, sim_target_no, col)
+
+test_fwdControl_get_target_list_int_col(control, target_no, col)
+
+test_fwdControl_get_target_list_int_col2(control, target_no, sim_target_no, col)
 
 test_fwdControl_get_target_num_col(control, target_no, col)
 

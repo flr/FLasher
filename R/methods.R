@@ -119,6 +119,7 @@ setMethod("[<-", signature(x="fwdControl", value="vector"),
   }
 )
 
+#' @rdname fwdControl-accessors
 setMethod("[<-", signature(x="fwdControl", value="ANY"),
   function(x, i, j, k, ..., value) {
     
@@ -165,6 +166,7 @@ setMethod("$<-", signature(x="fwdControl", value="vector"),
   }
 )
 
+#' @rdname fwdControl-accessors
 setMethod("$<-", signature(x="fwdControl", value="AsIs"),
   function(x, name, value) {
     x@target <- do.call("$<-", list(x=x@target, name=name, value=value))

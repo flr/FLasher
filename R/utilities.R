@@ -66,6 +66,12 @@ setMethod("fillchar", signature("FLBiols"),
 ) # }}}
 
 # G {{{
+
+#' @rdname fwdControl
+#' @examples
+#' # Construct a fwdControl with some targets having multiple Biols, specified using the G() function
+#' fwdControl(list(year=2000:2001, value=200, quant="catch", biol=G(1,2)),
+#'   list(year=2002:2003, value=100, quant="catch", biol=c(1,2)))
 G <- function(...)
   return(I(list(unlist(list(...)))))
 # }}}

@@ -182,6 +182,10 @@ setClass("FCBDrawing",
 #' Used to draw individual components or the whole FCB matrix
 #'
 #' @param object The object - link{basicBlock}, link{biolBlock}, link{fisheryBlock}, link{catchBlock}, link{matrix}, link{FCBDrawing}
+#' @param fisheryNames A vector of names of the FLFishery blocks
+#' @param catchNames A vector of names of the FLCatch blocks
+#' @param biolNames A vector of names of the FLBiol blocks
+#' @param ... Other arguments
 #' @return Nothing. Just draws something
 #' @aliases draw draw-method
 #' @rdname draw-FCB
@@ -296,6 +300,10 @@ setMethod("draw", signature(object="fwdControl"),
 #' Generic constructor for making an \link{FCBDrawing} object
 #'
 #' @param FCB The (FCB \link{matrix})
+#' @param fisheryNames A vector of names of the FLFishery blocks
+#' @param catchNames A vector of names of the FLCatch blocks
+#' @param biolNames A vector of names of the FLBiol blocks
+#' @param ... Other arguments
 #' @return An \link{FCBDrawing} object
 #' @aliases FCBDrawing FCBDrawing-method
 #' @rdname FCBDrawing

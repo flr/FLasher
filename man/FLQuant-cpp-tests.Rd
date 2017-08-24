@@ -36,6 +36,7 @@
 \alias{test_FLQuant_FLQuantAD_match_dims}
 \alias{test_FLQuantAD_fill}
 \alias{test_FLQuantAD_fill_double}
+\alias{testFLCppAD}
 \alias{FLPar_units}
 \alias{test_FLQuant_as_wrap}
 \alias{test_FLQuant_basic_constructor}
@@ -174,6 +175,8 @@ test_FLQuant_FLQuantAD_match_dims(flq1, flq2)
 test_FLQuantAD_fill(flq, value)
 
 test_FLQuantAD_fill_double(flq, value)
+
+testFLCppAD(scalar)
 
 FLPar_units(flp)
 
@@ -349,6 +352,8 @@ test_timestep_to_year_season(flq, timestep)
 \item{new_dimnames}{something}
 
 \item{flq2}{something}
+
+\item{scalar}{Atmosblisters}
 
 \item{flp}{something}
 

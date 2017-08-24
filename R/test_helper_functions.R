@@ -209,7 +209,6 @@ random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 1,
 #' @return An FLFishery object 
 #' @examples
 #' flf <- random_FLFisheries_generator(fixed_dims = c(NA,10,1,1,1,1))
-#' lapply(flf, summary)
 random_FLFisheries_generator <- function(min_fisheries = 2, max_fisheries = 5, ...){
     fisheries_list <- list()
     nfisheries <- round(runif(1,min=min_fisheries, max=max_fisheries))

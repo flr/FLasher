@@ -32,6 +32,7 @@
 //'@param sim_target_no something
 //'@param relative something
 //'@param flbs_list_sexp something
+//'@param target_component The Endmills
 //'@rdname operatingModel-cpp-tests
 // [[Rcpp::export]]
 void test_operatingModel_empty_constructor(){

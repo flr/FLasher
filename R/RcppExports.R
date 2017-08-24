@@ -1461,6 +1461,7 @@ test_FLQuantAD_fill_double <- function(flq, value) {
     .Call('_FLasher_test_FLQuantAD_fill_double', PACKAGE = 'FLasher', flq, value)
 }
 
+#'@rdname FLQuant-cpp-tests
 testFLCppAD <- function(scalar) {
     invisible(.Call('_FLasher_testFLCppAD', PACKAGE = 'FLasher', scalar))
 }
@@ -1511,6 +1512,7 @@ NULL
 #'@param iters something
 #'@param flq2 something
 #'@param rn something
+#'@param scalar Atmosblisters
 #'@param timestep something
 #'@rdname FLQuant-cpp-tests
 FLPar_units <- function(flp) {
@@ -2600,6 +2602,7 @@ NULL
 #'@param sim_target_no something
 #'@param relative something
 #'@param flbs_list_sexp something
+#'@param target_component The Endmills
 #'@rdname operatingModel-cpp-tests
 test_operatingModel_empty_constructor <- function() {
     invisible(.Call('_FLasher_test_operatingModel_empty_constructor', PACKAGE = 'FLasher'))
