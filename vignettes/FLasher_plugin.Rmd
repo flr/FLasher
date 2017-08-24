@@ -21,7 +21,7 @@ abstract:
 license: European Union Public Licence (EUPL) V.1.1
 ---
 
-```{r, pkgs, echo=FALSE, message=FALSE}
+```{r, pkgs, echo=FALSE, message=FALSE, warning=FALSE}
 library(Rcpp)
 library(FLasher)
 library(ggplotFL)
@@ -70,7 +70,6 @@ std::vector<int> rbl_demo(std::vector<int> v){
     }
     return v;
     }',
-    verbose=TRUE, rebuild=TRUE,
     plugins="cpp11"
 )
 ```
@@ -84,11 +83,11 @@ rbl_demo(c(1L,2L,3L))
 ## *sourceCpp()*
 
 *sourceCpp* is for writing longer C++ scripts and can contain multiple functions and classes, not all of which need to be exposed to R.
-Exposing the desired functions to R is done using the *Rcpp::attributes*.
+Exposing the desired functions to R is done using the *Rcpp::attributes* (see the vignette in the **Rcpp** package for details).
 The C++ code can either be included as a text string or written in a separate file.
 Writing the code in a separate file makes it easier to manage and also your text editor will highlight the syntax correctly.
 You need to include the *include* to get all the advantages of Rcpp.
-Here we write the C++ code to a temporary file and source it:
+Ideally, the following source code should be in a separate script. However, for the purposes of this vignette we write the C++ code as a text string, save it as a temporary file and then source the file.
 
 ```{r}
 source_code <- "
@@ -116,33 +115,20 @@ call_foo(3.5)
 C++11 code can be included using the C++11 plugin:
 
 ```{r, warning=FALSE}
-
 source_code <- "
     #include <Rcpp.h>
     // [[Rcpp::plugins(cpp11)]]     
 
-//    // [[Rcpp::export]]
-//    std::vector<double> rbl_demo2(std::vector<double> v){
-//        for (auto& i : v){
-//            i = i * 2.0;
-//        }
-//        return v;
-//    }
-
-// [[Rcpp::export]]
-void nothing(){
-    std::vector<double> x;
-    return;
-}
-
+    // [[Rcpp::export]]
+    std::vector<double> rbl_demo2(std::vector<double> v){
+        for (auto& i : v){
+            i = i * 2.0;
+        }
+        return v;
+    }
 "
 cat(source_code, file=paste(tempdir(),"test.cpp", sep="/"))
-sourceCpp(file=paste(tempdir(),"test.cpp", sep="/"), verbose=TRUE, rebuild=TRUE)
-
-
-
-
-
+sourceCpp(file=paste(tempdir(),"test.cpp", sep="/"))
 ```
 
 ```{r}
@@ -150,8 +136,11 @@ rbl_demo2(c(1.3, 2.6, 3.9))
 ```
 # Using the **FLasher** plugin
 
+## With *cppFunction()*
+
 Using the **FLasher** plugin means that you have access to the methods and classes in the C++ code of the **FLasher** package.
-For example, you can pass in and manipulate *FLQuant*s.
+For example, you can pass in and manipulate *FLQuant* objects.
+In this example, we write a C++ function that takes two *FLQuant*s adds them together and returns the resulting *FLQuant*.
 
 To use it with *cppFunction()* you must specify it as a *depends* argument:
 
@@ -169,11 +158,17 @@ FLQuant calc_catches(FLQuant landings, FLQuant discards){
 data(ple4)
 landings <- landings.n(ple4)[,ac(2000:2003)]
 discards <- discards.n(ple4)[,ac(2000:2003)]
+```
+
+The C++ function can be called as normal:
+
+```{r}
 calc_catches(landings, discards)
 ```
 
+## With *sourceCpp()*
 
-To use with *sourceCpp()* you must add a *depends* to top of the script and *include* the **FLasher** header file:
+To use the **FLasher** plugin with *sourceCpp()* you must add a *depends* at the top of the script and *include* the **FLasher** header file.
 
 ```{r}
 source_code <- "
@@ -196,22 +191,22 @@ calc_catches2(landings, discards)
 
 # Using automatic differentiation
 
-As well as providing access to the FLCppad classes and methods, the plugin allows the AD library CppAD to be accessed.
-Unfortunately, at the moment, the interface to is a bit clunky.
+As well as providing access to the *FLCppad* classes and methods, the plugin allows the AD library **CppAD** that **FLasher** uses to be accessed.
+Unfortunately, at the moment, the interface is a bit clunky.
 
-Here we write C++ code that returns the value and the gradient of the *banana* function (see help page for *optim* for more information on the banana function).
-We can pass the exposed gradient function to R's optim functions.
+Here we write C++ code that returns the value and the gradient of the *banana* function (see the R help page for *optim* for more information on the banana function).
+We can pass the exposed gradient function to R's *optim* functions.
 There is also an exposed function that returns the Hessian.
 
-The function *func()* can be rewritten to be *any* function that you want that gradient etc. for.
+The function *func()* can be rewritten to be *any* function that you want that derivatives for.
 The rest of the code remains the same (it would be good to have this other code in the package but it is not possible at the moment).
 
-```{r, "adexample"}
+```{r, adexample}
 source_code <- "
     // [[Rcpp::depends(FLasher)]]
     #include <FLasher.h>
 
-    // This is the function want to solve - the banana function
+    // This is the function we want to solve - the banana function
     // It is templated because we need versions of it that deal with
     // types double (for normal evaluation) and adouble (for AD evaluation) 
     template <typename T>
@@ -227,7 +222,7 @@ source_code <- "
         return func(params);
     }
 
-    // Uses CppAD magic to get the gradient
+    // Uses CppAD magic to get the gradient of the function
     // [[Rcpp::export]]
     std::vector<double> eval_gradient(std::vector<double> params){
         std::vector<adouble> x(params.begin(), params.end());
@@ -266,27 +261,36 @@ grr <- function(x) { ## Gradient of 'fr'
     c(-400 * x[1] * (x[2] - x[1] * x[1]) - 2 * (1 - x[1]),
         200 *      (x[2] - x[1] * x[1]))
 }
+```
 
-# Solving with:
-# Approximate gradient
+We then solve the function using *optim* using the three methods for calculating the gradient:
+
+Using the approximate gradient in R.
+```{r}
 res1 <- optim(c(-1.2,1), fr, method = "BFGS")
-# Exact gradient
-res2 <- optim(c(-1.2,1), fr, grr, method = "BFGS")
-# AD gradient defined above
-res3 <- optim(c(-1.2,1), eval_function, eval_gradient, method = "BFGS")
-
 res1[c("par", "value", "counts")]
+```
+
+Using the exact gradient in R.
+```{r}
+res2 <- optim(c(-1.2,1), fr, grr, method = "BFGS")
 res2[c("par", "value", "counts")]
+```
+
+Using the the AD gradient we get from using the CppAD library 
+```{r}
+res3 <- optim(c(-1.2,1), eval_function, eval_gradient, method = "BFGS")
 res3[c("par", "value", "counts")]
 ```
+
 The version with the AD gradient is exactly the same as the version with the exact gradient function.
 
 We can also get the Hessian:
 
 ```{r}
-# Estimated
+# Estimated by R
 optimHess(res1$par, fr)
-# Estimated using the the gradient function
+# Estimated by R using the the gradient function
 optimHess(res2$par, fr, grr)
 # Calculated using the AD function
 eval_hessian(res3$par)
@@ -296,149 +300,3 @@ The above C++ code can be used to provide the gradients and Hessians for any fun
 All the user needs to do is write their own *func()* function (with the same arguments).
 
 
-# Function pointers
-
-It is possible to get hold of the pointer to a C++ function and pass that as an argument to another function.
-This mechanism could be used to pass user-defined functions to routines contained in a package like **FLasher**.
-The process is a bit fiddly and requires setting a *typedef* for a function, the user function that follows the typedef, a function to return a pointer the user function and a function that evaluates a function pointer.
-
-
-UNFORTUNATELY WHEN THIS IS INCLUDED IN THE VIGNETTE, IT BREAKS ON BUILD
-
-IT WORKS WHEN RENDERED INDEPENDENTLY THOUGH
-
-NO IDEA
-
-This example is based on http://gallery.rcpp.org/articles/passing-cpp-function-pointers/.
-
-<!--
-
-```{r, fp_source}
-source_code <- "
-    #include <Rcpp.h>
-
-    // Make a definition for the expected function arguments
-    typedef std::vector<double> (*funcPtr)(std::vector<double> x); 
-
-    // User defined function that has the same arguments as our typedef
-    // Not necessarily exported
-    std::vector<double> myfunc(std::vector<double> x){
-        std::vector<double> res(1, 0.0);
-        res[0] = 100 * pow((x[1] - x[0] * x[0]), 2.0) + pow((1 - x[0]), 2.0);
-        return res;
-    }
-
-    // Function to return a pointer to the user function
-    // Note that the name of the function it points to is hardwired and must match our function above
-    // [[Rcpp::export]]
-    Rcpp::XPtr <funcPtr> get_func_ptr(){
-        return (Rcpp::XPtr<funcPtr> (new funcPtr(&myfunc)));
-    }
-
-    // Exported function to evaluate a function passed in by address
-    // [[Rcpp::export]]
-    std::vector<double> call_func_ptr(SEXP xpsexp, std::vector<double> x) {
-        Rcpp::XPtr<funcPtr> xpfun(xpsexp);
-        funcPtr fun = *xpfun;
-        std::vector<double> y = fun(x);
-        return (y);
-    }
-"
-
-cat(source_code, file=paste(tempdir(),"test.cpp", sep="/"))
-sourceCpp(file=paste(tempdir(),"test.cpp", sep="/"))
-```
-
-We first get the pointer to the user function, then we pass the pointer to the function that evaluates the user function.
-
-```{r, eval_fp}
-# Get the pointer
-myfunc_ptr <- get_func_ptr()
-myfunc_ptr
-# Evaluate it
-call_func_ptr(myfunc_ptr, c(-1.2, 1))
-```
-
-Why is this interesting? A function similar to *call_func_ptr()* could be included a package.
-This means that some C++ routines could be contained in the **FLasher** package that use user defined functions.
-
-A function, *eval_user_function()* is in the **FLasher** to test this.
-
-```{r, eval_user_source}
-source_code <- "
-    #include <Rcpp.h>
-
-    typedef std::vector<double> (*funcPtr)(std::vector<double> x); 
-
-    std::vector<double> myfunc(std::vector<double> x){
-        std::vector<double> res(1, 0.0);
-        res[0] = 100 * pow((x[1] - x[0] * x[0]), 2.0) + pow((1 - x[0]), 2.0);
-        return res;
-    }
-
-    // [[Rcpp::export]]
-    Rcpp::XPtr <funcPtr> get_func_ptr(){
-        return (Rcpp::XPtr<funcPtr> (new funcPtr(&myfunc)));
-    }
-"
-
-cat(source_code, file=paste(tempdir(),"test.cpp", sep="/"))
-sourceCpp(file=paste(tempdir(),"test.cpp", sep="/"))
-```
-
-We can evaluate the user defined function in the same way using the existing function in **FLasher**.
-However, it causes the vignette to crash so it is not run.
-Weirdly, it runs outside of the vignette. I don't understand and give up.
-
-Booooooo!
-
-```{r, eval_user FLasher, eval=FALSE}
-myfunc_ptr <- get_func_ptr()
-# Evaluate it using the exposed function in FLasher
-eval_user_function(myfunc_ptr, c(-1.2, 1))
-```
-
-The real interest in this lies in getting gradients etc for user defined functions, similar to the example above but without having to write the equivalent of the *eval_gradient()* function.
-
-An attempt at this has been added to **FLasher**.
-Unfortunately, although the user function is called, the returned gradients are always 0, like there is no connection between dependent and independent variables.
-(See the commented out code as the bottom of src/test_solver.cpp).
-
-The failing example, similar to the above example but using type *adouble* is below.
-It compiles OK, but the gradients are not correct.
-
-```{r, eval_grad_source}
-#source_code <- "
-#    // [[Rcpp::depends(FLasher)]]
-#    #include <FLasher.h>
-#
-#    typedef std::vector<adouble> (*funcADPtr)(std::vector<adouble> x); 
-#
-#    std::vector<adouble> myADfunc(std::vector<adouble> x){
-#        std::vector<adouble> res(1, 0.0);
-#        res[0] = 100 * pow((x[1] - x[0] * x[0]), 2.0) + pow((1 - x[0]), 2.0);
-#        return res;
-#    }
-#
-#    // [[Rcpp::export]]
-#    Rcpp::XPtr <funcADPtr> get_func_adptr(){
-#        return (Rcpp::XPtr<funcADPtr> (new funcADPtr(&myADfunc)));
-#    }
-#"
-#
-#cat(source_code, file=paste(tempdir(),"test.cpp", sep="/"))
-#sourceCpp(file=paste(tempdir(),"test.cpp", sep="/"))
-```
-
-We try to tape and evaluate the function, but the gradient is always 0.0.
-
-
-```{r, eval_grad_source_test}
-#myfunc_ptr <- get_func_adptr()
-## Evaluate it
-#eval_user_gradient(myfunc_ptr, c(-1.2, 1))
-## Something really fishy is going on because this call is allowed (and wrong)
-#eval_user_function(myfunc_ptr, c(-1.2, 1))
-```
-
--->

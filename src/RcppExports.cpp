@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // operatingModelRun
 Rcpp::List operatingModelRun(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double effort_mult_initial, const double indep_min, const double indep_max, const int nr_iters);
-RcppExport SEXP FLasher_operatingModelRun(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP effort_mult_initialSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP nr_itersSEXP) {
+RcppExport SEXP _FLasher_operatingModelRun(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP effort_mult_initialSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP nr_itersSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -25,7 +25,7 @@ END_RCPP
 }
 // test_FLQuant_FLQuant_multiplier_assignment_operator
 FLQuant test_FLQuant_FLQuant_multiplier_assignment_operator(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuant_FLQuant_multiplier_assignment_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_FLQuant_multiplier_assignment_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -37,7 +37,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuant_multiplier_assignment_operator
 FLQuantAD test_FLQuantAD_FLQuant_multiplier_assignment_operator(FLQuantAD flqad1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuant_multiplier_assignment_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuant_multiplier_assignment_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -49,7 +49,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuantAD_multiplier_assignment_operator
 FLQuantAD test_FLQuantAD_FLQuantAD_multiplier_assignment_operator(FLQuantAD flqad1, FLQuantAD flqad2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuantAD_multiplier_assignment_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuantAD_multiplier_assignment_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -61,7 +61,7 @@ END_RCPP
 }
 // test_FLQuant_double_multiplier_assignment_operator
 FLQuant test_FLQuant_double_multiplier_assignment_operator(FLQuant flq1, double value);
-RcppExport SEXP FLasher_test_FLQuant_double_multiplier_assignment_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_double_multiplier_assignment_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -73,7 +73,7 @@ END_RCPP
 }
 // test_FLQuantAD_double_multiplier_assignment_operator
 FLQuantAD test_FLQuantAD_double_multiplier_assignment_operator(FLQuantAD flqad1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_double_multiplier_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_double_multiplier_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -85,7 +85,7 @@ END_RCPP
 }
 // test_FLQuantAD_adouble_multiplier_assignment_operator
 FLQuantAD test_FLQuantAD_adouble_multiplier_assignment_operator(FLQuantAD flqad1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_adouble_multiplier_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_adouble_multiplier_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -97,7 +97,7 @@ END_RCPP
 }
 // test_FLQuant_FLQuant_multiplier_operator
 FLQuant test_FLQuant_FLQuant_multiplier_operator(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuant_FLQuant_multiplier_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_FLQuant_multiplier_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -109,7 +109,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuant_multiplier_operator
 FLQuantAD test_FLQuantAD_FLQuant_multiplier_operator(FLQuantAD flqad1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuant_multiplier_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuant_multiplier_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -121,7 +121,7 @@ END_RCPP
 }
 // test_FLQuant_FLQuantAD_multiplier_operator
 FLQuantAD test_FLQuant_FLQuantAD_multiplier_operator(FLQuant flq1, FLQuantAD flqad2);
-RcppExport SEXP FLasher_test_FLQuant_FLQuantAD_multiplier_operator(SEXP flq1SEXP, SEXP flqad2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_FLQuantAD_multiplier_operator(SEXP flq1SEXP, SEXP flqad2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -133,7 +133,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuantAD_multiplier_operator
 FLQuantAD test_FLQuantAD_FLQuantAD_multiplier_operator(FLQuantAD flqad1, FLQuantAD flqad2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuantAD_multiplier_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuantAD_multiplier_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -145,7 +145,7 @@ END_RCPP
 }
 // test_FLQuant_double_multiplier_operator
 FLQuant test_FLQuant_double_multiplier_operator(FLQuant flq1, double value);
-RcppExport SEXP FLasher_test_FLQuant_double_multiplier_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_double_multiplier_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -157,7 +157,7 @@ END_RCPP
 }
 // test_double_FLQuant_multiplier_operator
 FLQuant test_double_FLQuant_multiplier_operator(double value, FLQuant flq1);
-RcppExport SEXP FLasher_test_double_FLQuant_multiplier_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_double_FLQuant_multiplier_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -169,7 +169,7 @@ END_RCPP
 }
 // test_double_FLQuantAD_multiplier_operator
 FLQuantAD test_double_FLQuantAD_multiplier_operator(double value, FLQuantAD flq1);
-RcppExport SEXP FLasher_test_double_FLQuantAD_multiplier_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_double_FLQuantAD_multiplier_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -181,7 +181,7 @@ END_RCPP
 }
 // test_FLQuantAD_double_multiplier_operator
 FLQuantAD test_FLQuantAD_double_multiplier_operator(FLQuantAD flq1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_double_multiplier_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_double_multiplier_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -193,7 +193,7 @@ END_RCPP
 }
 // test_FLQuant_adouble_multiplier_operator
 FLQuantAD test_FLQuant_adouble_multiplier_operator(FLQuant flq1, double value);
-RcppExport SEXP FLasher_test_FLQuant_adouble_multiplier_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_adouble_multiplier_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -205,7 +205,7 @@ END_RCPP
 }
 // test_adouble_FLQuant_multiplier_operator
 FLQuantAD test_adouble_FLQuant_multiplier_operator(double value, FLQuant flq1);
-RcppExport SEXP FLasher_test_adouble_FLQuant_multiplier_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_adouble_FLQuant_multiplier_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -217,7 +217,7 @@ END_RCPP
 }
 // test_FLQuantAD_adouble_multiplier_operator
 FLQuantAD test_FLQuantAD_adouble_multiplier_operator(FLQuantAD flq1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_adouble_multiplier_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_adouble_multiplier_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -229,7 +229,7 @@ END_RCPP
 }
 // test_adouble_FLQuantAD_multiplier_operator
 FLQuantAD test_adouble_FLQuantAD_multiplier_operator(double value, FLQuantAD flq1);
-RcppExport SEXP FLasher_test_adouble_FLQuantAD_multiplier_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_adouble_FLQuantAD_multiplier_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -241,7 +241,7 @@ END_RCPP
 }
 // test_FLQuant_FLQuant_division_assignment_operator
 FLQuant test_FLQuant_FLQuant_division_assignment_operator(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuant_FLQuant_division_assignment_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_FLQuant_division_assignment_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -253,7 +253,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuant_division_assignment_operator
 FLQuantAD test_FLQuantAD_FLQuant_division_assignment_operator(FLQuantAD flqad1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuant_division_assignment_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuant_division_assignment_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -265,7 +265,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuantAD_division_assignment_operator
 FLQuantAD test_FLQuantAD_FLQuantAD_division_assignment_operator(FLQuantAD flqad1, FLQuantAD flqad2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuantAD_division_assignment_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuantAD_division_assignment_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -277,7 +277,7 @@ END_RCPP
 }
 // test_FLQuant_double_division_assignment_operator
 FLQuant test_FLQuant_double_division_assignment_operator(FLQuant flq1, double value);
-RcppExport SEXP FLasher_test_FLQuant_double_division_assignment_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_double_division_assignment_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -289,7 +289,7 @@ END_RCPP
 }
 // test_FLQuantAD_double_division_assignment_operator
 FLQuantAD test_FLQuantAD_double_division_assignment_operator(FLQuantAD flqad1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_double_division_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_double_division_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -301,7 +301,7 @@ END_RCPP
 }
 // test_FLQuantAD_adouble_division_assignment_operator
 FLQuantAD test_FLQuantAD_adouble_division_assignment_operator(FLQuantAD flqad1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_adouble_division_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_adouble_division_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -313,7 +313,7 @@ END_RCPP
 }
 // test_FLQuant_FLQuant_division_operator
 FLQuant test_FLQuant_FLQuant_division_operator(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuant_FLQuant_division_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_FLQuant_division_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -325,7 +325,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuant_division_operator
 FLQuantAD test_FLQuantAD_FLQuant_division_operator(FLQuantAD flqad1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuant_division_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuant_division_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -337,7 +337,7 @@ END_RCPP
 }
 // test_FLQuant_FLQuantAD_division_operator
 FLQuantAD test_FLQuant_FLQuantAD_division_operator(FLQuant flq1, FLQuantAD flqad2);
-RcppExport SEXP FLasher_test_FLQuant_FLQuantAD_division_operator(SEXP flq1SEXP, SEXP flqad2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_FLQuantAD_division_operator(SEXP flq1SEXP, SEXP flqad2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -349,7 +349,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuantAD_division_operator
 FLQuantAD test_FLQuantAD_FLQuantAD_division_operator(FLQuantAD flqad1, FLQuantAD flqad2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuantAD_division_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuantAD_division_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -361,7 +361,7 @@ END_RCPP
 }
 // test_FLQuant_double_division_operator
 FLQuant test_FLQuant_double_division_operator(FLQuant flq1, double value);
-RcppExport SEXP FLasher_test_FLQuant_double_division_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_double_division_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -373,7 +373,7 @@ END_RCPP
 }
 // test_double_FLQuant_division_operator
 FLQuant test_double_FLQuant_division_operator(double value, FLQuant flq1);
-RcppExport SEXP FLasher_test_double_FLQuant_division_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_double_FLQuant_division_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -385,7 +385,7 @@ END_RCPP
 }
 // test_double_FLQuantAD_division_operator
 FLQuantAD test_double_FLQuantAD_division_operator(double value, FLQuantAD flq1);
-RcppExport SEXP FLasher_test_double_FLQuantAD_division_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_double_FLQuantAD_division_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -397,7 +397,7 @@ END_RCPP
 }
 // test_FLQuantAD_double_division_operator
 FLQuantAD test_FLQuantAD_double_division_operator(FLQuantAD flq1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_double_division_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_double_division_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -409,7 +409,7 @@ END_RCPP
 }
 // test_FLQuant_adouble_division_operator
 FLQuantAD test_FLQuant_adouble_division_operator(FLQuant flq1, double value);
-RcppExport SEXP FLasher_test_FLQuant_adouble_division_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_adouble_division_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -421,7 +421,7 @@ END_RCPP
 }
 // test_adouble_FLQuant_division_operator
 FLQuantAD test_adouble_FLQuant_division_operator(double value, FLQuant flq1);
-RcppExport SEXP FLasher_test_adouble_FLQuant_division_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_adouble_FLQuant_division_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -433,7 +433,7 @@ END_RCPP
 }
 // test_FLQuantAD_adouble_division_operator
 FLQuantAD test_FLQuantAD_adouble_division_operator(FLQuantAD flq1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_adouble_division_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_adouble_division_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -445,7 +445,7 @@ END_RCPP
 }
 // test_adouble_FLQuantAD_division_operator
 FLQuantAD test_adouble_FLQuantAD_division_operator(double value, FLQuantAD flq1);
-RcppExport SEXP FLasher_test_adouble_FLQuantAD_division_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_adouble_FLQuantAD_division_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -457,7 +457,7 @@ END_RCPP
 }
 // test_FLQuant_FLQuant_subtraction_assignment_operator
 FLQuant test_FLQuant_FLQuant_subtraction_assignment_operator(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuant_FLQuant_subtraction_assignment_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_FLQuant_subtraction_assignment_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -469,7 +469,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuant_subtraction_assignment_operator
 FLQuantAD test_FLQuantAD_FLQuant_subtraction_assignment_operator(FLQuantAD flqad1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuant_subtraction_assignment_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuant_subtraction_assignment_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -481,7 +481,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuantAD_subtraction_assignment_operator
 FLQuantAD test_FLQuantAD_FLQuantAD_subtraction_assignment_operator(FLQuantAD flqad1, FLQuantAD flqad2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuantAD_subtraction_assignment_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuantAD_subtraction_assignment_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -493,7 +493,7 @@ END_RCPP
 }
 // test_FLQuant_double_subtraction_assignment_operator
 FLQuant test_FLQuant_double_subtraction_assignment_operator(FLQuant flq1, double value);
-RcppExport SEXP FLasher_test_FLQuant_double_subtraction_assignment_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_double_subtraction_assignment_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -505,7 +505,7 @@ END_RCPP
 }
 // test_FLQuantAD_double_subtraction_assignment_operator
 FLQuantAD test_FLQuantAD_double_subtraction_assignment_operator(FLQuantAD flqad1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_double_subtraction_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_double_subtraction_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -517,7 +517,7 @@ END_RCPP
 }
 // test_FLQuantAD_adouble_subtraction_assignment_operator
 FLQuantAD test_FLQuantAD_adouble_subtraction_assignment_operator(FLQuantAD flqad1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_adouble_subtraction_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_adouble_subtraction_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -529,7 +529,7 @@ END_RCPP
 }
 // test_FLQuant_FLQuant_subtraction_operator
 FLQuant test_FLQuant_FLQuant_subtraction_operator(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuant_FLQuant_subtraction_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_FLQuant_subtraction_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -541,7 +541,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuant_subtraction_operator
 FLQuantAD test_FLQuantAD_FLQuant_subtraction_operator(FLQuantAD flqad1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuant_subtraction_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuant_subtraction_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -553,7 +553,7 @@ END_RCPP
 }
 // test_FLQuant_FLQuantAD_subtraction_operator
 FLQuantAD test_FLQuant_FLQuantAD_subtraction_operator(FLQuant flq1, FLQuantAD flqad2);
-RcppExport SEXP FLasher_test_FLQuant_FLQuantAD_subtraction_operator(SEXP flq1SEXP, SEXP flqad2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_FLQuantAD_subtraction_operator(SEXP flq1SEXP, SEXP flqad2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -565,7 +565,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuantAD_subtraction_operator
 FLQuantAD test_FLQuantAD_FLQuantAD_subtraction_operator(FLQuantAD flqad1, FLQuantAD flqad2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuantAD_subtraction_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuantAD_subtraction_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -577,7 +577,7 @@ END_RCPP
 }
 // test_FLQuant_double_subtraction_operator
 FLQuant test_FLQuant_double_subtraction_operator(FLQuant flq1, double value);
-RcppExport SEXP FLasher_test_FLQuant_double_subtraction_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_double_subtraction_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -589,7 +589,7 @@ END_RCPP
 }
 // test_double_FLQuant_subtraction_operator
 FLQuant test_double_FLQuant_subtraction_operator(double value, FLQuant flq1);
-RcppExport SEXP FLasher_test_double_FLQuant_subtraction_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_double_FLQuant_subtraction_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -601,7 +601,7 @@ END_RCPP
 }
 // test_double_FLQuantAD_subtraction_operator
 FLQuantAD test_double_FLQuantAD_subtraction_operator(double value, FLQuantAD flq1);
-RcppExport SEXP FLasher_test_double_FLQuantAD_subtraction_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_double_FLQuantAD_subtraction_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -613,7 +613,7 @@ END_RCPP
 }
 // test_FLQuantAD_double_subtraction_operator
 FLQuantAD test_FLQuantAD_double_subtraction_operator(FLQuantAD flq1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_double_subtraction_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_double_subtraction_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -625,7 +625,7 @@ END_RCPP
 }
 // test_FLQuant_adouble_subtraction_operator
 FLQuantAD test_FLQuant_adouble_subtraction_operator(FLQuant flq1, double value);
-RcppExport SEXP FLasher_test_FLQuant_adouble_subtraction_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_adouble_subtraction_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -637,7 +637,7 @@ END_RCPP
 }
 // test_adouble_FLQuant_subtraction_operator
 FLQuantAD test_adouble_FLQuant_subtraction_operator(double value, FLQuant flq1);
-RcppExport SEXP FLasher_test_adouble_FLQuant_subtraction_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_adouble_FLQuant_subtraction_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -649,7 +649,7 @@ END_RCPP
 }
 // test_FLQuantAD_adouble_subtraction_operator
 FLQuantAD test_FLQuantAD_adouble_subtraction_operator(FLQuantAD flq1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_adouble_subtraction_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_adouble_subtraction_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -661,7 +661,7 @@ END_RCPP
 }
 // test_adouble_FLQuantAD_subtraction_operator
 FLQuantAD test_adouble_FLQuantAD_subtraction_operator(double value, FLQuantAD flq1);
-RcppExport SEXP FLasher_test_adouble_FLQuantAD_subtraction_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_adouble_FLQuantAD_subtraction_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -673,7 +673,7 @@ END_RCPP
 }
 // test_FLQuant_FLQuant_addition_assignment_operator
 FLQuant test_FLQuant_FLQuant_addition_assignment_operator(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuant_FLQuant_addition_assignment_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_FLQuant_addition_assignment_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -685,7 +685,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuant_addition_assignment_operator
 FLQuantAD test_FLQuantAD_FLQuant_addition_assignment_operator(FLQuantAD flqad1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuant_addition_assignment_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuant_addition_assignment_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -697,7 +697,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuantAD_addition_assignment_operator
 FLQuantAD test_FLQuantAD_FLQuantAD_addition_assignment_operator(FLQuantAD flqad1, FLQuantAD flqad2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuantAD_addition_assignment_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuantAD_addition_assignment_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -709,7 +709,7 @@ END_RCPP
 }
 // test_FLQuant_double_addition_assignment_operator
 FLQuant test_FLQuant_double_addition_assignment_operator(FLQuant flq1, double value);
-RcppExport SEXP FLasher_test_FLQuant_double_addition_assignment_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_double_addition_assignment_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -721,7 +721,7 @@ END_RCPP
 }
 // test_FLQuantAD_double_addition_assignment_operator
 FLQuantAD test_FLQuantAD_double_addition_assignment_operator(FLQuantAD flqad1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_double_addition_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_double_addition_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -733,7 +733,7 @@ END_RCPP
 }
 // test_FLQuantAD_adouble_addition_assignment_operator
 FLQuantAD test_FLQuantAD_adouble_addition_assignment_operator(FLQuantAD flqad1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_adouble_addition_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_adouble_addition_assignment_operator(SEXP flqad1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -745,7 +745,7 @@ END_RCPP
 }
 // test_FLQuant_FLQuant_addition_operator
 FLQuant test_FLQuant_FLQuant_addition_operator(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuant_FLQuant_addition_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_FLQuant_addition_operator(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -757,7 +757,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuant_addition_operator
 FLQuantAD test_FLQuantAD_FLQuant_addition_operator(FLQuantAD flqad1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuant_addition_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuant_addition_operator(SEXP flqad1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -769,7 +769,7 @@ END_RCPP
 }
 // test_FLQuant_FLQuantAD_addition_operator
 FLQuantAD test_FLQuant_FLQuantAD_addition_operator(FLQuant flq1, FLQuantAD flqad2);
-RcppExport SEXP FLasher_test_FLQuant_FLQuantAD_addition_operator(SEXP flq1SEXP, SEXP flqad2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_FLQuantAD_addition_operator(SEXP flq1SEXP, SEXP flqad2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -781,7 +781,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuantAD_addition_operator
 FLQuantAD test_FLQuantAD_FLQuantAD_addition_operator(FLQuantAD flqad1, FLQuantAD flqad2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuantAD_addition_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuantAD_addition_operator(SEXP flqad1SEXP, SEXP flqad2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -793,7 +793,7 @@ END_RCPP
 }
 // test_FLQuant_double_addition_operator
 FLQuant test_FLQuant_double_addition_operator(FLQuant flq1, double value);
-RcppExport SEXP FLasher_test_FLQuant_double_addition_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_double_addition_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -805,7 +805,7 @@ END_RCPP
 }
 // test_double_FLQuant_addition_operator
 FLQuant test_double_FLQuant_addition_operator(double value, FLQuant flq1);
-RcppExport SEXP FLasher_test_double_FLQuant_addition_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_double_FLQuant_addition_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -817,7 +817,7 @@ END_RCPP
 }
 // test_double_FLQuantAD_addition_operator
 FLQuantAD test_double_FLQuantAD_addition_operator(double value, FLQuantAD flq1);
-RcppExport SEXP FLasher_test_double_FLQuantAD_addition_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_double_FLQuantAD_addition_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -829,7 +829,7 @@ END_RCPP
 }
 // test_FLQuantAD_double_addition_operator
 FLQuantAD test_FLQuantAD_double_addition_operator(FLQuantAD flq1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_double_addition_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_double_addition_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -841,7 +841,7 @@ END_RCPP
 }
 // test_FLQuant_adouble_addition_operator
 FLQuantAD test_FLQuant_adouble_addition_operator(FLQuant flq1, double value);
-RcppExport SEXP FLasher_test_FLQuant_adouble_addition_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_adouble_addition_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -853,7 +853,7 @@ END_RCPP
 }
 // test_adouble_FLQuant_addition_operator
 FLQuantAD test_adouble_FLQuant_addition_operator(double value, FLQuant flq1);
-RcppExport SEXP FLasher_test_adouble_FLQuant_addition_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_adouble_FLQuant_addition_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -865,7 +865,7 @@ END_RCPP
 }
 // test_FLQuantAD_adouble_addition_operator
 FLQuantAD test_FLQuantAD_adouble_addition_operator(FLQuantAD flq1, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_adouble_addition_operator(SEXP flq1SEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_adouble_addition_operator(SEXP flq1SEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -877,7 +877,7 @@ END_RCPP
 }
 // test_adouble_FLQuantAD_addition_operator
 FLQuantAD test_adouble_FLQuantAD_addition_operator(double value, FLQuantAD flq1);
-RcppExport SEXP FLasher_test_adouble_FLQuantAD_addition_operator(SEXP valueSEXP, SEXP flq1SEXP) {
+RcppExport SEXP _FLasher_test_adouble_FLQuantAD_addition_operator(SEXP valueSEXP, SEXP flq1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -889,7 +889,7 @@ END_RCPP
 }
 // test_FLQuant_log
 FLQuant test_FLQuant_log(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_log(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_log(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -900,7 +900,7 @@ END_RCPP
 }
 // test_FLQuantAD_log
 FLQuantAD test_FLQuantAD_log(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_log(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_log(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -911,7 +911,7 @@ END_RCPP
 }
 // test_FLQuant_exp
 FLQuant test_FLQuant_exp(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_exp(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_exp(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -922,7 +922,7 @@ END_RCPP
 }
 // test_FLQuantAD_exp
 FLQuantAD test_FLQuantAD_exp(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_exp(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_exp(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -933,7 +933,7 @@ END_RCPP
 }
 // test_composite_arithmetic_operators
 FLQuantAD test_composite_arithmetic_operators(FLQuantAD flqad, FLQuant flq, double value);
-RcppExport SEXP FLasher_test_composite_arithmetic_operators(SEXP flqadSEXP, SEXP flqSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_composite_arithmetic_operators(SEXP flqadSEXP, SEXP flqSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -946,7 +946,7 @@ END_RCPP
 }
 // test_FLQuant_quant_sum
 FLQuant test_FLQuant_quant_sum(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_quant_sum(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_quant_sum(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -957,7 +957,7 @@ END_RCPP
 }
 // test_FLQuantAD_quant_sum
 FLQuantAD test_FLQuantAD_quant_sum(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_quant_sum(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_quant_sum(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -968,7 +968,7 @@ END_RCPP
 }
 // test_FLQuant_quant_mean
 FLQuant test_FLQuant_quant_mean(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_quant_mean(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_quant_mean(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -979,7 +979,7 @@ END_RCPP
 }
 // test_FLQuant_year_sum
 FLQuant test_FLQuant_year_sum(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_year_sum(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_year_sum(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -990,7 +990,7 @@ END_RCPP
 }
 // test_FLQuant_year_mean
 FLQuant test_FLQuant_year_mean(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_year_mean(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_year_mean(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1001,7 +1001,7 @@ END_RCPP
 }
 // test_FLQuantAD_quant_mean
 FLQuantAD test_FLQuantAD_quant_mean(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_quant_mean(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_quant_mean(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1012,7 +1012,7 @@ END_RCPP
 }
 // test_FLQuant_max_quant
 FLQuant test_FLQuant_max_quant(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_max_quant(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_max_quant(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1023,7 +1023,7 @@ END_RCPP
 }
 // test_FLQuantAD_max_quant
 FLQuantAD test_FLQuantAD_max_quant(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_max_quant(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_max_quant(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1034,7 +1034,7 @@ END_RCPP
 }
 // test_FLQuant_scale_by_max_quant
 FLQuant test_FLQuant_scale_by_max_quant(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_scale_by_max_quant(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_scale_by_max_quant(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1045,7 +1045,7 @@ END_RCPP
 }
 // test_FLQuantAD_scale_by_max_quant
 FLQuantAD test_FLQuantAD_scale_by_max_quant(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_scale_by_max_quant(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_scale_by_max_quant(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1056,7 +1056,7 @@ END_RCPP
 }
 // test_FLQuantAD_unit_sum
 FLQuantAD test_FLQuantAD_unit_sum(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_unit_sum(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_unit_sum(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1067,7 +1067,7 @@ END_RCPP
 }
 // test_sweep_multADAD
 FLQuantAD test_sweep_multADAD(FLQuantAD flq1, FLQuantAD flq2);
-RcppExport SEXP FLasher_test_sweep_multADAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_multADAD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1079,7 +1079,7 @@ END_RCPP
 }
 // test_sweep_multDD
 FLQuant test_sweep_multDD(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_sweep_multDD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_multDD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1091,7 +1091,7 @@ END_RCPP
 }
 // test_sweep_multADD
 FLQuantAD test_sweep_multADD(FLQuantAD flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_sweep_multADD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_multADD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1103,7 +1103,7 @@ END_RCPP
 }
 // test_sweep_multDAD
 FLQuantAD test_sweep_multDAD(FLQuant flq1, FLQuantAD flq2);
-RcppExport SEXP FLasher_test_sweep_multDAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_multDAD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1115,7 +1115,7 @@ END_RCPP
 }
 // test_sweep_divADAD
 FLQuantAD test_sweep_divADAD(FLQuantAD flq1, FLQuantAD flq2);
-RcppExport SEXP FLasher_test_sweep_divADAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_divADAD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1127,7 +1127,7 @@ END_RCPP
 }
 // test_sweep_divDD
 FLQuant test_sweep_divDD(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_sweep_divDD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_divDD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1139,7 +1139,7 @@ END_RCPP
 }
 // test_sweep_divADD
 FLQuantAD test_sweep_divADD(FLQuantAD flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_sweep_divADD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_divADD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1151,7 +1151,7 @@ END_RCPP
 }
 // test_sweep_divDAD
 FLQuantAD test_sweep_divDAD(FLQuant flq1, FLQuantAD flq2);
-RcppExport SEXP FLasher_test_sweep_divDAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_divDAD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1163,7 +1163,7 @@ END_RCPP
 }
 // test_sweep_plusADAD
 FLQuantAD test_sweep_plusADAD(FLQuantAD flq1, FLQuantAD flq2);
-RcppExport SEXP FLasher_test_sweep_plusADAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_plusADAD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1175,7 +1175,7 @@ END_RCPP
 }
 // test_sweep_plusDD
 FLQuant test_sweep_plusDD(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_sweep_plusDD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_plusDD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1187,7 +1187,7 @@ END_RCPP
 }
 // test_sweep_plusADD
 FLQuantAD test_sweep_plusADD(FLQuantAD flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_sweep_plusADD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_plusADD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1199,7 +1199,7 @@ END_RCPP
 }
 // test_sweep_plusDAD
 FLQuantAD test_sweep_plusDAD(FLQuant flq1, FLQuantAD flq2);
-RcppExport SEXP FLasher_test_sweep_plusDAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_plusDAD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1211,7 +1211,7 @@ END_RCPP
 }
 // test_sweep_minusADAD
 FLQuantAD test_sweep_minusADAD(FLQuantAD flq1, FLQuantAD flq2);
-RcppExport SEXP FLasher_test_sweep_minusADAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_minusADAD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1223,7 +1223,7 @@ END_RCPP
 }
 // test_sweep_minusDD
 FLQuant test_sweep_minusDD(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_sweep_minusDD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_minusDD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1235,7 +1235,7 @@ END_RCPP
 }
 // test_sweep_minusADD
 FLQuantAD test_sweep_minusADD(FLQuantAD flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_sweep_minusADD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_minusADD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1247,7 +1247,7 @@ END_RCPP
 }
 // test_sweep_minusDAD
 FLQuantAD test_sweep_minusDAD(FLQuant flq1, FLQuantAD flq2);
-RcppExport SEXP FLasher_test_sweep_minusDAD(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_sweep_minusDAD(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1259,7 +1259,7 @@ END_RCPP
 }
 // test_int_is_na
 bool test_int_is_na(int val);
-RcppExport SEXP FLasher_test_int_is_na(SEXP valSEXP) {
+RcppExport SEXP _FLasher_test_int_is_na(SEXP valSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1270,7 +1270,7 @@ END_RCPP
 }
 // test_double_is_na
 bool test_double_is_na(double val);
-RcppExport SEXP FLasher_test_double_is_na(SEXP valSEXP) {
+RcppExport SEXP _FLasher_test_double_is_na(SEXP valSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1281,7 +1281,7 @@ END_RCPP
 }
 // test_simple_FLCatch_sexp_constructor
 int test_simple_FLCatch_sexp_constructor(SEXP flc_sexp);
-RcppExport SEXP FLasher_test_simple_FLCatch_sexp_constructor(SEXP flc_sexpSEXP) {
+RcppExport SEXP _FLasher_test_simple_FLCatch_sexp_constructor(SEXP flc_sexpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1292,7 +1292,7 @@ END_RCPP
 }
 // test_FLCatch_sexp_constructor
 FLCatch test_FLCatch_sexp_constructor(SEXP flc_sexp);
-RcppExport SEXP FLasher_test_FLCatch_sexp_constructor(SEXP flc_sexpSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_sexp_constructor(SEXP flc_sexpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1303,7 +1303,7 @@ END_RCPP
 }
 // test_FLCatchAD_sexp_constructor
 FLCatchAD test_FLCatchAD_sexp_constructor(SEXP flc_sexp);
-RcppExport SEXP FLasher_test_FLCatchAD_sexp_constructor(SEXP flc_sexpSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_sexp_constructor(SEXP flc_sexpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1314,7 +1314,7 @@ END_RCPP
 }
 // test_FLCatch_as_wrap
 FLCatch test_FLCatch_as_wrap(FLCatch flc);
-RcppExport SEXP FLasher_test_FLCatch_as_wrap(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_as_wrap(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1325,7 +1325,7 @@ END_RCPP
 }
 // test_FLCatchAD_as_wrap
 FLCatchAD test_FLCatchAD_as_wrap(FLCatchAD flc);
-RcppExport SEXP FLasher_test_FLCatchAD_as_wrap(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_as_wrap(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1336,7 +1336,7 @@ END_RCPP
 }
 // test_FLCatch_copy_constructor
 FLCatch test_FLCatch_copy_constructor(FLCatch flc1);
-RcppExport SEXP FLasher_test_FLCatch_copy_constructor(SEXP flc1SEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_copy_constructor(SEXP flc1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1347,7 +1347,7 @@ END_RCPP
 }
 // test_FLCatchAD_copy_constructor
 FLCatchAD test_FLCatchAD_copy_constructor(FLCatchAD flc1);
-RcppExport SEXP FLasher_test_FLCatchAD_copy_constructor(SEXP flc1SEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_copy_constructor(SEXP flc1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1358,7 +1358,7 @@ END_RCPP
 }
 // test_FLCatch_copy_constructor2
 Rcpp::List test_FLCatch_copy_constructor2(FLCatch flc1, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLCatch_copy_constructor2(SEXP flc1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_copy_constructor2(SEXP flc1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1376,7 +1376,7 @@ END_RCPP
 }
 // test_FLCatchAD_copy_constructor2
 Rcpp::List test_FLCatchAD_copy_constructor2(FLCatchAD flc1, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLCatchAD_copy_constructor2(SEXP flc1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_copy_constructor2(SEXP flc1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1394,7 +1394,7 @@ END_RCPP
 }
 // test_FLCatch_assignment_operator
 FLCatch test_FLCatch_assignment_operator(FLCatch flc1);
-RcppExport SEXP FLasher_test_FLCatch_assignment_operator(SEXP flc1SEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_assignment_operator(SEXP flc1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1405,7 +1405,7 @@ END_RCPP
 }
 // test_FLCatchAD_assignment_operator
 FLCatchAD test_FLCatchAD_assignment_operator(FLCatchAD flc1);
-RcppExport SEXP FLasher_test_FLCatchAD_assignment_operator(SEXP flc1SEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_assignment_operator(SEXP flc1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1416,7 +1416,7 @@ END_RCPP
 }
 // test_FLCatch_assignment_operator2
 Rcpp::List test_FLCatch_assignment_operator2(FLCatch flc1, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLCatch_assignment_operator2(SEXP flc1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_assignment_operator2(SEXP flc1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1434,7 +1434,7 @@ END_RCPP
 }
 // test_FLCatchAD_assignment_operator2
 Rcpp::List test_FLCatchAD_assignment_operator2(FLCatchAD flc1, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLCatchAD_assignment_operator2(SEXP flc1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_assignment_operator2(SEXP flc1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1452,7 +1452,7 @@ END_RCPP
 }
 // test_FLCatch_const_get_accessors
 Rcpp::NumericVector test_FLCatch_const_get_accessors(const FLCatch flc, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLCatch_const_get_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_const_get_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1469,7 +1469,7 @@ END_RCPP
 }
 // test_FLCatch_const_get_accessors_subset
 Rcpp::List test_FLCatch_const_get_accessors_subset(const FLCatch flc, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_FLCatch_const_get_accessors_subset(SEXP flcSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_const_get_accessors_subset(SEXP flcSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1482,7 +1482,7 @@ END_RCPP
 }
 // test_FLCatchAD_const_get_accessors
 Rcpp::NumericVector test_FLCatchAD_const_get_accessors(const FLCatchAD flc, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLCatchAD_const_get_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_const_get_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1499,7 +1499,7 @@ END_RCPP
 }
 // test_FLCatch_get_accessors
 Rcpp::NumericVector test_FLCatch_get_accessors(FLCatch flc, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLCatch_get_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_get_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1516,7 +1516,7 @@ END_RCPP
 }
 // test_FLCatchAD_get_accessors
 Rcpp::NumericVector test_FLCatchAD_get_accessors(FLCatchAD flc, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLCatchAD_get_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_get_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1533,7 +1533,7 @@ END_RCPP
 }
 // test_FLCatch_set_accessors
 FLCatch test_FLCatch_set_accessors(FLCatch flc, int quant, int year, int unit, int season, int area, int iter, Rcpp::NumericVector values);
-RcppExport SEXP FLasher_test_FLCatch_set_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valuesSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_set_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valuesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1551,7 +1551,7 @@ END_RCPP
 }
 // test_FLCatchAD_set_accessors
 FLCatchAD test_FLCatchAD_set_accessors(FLCatchAD flc, int quant, int year, int unit, int season, int area, int iter, Rcpp::NumericVector values);
-RcppExport SEXP FLasher_test_FLCatchAD_set_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valuesSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_set_accessors(SEXP flcSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valuesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1569,7 +1569,7 @@ END_RCPP
 }
 // test_FLCatch_revenue_subset
 FLQuant test_FLCatch_revenue_subset(const FLCatch flc, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_FLCatch_revenue_subset(SEXP flcSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_revenue_subset(SEXP flcSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1582,7 +1582,7 @@ END_RCPP
 }
 // test_FLCatch_revenue
 FLQuant test_FLCatch_revenue(const FLCatch flc);
-RcppExport SEXP FLasher_test_FLCatch_revenue(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_revenue(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1593,7 +1593,7 @@ END_RCPP
 }
 // test_FLCatch_landings
 FLQuant test_FLCatch_landings(const FLCatch flc);
-RcppExport SEXP FLasher_test_FLCatch_landings(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_landings(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1604,7 +1604,7 @@ END_RCPP
 }
 // test_FLCatchAD_landings
 FLQuantAD test_FLCatchAD_landings(const FLCatchAD flc);
-RcppExport SEXP FLasher_test_FLCatchAD_landings(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_landings(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1615,7 +1615,7 @@ END_RCPP
 }
 // test_FLCatch_discards
 FLQuant test_FLCatch_discards(const FLCatch flc);
-RcppExport SEXP FLasher_test_FLCatch_discards(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_discards(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1626,7 +1626,7 @@ END_RCPP
 }
 // test_FLCatchAD_discards
 FLQuantAD test_FLCatchAD_discards(const FLCatchAD flc);
-RcppExport SEXP FLasher_test_FLCatchAD_discards(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_discards(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1637,7 +1637,7 @@ END_RCPP
 }
 // test_FLCatch_catch_n
 FLQuant test_FLCatch_catch_n(const FLCatch flc);
-RcppExport SEXP FLasher_test_FLCatch_catch_n(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_catch_n(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1648,7 +1648,7 @@ END_RCPP
 }
 // test_FLCatchAD_catch_n
 FLQuantAD test_FLCatchAD_catch_n(const FLCatchAD flc);
-RcppExport SEXP FLasher_test_FLCatchAD_catch_n(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_catch_n(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1659,7 +1659,7 @@ END_RCPP
 }
 // test_FLCatch_catch_wt
 FLQuant test_FLCatch_catch_wt(const FLCatch flc);
-RcppExport SEXP FLasher_test_FLCatch_catch_wt(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_catch_wt(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1670,7 +1670,7 @@ END_RCPP
 }
 // test_FLCatchAD_catch_wt
 FLQuantAD test_FLCatchAD_catch_wt(const FLCatchAD flc);
-RcppExport SEXP FLasher_test_FLCatchAD_catch_wt(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_catch_wt(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1681,7 +1681,7 @@ END_RCPP
 }
 // test_FLCatch_catches
 FLQuant test_FLCatch_catches(const FLCatch flc);
-RcppExport SEXP FLasher_test_FLCatch_catches(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_catches(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1692,7 +1692,7 @@ END_RCPP
 }
 // test_FLCatchAD_catches
 FLQuantAD test_FLCatchAD_catches(const FLCatchAD flc);
-RcppExport SEXP FLasher_test_FLCatchAD_catches(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_catches(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1703,7 +1703,7 @@ END_RCPP
 }
 // test_FLCatch_discards_ratio
 FLQuant test_FLCatch_discards_ratio(const FLCatch flc);
-RcppExport SEXP FLasher_test_FLCatch_discards_ratio(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_discards_ratio(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1714,7 +1714,7 @@ END_RCPP
 }
 // test_FLCatchAD_discards_ratio
 FLQuantAD test_FLCatchAD_discards_ratio(const FLCatchAD flc);
-RcppExport SEXP FLasher_test_FLCatchAD_discards_ratio(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_discards_ratio(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1725,7 +1725,7 @@ END_RCPP
 }
 // test_FLCatch_landings_sel
 FLQuant test_FLCatch_landings_sel(const FLCatch flc);
-RcppExport SEXP FLasher_test_FLCatch_landings_sel(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_landings_sel(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1736,7 +1736,7 @@ END_RCPP
 }
 // test_FLCatchAD_landings_sel
 FLQuantAD test_FLCatchAD_landings_sel(const FLCatchAD flc);
-RcppExport SEXP FLasher_test_FLCatchAD_landings_sel(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_landings_sel(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1747,7 +1747,7 @@ END_RCPP
 }
 // test_FLCatch_discards_sel
 FLQuant test_FLCatch_discards_sel(const FLCatch flc);
-RcppExport SEXP FLasher_test_FLCatch_discards_sel(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatch_discards_sel(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1758,7 +1758,7 @@ END_RCPP
 }
 // test_FLCatchAD_discards_sel
 FLQuantAD test_FLCatchAD_discards_sel(const FLCatchAD flc);
-RcppExport SEXP FLasher_test_FLCatchAD_discards_sel(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_discards_sel(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1769,7 +1769,7 @@ END_RCPP
 }
 // test_FLCatchAD_catch_q_params
 std::vector<double> test_FLCatchAD_catch_q_params(const FLCatchAD flc, const std::vector<unsigned int> indices);
-RcppExport SEXP FLasher_test_FLCatchAD_catch_q_params(SEXP flcSEXP, SEXP indicesSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_catch_q_params(SEXP flcSEXP, SEXP indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1781,7 +1781,7 @@ END_RCPP
 }
 // test_FLCatchAD_catch_q_params_subset
 FLQuant test_FLCatchAD_catch_q_params_subset(const FLCatchAD flc, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_FLCatchAD_catch_q_params_subset(SEXP flcSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchAD_catch_q_params_subset(SEXP flcSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1794,7 +1794,7 @@ END_RCPP
 }
 // test_FLCatches_as_wrap
 FLCatches test_FLCatches_as_wrap(FLCatches flcs);
-RcppExport SEXP FLasher_test_FLCatches_as_wrap(SEXP flcsSEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_as_wrap(SEXP flcsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1805,7 +1805,7 @@ END_RCPP
 }
 // test_FLCatches_sexp_constructor
 FLCatches test_FLCatches_sexp_constructor(SEXP flcs_sexp1);
-RcppExport SEXP FLasher_test_FLCatches_sexp_constructor(SEXP flcs_sexp1SEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_sexp_constructor(SEXP flcs_sexp1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1816,7 +1816,7 @@ END_RCPP
 }
 // test_FLCatches_FLCatch_constructor
 FLCatches test_FLCatches_FLCatch_constructor(FLCatch flc);
-RcppExport SEXP FLasher_test_FLCatches_FLCatch_constructor(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_FLCatch_constructor(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1827,7 +1827,7 @@ END_RCPP
 }
 // test_FLCatches_copy_constructor
 FLCatches test_FLCatches_copy_constructor(FLCatches flcs);
-RcppExport SEXP FLasher_test_FLCatches_copy_constructor(SEXP flcsSEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_copy_constructor(SEXP flcsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1838,7 +1838,7 @@ END_RCPP
 }
 // test_FLCatches_copy_constructor2
 Rcpp::List test_FLCatches_copy_constructor2(FLCatches flcs1, int catches, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLCatches_copy_constructor2(SEXP flcs1SEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_copy_constructor2(SEXP flcs1SEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1857,7 +1857,7 @@ END_RCPP
 }
 // test_FLCatches_assignment_operator
 FLCatches test_FLCatches_assignment_operator(FLCatches flcs);
-RcppExport SEXP FLasher_test_FLCatches_assignment_operator(SEXP flcsSEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_assignment_operator(SEXP flcsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1868,7 +1868,7 @@ END_RCPP
 }
 // test_FLCatches_assignment_operator2
 Rcpp::List test_FLCatches_assignment_operator2(FLCatches flcs1, int catches, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLCatches_assignment_operator2(SEXP flcs1SEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_assignment_operator2(SEXP flcs1SEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1887,7 +1887,7 @@ END_RCPP
 }
 // test_FLCatches_function_operator
 FLCatches test_FLCatches_function_operator(FLCatches flcs, FLCatch flc);
-RcppExport SEXP FLasher_test_FLCatches_function_operator(SEXP flcsSEXP, SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_function_operator(SEXP flcsSEXP, SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1899,7 +1899,7 @@ END_RCPP
 }
 // test_FLCatches_get_ncatches
 int test_FLCatches_get_ncatches(SEXP flc_sexp1);
-RcppExport SEXP FLasher_test_FLCatches_get_ncatches(SEXP flc_sexp1SEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_get_ncatches(SEXP flc_sexp1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1910,7 +1910,7 @@ END_RCPP
 }
 // test_FLCatches_const_get_single_index_accessor
 FLCatch test_FLCatches_const_get_single_index_accessor(const FLCatches flcs, const int element);
-RcppExport SEXP FLasher_test_FLCatches_const_get_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_const_get_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1922,7 +1922,7 @@ END_RCPP
 }
 // test_FLCatches_get_single_index_accessor
 FLCatch test_FLCatches_get_single_index_accessor(FLCatches flcs, const int element);
-RcppExport SEXP FLasher_test_FLCatches_get_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_get_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1934,7 +1934,7 @@ END_RCPP
 }
 // test_FLCatches_const_get_value_accessor
 double test_FLCatches_const_get_value_accessor(const FLCatches flcs, const int catches, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLCatches_const_get_value_accessor(SEXP flcsSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_const_get_value_accessor(SEXP flcsSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1952,7 +1952,7 @@ END_RCPP
 }
 // test_FLCatches_get_value_accessor
 double test_FLCatches_get_value_accessor(FLCatches flcs, const int catches, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLCatches_get_value_accessor(SEXP flcsSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_get_value_accessor(SEXP flcsSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1970,7 +1970,7 @@ END_RCPP
 }
 // test_FLCatches_set_single_index_accessor
 FLCatches test_FLCatches_set_single_index_accessor(FLCatches flcs, const int element, const FLCatch flc);
-RcppExport SEXP FLasher_test_FLCatches_set_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP, SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_set_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP, SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1983,7 +1983,7 @@ END_RCPP
 }
 // test_FLCatches_set_value_accessor
 FLCatches test_FLCatches_set_value_accessor(FLCatches flcs, const int element, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLCatches_set_value_accessor(SEXP flcsSEXP, SEXP elementSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLCatches_set_value_accessor(SEXP flcsSEXP, SEXP elementSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2002,7 +2002,7 @@ END_RCPP
 }
 // test_FLCatchesAD_as_wrap
 FLCatchesAD test_FLCatchesAD_as_wrap(FLCatchesAD flcs);
-RcppExport SEXP FLasher_test_FLCatchesAD_as_wrap(SEXP flcsSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_as_wrap(SEXP flcsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2013,7 +2013,7 @@ END_RCPP
 }
 // test_FLCatchesAD_sexp_constructor
 FLCatchesAD test_FLCatchesAD_sexp_constructor(SEXP flcs_sexp1);
-RcppExport SEXP FLasher_test_FLCatchesAD_sexp_constructor(SEXP flcs_sexp1SEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_sexp_constructor(SEXP flcs_sexp1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2024,7 +2024,7 @@ END_RCPP
 }
 // test_FLCatchesAD_FLCatchAD_constructor
 FLCatchesAD test_FLCatchesAD_FLCatchAD_constructor(FLCatchAD flc);
-RcppExport SEXP FLasher_test_FLCatchesAD_FLCatchAD_constructor(SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_FLCatchAD_constructor(SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2035,7 +2035,7 @@ END_RCPP
 }
 // test_FLCatchesAD_copy_constructor
 FLCatchesAD test_FLCatchesAD_copy_constructor(FLCatchesAD flcs);
-RcppExport SEXP FLasher_test_FLCatchesAD_copy_constructor(SEXP flcsSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_copy_constructor(SEXP flcsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2046,7 +2046,7 @@ END_RCPP
 }
 // test_FLCatchesAD_copy_constructor2
 Rcpp::List test_FLCatchesAD_copy_constructor2(FLCatchesAD flcs1, int catches, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLCatchesAD_copy_constructor2(SEXP flcs1SEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_copy_constructor2(SEXP flcs1SEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2065,7 +2065,7 @@ END_RCPP
 }
 // test_FLCatchesAD_assignment_operator
 FLCatchesAD test_FLCatchesAD_assignment_operator(FLCatchesAD flcs);
-RcppExport SEXP FLasher_test_FLCatchesAD_assignment_operator(SEXP flcsSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_assignment_operator(SEXP flcsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2076,7 +2076,7 @@ END_RCPP
 }
 // test_FLCatchesAD_assignment_operator2
 Rcpp::List test_FLCatchesAD_assignment_operator2(FLCatchesAD flcs1, int catches, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLCatchesAD_assignment_operator2(SEXP flcs1SEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_assignment_operator2(SEXP flcs1SEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2095,7 +2095,7 @@ END_RCPP
 }
 // test_FLCatchesAD_function_operator
 FLCatchesAD test_FLCatchesAD_function_operator(FLCatchesAD flcs, FLCatchAD flc);
-RcppExport SEXP FLasher_test_FLCatchesAD_function_operator(SEXP flcsSEXP, SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_function_operator(SEXP flcsSEXP, SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2107,7 +2107,7 @@ END_RCPP
 }
 // test_FLCatchesAD_get_ncatches
 int test_FLCatchesAD_get_ncatches(SEXP flc_sexp1);
-RcppExport SEXP FLasher_test_FLCatchesAD_get_ncatches(SEXP flc_sexp1SEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_get_ncatches(SEXP flc_sexp1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2118,7 +2118,7 @@ END_RCPP
 }
 // test_FLCatchesAD_const_get_single_index_accessor
 FLCatchAD test_FLCatchesAD_const_get_single_index_accessor(const FLCatchesAD flcs, const int element);
-RcppExport SEXP FLasher_test_FLCatchesAD_const_get_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_const_get_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2130,7 +2130,7 @@ END_RCPP
 }
 // test_FLCatchesAD_get_single_index_accessor
 FLCatchAD test_FLCatchesAD_get_single_index_accessor(FLCatchesAD flcs, const int element);
-RcppExport SEXP FLasher_test_FLCatchesAD_get_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_get_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2142,7 +2142,7 @@ END_RCPP
 }
 // test_FLCatchesAD_const_get_value_accessor
 double test_FLCatchesAD_const_get_value_accessor(const FLCatchesAD flcs, const int catches, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLCatchesAD_const_get_value_accessor(SEXP flcsSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_const_get_value_accessor(SEXP flcsSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2160,7 +2160,7 @@ END_RCPP
 }
 // test_FLCatchesAD_get_value_accessor
 double test_FLCatchesAD_get_value_accessor(FLCatchesAD flcs, const int catches, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLCatchesAD_get_value_accessor(SEXP flcsSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_get_value_accessor(SEXP flcsSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2178,7 +2178,7 @@ END_RCPP
 }
 // test_FLCatchesAD_set_single_index_accessor
 FLCatchesAD test_FLCatchesAD_set_single_index_accessor(FLCatchesAD flcs, const int element, const FLCatchAD flc);
-RcppExport SEXP FLasher_test_FLCatchesAD_set_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP, SEXP flcSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_set_single_index_accessor(SEXP flcsSEXP, SEXP elementSEXP, SEXP flcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2191,7 +2191,7 @@ END_RCPP
 }
 // test_FLCatchesAD_set_value_accessor
 FLCatchesAD test_FLCatchesAD_set_value_accessor(FLCatchesAD flcs, const int element, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLCatchesAD_set_value_accessor(SEXP flcsSEXP, SEXP elementSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_set_value_accessor(SEXP flcsSEXP, SEXP elementSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2210,7 +2210,7 @@ END_RCPP
 }
 // test_FLCatchesAD_const_iterator
 Rcpp::List test_FLCatchesAD_const_iterator(const FLCatchesAD catches);
-RcppExport SEXP FLasher_test_FLCatchesAD_const_iterator(SEXP catchesSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_const_iterator(SEXP catchesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2221,7 +2221,7 @@ END_RCPP
 }
 // test_FLCatchesAD_iterator
 FLCatchesAD test_FLCatchesAD_iterator(FLCatchesAD catches, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLCatchesAD_iterator(SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLCatchesAD_iterator(SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2239,7 +2239,7 @@ END_RCPP
 }
 // test_FLFishery_empty_constructor
 void test_FLFishery_empty_constructor();
-RcppExport SEXP FLasher_test_FLFishery_empty_constructor() {
+RcppExport SEXP _FLasher_test_FLFishery_empty_constructor() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     test_FLFishery_empty_constructor();
@@ -2248,7 +2248,7 @@ END_RCPP
 }
 // test_simple_FLFishery_sexp_constructor
 int test_simple_FLFishery_sexp_constructor(SEXP flf_sexp);
-RcppExport SEXP FLasher_test_simple_FLFishery_sexp_constructor(SEXP flf_sexpSEXP) {
+RcppExport SEXP _FLasher_test_simple_FLFishery_sexp_constructor(SEXP flf_sexpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2259,7 +2259,7 @@ END_RCPP
 }
 // test_FLFishery_sexp_constructor
 FLFishery test_FLFishery_sexp_constructor(SEXP flf_sexp);
-RcppExport SEXP FLasher_test_FLFishery_sexp_constructor(SEXP flf_sexpSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_sexp_constructor(SEXP flf_sexpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2270,7 +2270,7 @@ END_RCPP
 }
 // test_FLFishery_as_wrap
 FLFishery test_FLFishery_as_wrap(FLFishery flf);
-RcppExport SEXP FLasher_test_FLFishery_as_wrap(SEXP flfSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_as_wrap(SEXP flfSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2281,7 +2281,7 @@ END_RCPP
 }
 // test_FLFishery_copy_constructor
 FLFishery test_FLFishery_copy_constructor(FLFishery flf1);
-RcppExport SEXP FLasher_test_FLFishery_copy_constructor(SEXP flf1SEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_copy_constructor(SEXP flf1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2292,7 +2292,7 @@ END_RCPP
 }
 // test_FLFishery_assignment_operator
 FLFishery test_FLFishery_assignment_operator(FLFishery flf1);
-RcppExport SEXP FLasher_test_FLFishery_assignment_operator(SEXP flf1SEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_assignment_operator(SEXP flf1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2303,7 +2303,7 @@ END_RCPP
 }
 // test_FLFishery_const_catches_get_accessors
 Rcpp::NumericVector test_FLFishery_const_catches_get_accessors(const FLFishery flf, int catches, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLFishery_const_catches_get_accessors(SEXP flfSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_const_catches_get_accessors(SEXP flfSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2321,7 +2321,7 @@ END_RCPP
 }
 // test_FLFishery_catches_get_accessors
 Rcpp::NumericVector test_FLFishery_catches_get_accessors(FLFishery flf, int catches, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLFishery_catches_get_accessors(SEXP flfSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_catches_get_accessors(SEXP flfSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2339,7 +2339,7 @@ END_RCPP
 }
 // test_FLFishery_const_economics_get_accessors
 Rcpp::NumericVector test_FLFishery_const_economics_get_accessors(const FLFishery flf, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLFishery_const_economics_get_accessors(SEXP flfSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_const_economics_get_accessors(SEXP flfSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2355,7 +2355,7 @@ END_RCPP
 }
 // test_FLFishery_const_get_hperiod
 double test_FLFishery_const_get_hperiod(const FLFishery flf, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLFishery_const_get_hperiod(SEXP flfSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_const_get_hperiod(SEXP flfSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2372,7 +2372,7 @@ END_RCPP
 }
 // test_FLFishery_get_hperiod
 double test_FLFishery_get_hperiod(FLFishery flf, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLFishery_get_hperiod(SEXP flfSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_get_hperiod(SEXP flfSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2389,7 +2389,7 @@ END_RCPP
 }
 // test_FLFishery_set_hperiod
 FLQuant test_FLFishery_set_hperiod(FLFishery flf, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLFishery_set_hperiod(SEXP flfSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_set_hperiod(SEXP flfSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2407,7 +2407,7 @@ END_RCPP
 }
 // test_FLFishery_get_effort_subset
 FLQuant test_FLFishery_get_effort_subset(const FLFishery flf, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_FLFishery_get_effort_subset(SEXP flfSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_get_effort_subset(SEXP flfSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2420,7 +2420,7 @@ END_RCPP
 }
 // test_FLFishery_get_effort
 FLQuant test_FLFishery_get_effort(const FLFishery flf);
-RcppExport SEXP FLasher_test_FLFishery_get_effort(SEXP flfSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_get_effort(SEXP flfSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2431,7 +2431,7 @@ END_RCPP
 }
 // test_FLFishery_economics_get_accessors
 Rcpp::NumericVector test_FLFishery_economics_get_accessors(FLFishery flf, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLFishery_economics_get_accessors(SEXP flfSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_economics_get_accessors(SEXP flfSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2447,7 +2447,7 @@ END_RCPP
 }
 // test_FLFishery_set_accessors
 FLFishery test_FLFishery_set_accessors(FLFishery flf, int catches, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLFishery_set_accessors(SEXP flfSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_set_accessors(SEXP flfSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2466,7 +2466,7 @@ END_RCPP
 }
 // test_FLFishery_copy_constructor2
 Rcpp::List test_FLFishery_copy_constructor2(FLFishery flf1, int element, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLFishery_copy_constructor2(SEXP flf1SEXP, SEXP elementSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_copy_constructor2(SEXP flf1SEXP, SEXP elementSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2485,7 +2485,7 @@ END_RCPP
 }
 // test_FLFishery_assignment_operator2
 Rcpp::List test_FLFishery_assignment_operator2(FLFishery flf1, int element, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLFishery_assignment_operator2(SEXP flf1SEXP, SEXP elementSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_assignment_operator2(SEXP flf1SEXP, SEXP elementSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2504,7 +2504,7 @@ END_RCPP
 }
 // test_FLFisheryAD_empty_constructor
 void test_FLFisheryAD_empty_constructor();
-RcppExport SEXP FLasher_test_FLFisheryAD_empty_constructor() {
+RcppExport SEXP _FLasher_test_FLFisheryAD_empty_constructor() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     test_FLFisheryAD_empty_constructor();
@@ -2513,7 +2513,7 @@ END_RCPP
 }
 // test_simple_FLFisheryAD_sexp_constructor
 int test_simple_FLFisheryAD_sexp_constructor(SEXP flf_sexp);
-RcppExport SEXP FLasher_test_simple_FLFisheryAD_sexp_constructor(SEXP flf_sexpSEXP) {
+RcppExport SEXP _FLasher_test_simple_FLFisheryAD_sexp_constructor(SEXP flf_sexpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2524,7 +2524,7 @@ END_RCPP
 }
 // test_FLFisheryAD_sexp_constructor
 FLFisheryAD test_FLFisheryAD_sexp_constructor(SEXP flf_sexp);
-RcppExport SEXP FLasher_test_FLFisheryAD_sexp_constructor(SEXP flf_sexpSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheryAD_sexp_constructor(SEXP flf_sexpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2535,7 +2535,7 @@ END_RCPP
 }
 // test_FLFisheryAD_as_wrap
 FLFisheryAD test_FLFisheryAD_as_wrap(FLFisheryAD flf);
-RcppExport SEXP FLasher_test_FLFisheryAD_as_wrap(SEXP flfSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheryAD_as_wrap(SEXP flfSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2546,7 +2546,7 @@ END_RCPP
 }
 // test_FLFisheryAD_copy_constructor
 FLFisheryAD test_FLFisheryAD_copy_constructor(FLFisheryAD flf1);
-RcppExport SEXP FLasher_test_FLFisheryAD_copy_constructor(SEXP flf1SEXP) {
+RcppExport SEXP _FLasher_test_FLFisheryAD_copy_constructor(SEXP flf1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2557,7 +2557,7 @@ END_RCPP
 }
 // test_FLFisheryAD_assignment_operator
 FLFisheryAD test_FLFisheryAD_assignment_operator(FLFisheryAD flf1);
-RcppExport SEXP FLasher_test_FLFisheryAD_assignment_operator(SEXP flf1SEXP) {
+RcppExport SEXP _FLasher_test_FLFisheryAD_assignment_operator(SEXP flf1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2568,7 +2568,7 @@ END_RCPP
 }
 // test_FLFisheryAD_const_catches_get_accessors
 Rcpp::NumericVector test_FLFisheryAD_const_catches_get_accessors(const FLFisheryAD flf, int catches, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLFisheryAD_const_catches_get_accessors(SEXP flfSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheryAD_const_catches_get_accessors(SEXP flfSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2586,7 +2586,7 @@ END_RCPP
 }
 // test_FLFisheryAD_catches_get_accessors
 Rcpp::NumericVector test_FLFisheryAD_catches_get_accessors(FLFisheryAD flf, int catches, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLFisheryAD_catches_get_accessors(SEXP flfSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheryAD_catches_get_accessors(SEXP flfSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2604,7 +2604,7 @@ END_RCPP
 }
 // test_FLFisheryAD_const_economics_get_accessors
 Rcpp::NumericVector test_FLFisheryAD_const_economics_get_accessors(const FLFisheryAD flf, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLFisheryAD_const_economics_get_accessors(SEXP flfSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheryAD_const_economics_get_accessors(SEXP flfSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2620,7 +2620,7 @@ END_RCPP
 }
 // test_FLFisheryAD_economics_get_accessors
 Rcpp::NumericVector test_FLFisheryAD_economics_get_accessors(FLFisheryAD flf, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLFisheryAD_economics_get_accessors(SEXP flfSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheryAD_economics_get_accessors(SEXP flfSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2636,7 +2636,7 @@ END_RCPP
 }
 // test_FLFisheryAD_set_accessors
 FLFisheryAD test_FLFisheryAD_set_accessors(FLFisheryAD flf, int catches, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLFisheryAD_set_accessors(SEXP flfSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheryAD_set_accessors(SEXP flfSEXP, SEXP catchesSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2655,7 +2655,7 @@ END_RCPP
 }
 // test_FLFisheryAD_copy_constructor2
 Rcpp::List test_FLFisheryAD_copy_constructor2(FLFisheryAD flf1, int element, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLFisheryAD_copy_constructor2(SEXP flf1SEXP, SEXP elementSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheryAD_copy_constructor2(SEXP flf1SEXP, SEXP elementSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2674,7 +2674,7 @@ END_RCPP
 }
 // test_FLFisheryAD_assignment_operator2
 Rcpp::List test_FLFisheryAD_assignment_operator2(FLFisheryAD flf1, int element, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLFisheryAD_assignment_operator2(SEXP flf1SEXP, SEXP elementSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheryAD_assignment_operator2(SEXP flf1SEXP, SEXP elementSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2693,7 +2693,7 @@ END_RCPP
 }
 // test_FLFisheryAD_const_iterator
 Rcpp::List test_FLFisheryAD_const_iterator(const FLFisheryAD fishery);
-RcppExport SEXP FLasher_test_FLFisheryAD_const_iterator(SEXP fisherySEXP) {
+RcppExport SEXP _FLasher_test_FLFisheryAD_const_iterator(SEXP fisherySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2704,7 +2704,7 @@ END_RCPP
 }
 // test_FLFisheryAD_iterator
 FLFisheryAD test_FLFisheryAD_iterator(FLFisheryAD fishery, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLFisheryAD_iterator(SEXP fisherySEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheryAD_iterator(SEXP fisherySEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2722,7 +2722,7 @@ END_RCPP
 }
 // test_FLFisheries_sexp_constructor
 FLFisheries test_FLFisheries_sexp_constructor(SEXP flfs_sexp1);
-RcppExport SEXP FLasher_test_FLFisheries_sexp_constructor(SEXP flfs_sexp1SEXP) {
+RcppExport SEXP _FLasher_test_FLFisheries_sexp_constructor(SEXP flfs_sexp1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2733,7 +2733,7 @@ END_RCPP
 }
 // test_FLFisheries_as_wrap
 FLFisheries test_FLFisheries_as_wrap(FLFisheries flfs);
-RcppExport SEXP FLasher_test_FLFisheries_as_wrap(SEXP flfsSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheries_as_wrap(SEXP flfsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2744,7 +2744,7 @@ END_RCPP
 }
 // test_FLFisheries_get_nfisheries
 int test_FLFisheries_get_nfisheries(FLFisheries flfs);
-RcppExport SEXP FLasher_test_FLFisheries_get_nfisheries(SEXP flfsSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheries_get_nfisheries(SEXP flfsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2755,7 +2755,7 @@ END_RCPP
 }
 // test_FLFisheries_copy_constructor
 FLFisheries test_FLFisheries_copy_constructor(FLFisheries flfs);
-RcppExport SEXP FLasher_test_FLFisheries_copy_constructor(SEXP flfsSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheries_copy_constructor(SEXP flfsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2766,7 +2766,7 @@ END_RCPP
 }
 // test_FLFisheries_copy_constructor2
 Rcpp::List test_FLFisheries_copy_constructor2(FLFisheries flfs1, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value);
-RcppExport SEXP FLasher_test_FLFisheries_copy_constructor2(SEXP flfs1SEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheries_copy_constructor2(SEXP flfs1SEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2781,7 +2781,7 @@ END_RCPP
 }
 // test_FLFisheries_assignment_operator
 FLFisheries test_FLFisheries_assignment_operator(FLFisheries flfs);
-RcppExport SEXP FLasher_test_FLFisheries_assignment_operator(SEXP flfsSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheries_assignment_operator(SEXP flfsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2792,7 +2792,7 @@ END_RCPP
 }
 // test_FLFisheries_assignment_operator2
 Rcpp::List test_FLFisheries_assignment_operator2(FLFisheries flfs1, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value);
-RcppExport SEXP FLasher_test_FLFisheries_assignment_operator2(SEXP flfs1SEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheries_assignment_operator2(SEXP flfs1SEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2807,7 +2807,7 @@ END_RCPP
 }
 // test_FLFisheries_const_get_single
 Rcpp::List test_FLFisheries_const_get_single(const FLFisheries flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices);
-RcppExport SEXP FLasher_test_FLFisheries_const_get_single(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheries_const_get_single(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2821,7 +2821,7 @@ END_RCPP
 }
 // test_FLFisheries_get_single
 Rcpp::List test_FLFisheries_get_single(FLFisheries flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices);
-RcppExport SEXP FLasher_test_FLFisheries_get_single(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheries_get_single(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2835,7 +2835,7 @@ END_RCPP
 }
 // test_FLFisheries_const_get_double
 Rcpp::List test_FLFisheries_const_get_double(const FLFisheries flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices);
-RcppExport SEXP FLasher_test_FLFisheries_const_get_double(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheries_const_get_double(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2849,7 +2849,7 @@ END_RCPP
 }
 // test_FLFisheries_get_double
 Rcpp::List test_FLFisheries_get_double(FLFisheries flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices);
-RcppExport SEXP FLasher_test_FLFisheries_get_double(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheries_get_double(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2863,7 +2863,7 @@ END_RCPP
 }
 // test_FLFisheries_set_single
 FLFisheries test_FLFisheries_set_single(FLFisheries flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value);
-RcppExport SEXP FLasher_test_FLFisheries_set_single(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheries_set_single(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2878,7 +2878,7 @@ END_RCPP
 }
 // test_FLFisheries_set_double
 FLFisheries test_FLFisheries_set_double(FLFisheries flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value);
-RcppExport SEXP FLasher_test_FLFisheries_set_double(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheries_set_double(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2893,7 +2893,7 @@ END_RCPP
 }
 // test_FLFishery_revenue
 FLQuant test_FLFishery_revenue(const FLFishery flf);
-RcppExport SEXP FLasher_test_FLFishery_revenue(SEXP flfSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_revenue(SEXP flfSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2904,7 +2904,7 @@ END_RCPP
 }
 // test_FLFishery_revenue_subset
 FLQuant test_FLFishery_revenue_subset(const FLFishery flf, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_FLFishery_revenue_subset(SEXP flfSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_FLFishery_revenue_subset(SEXP flfSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2917,7 +2917,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_sexp_constructor
 FLFisheriesAD test_FLFisheriesAD_sexp_constructor(SEXP flfs_sexp1);
-RcppExport SEXP FLasher_test_FLFisheriesAD_sexp_constructor(SEXP flfs_sexp1SEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_sexp_constructor(SEXP flfs_sexp1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2928,7 +2928,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_as_wrap
 FLFisheriesAD test_FLFisheriesAD_as_wrap(FLFisheriesAD flfs);
-RcppExport SEXP FLasher_test_FLFisheriesAD_as_wrap(SEXP flfsSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_as_wrap(SEXP flfsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2939,7 +2939,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_get_nfisheries
 int test_FLFisheriesAD_get_nfisheries(FLFisheriesAD flfs);
-RcppExport SEXP FLasher_test_FLFisheriesAD_get_nfisheries(SEXP flfsSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_get_nfisheries(SEXP flfsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2950,7 +2950,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_copy_constructor
 FLFisheriesAD test_FLFisheriesAD_copy_constructor(FLFisheriesAD flfs);
-RcppExport SEXP FLasher_test_FLFisheriesAD_copy_constructor(SEXP flfsSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_copy_constructor(SEXP flfsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2961,7 +2961,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_copy_constructor2
 Rcpp::List test_FLFisheriesAD_copy_constructor2(FLFisheriesAD flfs1, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value);
-RcppExport SEXP FLasher_test_FLFisheriesAD_copy_constructor2(SEXP flfs1SEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_copy_constructor2(SEXP flfs1SEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2976,7 +2976,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_assignment_operator
 FLFisheriesAD test_FLFisheriesAD_assignment_operator(FLFisheriesAD flfs);
-RcppExport SEXP FLasher_test_FLFisheriesAD_assignment_operator(SEXP flfsSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_assignment_operator(SEXP flfsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -2987,7 +2987,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_assignment_operator2
 Rcpp::List test_FLFisheriesAD_assignment_operator2(FLFisheriesAD flfs1, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value);
-RcppExport SEXP FLasher_test_FLFisheriesAD_assignment_operator2(SEXP flfs1SEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_assignment_operator2(SEXP flfs1SEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3002,7 +3002,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_const_get_single
 Rcpp::List test_FLFisheriesAD_const_get_single(const FLFisheriesAD flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices);
-RcppExport SEXP FLasher_test_FLFisheriesAD_const_get_single(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_const_get_single(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3016,7 +3016,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_get_single
 Rcpp::List test_FLFisheriesAD_get_single(FLFisheriesAD flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices);
-RcppExport SEXP FLasher_test_FLFisheriesAD_get_single(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_get_single(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3030,7 +3030,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_const_get_double
 Rcpp::List test_FLFisheriesAD_const_get_double(const FLFisheriesAD flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices);
-RcppExport SEXP FLasher_test_FLFisheriesAD_const_get_double(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_const_get_double(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3044,7 +3044,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_get_double
 Rcpp::List test_FLFisheriesAD_get_double(FLFisheriesAD flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices);
-RcppExport SEXP FLasher_test_FLFisheriesAD_get_double(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_get_double(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3058,7 +3058,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_set_single
 FLFisheriesAD test_FLFisheriesAD_set_single(FLFisheriesAD flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value);
-RcppExport SEXP FLasher_test_FLFisheriesAD_set_single(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_set_single(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3073,7 +3073,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_set_double
 FLFisheriesAD test_FLFisheriesAD_set_double(FLFisheriesAD flfs, const int fishery, const int catches, const Rcpp::IntegerVector indices, double value);
-RcppExport SEXP FLasher_test_FLFisheriesAD_set_double(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_set_double(SEXP flfsSEXP, SEXP fisherySEXP, SEXP catchesSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3088,7 +3088,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_const_iterator
 Rcpp::List test_FLFisheriesAD_const_iterator(const FLFisheriesAD fisheries);
-RcppExport SEXP FLasher_test_FLFisheriesAD_const_iterator(SEXP fisheriesSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_const_iterator(SEXP fisheriesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3099,7 +3099,7 @@ END_RCPP
 }
 // test_FLFisheriesAD_iterator
 FLFisheriesAD test_FLFisheriesAD_iterator(FLFisheriesAD fisheries, double value);
-RcppExport SEXP FLasher_test_FLFisheriesAD_iterator(SEXP fisheriesSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLFisheriesAD_iterator(SEXP fisheriesSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3111,7 +3111,7 @@ END_RCPP
 }
 // test_FLQuantAD_as_wrap
 FLQuantAD test_FLQuantAD_as_wrap(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_as_wrap(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_as_wrap(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3122,7 +3122,7 @@ END_RCPP
 }
 // test_FLQuantAD_basic_constructor
 void test_FLQuantAD_basic_constructor();
-RcppExport SEXP FLasher_test_FLQuantAD_basic_constructor() {
+RcppExport SEXP _FLasher_test_FLQuantAD_basic_constructor() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     test_FLQuantAD_basic_constructor();
@@ -3131,7 +3131,7 @@ END_RCPP
 }
 // test_FLQuantAD_sexp_constructor
 FLQuantAD test_FLQuantAD_sexp_constructor(SEXP flq_sexp);
-RcppExport SEXP FLasher_test_FLQuantAD_sexp_constructor(SEXP flq_sexpSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_sexp_constructor(SEXP flq_sexpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3142,7 +3142,7 @@ END_RCPP
 }
 // test_FLQuantAD_dim_constructor
 FLQuantAD test_FLQuantAD_dim_constructor(int nquant, int nyear, int nunit, int nseason, int narea, int niter);
-RcppExport SEXP FLasher_test_FLQuantAD_dim_constructor(SEXP nquantSEXP, SEXP nyearSEXP, SEXP nunitSEXP, SEXP nseasonSEXP, SEXP nareaSEXP, SEXP niterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_dim_constructor(SEXP nquantSEXP, SEXP nyearSEXP, SEXP nunitSEXP, SEXP nseasonSEXP, SEXP nareaSEXP, SEXP niterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3158,7 +3158,7 @@ END_RCPP
 }
 // test_FLQuantAD_copy_constructor
 FLQuantAD test_FLQuantAD_copy_constructor(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_copy_constructor(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_copy_constructor(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3169,7 +3169,7 @@ END_RCPP
 }
 // test_FLQuantAD_copy_constructor2
 Rcpp::List test_FLQuantAD_copy_constructor2(FLQuantAD flq1, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_copy_constructor2(SEXP flq1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_copy_constructor2(SEXP flq1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3187,7 +3187,7 @@ END_RCPP
 }
 // test_FLQuantAD_assignment_operator
 FLQuantAD test_FLQuantAD_assignment_operator(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_assignment_operator(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_assignment_operator(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3198,7 +3198,7 @@ END_RCPP
 }
 // test_FLQuantAD_assignment_operator2
 Rcpp::List test_FLQuantAD_assignment_operator2(FLQuantAD flq1, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_assignment_operator2(SEXP flq1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_assignment_operator2(SEXP flq1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3216,7 +3216,7 @@ END_RCPP
 }
 // test_FLQuantAD_from_FLQuant_constructor
 FLQuantAD test_FLQuantAD_from_FLQuant_constructor(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuantAD_from_FLQuant_constructor(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_from_FLQuant_constructor(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3227,7 +3227,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_units
 std::string test_FLQuantAD_get_units(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_get_units(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_units(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3238,7 +3238,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_dim
 std::vector<unsigned int> test_FLQuantAD_get_dim(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_get_dim(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_dim(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3249,7 +3249,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_dimnames
 Rcpp::List test_FLQuantAD_get_dimnames(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_get_dimnames(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_dimnames(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3260,7 +3260,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_size
 int test_FLQuantAD_get_size(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_get_size(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_size(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3271,7 +3271,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_nquant
 int test_FLQuantAD_get_nquant(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_get_nquant(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_nquant(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3282,7 +3282,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_nyear
 int test_FLQuantAD_get_nyear(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_get_nyear(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_nyear(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3293,7 +3293,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_nunit
 int test_FLQuantAD_get_nunit(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_get_nunit(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_nunit(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3304,7 +3304,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_nseason
 int test_FLQuantAD_get_nseason(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_get_nseason(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_nseason(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3315,7 +3315,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_narea
 int test_FLQuantAD_get_narea(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_get_narea(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_narea(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3326,7 +3326,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_niter
 int test_FLQuantAD_get_niter(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuantAD_get_niter(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_niter(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3337,7 +3337,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_data_element
 int test_FLQuantAD_get_data_element(const FLQuantAD flq, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLQuantAD_get_data_element(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_data_element(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3354,7 +3354,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_const_single_index_accessor
 double test_FLQuantAD_get_const_single_index_accessor(const FLQuantAD flq, const int element);
-RcppExport SEXP FLasher_test_FLQuantAD_get_const_single_index_accessor(SEXP flqSEXP, SEXP elementSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_const_single_index_accessor(SEXP flqSEXP, SEXP elementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3366,7 +3366,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_single_index_accessor
 double test_FLQuantAD_get_single_index_accessor(FLQuantAD flq, int element);
-RcppExport SEXP FLasher_test_FLQuantAD_get_single_index_accessor(SEXP flqSEXP, SEXP elementSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_single_index_accessor(SEXP flqSEXP, SEXP elementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3378,7 +3378,7 @@ END_RCPP
 }
 // test_FLQuantAD_set_single_index_accessor
 FLQuantAD test_FLQuantAD_set_single_index_accessor(FLQuantAD flq, int element, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_set_single_index_accessor(SEXP flqSEXP, SEXP elementSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_set_single_index_accessor(SEXP flqSEXP, SEXP elementSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3391,7 +3391,7 @@ END_RCPP
 }
 // test_FLQuantAD_const_get_accessor
 double test_FLQuantAD_const_get_accessor(const FLQuantAD flq, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLQuantAD_const_get_accessor(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_const_get_accessor(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3408,7 +3408,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_accessor
 double test_FLQuantAD_get_accessor(FLQuantAD flq, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLQuantAD_get_accessor(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_accessor(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3425,7 +3425,7 @@ END_RCPP
 }
 // test_FLQuantAD_set_accessor
 FLQuantAD test_FLQuantAD_set_accessor(FLQuantAD flq, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_set_accessor(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_set_accessor(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3443,7 +3443,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_const_indices_accessor
 double test_FLQuantAD_get_const_indices_accessor(const FLQuantAD flq, std::vector<unsigned int> indices);
-RcppExport SEXP FLasher_test_FLQuantAD_get_const_indices_accessor(SEXP flqSEXP, SEXP indicesSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_const_indices_accessor(SEXP flqSEXP, SEXP indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3455,7 +3455,7 @@ END_RCPP
 }
 // test_FLQuantAD_get_indices_accessor
 double test_FLQuantAD_get_indices_accessor(FLQuantAD flq, std::vector<unsigned int> indices);
-RcppExport SEXP FLasher_test_FLQuantAD_get_indices_accessor(SEXP flqSEXP, SEXP indicesSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_get_indices_accessor(SEXP flqSEXP, SEXP indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3467,7 +3467,7 @@ END_RCPP
 }
 // test_FLQuantAD_set_indices_accessor
 FLQuantAD test_FLQuantAD_set_indices_accessor(FLQuantAD flq, std::vector<unsigned int> indices, double value);
-RcppExport SEXP FLasher_test_FLQuantAD_set_indices_accessor(SEXP flqSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_set_indices_accessor(SEXP flqSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3480,7 +3480,7 @@ END_RCPP
 }
 // test_FLQuantAD_set_dimnames
 FLQuantAD test_FLQuantAD_set_dimnames(FLQuantAD flq, Rcpp::List new_dimnames);
-RcppExport SEXP FLasher_test_FLQuantAD_set_dimnames(SEXP flqSEXP, SEXP new_dimnamesSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_set_dimnames(SEXP flqSEXP, SEXP new_dimnamesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3492,7 +3492,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuantAD_match_dims
 int test_FLQuantAD_FLQuantAD_match_dims(FLQuantAD flq1, FLQuantAD flq2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuantAD_match_dims(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuantAD_match_dims(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3504,7 +3504,7 @@ END_RCPP
 }
 // test_FLQuantAD_FLQuant_match_dims
 int test_FLQuantAD_FLQuant_match_dims(FLQuantAD flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuantAD_FLQuant_match_dims(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_FLQuant_match_dims(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3516,7 +3516,7 @@ END_RCPP
 }
 // test_FLQuant_FLQuantAD_match_dims
 int test_FLQuant_FLQuantAD_match_dims(FLQuant flq1, FLQuantAD flq2);
-RcppExport SEXP FLasher_test_FLQuant_FLQuantAD_match_dims(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_FLQuantAD_match_dims(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3528,7 +3528,7 @@ END_RCPP
 }
 // test_FLQuantAD_fill
 FLQuantAD test_FLQuantAD_fill(FLQuantAD flq, const double value);
-RcppExport SEXP FLasher_test_FLQuantAD_fill(SEXP flqSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_fill(SEXP flqSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3540,7 +3540,7 @@ END_RCPP
 }
 // test_FLQuantAD_fill_double
 FLQuantAD test_FLQuantAD_fill_double(FLQuantAD flq, const double value);
-RcppExport SEXP FLasher_test_FLQuantAD_fill_double(SEXP flqSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuantAD_fill_double(SEXP flqSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3552,7 +3552,7 @@ END_RCPP
 }
 // testFLCppAD
 void testFLCppAD(double scalar);
-RcppExport SEXP FLasher_testFLCppAD(SEXP scalarSEXP) {
+RcppExport SEXP _FLasher_testFLCppAD(SEXP scalarSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type scalar(scalarSEXP);
@@ -3562,7 +3562,7 @@ END_RCPP
 }
 // FLPar_units
 std::string FLPar_units(SEXP flp);
-RcppExport SEXP FLasher_FLPar_units(SEXP flpSEXP) {
+RcppExport SEXP _FLasher_FLPar_units(SEXP flpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3573,7 +3573,7 @@ END_RCPP
 }
 // test_FLQuant_as_wrap
 FLQuant test_FLQuant_as_wrap(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_as_wrap(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_as_wrap(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3584,7 +3584,7 @@ END_RCPP
 }
 // test_FLQuant_basic_constructor
 void test_FLQuant_basic_constructor();
-RcppExport SEXP FLasher_test_FLQuant_basic_constructor() {
+RcppExport SEXP _FLasher_test_FLQuant_basic_constructor() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     test_FLQuant_basic_constructor();
@@ -3593,7 +3593,7 @@ END_RCPP
 }
 // test_FLQuant_sexp_constructor
 FLQuant test_FLQuant_sexp_constructor(SEXP flq_sexp);
-RcppExport SEXP FLasher_test_FLQuant_sexp_constructor(SEXP flq_sexpSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_sexp_constructor(SEXP flq_sexpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3604,7 +3604,7 @@ END_RCPP
 }
 // test_FLQuant_dim_constructor
 FLQuant test_FLQuant_dim_constructor(int nquant, int nyear, int nunit, int nseason, int narea, int niter);
-RcppExport SEXP FLasher_test_FLQuant_dim_constructor(SEXP nquantSEXP, SEXP nyearSEXP, SEXP nunitSEXP, SEXP nseasonSEXP, SEXP nareaSEXP, SEXP niterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_dim_constructor(SEXP nquantSEXP, SEXP nyearSEXP, SEXP nunitSEXP, SEXP nseasonSEXP, SEXP nareaSEXP, SEXP niterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3620,7 +3620,7 @@ END_RCPP
 }
 // test_FLQuant_dim_value_constructor
 FLQuant test_FLQuant_dim_value_constructor(int nquant, int nyear, int nunit, int nseason, int narea, int niter, double value);
-RcppExport SEXP FLasher_test_FLQuant_dim_value_constructor(SEXP nquantSEXP, SEXP nyearSEXP, SEXP nunitSEXP, SEXP nseasonSEXP, SEXP nareaSEXP, SEXP niterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_dim_value_constructor(SEXP nquantSEXP, SEXP nyearSEXP, SEXP nunitSEXP, SEXP nseasonSEXP, SEXP nareaSEXP, SEXP niterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3637,7 +3637,7 @@ END_RCPP
 }
 // test_FLQuant_intvec_dim_constructor
 FLQuant test_FLQuant_intvec_dim_constructor(std::vector<unsigned int> dims);
-RcppExport SEXP FLasher_test_FLQuant_intvec_dim_constructor(SEXP dimsSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_intvec_dim_constructor(SEXP dimsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3648,7 +3648,7 @@ END_RCPP
 }
 // test_FLQuant_intvec_dim_value_constructor
 FLQuant test_FLQuant_intvec_dim_value_constructor(std::vector<unsigned int> dims, double value);
-RcppExport SEXP FLasher_test_FLQuant_intvec_dim_value_constructor(SEXP dimsSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_intvec_dim_value_constructor(SEXP dimsSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3660,7 +3660,7 @@ END_RCPP
 }
 // test_FLQuant_copy_constructor
 FLQuant test_FLQuant_copy_constructor(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_copy_constructor(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_copy_constructor(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3671,7 +3671,7 @@ END_RCPP
 }
 // test_FLQuant_copy_constructor2
 Rcpp::List test_FLQuant_copy_constructor2(FLQuant flq1, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLQuant_copy_constructor2(SEXP flq1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_copy_constructor2(SEXP flq1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3689,7 +3689,7 @@ END_RCPP
 }
 // test_FLQuant_assignment_operator
 FLQuant test_FLQuant_assignment_operator(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_assignment_operator(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_assignment_operator(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3700,7 +3700,7 @@ END_RCPP
 }
 // test_FLQuant_assignment_operator2
 Rcpp::List test_FLQuant_assignment_operator2(FLQuant flq1, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLQuant_assignment_operator2(SEXP flq1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_assignment_operator2(SEXP flq1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3718,7 +3718,7 @@ END_RCPP
 }
 // test_FLQuant_from_FLQuantAD_constructor
 FLQuant test_FLQuant_from_FLQuantAD_constructor(FLQuantAD flqad);
-RcppExport SEXP FLasher_test_FLQuant_from_FLQuantAD_constructor(SEXP flqadSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_from_FLQuantAD_constructor(SEXP flqadSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3729,7 +3729,7 @@ END_RCPP
 }
 // test_FLQuant_get_data
 std::vector<double> test_FLQuant_get_data(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_get_data(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_data(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3740,7 +3740,7 @@ END_RCPP
 }
 // test_FLQuant_get_units
 std::string test_FLQuant_get_units(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_get_units(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_units(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3751,7 +3751,7 @@ END_RCPP
 }
 // test_FLQuant_get_dim
 std::vector<unsigned int> test_FLQuant_get_dim(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_get_dim(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_dim(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3762,7 +3762,7 @@ END_RCPP
 }
 // test_FLQuant_get_dimnames
 Rcpp::List test_FLQuant_get_dimnames(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_get_dimnames(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_dimnames(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3773,7 +3773,7 @@ END_RCPP
 }
 // test_FLQuant_get_dimnames2
 Rcpp::List test_FLQuant_get_dimnames2(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_get_dimnames2(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_dimnames2(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3784,7 +3784,7 @@ END_RCPP
 }
 // test_FLQuant_get_size
 int test_FLQuant_get_size(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_get_size(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_size(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3795,7 +3795,7 @@ END_RCPP
 }
 // test_FLQuant_get_nquant
 int test_FLQuant_get_nquant(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_get_nquant(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_nquant(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3806,7 +3806,7 @@ END_RCPP
 }
 // test_FLQuant_get_nyear
 int test_FLQuant_get_nyear(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_get_nyear(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_nyear(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3817,7 +3817,7 @@ END_RCPP
 }
 // test_FLQuant_get_nunit
 int test_FLQuant_get_nunit(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_get_nunit(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_nunit(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3828,7 +3828,7 @@ END_RCPP
 }
 // test_FLQuant_get_nseason
 int test_FLQuant_get_nseason(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_get_nseason(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_nseason(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3839,7 +3839,7 @@ END_RCPP
 }
 // test_FLQuant_get_narea
 int test_FLQuant_get_narea(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_get_narea(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_narea(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3850,7 +3850,7 @@ END_RCPP
 }
 // test_FLQuant_get_niter
 int test_FLQuant_get_niter(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_get_niter(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_niter(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3861,7 +3861,7 @@ END_RCPP
 }
 // test_FLQuant_get_first_age
 int test_FLQuant_get_first_age(const FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant_get_first_age(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_first_age(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3872,7 +3872,7 @@ END_RCPP
 }
 // test_FLQuant_get_data_element
 int test_FLQuant_get_data_element(const FLQuant flq, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLQuant_get_data_element(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_data_element(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3889,7 +3889,7 @@ END_RCPP
 }
 // test_FLQuant_get_const_single_index_accessor
 double test_FLQuant_get_const_single_index_accessor(const FLQuant flq, const int element);
-RcppExport SEXP FLasher_test_FLQuant_get_const_single_index_accessor(SEXP flqSEXP, SEXP elementSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_const_single_index_accessor(SEXP flqSEXP, SEXP elementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3901,7 +3901,7 @@ END_RCPP
 }
 // test_FLQuant_get_single_index_accessor
 double test_FLQuant_get_single_index_accessor(FLQuant flq, int element);
-RcppExport SEXP FLasher_test_FLQuant_get_single_index_accessor(SEXP flqSEXP, SEXP elementSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_single_index_accessor(SEXP flqSEXP, SEXP elementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3913,7 +3913,7 @@ END_RCPP
 }
 // test_FLQuant_set_single_index_accessor
 FLQuant test_FLQuant_set_single_index_accessor(FLQuant flq, int element, double value);
-RcppExport SEXP FLasher_test_FLQuant_set_single_index_accessor(SEXP flqSEXP, SEXP elementSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_set_single_index_accessor(SEXP flqSEXP, SEXP elementSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3926,7 +3926,7 @@ END_RCPP
 }
 // test_FLQuant_const_get_accessor
 double test_FLQuant_const_get_accessor(const FLQuant flq, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLQuant_const_get_accessor(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_const_get_accessor(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3943,7 +3943,7 @@ END_RCPP
 }
 // test_FLQuant_get_accessor
 double test_FLQuant_get_accessor(FLQuant flq, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_FLQuant_get_accessor(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_accessor(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3960,7 +3960,7 @@ END_RCPP
 }
 // test_FLQuant_set_accessor
 FLQuant test_FLQuant_set_accessor(FLQuant flq, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLQuant_set_accessor(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_set_accessor(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3978,7 +3978,7 @@ END_RCPP
 }
 // test_FLQuant_get_const_indices_accessor
 double test_FLQuant_get_const_indices_accessor(const FLQuant flq, std::vector<unsigned int> indices);
-RcppExport SEXP FLasher_test_FLQuant_get_const_indices_accessor(SEXP flqSEXP, SEXP indicesSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_const_indices_accessor(SEXP flqSEXP, SEXP indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -3990,7 +3990,7 @@ END_RCPP
 }
 // test_FLQuant_get_indices_accessor
 double test_FLQuant_get_indices_accessor(FLQuant flq, std::vector<unsigned int> indices);
-RcppExport SEXP FLasher_test_FLQuant_get_indices_accessor(SEXP flqSEXP, SEXP indicesSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_indices_accessor(SEXP flqSEXP, SEXP indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4002,7 +4002,7 @@ END_RCPP
 }
 // test_FLQuant_set_indices_accessor
 FLQuant test_FLQuant_set_indices_accessor(FLQuant flq, std::vector<unsigned int> indices, double value);
-RcppExport SEXP FLasher_test_FLQuant_set_indices_accessor(SEXP flqSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_set_indices_accessor(SEXP flqSEXP, SEXP indicesSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4015,7 +4015,7 @@ END_RCPP
 }
 // test_FLQuant_get_all_iters
 FLQuant test_FLQuant_get_all_iters(FLQuant flq, int quant, int year, int unit, int season, int area);
-RcppExport SEXP FLasher_test_FLQuant_get_all_iters(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_get_all_iters(SEXP flqSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4031,7 +4031,7 @@ END_RCPP
 }
 // test_FLQuant_set_data
 FLQuant test_FLQuant_set_data(FLQuant flq, std::vector<double> data_in);
-RcppExport SEXP FLasher_test_FLQuant_set_data(SEXP flqSEXP, SEXP data_inSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_set_data(SEXP flqSEXP, SEXP data_inSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4043,7 +4043,7 @@ END_RCPP
 }
 // test_FLQuant_set_dimnames
 FLQuant test_FLQuant_set_dimnames(FLQuant flq, Rcpp::List new_dimnames);
-RcppExport SEXP FLasher_test_FLQuant_set_dimnames(SEXP flqSEXP, SEXP new_dimnamesSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_set_dimnames(SEXP flqSEXP, SEXP new_dimnamesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4055,7 +4055,7 @@ END_RCPP
 }
 // test_FLQuant_set_units
 FLQuant test_FLQuant_set_units(FLQuant flq, std::string new_units);
-RcppExport SEXP FLasher_test_FLQuant_set_units(SEXP flqSEXP, SEXP new_unitsSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_set_units(SEXP flqSEXP, SEXP new_unitsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4067,7 +4067,7 @@ END_RCPP
 }
 // test_FLQuant_subset
 FLQuant test_FLQuant_subset(FLQuant flq, const int quant_min, const int quant_max, const int year_min, const int year_max, const int unit_min, const int unit_max, const int season_min, const int season_max, const int area_min, const int area_max, const int iter_min, const int iter_max);
-RcppExport SEXP FLasher_test_FLQuant_subset(SEXP flqSEXP, SEXP quant_minSEXP, SEXP quant_maxSEXP, SEXP year_minSEXP, SEXP year_maxSEXP, SEXP unit_minSEXP, SEXP unit_maxSEXP, SEXP season_minSEXP, SEXP season_maxSEXP, SEXP area_minSEXP, SEXP area_maxSEXP, SEXP iter_minSEXP, SEXP iter_maxSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_subset(SEXP flqSEXP, SEXP quant_minSEXP, SEXP quant_maxSEXP, SEXP year_minSEXP, SEXP year_maxSEXP, SEXP unit_minSEXP, SEXP unit_maxSEXP, SEXP season_minSEXP, SEXP season_maxSEXP, SEXP area_minSEXP, SEXP area_maxSEXP, SEXP iter_minSEXP, SEXP iter_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4090,7 +4090,7 @@ END_RCPP
 }
 // test_FLQuant_neat_subset
 FLQuant test_FLQuant_neat_subset(FLQuant flq, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_FLQuant_neat_subset(SEXP flqSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_neat_subset(SEXP flqSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4103,7 +4103,7 @@ END_RCPP
 }
 // test_FLQuant_propagate_iters
 Rcpp::List test_FLQuant_propagate_iters(FLQuant flq, const int iters);
-RcppExport SEXP FLasher_test_FLQuant_propagate_iters(SEXP flqSEXP, SEXP itersSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_propagate_iters(SEXP flqSEXP, SEXP itersSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4115,7 +4115,7 @@ END_RCPP
 }
 // test_FLQuant_fill
 FLQuant test_FLQuant_fill(FLQuant flq, const double value);
-RcppExport SEXP FLasher_test_FLQuant_fill(SEXP flqSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_fill(SEXP flqSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4127,7 +4127,7 @@ END_RCPP
 }
 // test_FLQuant_FLQuant_match_dims
 int test_FLQuant_FLQuant_match_dims(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuant_FLQuant_match_dims(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_FLQuant_match_dims(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4139,7 +4139,7 @@ END_RCPP
 }
 // test_FLPar_to_FLQuant
 FLQuant test_FLPar_to_FLQuant(SEXP flp);
-RcppExport SEXP FLasher_test_FLPar_to_FLQuant(SEXP flpSEXP) {
+RcppExport SEXP _FLasher_test_FLPar_to_FLQuant(SEXP flpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4150,7 +4150,7 @@ END_RCPP
 }
 // test_for_range
 FLQuant test_for_range(FLQuant flq, double rn);
-RcppExport SEXP FLasher_test_for_range(SEXP flqSEXP, SEXP rnSEXP) {
+RcppExport SEXP _FLasher_test_for_range(SEXP flqSEXP, SEXP rnSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4162,7 +4162,7 @@ END_RCPP
 }
 // test_for_range_const
 double test_for_range_const(FLQuant flq, double rn);
-RcppExport SEXP FLasher_test_for_range_const(SEXP flqSEXP, SEXP rnSEXP) {
+RcppExport SEXP _FLasher_test_for_range_const(SEXP flqSEXP, SEXP rnSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4174,7 +4174,7 @@ END_RCPP
 }
 // test_FLQuant_for_iterator
 FLQuant test_FLQuant_for_iterator(FLQuant flq, double rn);
-RcppExport SEXP FLasher_test_FLQuant_for_iterator(SEXP flqSEXP, SEXP rnSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_for_iterator(SEXP flqSEXP, SEXP rnSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4186,7 +4186,7 @@ END_RCPP
 }
 // test_FLQuant_for_iterator_const
 double test_FLQuant_for_iterator_const(FLQuant flq, double rn);
-RcppExport SEXP FLasher_test_FLQuant_for_iterator_const(SEXP flqSEXP, SEXP rnSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_for_iterator_const(SEXP flqSEXP, SEXP rnSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4198,7 +4198,7 @@ END_RCPP
 }
 // test_FLQuant_lambda
 FLQuant test_FLQuant_lambda(FLQuant flq1, FLQuant flq2);
-RcppExport SEXP FLasher_test_FLQuant_lambda(SEXP flq1SEXP, SEXP flq2SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant_lambda(SEXP flq1SEXP, SEXP flq2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4210,7 +4210,7 @@ END_RCPP
 }
 // test_DD_pow
 FLQuant test_DD_pow(const FLQuant flq, const double power);
-RcppExport SEXP FLasher_test_DD_pow(SEXP flqSEXP, SEXP powerSEXP) {
+RcppExport SEXP _FLasher_test_DD_pow(SEXP flqSEXP, SEXP powerSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4222,7 +4222,7 @@ END_RCPP
 }
 // test_DAD_pow
 FLQuantAD test_DAD_pow(const FLQuant flq, const double power);
-RcppExport SEXP FLasher_test_DAD_pow(SEXP flqSEXP, SEXP powerSEXP) {
+RcppExport SEXP _FLasher_test_DAD_pow(SEXP flqSEXP, SEXP powerSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4234,7 +4234,7 @@ END_RCPP
 }
 // test_ADD_pow
 FLQuantAD test_ADD_pow(const FLQuantAD flq, const double power);
-RcppExport SEXP FLasher_test_ADD_pow(SEXP flqSEXP, SEXP powerSEXP) {
+RcppExport SEXP _FLasher_test_ADD_pow(SEXP flqSEXP, SEXP powerSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4246,7 +4246,7 @@ END_RCPP
 }
 // test_ADAD_pow
 FLQuantAD test_ADAD_pow(const FLQuantAD flq, const double power);
-RcppExport SEXP FLasher_test_ADAD_pow(SEXP flqSEXP, SEXP powerSEXP) {
+RcppExport SEXP _FLasher_test_ADAD_pow(SEXP flqSEXP, SEXP powerSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4258,7 +4258,7 @@ END_RCPP
 }
 // test_input_subsetter_ADAD
 FLQuantAD test_input_subsetter_ADAD(FLQuantAD flq1, FLQuantAD flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_input_subsetter_ADAD(SEXP flq1SEXP, SEXP flq2SEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_input_subsetter_ADAD(SEXP flq1SEXP, SEXP flq2SEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4272,7 +4272,7 @@ END_RCPP
 }
 // test_input_subsetter_DD
 FLQuant test_input_subsetter_DD(FLQuant flq1, FLQuant flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_input_subsetter_DD(SEXP flq1SEXP, SEXP flq2SEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_input_subsetter_DD(SEXP flq1SEXP, SEXP flq2SEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4286,7 +4286,7 @@ END_RCPP
 }
 // test_input_subsetter_ADD
 FLQuantAD test_input_subsetter_ADD(FLQuantAD flq1, FLQuant flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_input_subsetter_ADD(SEXP flq1SEXP, SEXP flq2SEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_input_subsetter_ADD(SEXP flq1SEXP, SEXP flq2SEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4300,7 +4300,7 @@ END_RCPP
 }
 // test_input_subsetter_DAD
 FLQuant test_input_subsetter_DAD(FLQuant flq1, FLQuantAD flq2, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_input_subsetter_DAD(SEXP flq1SEXP, SEXP flq2SEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_input_subsetter_DAD(SEXP flq1SEXP, SEXP flq2SEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4314,7 +4314,7 @@ END_RCPP
 }
 // test_year_season_to_timestep_FLQuant_double
 unsigned int test_year_season_to_timestep_FLQuant_double(FLQuant flq, const unsigned int year, const unsigned int season);
-RcppExport SEXP FLasher_test_year_season_to_timestep_FLQuant_double(SEXP flqSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
+RcppExport SEXP _FLasher_test_year_season_to_timestep_FLQuant_double(SEXP flqSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4327,7 +4327,7 @@ END_RCPP
 }
 // test_year_season_to_timestep_FLQuant_adouble
 unsigned int test_year_season_to_timestep_FLQuant_adouble(FLQuantAD flqad, const unsigned int year, const unsigned int season);
-RcppExport SEXP FLasher_test_year_season_to_timestep_FLQuant_adouble(SEXP flqadSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
+RcppExport SEXP _FLasher_test_year_season_to_timestep_FLQuant_adouble(SEXP flqadSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4340,7 +4340,7 @@ END_RCPP
 }
 // test_year_season_to_timestep
 unsigned int test_year_season_to_timestep(FLQuant flq, const int unsigned year, const int unsigned season);
-RcppExport SEXP FLasher_test_year_season_to_timestep(SEXP flqSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
+RcppExport SEXP _FLasher_test_year_season_to_timestep(SEXP flqSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4353,7 +4353,7 @@ END_RCPP
 }
 // test_timestep_to_year_season_FLQuant_double
 Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_double(FLQuant flq, const unsigned int timestep);
-RcppExport SEXP FLasher_test_timestep_to_year_season_FLQuant_double(SEXP flqSEXP, SEXP timestepSEXP) {
+RcppExport SEXP _FLasher_test_timestep_to_year_season_FLQuant_double(SEXP flqSEXP, SEXP timestepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4365,7 +4365,7 @@ END_RCPP
 }
 // test_timestep_to_year_season_FLQuant_adouble
 Rcpp::IntegerVector test_timestep_to_year_season_FLQuant_adouble(FLQuantAD flqad, const unsigned int timestep);
-RcppExport SEXP FLasher_test_timestep_to_year_season_FLQuant_adouble(SEXP flqadSEXP, SEXP timestepSEXP) {
+RcppExport SEXP _FLasher_test_timestep_to_year_season_FLQuant_adouble(SEXP flqadSEXP, SEXP timestepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4377,7 +4377,7 @@ END_RCPP
 }
 // test_timestep_to_year_season
 Rcpp::IntegerVector test_timestep_to_year_season(FLQuant flq, const unsigned int timestep);
-RcppExport SEXP FLasher_test_timestep_to_year_season(SEXP flqSEXP, SEXP timestepSEXP) {
+RcppExport SEXP _FLasher_test_timestep_to_year_season(SEXP flqSEXP, SEXP timestepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4389,7 +4389,7 @@ END_RCPP
 }
 // test_FLQuant7_as_wrap
 FLQuant7 test_FLQuant7_as_wrap(FLQuant7 flq7);
-RcppExport SEXP FLasher_test_FLQuant7_as_wrap(SEXP flq7SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_as_wrap(SEXP flq7SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4400,7 +4400,7 @@ END_RCPP
 }
 // test_FLQuant7_empty_wrap
 FLQuant7 test_FLQuant7_empty_wrap();
-RcppExport SEXP FLasher_test_FLQuant7_empty_wrap() {
+RcppExport SEXP _FLasher_test_FLQuant7_empty_wrap() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4410,7 +4410,7 @@ END_RCPP
 }
 // test_FLQuant7_basic_constructor
 void test_FLQuant7_basic_constructor();
-RcppExport SEXP FLasher_test_FLQuant7_basic_constructor() {
+RcppExport SEXP _FLasher_test_FLQuant7_basic_constructor() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     test_FLQuant7_basic_constructor();
@@ -4419,7 +4419,7 @@ END_RCPP
 }
 // test_FLQuant7_sexp_constructor
 FLQuant7 test_FLQuant7_sexp_constructor(SEXP flq_sexp1);
-RcppExport SEXP FLasher_test_FLQuant7_sexp_constructor(SEXP flq_sexp1SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_sexp_constructor(SEXP flq_sexp1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4430,7 +4430,7 @@ END_RCPP
 }
 // test_FLQuant7_FLQuant_constructor
 FLQuant7 test_FLQuant7_FLQuant_constructor(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant7_FLQuant_constructor(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_FLQuant_constructor(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4441,7 +4441,7 @@ END_RCPP
 }
 // test_FLQuant7_copy_constructor
 FLQuant7 test_FLQuant7_copy_constructor(FLQuant7 flq7);
-RcppExport SEXP FLasher_test_FLQuant7_copy_constructor(SEXP flq7SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_copy_constructor(SEXP flq7SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4452,7 +4452,7 @@ END_RCPP
 }
 // test_FLQuant7_copy_constructor2
 Rcpp::List test_FLQuant7_copy_constructor2(FLQuant7 flq71, int dim7, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLQuant7_copy_constructor2(SEXP flq71SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_copy_constructor2(SEXP flq71SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4471,7 +4471,7 @@ END_RCPP
 }
 // test_FLQuant7_assignment_operator
 FLQuant7 test_FLQuant7_assignment_operator(FLQuant7 flq7);
-RcppExport SEXP FLasher_test_FLQuant7_assignment_operator(SEXP flq7SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_assignment_operator(SEXP flq7SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4482,7 +4482,7 @@ END_RCPP
 }
 // test_FLQuant7_assignment_operator2
 Rcpp::List test_FLQuant7_assignment_operator2(FLQuant7 flq71, int dim7, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLQuant7_assignment_operator2(SEXP flq71SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_assignment_operator2(SEXP flq71SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4501,7 +4501,7 @@ END_RCPP
 }
 // test_FLQuant7_function_operator
 FLQuant7 test_FLQuant7_function_operator(FLQuant7 flq7, FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant7_function_operator(SEXP flq7SEXP, SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_function_operator(SEXP flq7SEXP, SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4513,7 +4513,7 @@ END_RCPP
 }
 // test_FLQuant7_get_ndim7
 int test_FLQuant7_get_ndim7(SEXP flq_sexp1);
-RcppExport SEXP FLasher_test_FLQuant7_get_ndim7(SEXP flq_sexp1SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_get_ndim7(SEXP flq_sexp1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4524,7 +4524,7 @@ END_RCPP
 }
 // test_FLQuant7_const_get_single_index_accessor
 FLQuant test_FLQuant7_const_get_single_index_accessor(const FLQuant7 flq7, const int element);
-RcppExport SEXP FLasher_test_FLQuant7_const_get_single_index_accessor(SEXP flq7SEXP, SEXP elementSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_const_get_single_index_accessor(SEXP flq7SEXP, SEXP elementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4536,7 +4536,7 @@ END_RCPP
 }
 // test_FLQuant7_get_single_index_accessor
 FLQuant test_FLQuant7_get_single_index_accessor(FLQuant7 flq7, const int element);
-RcppExport SEXP FLasher_test_FLQuant7_get_single_index_accessor(SEXP flq7SEXP, SEXP elementSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_get_single_index_accessor(SEXP flq7SEXP, SEXP elementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4548,7 +4548,7 @@ END_RCPP
 }
 // test_FLQuant7_set_single_index_accessor
 FLQuant7 test_FLQuant7_set_single_index_accessor(FLQuant7 flq7, const int element, const FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant7_set_single_index_accessor(SEXP flq7SEXP, SEXP elementSEXP, SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_set_single_index_accessor(SEXP flq7SEXP, SEXP elementSEXP, SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4561,7 +4561,7 @@ END_RCPP
 }
 // test_FLQuant7_const_get_accessor
 double test_FLQuant7_const_get_accessor(const FLQuant7 flq7, const int dim7, const int quant, const int year, const int unit, const int season, const int area, const int iter);
-RcppExport SEXP FLasher_test_FLQuant7_const_get_accessor(SEXP flq7SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_const_get_accessor(SEXP flq7SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4579,7 +4579,7 @@ END_RCPP
 }
 // test_FLQuant7_get_accessor
 double test_FLQuant7_get_accessor(FLQuant7 flq7, const int dim7, const int quant, const int year, const int unit, const int season, const int area, const int iter);
-RcppExport SEXP FLasher_test_FLQuant7_get_accessor(SEXP flq7SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_get_accessor(SEXP flq7SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4597,7 +4597,7 @@ END_RCPP
 }
 // test_FLQuant7_set_accessor
 FLQuant7 test_FLQuant7_set_accessor(FLQuant7 flq7, const int dim7, const int quant, const int year, const int unit, const int season, const int area, const int iter, const double value);
-RcppExport SEXP FLasher_test_FLQuant7_set_accessor(SEXP flq7SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_set_accessor(SEXP flq7SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4616,7 +4616,7 @@ END_RCPP
 }
 // test_FLQuant7_const_default_dim7_get_accessor
 FLQuant test_FLQuant7_const_default_dim7_get_accessor(const FLQuant7 flq7);
-RcppExport SEXP FLasher_test_FLQuant7_const_default_dim7_get_accessor(SEXP flq7SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_const_default_dim7_get_accessor(SEXP flq7SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4627,7 +4627,7 @@ END_RCPP
 }
 // test_FLQuant7_default_dim7_get_accessor
 FLQuant test_FLQuant7_default_dim7_get_accessor(FLQuant7 flq7);
-RcppExport SEXP FLasher_test_FLQuant7_default_dim7_get_accessor(SEXP flq7SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_default_dim7_get_accessor(SEXP flq7SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4638,7 +4638,7 @@ END_RCPP
 }
 // test_FLQuant7_default_dim7_set_accessor
 FLQuant7 test_FLQuant7_default_dim7_set_accessor(FLQuant7 flq7, FLQuant flq);
-RcppExport SEXP FLasher_test_FLQuant7_default_dim7_set_accessor(SEXP flq7SEXP, SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_default_dim7_set_accessor(SEXP flq7SEXP, SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4650,7 +4650,7 @@ END_RCPP
 }
 // test_FLQuant7_const_default_dim7_get_accessor_multi
 double test_FLQuant7_const_default_dim7_get_accessor_multi(const FLQuant7 flq7, const int quant, const int year, const int unit, const int season, const int area, const int iter);
-RcppExport SEXP FLasher_test_FLQuant7_const_default_dim7_get_accessor_multi(SEXP flq7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_const_default_dim7_get_accessor_multi(SEXP flq7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4667,7 +4667,7 @@ END_RCPP
 }
 // test_FLQuant7_default_dim7_get_accessor_multi
 double test_FLQuant7_default_dim7_get_accessor_multi(FLQuant7 flq7, const int quant, const int year, const int unit, const int season, const int area, const int iter);
-RcppExport SEXP FLasher_test_FLQuant7_default_dim7_get_accessor_multi(SEXP flq7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_default_dim7_get_accessor_multi(SEXP flq7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4684,7 +4684,7 @@ END_RCPP
 }
 // test_FLQuant7_default_dim7_set_accessor_multi
 FLQuant7 test_FLQuant7_default_dim7_set_accessor_multi(FLQuant7 flq7, const int quant, const int year, const int unit, const int season, const int area, const int iter, const double value);
-RcppExport SEXP FLasher_test_FLQuant7_default_dim7_set_accessor_multi(SEXP flq7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7_default_dim7_set_accessor_multi(SEXP flq7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4702,7 +4702,7 @@ END_RCPP
 }
 // test_FLQuant7AD_as_wrap
 FLQuant7AD test_FLQuant7AD_as_wrap(FLQuant7AD flq7);
-RcppExport SEXP FLasher_test_FLQuant7AD_as_wrap(SEXP flq7SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_as_wrap(SEXP flq7SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4713,7 +4713,7 @@ END_RCPP
 }
 // test_FLQuant7AD_empty_wrap
 FLQuant7AD test_FLQuant7AD_empty_wrap();
-RcppExport SEXP FLasher_test_FLQuant7AD_empty_wrap() {
+RcppExport SEXP _FLasher_test_FLQuant7AD_empty_wrap() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4723,7 +4723,7 @@ END_RCPP
 }
 // test_FLQuant7AD_basic_constructor
 void test_FLQuant7AD_basic_constructor();
-RcppExport SEXP FLasher_test_FLQuant7AD_basic_constructor() {
+RcppExport SEXP _FLasher_test_FLQuant7AD_basic_constructor() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     test_FLQuant7AD_basic_constructor();
@@ -4732,7 +4732,7 @@ END_RCPP
 }
 // test_FLQuant7AD_sexp_constructor
 FLQuant7AD test_FLQuant7AD_sexp_constructor(SEXP flq_sexp1);
-RcppExport SEXP FLasher_test_FLQuant7AD_sexp_constructor(SEXP flq_sexp1SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_sexp_constructor(SEXP flq_sexp1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4743,7 +4743,7 @@ END_RCPP
 }
 // test_FLQuant7AD_FLQuant_constructor
 FLQuant7AD test_FLQuant7AD_FLQuant_constructor(FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuant7AD_FLQuant_constructor(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_FLQuant_constructor(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4754,7 +4754,7 @@ END_RCPP
 }
 // test_FLQuant7AD_copy_constructor
 FLQuant7AD test_FLQuant7AD_copy_constructor(FLQuant7AD flq7);
-RcppExport SEXP FLasher_test_FLQuant7AD_copy_constructor(SEXP flq7SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_copy_constructor(SEXP flq7SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4765,7 +4765,7 @@ END_RCPP
 }
 // test_FLQuant7AD_copy_constructor2
 Rcpp::List test_FLQuant7AD_copy_constructor2(FLQuant7AD flq71, int dim7, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLQuant7AD_copy_constructor2(SEXP flq71SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_copy_constructor2(SEXP flq71SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4784,7 +4784,7 @@ END_RCPP
 }
 // test_FLQuant7AD_assignment_operator
 FLQuant7AD test_FLQuant7AD_assignment_operator(FLQuant7AD flq7);
-RcppExport SEXP FLasher_test_FLQuant7AD_assignment_operator(SEXP flq7SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_assignment_operator(SEXP flq7SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4795,7 +4795,7 @@ END_RCPP
 }
 // test_FLQuant7AD_assignment_operator2
 Rcpp::List test_FLQuant7AD_assignment_operator2(FLQuant7AD flq71, int dim7, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLQuant7AD_assignment_operator2(SEXP flq71SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_assignment_operator2(SEXP flq71SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4814,7 +4814,7 @@ END_RCPP
 }
 // test_FLQuant7AD_function_operator
 FLQuant7AD test_FLQuant7AD_function_operator(FLQuant7AD flq7, FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuant7AD_function_operator(SEXP flq7SEXP, SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_function_operator(SEXP flq7SEXP, SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4826,7 +4826,7 @@ END_RCPP
 }
 // test_FLQuant7AD_get_ndim7
 int test_FLQuant7AD_get_ndim7(SEXP flq_sexp1);
-RcppExport SEXP FLasher_test_FLQuant7AD_get_ndim7(SEXP flq_sexp1SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_get_ndim7(SEXP flq_sexp1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4837,7 +4837,7 @@ END_RCPP
 }
 // test_FLQuant7AD_const_get_single_index_accessor
 FLQuantAD test_FLQuant7AD_const_get_single_index_accessor(const FLQuant7AD flq7, const int element);
-RcppExport SEXP FLasher_test_FLQuant7AD_const_get_single_index_accessor(SEXP flq7SEXP, SEXP elementSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_const_get_single_index_accessor(SEXP flq7SEXP, SEXP elementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4849,7 +4849,7 @@ END_RCPP
 }
 // test_FLQuant7AD_get_single_index_accessor
 FLQuantAD test_FLQuant7AD_get_single_index_accessor(FLQuant7AD flq7, const int element);
-RcppExport SEXP FLasher_test_FLQuant7AD_get_single_index_accessor(SEXP flq7SEXP, SEXP elementSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_get_single_index_accessor(SEXP flq7SEXP, SEXP elementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4861,7 +4861,7 @@ END_RCPP
 }
 // test_FLQuant7AD_set_single_index_accessor
 FLQuant7AD test_FLQuant7AD_set_single_index_accessor(FLQuant7AD flq7, const int element, const FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuant7AD_set_single_index_accessor(SEXP flq7SEXP, SEXP elementSEXP, SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_set_single_index_accessor(SEXP flq7SEXP, SEXP elementSEXP, SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4874,7 +4874,7 @@ END_RCPP
 }
 // test_FLQuant7AD_const_get_accessor
 double test_FLQuant7AD_const_get_accessor(const FLQuant7AD flq7, const int dim7, const int quant, const int year, const int unit, const int season, const int area, const int iter);
-RcppExport SEXP FLasher_test_FLQuant7AD_const_get_accessor(SEXP flq7SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_const_get_accessor(SEXP flq7SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4892,7 +4892,7 @@ END_RCPP
 }
 // test_FLQuant7AD_get_accessor
 double test_FLQuant7AD_get_accessor(FLQuant7AD flq7, const int dim7, const int quant, const int year, const int unit, const int season, const int area, const int iter);
-RcppExport SEXP FLasher_test_FLQuant7AD_get_accessor(SEXP flq7SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_get_accessor(SEXP flq7SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4910,7 +4910,7 @@ END_RCPP
 }
 // test_FLQuant7AD_set_accessor
 FLQuant7AD test_FLQuant7AD_set_accessor(FLQuant7AD flq7, const int dim7, const int quant, const int year, const int unit, const int season, const int area, const int iter, const double value);
-RcppExport SEXP FLasher_test_FLQuant7AD_set_accessor(SEXP flq7SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_set_accessor(SEXP flq7SEXP, SEXP dim7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4929,7 +4929,7 @@ END_RCPP
 }
 // test_FLQuant7AD_const_default_dim7_get_accessor
 FLQuantAD test_FLQuant7AD_const_default_dim7_get_accessor(const FLQuant7AD flq7);
-RcppExport SEXP FLasher_test_FLQuant7AD_const_default_dim7_get_accessor(SEXP flq7SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_const_default_dim7_get_accessor(SEXP flq7SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4940,7 +4940,7 @@ END_RCPP
 }
 // test_FLQuant7AD_default_dim7_get_accessor
 FLQuantAD test_FLQuant7AD_default_dim7_get_accessor(FLQuant7AD flq7);
-RcppExport SEXP FLasher_test_FLQuant7AD_default_dim7_get_accessor(SEXP flq7SEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_default_dim7_get_accessor(SEXP flq7SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4951,7 +4951,7 @@ END_RCPP
 }
 // test_FLQuant7AD_default_dim7_set_accessor
 FLQuant7AD test_FLQuant7AD_default_dim7_set_accessor(FLQuant7AD flq7, FLQuantAD flq);
-RcppExport SEXP FLasher_test_FLQuant7AD_default_dim7_set_accessor(SEXP flq7SEXP, SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_default_dim7_set_accessor(SEXP flq7SEXP, SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4963,7 +4963,7 @@ END_RCPP
 }
 // test_FLQuant7AD_const_default_dim7_get_accessor_multi
 double test_FLQuant7AD_const_default_dim7_get_accessor_multi(const FLQuant7AD flq7, const int quant, const int year, const int unit, const int season, const int area, const int iter);
-RcppExport SEXP FLasher_test_FLQuant7AD_const_default_dim7_get_accessor_multi(SEXP flq7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_const_default_dim7_get_accessor_multi(SEXP flq7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4980,7 +4980,7 @@ END_RCPP
 }
 // test_FLQuant7AD_default_dim7_get_accessor_multi
 double test_FLQuant7AD_default_dim7_get_accessor_multi(FLQuant7AD flq7, const int quant, const int year, const int unit, const int season, const int area, const int iter);
-RcppExport SEXP FLasher_test_FLQuant7AD_default_dim7_get_accessor_multi(SEXP flq7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_default_dim7_get_accessor_multi(SEXP flq7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -4997,7 +4997,7 @@ END_RCPP
 }
 // test_FLQuant7AD_default_dim7_set_accessor_multi
 FLQuant7AD test_FLQuant7AD_default_dim7_set_accessor_multi(FLQuant7AD flq7, const int quant, const int year, const int unit, const int season, const int area, const int iter, const double value);
-RcppExport SEXP FLasher_test_FLQuant7AD_default_dim7_set_accessor_multi(SEXP flq7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLQuant7AD_default_dim7_set_accessor_multi(SEXP flq7SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5015,7 +5015,7 @@ END_RCPP
 }
 // test_FLQ_in_FLS
 FLQuant test_FLQ_in_FLS(FLQuant flq);
-RcppExport SEXP FLasher_test_FLQ_in_FLS(SEXP flqSEXP) {
+RcppExport SEXP _FLasher_test_FLQ_in_FLS(SEXP flqSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5026,7 +5026,7 @@ END_RCPP
 }
 // test_FLStock_sexp_constructor
 FLQuant test_FLStock_sexp_constructor(SEXP fls_sexp);
-RcppExport SEXP FLasher_test_FLStock_sexp_constructor(SEXP fls_sexpSEXP) {
+RcppExport SEXP _FLasher_test_FLStock_sexp_constructor(SEXP fls_sexpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5037,7 +5037,7 @@ END_RCPP
 }
 // test_FLStock_wrap
 FLStock test_FLStock_wrap(SEXP fls_sexp);
-RcppExport SEXP FLasher_test_FLStock_wrap(SEXP fls_sexpSEXP) {
+RcppExport SEXP _FLasher_test_FLStock_wrap(SEXP fls_sexpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5048,7 +5048,7 @@ END_RCPP
 }
 // test_FLStock_as
 FLQuant test_FLStock_as(FLStock fls);
-RcppExport SEXP FLasher_test_FLStock_as(SEXP flsSEXP) {
+RcppExport SEXP _FLasher_test_FLStock_as(SEXP flsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5059,7 +5059,7 @@ END_RCPP
 }
 // test_FLStock_as_wrap
 FLStock test_FLStock_as_wrap(FLStock fls);
-RcppExport SEXP FLasher_test_FLStock_as_wrap(SEXP flsSEXP) {
+RcppExport SEXP _FLasher_test_FLStock_as_wrap(SEXP flsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5070,7 +5070,7 @@ END_RCPP
 }
 // test_FLStock_copy_constructor
 Rcpp::List test_FLStock_copy_constructor(FLStock fls1, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLStock_copy_constructor(SEXP fls1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLStock_copy_constructor(SEXP fls1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5088,7 +5088,7 @@ END_RCPP
 }
 // test_FLStock_assignment_operator
 Rcpp::List test_FLStock_assignment_operator(FLStock fls1, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_FLStock_assignment_operator(SEXP fls1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_FLStock_assignment_operator(SEXP fls1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5106,7 +5106,7 @@ END_RCPP
 }
 // test_fwdBiol_sexp_constructor
 fwdBiol test_fwdBiol_sexp_constructor(SEXP flb_sexp);
-RcppExport SEXP FLasher_test_fwdBiol_sexp_constructor(SEXP flb_sexpSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiol_sexp_constructor(SEXP flb_sexpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5117,7 +5117,7 @@ END_RCPP
 }
 // test_fwdBiolAD_sexp_constructor
 fwdBiolAD test_fwdBiolAD_sexp_constructor(SEXP flb_sexp);
-RcppExport SEXP FLasher_test_fwdBiolAD_sexp_constructor(SEXP flb_sexpSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolAD_sexp_constructor(SEXP flb_sexpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5128,7 +5128,7 @@ END_RCPP
 }
 // test_fwdBiol_as_wrap
 fwdBiol test_fwdBiol_as_wrap(fwdBiol fwdb);
-RcppExport SEXP FLasher_test_fwdBiol_as_wrap(SEXP fwdbSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiol_as_wrap(SEXP fwdbSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5139,7 +5139,7 @@ END_RCPP
 }
 // test_fwdBiolAD_as_wrap
 fwdBiolAD test_fwdBiolAD_as_wrap(fwdBiolAD fwdb);
-RcppExport SEXP FLasher_test_fwdBiolAD_as_wrap(SEXP fwdbSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolAD_as_wrap(SEXP fwdbSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5150,7 +5150,7 @@ END_RCPP
 }
 // test_fwdBiol_fwdSR_constructor
 Rcpp::List test_fwdBiol_fwdSR_constructor(SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult);
-RcppExport SEXP FLasher_test_fwdBiol_fwdSR_constructor(SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiol_fwdSR_constructor(SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5165,7 +5165,7 @@ END_RCPP
 }
 // test_fwdBiolAD_fwdSRAD_constructor
 Rcpp::List test_fwdBiolAD_fwdSRAD_constructor(SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult);
-RcppExport SEXP FLasher_test_fwdBiolAD_fwdSRAD_constructor(SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolAD_fwdSRAD_constructor(SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5180,7 +5180,7 @@ END_RCPP
 }
 // test_fwdBiol_FLSR_bits_constructor
 Rcpp::List test_fwdBiol_FLSR_bits_constructor(SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult);
-RcppExport SEXP FLasher_test_fwdBiol_FLSR_bits_constructor(SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiol_FLSR_bits_constructor(SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5195,7 +5195,7 @@ END_RCPP
 }
 // test_fwdBiolAD_FLSR_residuals_constructor
 Rcpp::List test_fwdBiolAD_FLSR_residuals_constructor(SEXP flb_sexp, const FLQuant residuals, const bool residuals_mult);
-RcppExport SEXP FLasher_test_fwdBiolAD_FLSR_residuals_constructor(SEXP flb_sexpSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolAD_FLSR_residuals_constructor(SEXP flb_sexpSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5208,7 +5208,7 @@ END_RCPP
 }
 // test_fwdBiolAD_FLSR_bits_constructor
 Rcpp::List test_fwdBiolAD_FLSR_bits_constructor(SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult);
-RcppExport SEXP FLasher_test_fwdBiolAD_FLSR_bits_constructor(SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolAD_FLSR_bits_constructor(SEXP flb_sexpSEXP, SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5223,7 +5223,7 @@ END_RCPP
 }
 // test_fwdBiol_copy_constructor
 fwdBiol test_fwdBiol_copy_constructor(fwdBiol fwdb1);
-RcppExport SEXP FLasher_test_fwdBiol_copy_constructor(SEXP fwdb1SEXP) {
+RcppExport SEXP _FLasher_test_fwdBiol_copy_constructor(SEXP fwdb1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5234,7 +5234,7 @@ END_RCPP
 }
 // test_fwdBiolAD_copy_constructor
 fwdBiolAD test_fwdBiolAD_copy_constructor(fwdBiolAD fwdb1);
-RcppExport SEXP FLasher_test_fwdBiolAD_copy_constructor(SEXP fwdb1SEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolAD_copy_constructor(SEXP fwdb1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5245,7 +5245,7 @@ END_RCPP
 }
 // test_fwdBiol_copy_constructor2
 Rcpp::List test_fwdBiol_copy_constructor2(fwdBiol fwdb1, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_fwdBiol_copy_constructor2(SEXP fwdb1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiol_copy_constructor2(SEXP fwdb1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5263,7 +5263,7 @@ END_RCPP
 }
 // test_fwdBiolAD_copy_constructor2
 Rcpp::List test_fwdBiolAD_copy_constructor2(fwdBiolAD fwdb1, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_fwdBiolAD_copy_constructor2(SEXP fwdb1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolAD_copy_constructor2(SEXP fwdb1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5281,7 +5281,7 @@ END_RCPP
 }
 // test_fwdBiol_assignment_operator
 fwdBiol test_fwdBiol_assignment_operator(fwdBiol fwdb1);
-RcppExport SEXP FLasher_test_fwdBiol_assignment_operator(SEXP fwdb1SEXP) {
+RcppExport SEXP _FLasher_test_fwdBiol_assignment_operator(SEXP fwdb1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5292,7 +5292,7 @@ END_RCPP
 }
 // test_fwdBiolAD_assignment_operator
 fwdBiolAD test_fwdBiolAD_assignment_operator(fwdBiolAD fwdb1);
-RcppExport SEXP FLasher_test_fwdBiolAD_assignment_operator(SEXP fwdb1SEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolAD_assignment_operator(SEXP fwdb1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5303,7 +5303,7 @@ END_RCPP
 }
 // test_fwdBiol_assignment_operator2
 Rcpp::List test_fwdBiol_assignment_operator2(fwdBiol fwdb1, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_fwdBiol_assignment_operator2(SEXP fwdb1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiol_assignment_operator2(SEXP fwdb1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5321,7 +5321,7 @@ END_RCPP
 }
 // test_fwdBiolAD_assignment_operator2
 Rcpp::List test_fwdBiolAD_assignment_operator2(fwdBiolAD fwdb1, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_fwdBiolAD_assignment_operator2(SEXP fwdb1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolAD_assignment_operator2(SEXP fwdb1SEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5339,7 +5339,7 @@ END_RCPP
 }
 // test_fwdBiol_const_get_accessors
 Rcpp::NumericVector test_fwdBiol_const_get_accessors(const fwdBiol fwdb, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_fwdBiol_const_get_accessors(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiol_const_get_accessors(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5356,7 +5356,7 @@ END_RCPP
 }
 // test_fwdBiol_const_get_accessors_subset
 Rcpp::List test_fwdBiol_const_get_accessors_subset(const fwdBiol fwdb, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_fwdBiol_const_get_accessors_subset(SEXP fwdbSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiol_const_get_accessors_subset(SEXP fwdbSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5369,7 +5369,7 @@ END_RCPP
 }
 // test_fwdBiol_get_accessors
 Rcpp::NumericVector test_fwdBiol_get_accessors(fwdBiol fwdb, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_fwdBiol_get_accessors(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiol_get_accessors(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5386,7 +5386,7 @@ END_RCPP
 }
 // test_fwdBiolAD_const_get_accessors
 Rcpp::NumericVector test_fwdBiolAD_const_get_accessors(const fwdBiolAD fwdb, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_fwdBiolAD_const_get_accessors(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolAD_const_get_accessors(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5403,7 +5403,7 @@ END_RCPP
 }
 // test_fwdBiolAD_get_accessors
 Rcpp::NumericVector test_fwdBiolAD_get_accessors(fwdBiolAD fwdb, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_fwdBiolAD_get_accessors(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolAD_get_accessors(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5420,7 +5420,7 @@ END_RCPP
 }
 // test_fwdBiol_set_accessors
 fwdBiol test_fwdBiol_set_accessors(fwdBiol fwdb, int quant, int year, int unit, int season, int area, int iter, Rcpp::NumericVector values);
-RcppExport SEXP FLasher_test_fwdBiol_set_accessors(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valuesSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiol_set_accessors(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valuesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5438,7 +5438,7 @@ END_RCPP
 }
 // test_fwdBiolAD_set_accessors
 fwdBiolAD test_fwdBiolAD_set_accessors(fwdBiolAD fwdb, int quant, int year, int unit, int season, int area, int iter, Rcpp::NumericVector values);
-RcppExport SEXP FLasher_test_fwdBiolAD_set_accessors(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valuesSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolAD_set_accessors(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valuesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5456,7 +5456,7 @@ END_RCPP
 }
 // fwdBiolAD_biomass_FLQ
 FLQuantAD fwdBiolAD_biomass_FLQ(fwdBiolAD fwdb);
-RcppExport SEXP FLasher_fwdBiolAD_biomass_FLQ(SEXP fwdbSEXP) {
+RcppExport SEXP _FLasher_fwdBiolAD_biomass_FLQ(SEXP fwdbSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5467,7 +5467,7 @@ END_RCPP
 }
 // fwdBiolAD_biomass_subset
 FLQuantAD fwdBiolAD_biomass_subset(fwdBiolAD fwdb, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_fwdBiolAD_biomass_subset(SEXP fwdbSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_fwdBiolAD_biomass_subset(SEXP fwdbSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5480,7 +5480,7 @@ END_RCPP
 }
 // test_fwdBiolAD_n_direct_set_accessor
 fwdBiolAD test_fwdBiolAD_n_direct_set_accessor(fwdBiolAD fwdb, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_fwdBiolAD_n_direct_set_accessor(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolAD_n_direct_set_accessor(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5498,7 +5498,7 @@ END_RCPP
 }
 // test_fwdBiolAD_n_direct_get_accessor
 double test_fwdBiolAD_n_direct_get_accessor(fwdBiolAD fwdb, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_fwdBiolAD_n_direct_get_accessor(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolAD_n_direct_get_accessor(SEXP fwdbSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5515,7 +5515,7 @@ END_RCPP
 }
 // test_fwdBiol_srp_timelag
 unsigned int test_fwdBiol_srp_timelag(fwdBiol fwb);
-RcppExport SEXP FLasher_test_fwdBiol_srp_timelag(SEXP fwbSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiol_srp_timelag(SEXP fwbSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5526,7 +5526,7 @@ END_RCPP
 }
 // test_fwdBiols_as_wrap
 fwdBiols test_fwdBiols_as_wrap(const fwdBiols biols_in);
-RcppExport SEXP FLasher_test_fwdBiols_as_wrap(SEXP biols_inSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiols_as_wrap(SEXP biols_inSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5537,7 +5537,7 @@ END_RCPP
 }
 // test_fwdBiolsAD_as_wrap
 fwdBiolsAD test_fwdBiolsAD_as_wrap(const fwdBiolsAD biols_in);
-RcppExport SEXP FLasher_test_fwdBiolsAD_as_wrap(SEXP biols_inSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolsAD_as_wrap(SEXP biols_inSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5548,7 +5548,7 @@ END_RCPP
 }
 // test_fwdBiolsAD_fwdBiolAD_constructor
 fwdBiolsAD test_fwdBiolsAD_fwdBiolAD_constructor(SEXP flb_sexp, const FLQuant residuals, const bool residuals_mult);
-RcppExport SEXP FLasher_test_fwdBiolsAD_fwdBiolAD_constructor(SEXP flb_sexpSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolsAD_fwdBiolAD_constructor(SEXP flb_sexpSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5561,7 +5561,7 @@ END_RCPP
 }
 // test_fwdBiolsAD_const_get_single_index_accessor
 fwdBiolAD test_fwdBiolsAD_const_get_single_index_accessor(const fwdBiolsAD fwbs, const int element);
-RcppExport SEXP FLasher_test_fwdBiolsAD_const_get_single_index_accessor(SEXP fwbsSEXP, SEXP elementSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolsAD_const_get_single_index_accessor(SEXP fwbsSEXP, SEXP elementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5573,7 +5573,7 @@ END_RCPP
 }
 // test_fwdBiolsAD_get_single_index_accessor
 fwdBiolAD test_fwdBiolsAD_get_single_index_accessor(fwdBiolsAD fwbs, const int element);
-RcppExport SEXP FLasher_test_fwdBiolsAD_get_single_index_accessor(SEXP fwbsSEXP, SEXP elementSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolsAD_get_single_index_accessor(SEXP fwbsSEXP, SEXP elementSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5585,7 +5585,7 @@ END_RCPP
 }
 // test_fwdBiolsAD_const_get_value_accessor
 double test_fwdBiolsAD_const_get_value_accessor(const fwdBiolsAD fwbs, const int biol_no, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_fwdBiolsAD_const_get_value_accessor(SEXP fwbsSEXP, SEXP biol_noSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolsAD_const_get_value_accessor(SEXP fwbsSEXP, SEXP biol_noSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5603,7 +5603,7 @@ END_RCPP
 }
 // test_fwdBiolsAD_get_value_accessor
 double test_fwdBiolsAD_get_value_accessor(fwdBiolsAD fwbs, const int biol_no, int quant, int year, int unit, int season, int area, int iter);
-RcppExport SEXP FLasher_test_fwdBiolsAD_get_value_accessor(SEXP fwbsSEXP, SEXP biol_noSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolsAD_get_value_accessor(SEXP fwbsSEXP, SEXP biol_noSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5621,7 +5621,7 @@ END_RCPP
 }
 // test_fwdBiolsAD_set_single_index_accessor
 fwdBiolsAD test_fwdBiolsAD_set_single_index_accessor(fwdBiolsAD fwbs, const int element, SEXP flb_sexp, const FLQuant residuals, const bool residuals_mult);
-RcppExport SEXP FLasher_test_fwdBiolsAD_set_single_index_accessor(SEXP fwbsSEXP, SEXP elementSEXP, SEXP flb_sexpSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolsAD_set_single_index_accessor(SEXP fwbsSEXP, SEXP elementSEXP, SEXP flb_sexpSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5636,7 +5636,7 @@ END_RCPP
 }
 // test_fwdBiolsAD_set_value_accessor
 fwdBiolsAD test_fwdBiolsAD_set_value_accessor(fwdBiolsAD fwbs, const int biol_no, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_fwdBiolsAD_set_value_accessor(SEXP fwbsSEXP, SEXP biol_noSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolsAD_set_value_accessor(SEXP fwbsSEXP, SEXP biol_noSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5655,7 +5655,7 @@ END_RCPP
 }
 // test_fwdBiolsAD_copy_constructor
 Rcpp::List test_fwdBiolsAD_copy_constructor(fwdBiolsAD fwbs1, const int biol_no, const std::vector<int> dims, const double value);
-RcppExport SEXP FLasher_test_fwdBiolsAD_copy_constructor(SEXP fwbs1SEXP, SEXP biol_noSEXP, SEXP dimsSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolsAD_copy_constructor(SEXP fwbs1SEXP, SEXP biol_noSEXP, SEXP dimsSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5669,7 +5669,7 @@ END_RCPP
 }
 // test_fwdBiolsAD_assignment_operator
 Rcpp::List test_fwdBiolsAD_assignment_operator(fwdBiolsAD fwbs1, const int biol_no, const std::vector<int> dims, const double value);
-RcppExport SEXP FLasher_test_fwdBiolsAD_assignment_operator(SEXP fwbs1SEXP, SEXP biol_noSEXP, SEXP dimsSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolsAD_assignment_operator(SEXP fwbs1SEXP, SEXP biol_noSEXP, SEXP dimsSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5683,7 +5683,7 @@ END_RCPP
 }
 // test_fwdBiolsAD_const_iterator
 Rcpp::List test_fwdBiolsAD_const_iterator(const fwdBiolsAD fwbs);
-RcppExport SEXP FLasher_test_fwdBiolsAD_const_iterator(SEXP fwbsSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolsAD_const_iterator(SEXP fwbsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5694,7 +5694,7 @@ END_RCPP
 }
 // test_fwdBiolsAD_iterator
 fwdBiolsAD test_fwdBiolsAD_iterator(fwdBiolsAD fwbs, int quant, int year, int unit, int season, int area, int iter, double value);
-RcppExport SEXP FLasher_test_fwdBiolsAD_iterator(SEXP fwbsSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
+RcppExport SEXP _FLasher_test_fwdBiolsAD_iterator(SEXP fwbsSEXP, SEXP quantSEXP, SEXP yearSEXP, SEXP unitSEXP, SEXP seasonSEXP, SEXP areaSEXP, SEXP iterSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5712,7 +5712,7 @@ END_RCPP
 }
 // test_as_wrap_fwdControl
 fwdControl test_as_wrap_fwdControl(fwdControl control);
-RcppExport SEXP FLasher_test_as_wrap_fwdControl(SEXP controlSEXP) {
+RcppExport SEXP _FLasher_test_as_wrap_fwdControl(SEXP controlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5723,7 +5723,7 @@ END_RCPP
 }
 // test_fwdControl_copy_constructor
 Rcpp::List test_fwdControl_copy_constructor(fwdControl fc1);
-RcppExport SEXP FLasher_test_fwdControl_copy_constructor(SEXP fc1SEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_copy_constructor(SEXP fc1SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5734,7 +5734,7 @@ END_RCPP
 }
 // test_fwdControl_assignment_operator
 fwdControl test_fwdControl_assignment_operator(fwdControl fc);
-RcppExport SEXP FLasher_test_fwdControl_assignment_operator(SEXP fcSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_assignment_operator(SEXP fcSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5745,7 +5745,7 @@ END_RCPP
 }
 // test_fwdControl_get_target
 Rcpp::DataFrame test_fwdControl_get_target(const fwdControl control);
-RcppExport SEXP FLasher_test_fwdControl_get_target(SEXP controlSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_target(SEXP controlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5756,7 +5756,7 @@ END_RCPP
 }
 // test_fwdControl_get_ntarget
 int test_fwdControl_get_ntarget(const fwdControl control);
-RcppExport SEXP FLasher_test_fwdControl_get_ntarget(SEXP controlSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_ntarget(SEXP controlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5767,7 +5767,7 @@ END_RCPP
 }
 // test_fwdControl_get_niter
 int test_fwdControl_get_niter(const fwdControl control);
-RcppExport SEXP FLasher_test_fwdControl_get_niter(SEXP controlSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_niter(SEXP controlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5778,7 +5778,7 @@ END_RCPP
 }
 // test_fwdControl_get_nsim_target
 int test_fwdControl_get_nsim_target(const fwdControl control, unsigned int target_no);
-RcppExport SEXP FLasher_test_fwdControl_get_nsim_target(SEXP controlSEXP, SEXP target_noSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_nsim_target(SEXP controlSEXP, SEXP target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5790,7 +5790,7 @@ END_RCPP
 }
 // test_fwdControl_get_target_row
 int test_fwdControl_get_target_row(const fwdControl control, unsigned int target_no, unsigned int sim_target_no);
-RcppExport SEXP FLasher_test_fwdControl_get_target_row(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_target_row(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5803,7 +5803,7 @@ END_RCPP
 }
 // test_fwdControl_get_target_rows
 std::vector<unsigned int> test_fwdControl_get_target_rows(const fwdControl control, unsigned int target_no);
-RcppExport SEXP FLasher_test_fwdControl_get_target_rows(SEXP controlSEXP, SEXP target_noSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_target_rows(SEXP controlSEXP, SEXP target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5815,7 +5815,7 @@ END_RCPP
 }
 // test_fwdControl_get_target_int_col
 Rcpp::IntegerVector test_fwdControl_get_target_int_col(const fwdControl control, const int target_no, const std::string col);
-RcppExport SEXP FLasher_test_fwdControl_get_target_int_col(SEXP controlSEXP, SEXP target_noSEXP, SEXP colSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_target_int_col(SEXP controlSEXP, SEXP target_noSEXP, SEXP colSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5828,7 +5828,7 @@ END_RCPP
 }
 // test_fwdControl_get_target_int_col2
 int test_fwdControl_get_target_int_col2(const fwdControl control, const int target_no, const int sim_target_no, const std::string col);
-RcppExport SEXP FLasher_test_fwdControl_get_target_int_col2(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP colSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_target_int_col2(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP colSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5842,7 +5842,7 @@ END_RCPP
 }
 // test_fwdControl_get_target_list_int_col
 Rcpp::List test_fwdControl_get_target_list_int_col(const fwdControl control, const int target_no, const std::string col);
-RcppExport SEXP FLasher_test_fwdControl_get_target_list_int_col(SEXP controlSEXP, SEXP target_noSEXP, SEXP colSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_target_list_int_col(SEXP controlSEXP, SEXP target_noSEXP, SEXP colSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5855,7 +5855,7 @@ END_RCPP
 }
 // test_fwdControl_get_target_list_int_col2
 Rcpp::IntegerVector test_fwdControl_get_target_list_int_col2(const fwdControl control, const int target_no, const int sim_target_no, const std::string col);
-RcppExport SEXP FLasher_test_fwdControl_get_target_list_int_col2(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP colSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_target_list_int_col2(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP colSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5869,7 +5869,7 @@ END_RCPP
 }
 // test_fwdControl_get_target_num_col
 Rcpp::NumericVector test_fwdControl_get_target_num_col(const fwdControl control, const int target_no, const std::string col);
-RcppExport SEXP FLasher_test_fwdControl_get_target_num_col(SEXP controlSEXP, SEXP target_noSEXP, SEXP colSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_target_num_col(SEXP controlSEXP, SEXP target_noSEXP, SEXP colSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5882,7 +5882,7 @@ END_RCPP
 }
 // test_fwdControl_get_target_num_col2
 double test_fwdControl_get_target_num_col2(const fwdControl control, const int target_no, const int sim_target_no, const std::string col);
-RcppExport SEXP FLasher_test_fwdControl_get_target_num_col2(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP colSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_target_num_col2(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP colSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5896,7 +5896,7 @@ END_RCPP
 }
 // test_fwdControl_get_target_value
 std::vector<double> test_fwdControl_get_target_value(const fwdControl control, const int target_no, const int col);
-RcppExport SEXP FLasher_test_fwdControl_get_target_value(SEXP controlSEXP, SEXP target_noSEXP, SEXP colSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_target_value(SEXP controlSEXP, SEXP target_noSEXP, SEXP colSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5909,7 +5909,7 @@ END_RCPP
 }
 // test_fwdControl_get_target_value2
 std::vector<double> test_fwdControl_get_target_value2(const fwdControl control, const int target_no, const int sim_target_no, const int col);
-RcppExport SEXP FLasher_test_fwdControl_get_target_value2(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP colSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_target_value2(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP colSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5923,7 +5923,7 @@ END_RCPP
 }
 // test_fwdControl_get_target_quantity
 std::string test_fwdControl_get_target_quantity(const fwdControl control, const int target_no, const int sim_target_no);
-RcppExport SEXP FLasher_test_fwdControl_get_target_quantity(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_target_quantity(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5936,7 +5936,7 @@ END_RCPP
 }
 // test_fwdControl_get_age_range
 std::vector<unsigned int> test_fwdControl_get_age_range(const fwdControl control, const int target_no, const int sim_target_no);
-RcppExport SEXP FLasher_test_fwdControl_get_age_range(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_age_range(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5949,7 +5949,7 @@ END_RCPP
 }
 // test_fwdControl_get_FC
 Rcpp::IntegerMatrix test_fwdControl_get_FC(const fwdControl control, const int biol_no);
-RcppExport SEXP FLasher_test_fwdControl_get_FC(SEXP controlSEXP, SEXP biol_noSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_FC(SEXP controlSEXP, SEXP biol_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5961,7 +5961,7 @@ END_RCPP
 }
 // test_fwdControl_get_B
 std::vector<unsigned int> test_fwdControl_get_B(const fwdControl control, const int fishery_no, const int catch_no);
-RcppExport SEXP FLasher_test_fwdControl_get_B(SEXP controlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_B(SEXP controlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5974,7 +5974,7 @@ END_RCPP
 }
 // test_fwdControl_get_F
 std::vector<unsigned int> test_fwdControl_get_F(const fwdControl control, const int biol_no);
-RcppExport SEXP FLasher_test_fwdControl_get_F(SEXP controlSEXP, SEXP biol_noSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_F(SEXP controlSEXP, SEXP biol_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5986,7 +5986,7 @@ END_RCPP
 }
 // test_fwdControl_get_FCB_nrow
 int test_fwdControl_get_FCB_nrow(const fwdControl control);
-RcppExport SEXP FLasher_test_fwdControl_get_FCB_nrow(SEXP controlSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_FCB_nrow(SEXP controlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -5997,7 +5997,7 @@ END_RCPP
 }
 // test_fwdControl_get_FCB_row_no
 int test_fwdControl_get_FCB_row_no(const fwdControl control, const unsigned int fishery_no, const unsigned int catch_no, const unsigned int biol_no);
-RcppExport SEXP FLasher_test_fwdControl_get_FCB_row_no(SEXP controlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_FCB_row_no(SEXP controlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6011,7 +6011,7 @@ END_RCPP
 }
 // test_fwdControl_get_FCB_nos
 std::vector<int> test_fwdControl_get_FCB_nos(const fwdControl control, const unsigned int target_no, const unsigned int sim_target_no, const bool relative, const bool check);
-RcppExport SEXP FLasher_test_fwdControl_get_FCB_nos(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP relativeSEXP, SEXP checkSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_get_FCB_nos(SEXP controlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP relativeSEXP, SEXP checkSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6026,7 +6026,7 @@ END_RCPP
 }
 // test_fwdControl_shared_catch
 bool test_fwdControl_shared_catch(const fwdControl control, const unsigned int biol_no);
-RcppExport SEXP FLasher_test_fwdControl_shared_catch(SEXP controlSEXP, SEXP biol_noSEXP) {
+RcppExport SEXP _FLasher_test_fwdControl_shared_catch(SEXP controlSEXP, SEXP biol_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6038,7 +6038,7 @@ END_RCPP
 }
 // test_fwdSR_empty_constructor
 void test_fwdSR_empty_constructor();
-RcppExport SEXP FLasher_test_fwdSR_empty_constructor() {
+RcppExport SEXP _FLasher_test_fwdSR_empty_constructor() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     test_fwdSR_empty_constructor();
@@ -6047,7 +6047,7 @@ END_RCPP
 }
 // test_fwdSR_constructor_wrap
 fwdSR test_fwdSR_constructor_wrap(const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult);
-RcppExport SEXP FLasher_test_fwdSR_constructor_wrap(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
+RcppExport SEXP _FLasher_test_fwdSR_constructor_wrap(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6061,7 +6061,7 @@ END_RCPP
 }
 // test_fwdSR_get_nparams
 int test_fwdSR_get_nparams(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult);
-RcppExport SEXP FLasher_test_fwdSR_get_nparams(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
+RcppExport SEXP _FLasher_test_fwdSR_get_nparams(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6075,7 +6075,7 @@ END_RCPP
 }
 // test_fwdSR_eval
 double test_fwdSR_eval(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const double srp, const std::vector<unsigned int> param_indices);
-RcppExport SEXP FLasher_test_fwdSR_eval(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP srpSEXP, SEXP param_indicesSEXP) {
+RcppExport SEXP _FLasher_test_fwdSR_eval(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP srpSEXP, SEXP param_indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6091,7 +6091,7 @@ END_RCPP
 }
 // test_fwdSR_get_params
 std::vector<double> test_fwdSR_get_params(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const std::vector<unsigned int> param_indices);
-RcppExport SEXP FLasher_test_fwdSR_get_params(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP param_indicesSEXP) {
+RcppExport SEXP _FLasher_test_fwdSR_get_params(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP param_indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6106,7 +6106,7 @@ END_RCPP
 }
 // test_fwdSR_copy_constructor
 Rcpp::List test_fwdSR_copy_constructor(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const double srp);
-RcppExport SEXP FLasher_test_fwdSR_copy_constructor(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP srpSEXP) {
+RcppExport SEXP _FLasher_test_fwdSR_copy_constructor(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP srpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6121,7 +6121,7 @@ END_RCPP
 }
 // test_fwdSR_assignment_operator
 Rcpp::List test_fwdSR_assignment_operator(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const double srp);
-RcppExport SEXP FLasher_test_fwdSR_assignment_operator(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP srpSEXP) {
+RcppExport SEXP _FLasher_test_fwdSR_assignment_operator(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP srpSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6136,7 +6136,7 @@ END_RCPP
 }
 // test_fwdSR_predict_recruitment
 FLQuant test_fwdSR_predict_recruitment(std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, const FLQuant srp, const std::vector<unsigned int> initial_params_indices);
-RcppExport SEXP FLasher_test_fwdSR_predict_recruitment(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP srpSEXP, SEXP initial_params_indicesSEXP) {
+RcppExport SEXP _FLasher_test_fwdSR_predict_recruitment(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP srpSEXP, SEXP initial_params_indicesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6152,7 +6152,7 @@ END_RCPP
 }
 // test_fwdSR_does_recruitment_happen
 bool test_fwdSR_does_recruitment_happen(const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult, unsigned int unit, unsigned int year, unsigned int season);
-RcppExport SEXP FLasher_test_fwdSR_does_recruitment_happen(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP unitSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
+RcppExport SEXP _FLasher_test_fwdSR_does_recruitment_happen(SEXP model_nameSEXP, SEXP paramsSEXP, SEXP residualsSEXP, SEXP residuals_multSEXP, SEXP unitSEXP, SEXP yearSEXP, SEXP seasonSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6169,7 +6169,7 @@ END_RCPP
 }
 // test_operatingModel_empty_constructor
 void test_operatingModel_empty_constructor();
-RcppExport SEXP FLasher_test_operatingModel_empty_constructor() {
+RcppExport SEXP _FLasher_test_operatingModel_empty_constructor() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     test_operatingModel_empty_constructor();
@@ -6178,7 +6178,7 @@ END_RCPP
 }
 // test_operatingModel_full_constructor
 operatingModel test_operatingModel_full_constructor(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl);
-RcppExport SEXP FLasher_test_operatingModel_full_constructor(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_full_constructor(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6191,7 +6191,7 @@ END_RCPP
 }
 // test_operatingModel_get_niter
 unsigned int test_operatingModel_get_niter(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl);
-RcppExport SEXP FLasher_test_operatingModel_get_niter(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_get_niter(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6204,7 +6204,7 @@ END_RCPP
 }
 // test_operatingModel_get_exp_z_pre_spwn
 FLQuantAD test_operatingModel_get_exp_z_pre_spwn(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_get_exp_z_pre_spwn(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_get_exp_z_pre_spwn(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6220,7 +6220,7 @@ END_RCPP
 }
 // test_operatingModel_f_prop_spwn_FLQ_subset
 FLQuantAD test_operatingModel_f_prop_spwn_FLQ_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int fishery_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_f_prop_spwn_FLQ_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_f_prop_spwn_FLQ_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6237,7 +6237,7 @@ END_RCPP
 }
 // test_operatingModel_SRP_FLQ_subset
 FLQuantAD test_operatingModel_SRP_FLQ_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_SRP_FLQ_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_SRP_FLQ_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6253,7 +6253,7 @@ END_RCPP
 }
 // test_operatingModel_total_SRP_FLQ_subset
 FLQuantAD test_operatingModel_total_SRP_FLQ_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_total_SRP_FLQ_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_total_SRP_FLQ_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6269,7 +6269,7 @@ END_RCPP
 }
 // test_operatingModel_calc_rec
 std::vector<double> test_operatingModel_calc_rec(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const int unit, const int rec_timestep);
-RcppExport SEXP FLasher_test_operatingModel_calc_rec(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP unitSEXP, SEXP rec_timestepSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_calc_rec(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP unitSEXP, SEXP rec_timestepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6285,7 +6285,7 @@ END_RCPP
 }
 // test_operatingModel_get_f_FCB
 FLQuantAD test_operatingModel_get_f_FCB(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no);
-RcppExport SEXP FLasher_test_operatingModel_get_f_FCB(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_get_f_FCB(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6301,7 +6301,7 @@ END_RCPP
 }
 // test_operatingModel_get_f_FCB_subset
 FLQuantAD test_operatingModel_get_f_FCB_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, std::vector<unsigned int> indices_min, std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_get_f_FCB_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_get_f_FCB_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6319,7 +6319,7 @@ END_RCPP
 }
 // test_operatingModel_get_f_B_subset
 FLQuantAD test_operatingModel_get_f_B_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_get_f_B_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_get_f_B_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6335,7 +6335,7 @@ END_RCPP
 }
 // test_operatingModel_get_f_B
 FLQuantAD test_operatingModel_get_f_B(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no);
-RcppExport SEXP FLasher_test_operatingModel_get_f_B(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_get_f_B(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6349,7 +6349,7 @@ END_RCPP
 }
 // test_operatingModel_fbar_FCB
 FLQuantAD test_operatingModel_fbar_FCB(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_fbar_FCB(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_fbar_FCB(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6367,7 +6367,7 @@ END_RCPP
 }
 // test_operatingModel_fbar_B
 FLQuantAD test_operatingModel_fbar_B(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_fbar_B(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_fbar_B(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6383,7 +6383,7 @@ END_RCPP
 }
 // test_operatingModel_nunit_z_subset
 FLQuantAD test_operatingModel_nunit_z_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_nunit_z_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_nunit_z_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6399,7 +6399,7 @@ END_RCPP
 }
 // test_operatingModel_nunit_f_B_subset
 FLQuantAD test_operatingModel_nunit_f_B_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_nunit_f_B_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_nunit_f_B_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6415,7 +6415,7 @@ END_RCPP
 }
 // test_operatingModel_nunit_f_FCB_subset
 FLQuantAD test_operatingModel_nunit_f_FCB_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_nunit_f_FCB_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_nunit_f_FCB_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6433,7 +6433,7 @@ END_RCPP
 }
 // test_operatingModel_survivors
 FLQuantAD test_operatingModel_survivors(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_survivors(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_survivors(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6449,7 +6449,7 @@ END_RCPP
 }
 // test_operatingModel_project_biols
 operatingModel test_operatingModel_project_biols(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int timestep);
-RcppExport SEXP FLasher_test_operatingModel_project_biols(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP timestepSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_project_biols(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP timestepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6463,7 +6463,7 @@ END_RCPP
 }
 // test_operatingModel_project_fisheries
 operatingModel test_operatingModel_project_fisheries(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int timestep);
-RcppExport SEXP FLasher_test_operatingModel_project_fisheries(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP timestepSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_project_fisheries(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP timestepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6477,7 +6477,7 @@ END_RCPP
 }
 // test_operatingModel_run
 operatingModel test_operatingModel_run(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double effort_mult_initial, const double indep_min, const double indep_max, const int nr_iters);
-RcppExport SEXP FLasher_test_operatingModel_run(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP effort_mult_initialSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP nr_itersSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_run(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP effort_mult_initialSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP nr_itersSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6494,7 +6494,7 @@ END_RCPP
 }
 // test_operatingModel_run2
 Rcpp::List test_operatingModel_run2(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double effort_mult_initial, const double indep_min, const double indep_max, const int nr_iters);
-RcppExport SEXP FLasher_test_operatingModel_run2(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP effort_mult_initialSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP nr_itersSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_run2(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP effort_mult_initialSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP nr_itersSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6511,7 +6511,7 @@ END_RCPP
 }
 // test_operatingModel_eval_om
 FLQuantAD test_operatingModel_eval_om(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const std::string strquantity, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_eval_om(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP strquantitySEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_eval_om(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP strquantitySEXP, SEXP fishery_noSEXP, SEXP catch_noSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6530,7 +6530,7 @@ END_RCPP
 }
 // test_operatingModel_get_target_value_hat
 std::vector<double> test_operatingModel_get_target_value_hat(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int target_no, const int sim_target_no);
-RcppExport SEXP FLasher_test_operatingModel_get_target_value_hat(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_get_target_value_hat(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6545,7 +6545,7 @@ END_RCPP
 }
 // test_operatingModel_get_target_value_hat2
 std::vector<double> test_operatingModel_get_target_value_hat2(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int target_no);
-RcppExport SEXP FLasher_test_operatingModel_get_target_value_hat2(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_get_target_value_hat2(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6559,7 +6559,7 @@ END_RCPP
 }
 // test_operatingModel_get_target_value
 std::vector<double> test_operatingModel_get_target_value(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int target_no, const int sim_target_no);
-RcppExport SEXP FLasher_test_operatingModel_get_target_value(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_get_target_value(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6574,7 +6574,7 @@ END_RCPP
 }
 // test_operatingModel_get_target_value2
 std::vector<double> test_operatingModel_get_target_value2(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int target_no);
-RcppExport SEXP FLasher_test_operatingModel_get_target_value2(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_get_target_value2(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6588,7 +6588,7 @@ END_RCPP
 }
 // test_operatingModel_get_target_hat_indices
 Rcpp::List test_operatingModel_get_target_hat_indices(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const unsigned int target_no, const unsigned int sim_target_no, const unsigned int target_component, const bool relative);
-RcppExport SEXP FLasher_test_operatingModel_get_target_hat_indices(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP target_componentSEXP, SEXP relativeSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_get_target_hat_indices(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP target_noSEXP, SEXP sim_target_noSEXP, SEXP target_componentSEXP, SEXP relativeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6605,7 +6605,7 @@ END_RCPP
 }
 // test_operatingModel_catches_subset
 FLQuantAD test_operatingModel_catches_subset(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_catches_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_catches_subset(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6621,7 +6621,7 @@ END_RCPP
 }
 // test_operatingModel_landings_subset
 FLQuantAD test_operatingModel_landings_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_landings_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_landings_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6637,7 +6637,7 @@ END_RCPP
 }
 // test_operatingModel_discards_subset
 FLQuantAD test_operatingModel_discards_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_discards_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_discards_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6653,7 +6653,7 @@ END_RCPP
 }
 // test_operatingModel_catch_n_subset
 FLQuantAD test_operatingModel_catch_n_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_catch_n_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_catch_n_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6669,7 +6669,7 @@ END_RCPP
 }
 // test_operatingModel_landings_n_subset
 FLQuantAD test_operatingModel_landings_n_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_landings_n_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_landings_n_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6685,7 +6685,7 @@ END_RCPP
 }
 // test_operatingModel_discards_n_subset
 FLQuantAD test_operatingModel_discards_n_subset(FLFisheriesAD flfs, SEXP flbs_list_sexp, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_discards_n_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_discards_n_subset(SEXP flfsSEXP, SEXP flbs_list_sexpSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6701,7 +6701,7 @@ END_RCPP
 }
 // test_operatingModel_ssb_start
 FLQuantAD test_operatingModel_ssb_start(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_ssb_start(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_ssb_start(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6717,7 +6717,7 @@ END_RCPP
 }
 // test_operatingModel_biomass_start
 FLQuantAD test_operatingModel_biomass_start(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_biomass_start(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_biomass_start(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6733,7 +6733,7 @@ END_RCPP
 }
 // test_operatingModel_ssb_end
 FLQuantAD test_operatingModel_ssb_end(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_ssb_end(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_ssb_end(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6749,7 +6749,7 @@ END_RCPP
 }
 // test_operatingModel_ssb_spawn
 FLQuantAD test_operatingModel_ssb_spawn(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_ssb_spawn(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_ssb_spawn(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6765,7 +6765,7 @@ END_RCPP
 }
 // test_operatingModel_ssb_flash
 FLQuantAD test_operatingModel_ssb_flash(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_ssb_flash(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_ssb_flash(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6781,7 +6781,7 @@ END_RCPP
 }
 // test_operatingModel_biomass_flash
 FLQuantAD test_operatingModel_biomass_flash(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_biomass_flash(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_biomass_flash(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6797,7 +6797,7 @@ END_RCPP
 }
 // test_operatingModel_biomass_end
 FLQuantAD test_operatingModel_biomass_end(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_biomass_end(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_biomass_end(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6813,7 +6813,7 @@ END_RCPP
 }
 // test_operatingModel_biomass_spawn
 FLQuantAD test_operatingModel_biomass_spawn(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_biomass_spawn(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_biomass_spawn(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6829,7 +6829,7 @@ END_RCPP
 }
 // test_operatingModel_spawn_before_fishing
 bool test_operatingModel_spawn_before_fishing(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_spawn_before_fishing(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_spawn_before_fishing(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6845,7 +6845,7 @@ END_RCPP
 }
 // test_operatingModel_fishing_before_spawn
 bool test_operatingModel_fishing_before_spawn(const FLFisheriesAD flfs, const fwdBiolsAD biols, const fwdControl ctrl, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max);
-RcppExport SEXP FLasher_test_operatingModel_fishing_before_spawn(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
+RcppExport SEXP _FLasher_test_operatingModel_fishing_before_spawn(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP biol_noSEXP, SEXP indices_minSEXP, SEXP indices_maxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6861,7 +6861,7 @@ END_RCPP
 }
 // test_max3
 std::vector<double> test_max3(std::vector<double> indep);
-RcppExport SEXP FLasher_test_max3(SEXP indepSEXP) {
+RcppExport SEXP _FLasher_test_max3(SEXP indepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6872,7 +6872,7 @@ END_RCPP
 }
 // test_max2
 std::vector<double> test_max2(std::vector<double> indep);
-RcppExport SEXP FLasher_test_max2(SEXP indepSEXP) {
+RcppExport SEXP _FLasher_test_max2(SEXP indepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6883,7 +6883,7 @@ END_RCPP
 }
 // test_max
 std::vector<double> test_max(std::vector<double> indep);
-RcppExport SEXP FLasher_test_max(SEXP indepSEXP) {
+RcppExport SEXP _FLasher_test_max(SEXP indepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6894,7 +6894,7 @@ END_RCPP
 }
 // test_standard_conditional
 std::vector<double> test_standard_conditional(std::vector<double> indep);
-RcppExport SEXP FLasher_test_standard_conditional(SEXP indepSEXP) {
+RcppExport SEXP _FLasher_test_standard_conditional(SEXP indepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6905,7 +6905,7 @@ END_RCPP
 }
 // test_cppad_conditional
 std::vector<double> test_cppad_conditional(std::vector<double> indep);
-RcppExport SEXP FLasher_test_cppad_conditional(SEXP indepSEXP) {
+RcppExport SEXP _FLasher_test_cppad_conditional(SEXP indepSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6916,7 +6916,7 @@ END_RCPP
 }
 // test_euclid_norm
 double test_euclid_norm(std::vector<double> xvec);
-RcppExport SEXP FLasher_test_euclid_norm(SEXP xvecSEXP) {
+RcppExport SEXP _FLasher_test_euclid_norm(SEXP xvecSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6927,7 +6927,7 @@ END_RCPP
 }
 // test_NR_quad_iters
 Rcpp::List test_NR_quad_iters(const Rcpp::NumericMatrix coefs, const double initial_value, const unsigned int max_iters, const double indep_min, const double indep_max, const double tolerance);
-RcppExport SEXP FLasher_test_NR_quad_iters(SEXP coefsSEXP, SEXP initial_valueSEXP, SEXP max_itersSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP toleranceSEXP) {
+RcppExport SEXP _FLasher_test_NR_quad_iters(SEXP coefsSEXP, SEXP initial_valueSEXP, SEXP max_itersSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP toleranceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6943,7 +6943,7 @@ END_RCPP
 }
 // test_NR_linear
 Rcpp::List test_NR_linear(std::vector<double> initial_value, const Rcpp::NumericMatrix coefs, const unsigned int max_iters, const double indep_min, const double indep_max, const double tolerance);
-RcppExport SEXP FLasher_test_NR_linear(SEXP initial_valueSEXP, SEXP coefsSEXP, SEXP max_itersSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP toleranceSEXP) {
+RcppExport SEXP _FLasher_test_NR_linear(SEXP initial_valueSEXP, SEXP coefsSEXP, SEXP max_itersSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP toleranceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6959,7 +6959,7 @@ END_RCPP
 }
 // eval_user_function
 std::vector<double> eval_user_function(SEXP xpsexp, std::vector<double> params);
-RcppExport SEXP FLasher_eval_user_function(SEXP xpsexpSEXP, SEXP paramsSEXP) {
+RcppExport SEXP _FLasher_eval_user_function(SEXP xpsexpSEXP, SEXP paramsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6971,7 +6971,7 @@ END_RCPP
 }
 // eval_user_gradient
 std::vector<double> eval_user_gradient(SEXP xpsexp, std::vector<double> params);
-RcppExport SEXP FLasher_eval_user_gradient(SEXP xpsexpSEXP, SEXP paramsSEXP) {
+RcppExport SEXP _FLasher_eval_user_gradient(SEXP xpsexpSEXP, SEXP paramsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -6983,533 +6983,533 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"FLasher_operatingModelRun", (DL_FUNC) &FLasher_operatingModelRun, 7},
-    {"FLasher_test_FLQuant_FLQuant_multiplier_assignment_operator", (DL_FUNC) &FLasher_test_FLQuant_FLQuant_multiplier_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuant_multiplier_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuant_multiplier_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuantAD_multiplier_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuantAD_multiplier_assignment_operator, 2},
-    {"FLasher_test_FLQuant_double_multiplier_assignment_operator", (DL_FUNC) &FLasher_test_FLQuant_double_multiplier_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_double_multiplier_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_double_multiplier_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_adouble_multiplier_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_adouble_multiplier_assignment_operator, 2},
-    {"FLasher_test_FLQuant_FLQuant_multiplier_operator", (DL_FUNC) &FLasher_test_FLQuant_FLQuant_multiplier_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuant_multiplier_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuant_multiplier_operator, 2},
-    {"FLasher_test_FLQuant_FLQuantAD_multiplier_operator", (DL_FUNC) &FLasher_test_FLQuant_FLQuantAD_multiplier_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuantAD_multiplier_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuantAD_multiplier_operator, 2},
-    {"FLasher_test_FLQuant_double_multiplier_operator", (DL_FUNC) &FLasher_test_FLQuant_double_multiplier_operator, 2},
-    {"FLasher_test_double_FLQuant_multiplier_operator", (DL_FUNC) &FLasher_test_double_FLQuant_multiplier_operator, 2},
-    {"FLasher_test_double_FLQuantAD_multiplier_operator", (DL_FUNC) &FLasher_test_double_FLQuantAD_multiplier_operator, 2},
-    {"FLasher_test_FLQuantAD_double_multiplier_operator", (DL_FUNC) &FLasher_test_FLQuantAD_double_multiplier_operator, 2},
-    {"FLasher_test_FLQuant_adouble_multiplier_operator", (DL_FUNC) &FLasher_test_FLQuant_adouble_multiplier_operator, 2},
-    {"FLasher_test_adouble_FLQuant_multiplier_operator", (DL_FUNC) &FLasher_test_adouble_FLQuant_multiplier_operator, 2},
-    {"FLasher_test_FLQuantAD_adouble_multiplier_operator", (DL_FUNC) &FLasher_test_FLQuantAD_adouble_multiplier_operator, 2},
-    {"FLasher_test_adouble_FLQuantAD_multiplier_operator", (DL_FUNC) &FLasher_test_adouble_FLQuantAD_multiplier_operator, 2},
-    {"FLasher_test_FLQuant_FLQuant_division_assignment_operator", (DL_FUNC) &FLasher_test_FLQuant_FLQuant_division_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuant_division_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuant_division_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuantAD_division_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuantAD_division_assignment_operator, 2},
-    {"FLasher_test_FLQuant_double_division_assignment_operator", (DL_FUNC) &FLasher_test_FLQuant_double_division_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_double_division_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_double_division_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_adouble_division_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_adouble_division_assignment_operator, 2},
-    {"FLasher_test_FLQuant_FLQuant_division_operator", (DL_FUNC) &FLasher_test_FLQuant_FLQuant_division_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuant_division_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuant_division_operator, 2},
-    {"FLasher_test_FLQuant_FLQuantAD_division_operator", (DL_FUNC) &FLasher_test_FLQuant_FLQuantAD_division_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuantAD_division_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuantAD_division_operator, 2},
-    {"FLasher_test_FLQuant_double_division_operator", (DL_FUNC) &FLasher_test_FLQuant_double_division_operator, 2},
-    {"FLasher_test_double_FLQuant_division_operator", (DL_FUNC) &FLasher_test_double_FLQuant_division_operator, 2},
-    {"FLasher_test_double_FLQuantAD_division_operator", (DL_FUNC) &FLasher_test_double_FLQuantAD_division_operator, 2},
-    {"FLasher_test_FLQuantAD_double_division_operator", (DL_FUNC) &FLasher_test_FLQuantAD_double_division_operator, 2},
-    {"FLasher_test_FLQuant_adouble_division_operator", (DL_FUNC) &FLasher_test_FLQuant_adouble_division_operator, 2},
-    {"FLasher_test_adouble_FLQuant_division_operator", (DL_FUNC) &FLasher_test_adouble_FLQuant_division_operator, 2},
-    {"FLasher_test_FLQuantAD_adouble_division_operator", (DL_FUNC) &FLasher_test_FLQuantAD_adouble_division_operator, 2},
-    {"FLasher_test_adouble_FLQuantAD_division_operator", (DL_FUNC) &FLasher_test_adouble_FLQuantAD_division_operator, 2},
-    {"FLasher_test_FLQuant_FLQuant_subtraction_assignment_operator", (DL_FUNC) &FLasher_test_FLQuant_FLQuant_subtraction_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuant_subtraction_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuant_subtraction_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuantAD_subtraction_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuantAD_subtraction_assignment_operator, 2},
-    {"FLasher_test_FLQuant_double_subtraction_assignment_operator", (DL_FUNC) &FLasher_test_FLQuant_double_subtraction_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_double_subtraction_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_double_subtraction_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_adouble_subtraction_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_adouble_subtraction_assignment_operator, 2},
-    {"FLasher_test_FLQuant_FLQuant_subtraction_operator", (DL_FUNC) &FLasher_test_FLQuant_FLQuant_subtraction_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuant_subtraction_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuant_subtraction_operator, 2},
-    {"FLasher_test_FLQuant_FLQuantAD_subtraction_operator", (DL_FUNC) &FLasher_test_FLQuant_FLQuantAD_subtraction_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuantAD_subtraction_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuantAD_subtraction_operator, 2},
-    {"FLasher_test_FLQuant_double_subtraction_operator", (DL_FUNC) &FLasher_test_FLQuant_double_subtraction_operator, 2},
-    {"FLasher_test_double_FLQuant_subtraction_operator", (DL_FUNC) &FLasher_test_double_FLQuant_subtraction_operator, 2},
-    {"FLasher_test_double_FLQuantAD_subtraction_operator", (DL_FUNC) &FLasher_test_double_FLQuantAD_subtraction_operator, 2},
-    {"FLasher_test_FLQuantAD_double_subtraction_operator", (DL_FUNC) &FLasher_test_FLQuantAD_double_subtraction_operator, 2},
-    {"FLasher_test_FLQuant_adouble_subtraction_operator", (DL_FUNC) &FLasher_test_FLQuant_adouble_subtraction_operator, 2},
-    {"FLasher_test_adouble_FLQuant_subtraction_operator", (DL_FUNC) &FLasher_test_adouble_FLQuant_subtraction_operator, 2},
-    {"FLasher_test_FLQuantAD_adouble_subtraction_operator", (DL_FUNC) &FLasher_test_FLQuantAD_adouble_subtraction_operator, 2},
-    {"FLasher_test_adouble_FLQuantAD_subtraction_operator", (DL_FUNC) &FLasher_test_adouble_FLQuantAD_subtraction_operator, 2},
-    {"FLasher_test_FLQuant_FLQuant_addition_assignment_operator", (DL_FUNC) &FLasher_test_FLQuant_FLQuant_addition_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuant_addition_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuant_addition_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuantAD_addition_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuantAD_addition_assignment_operator, 2},
-    {"FLasher_test_FLQuant_double_addition_assignment_operator", (DL_FUNC) &FLasher_test_FLQuant_double_addition_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_double_addition_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_double_addition_assignment_operator, 2},
-    {"FLasher_test_FLQuantAD_adouble_addition_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_adouble_addition_assignment_operator, 2},
-    {"FLasher_test_FLQuant_FLQuant_addition_operator", (DL_FUNC) &FLasher_test_FLQuant_FLQuant_addition_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuant_addition_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuant_addition_operator, 2},
-    {"FLasher_test_FLQuant_FLQuantAD_addition_operator", (DL_FUNC) &FLasher_test_FLQuant_FLQuantAD_addition_operator, 2},
-    {"FLasher_test_FLQuantAD_FLQuantAD_addition_operator", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuantAD_addition_operator, 2},
-    {"FLasher_test_FLQuant_double_addition_operator", (DL_FUNC) &FLasher_test_FLQuant_double_addition_operator, 2},
-    {"FLasher_test_double_FLQuant_addition_operator", (DL_FUNC) &FLasher_test_double_FLQuant_addition_operator, 2},
-    {"FLasher_test_double_FLQuantAD_addition_operator", (DL_FUNC) &FLasher_test_double_FLQuantAD_addition_operator, 2},
-    {"FLasher_test_FLQuantAD_double_addition_operator", (DL_FUNC) &FLasher_test_FLQuantAD_double_addition_operator, 2},
-    {"FLasher_test_FLQuant_adouble_addition_operator", (DL_FUNC) &FLasher_test_FLQuant_adouble_addition_operator, 2},
-    {"FLasher_test_adouble_FLQuant_addition_operator", (DL_FUNC) &FLasher_test_adouble_FLQuant_addition_operator, 2},
-    {"FLasher_test_FLQuantAD_adouble_addition_operator", (DL_FUNC) &FLasher_test_FLQuantAD_adouble_addition_operator, 2},
-    {"FLasher_test_adouble_FLQuantAD_addition_operator", (DL_FUNC) &FLasher_test_adouble_FLQuantAD_addition_operator, 2},
-    {"FLasher_test_FLQuant_log", (DL_FUNC) &FLasher_test_FLQuant_log, 1},
-    {"FLasher_test_FLQuantAD_log", (DL_FUNC) &FLasher_test_FLQuantAD_log, 1},
-    {"FLasher_test_FLQuant_exp", (DL_FUNC) &FLasher_test_FLQuant_exp, 1},
-    {"FLasher_test_FLQuantAD_exp", (DL_FUNC) &FLasher_test_FLQuantAD_exp, 1},
-    {"FLasher_test_composite_arithmetic_operators", (DL_FUNC) &FLasher_test_composite_arithmetic_operators, 3},
-    {"FLasher_test_FLQuant_quant_sum", (DL_FUNC) &FLasher_test_FLQuant_quant_sum, 1},
-    {"FLasher_test_FLQuantAD_quant_sum", (DL_FUNC) &FLasher_test_FLQuantAD_quant_sum, 1},
-    {"FLasher_test_FLQuant_quant_mean", (DL_FUNC) &FLasher_test_FLQuant_quant_mean, 1},
-    {"FLasher_test_FLQuant_year_sum", (DL_FUNC) &FLasher_test_FLQuant_year_sum, 1},
-    {"FLasher_test_FLQuant_year_mean", (DL_FUNC) &FLasher_test_FLQuant_year_mean, 1},
-    {"FLasher_test_FLQuantAD_quant_mean", (DL_FUNC) &FLasher_test_FLQuantAD_quant_mean, 1},
-    {"FLasher_test_FLQuant_max_quant", (DL_FUNC) &FLasher_test_FLQuant_max_quant, 1},
-    {"FLasher_test_FLQuantAD_max_quant", (DL_FUNC) &FLasher_test_FLQuantAD_max_quant, 1},
-    {"FLasher_test_FLQuant_scale_by_max_quant", (DL_FUNC) &FLasher_test_FLQuant_scale_by_max_quant, 1},
-    {"FLasher_test_FLQuantAD_scale_by_max_quant", (DL_FUNC) &FLasher_test_FLQuantAD_scale_by_max_quant, 1},
-    {"FLasher_test_FLQuantAD_unit_sum", (DL_FUNC) &FLasher_test_FLQuantAD_unit_sum, 1},
-    {"FLasher_test_sweep_multADAD", (DL_FUNC) &FLasher_test_sweep_multADAD, 2},
-    {"FLasher_test_sweep_multDD", (DL_FUNC) &FLasher_test_sweep_multDD, 2},
-    {"FLasher_test_sweep_multADD", (DL_FUNC) &FLasher_test_sweep_multADD, 2},
-    {"FLasher_test_sweep_multDAD", (DL_FUNC) &FLasher_test_sweep_multDAD, 2},
-    {"FLasher_test_sweep_divADAD", (DL_FUNC) &FLasher_test_sweep_divADAD, 2},
-    {"FLasher_test_sweep_divDD", (DL_FUNC) &FLasher_test_sweep_divDD, 2},
-    {"FLasher_test_sweep_divADD", (DL_FUNC) &FLasher_test_sweep_divADD, 2},
-    {"FLasher_test_sweep_divDAD", (DL_FUNC) &FLasher_test_sweep_divDAD, 2},
-    {"FLasher_test_sweep_plusADAD", (DL_FUNC) &FLasher_test_sweep_plusADAD, 2},
-    {"FLasher_test_sweep_plusDD", (DL_FUNC) &FLasher_test_sweep_plusDD, 2},
-    {"FLasher_test_sweep_plusADD", (DL_FUNC) &FLasher_test_sweep_plusADD, 2},
-    {"FLasher_test_sweep_plusDAD", (DL_FUNC) &FLasher_test_sweep_plusDAD, 2},
-    {"FLasher_test_sweep_minusADAD", (DL_FUNC) &FLasher_test_sweep_minusADAD, 2},
-    {"FLasher_test_sweep_minusDD", (DL_FUNC) &FLasher_test_sweep_minusDD, 2},
-    {"FLasher_test_sweep_minusADD", (DL_FUNC) &FLasher_test_sweep_minusADD, 2},
-    {"FLasher_test_sweep_minusDAD", (DL_FUNC) &FLasher_test_sweep_minusDAD, 2},
-    {"FLasher_test_int_is_na", (DL_FUNC) &FLasher_test_int_is_na, 1},
-    {"FLasher_test_double_is_na", (DL_FUNC) &FLasher_test_double_is_na, 1},
-    {"FLasher_test_simple_FLCatch_sexp_constructor", (DL_FUNC) &FLasher_test_simple_FLCatch_sexp_constructor, 1},
-    {"FLasher_test_FLCatch_sexp_constructor", (DL_FUNC) &FLasher_test_FLCatch_sexp_constructor, 1},
-    {"FLasher_test_FLCatchAD_sexp_constructor", (DL_FUNC) &FLasher_test_FLCatchAD_sexp_constructor, 1},
-    {"FLasher_test_FLCatch_as_wrap", (DL_FUNC) &FLasher_test_FLCatch_as_wrap, 1},
-    {"FLasher_test_FLCatchAD_as_wrap", (DL_FUNC) &FLasher_test_FLCatchAD_as_wrap, 1},
-    {"FLasher_test_FLCatch_copy_constructor", (DL_FUNC) &FLasher_test_FLCatch_copy_constructor, 1},
-    {"FLasher_test_FLCatchAD_copy_constructor", (DL_FUNC) &FLasher_test_FLCatchAD_copy_constructor, 1},
-    {"FLasher_test_FLCatch_copy_constructor2", (DL_FUNC) &FLasher_test_FLCatch_copy_constructor2, 8},
-    {"FLasher_test_FLCatchAD_copy_constructor2", (DL_FUNC) &FLasher_test_FLCatchAD_copy_constructor2, 8},
-    {"FLasher_test_FLCatch_assignment_operator", (DL_FUNC) &FLasher_test_FLCatch_assignment_operator, 1},
-    {"FLasher_test_FLCatchAD_assignment_operator", (DL_FUNC) &FLasher_test_FLCatchAD_assignment_operator, 1},
-    {"FLasher_test_FLCatch_assignment_operator2", (DL_FUNC) &FLasher_test_FLCatch_assignment_operator2, 8},
-    {"FLasher_test_FLCatchAD_assignment_operator2", (DL_FUNC) &FLasher_test_FLCatchAD_assignment_operator2, 8},
-    {"FLasher_test_FLCatch_const_get_accessors", (DL_FUNC) &FLasher_test_FLCatch_const_get_accessors, 7},
-    {"FLasher_test_FLCatch_const_get_accessors_subset", (DL_FUNC) &FLasher_test_FLCatch_const_get_accessors_subset, 3},
-    {"FLasher_test_FLCatchAD_const_get_accessors", (DL_FUNC) &FLasher_test_FLCatchAD_const_get_accessors, 7},
-    {"FLasher_test_FLCatch_get_accessors", (DL_FUNC) &FLasher_test_FLCatch_get_accessors, 7},
-    {"FLasher_test_FLCatchAD_get_accessors", (DL_FUNC) &FLasher_test_FLCatchAD_get_accessors, 7},
-    {"FLasher_test_FLCatch_set_accessors", (DL_FUNC) &FLasher_test_FLCatch_set_accessors, 8},
-    {"FLasher_test_FLCatchAD_set_accessors", (DL_FUNC) &FLasher_test_FLCatchAD_set_accessors, 8},
-    {"FLasher_test_FLCatch_revenue_subset", (DL_FUNC) &FLasher_test_FLCatch_revenue_subset, 3},
-    {"FLasher_test_FLCatch_revenue", (DL_FUNC) &FLasher_test_FLCatch_revenue, 1},
-    {"FLasher_test_FLCatch_landings", (DL_FUNC) &FLasher_test_FLCatch_landings, 1},
-    {"FLasher_test_FLCatchAD_landings", (DL_FUNC) &FLasher_test_FLCatchAD_landings, 1},
-    {"FLasher_test_FLCatch_discards", (DL_FUNC) &FLasher_test_FLCatch_discards, 1},
-    {"FLasher_test_FLCatchAD_discards", (DL_FUNC) &FLasher_test_FLCatchAD_discards, 1},
-    {"FLasher_test_FLCatch_catch_n", (DL_FUNC) &FLasher_test_FLCatch_catch_n, 1},
-    {"FLasher_test_FLCatchAD_catch_n", (DL_FUNC) &FLasher_test_FLCatchAD_catch_n, 1},
-    {"FLasher_test_FLCatch_catch_wt", (DL_FUNC) &FLasher_test_FLCatch_catch_wt, 1},
-    {"FLasher_test_FLCatchAD_catch_wt", (DL_FUNC) &FLasher_test_FLCatchAD_catch_wt, 1},
-    {"FLasher_test_FLCatch_catches", (DL_FUNC) &FLasher_test_FLCatch_catches, 1},
-    {"FLasher_test_FLCatchAD_catches", (DL_FUNC) &FLasher_test_FLCatchAD_catches, 1},
-    {"FLasher_test_FLCatch_discards_ratio", (DL_FUNC) &FLasher_test_FLCatch_discards_ratio, 1},
-    {"FLasher_test_FLCatchAD_discards_ratio", (DL_FUNC) &FLasher_test_FLCatchAD_discards_ratio, 1},
-    {"FLasher_test_FLCatch_landings_sel", (DL_FUNC) &FLasher_test_FLCatch_landings_sel, 1},
-    {"FLasher_test_FLCatchAD_landings_sel", (DL_FUNC) &FLasher_test_FLCatchAD_landings_sel, 1},
-    {"FLasher_test_FLCatch_discards_sel", (DL_FUNC) &FLasher_test_FLCatch_discards_sel, 1},
-    {"FLasher_test_FLCatchAD_discards_sel", (DL_FUNC) &FLasher_test_FLCatchAD_discards_sel, 1},
-    {"FLasher_test_FLCatchAD_catch_q_params", (DL_FUNC) &FLasher_test_FLCatchAD_catch_q_params, 2},
-    {"FLasher_test_FLCatchAD_catch_q_params_subset", (DL_FUNC) &FLasher_test_FLCatchAD_catch_q_params_subset, 3},
-    {"FLasher_test_FLCatches_as_wrap", (DL_FUNC) &FLasher_test_FLCatches_as_wrap, 1},
-    {"FLasher_test_FLCatches_sexp_constructor", (DL_FUNC) &FLasher_test_FLCatches_sexp_constructor, 1},
-    {"FLasher_test_FLCatches_FLCatch_constructor", (DL_FUNC) &FLasher_test_FLCatches_FLCatch_constructor, 1},
-    {"FLasher_test_FLCatches_copy_constructor", (DL_FUNC) &FLasher_test_FLCatches_copy_constructor, 1},
-    {"FLasher_test_FLCatches_copy_constructor2", (DL_FUNC) &FLasher_test_FLCatches_copy_constructor2, 9},
-    {"FLasher_test_FLCatches_assignment_operator", (DL_FUNC) &FLasher_test_FLCatches_assignment_operator, 1},
-    {"FLasher_test_FLCatches_assignment_operator2", (DL_FUNC) &FLasher_test_FLCatches_assignment_operator2, 9},
-    {"FLasher_test_FLCatches_function_operator", (DL_FUNC) &FLasher_test_FLCatches_function_operator, 2},
-    {"FLasher_test_FLCatches_get_ncatches", (DL_FUNC) &FLasher_test_FLCatches_get_ncatches, 1},
-    {"FLasher_test_FLCatches_const_get_single_index_accessor", (DL_FUNC) &FLasher_test_FLCatches_const_get_single_index_accessor, 2},
-    {"FLasher_test_FLCatches_get_single_index_accessor", (DL_FUNC) &FLasher_test_FLCatches_get_single_index_accessor, 2},
-    {"FLasher_test_FLCatches_const_get_value_accessor", (DL_FUNC) &FLasher_test_FLCatches_const_get_value_accessor, 8},
-    {"FLasher_test_FLCatches_get_value_accessor", (DL_FUNC) &FLasher_test_FLCatches_get_value_accessor, 8},
-    {"FLasher_test_FLCatches_set_single_index_accessor", (DL_FUNC) &FLasher_test_FLCatches_set_single_index_accessor, 3},
-    {"FLasher_test_FLCatches_set_value_accessor", (DL_FUNC) &FLasher_test_FLCatches_set_value_accessor, 9},
-    {"FLasher_test_FLCatchesAD_as_wrap", (DL_FUNC) &FLasher_test_FLCatchesAD_as_wrap, 1},
-    {"FLasher_test_FLCatchesAD_sexp_constructor", (DL_FUNC) &FLasher_test_FLCatchesAD_sexp_constructor, 1},
-    {"FLasher_test_FLCatchesAD_FLCatchAD_constructor", (DL_FUNC) &FLasher_test_FLCatchesAD_FLCatchAD_constructor, 1},
-    {"FLasher_test_FLCatchesAD_copy_constructor", (DL_FUNC) &FLasher_test_FLCatchesAD_copy_constructor, 1},
-    {"FLasher_test_FLCatchesAD_copy_constructor2", (DL_FUNC) &FLasher_test_FLCatchesAD_copy_constructor2, 9},
-    {"FLasher_test_FLCatchesAD_assignment_operator", (DL_FUNC) &FLasher_test_FLCatchesAD_assignment_operator, 1},
-    {"FLasher_test_FLCatchesAD_assignment_operator2", (DL_FUNC) &FLasher_test_FLCatchesAD_assignment_operator2, 9},
-    {"FLasher_test_FLCatchesAD_function_operator", (DL_FUNC) &FLasher_test_FLCatchesAD_function_operator, 2},
-    {"FLasher_test_FLCatchesAD_get_ncatches", (DL_FUNC) &FLasher_test_FLCatchesAD_get_ncatches, 1},
-    {"FLasher_test_FLCatchesAD_const_get_single_index_accessor", (DL_FUNC) &FLasher_test_FLCatchesAD_const_get_single_index_accessor, 2},
-    {"FLasher_test_FLCatchesAD_get_single_index_accessor", (DL_FUNC) &FLasher_test_FLCatchesAD_get_single_index_accessor, 2},
-    {"FLasher_test_FLCatchesAD_const_get_value_accessor", (DL_FUNC) &FLasher_test_FLCatchesAD_const_get_value_accessor, 8},
-    {"FLasher_test_FLCatchesAD_get_value_accessor", (DL_FUNC) &FLasher_test_FLCatchesAD_get_value_accessor, 8},
-    {"FLasher_test_FLCatchesAD_set_single_index_accessor", (DL_FUNC) &FLasher_test_FLCatchesAD_set_single_index_accessor, 3},
-    {"FLasher_test_FLCatchesAD_set_value_accessor", (DL_FUNC) &FLasher_test_FLCatchesAD_set_value_accessor, 9},
-    {"FLasher_test_FLCatchesAD_const_iterator", (DL_FUNC) &FLasher_test_FLCatchesAD_const_iterator, 1},
-    {"FLasher_test_FLCatchesAD_iterator", (DL_FUNC) &FLasher_test_FLCatchesAD_iterator, 8},
-    {"FLasher_test_FLFishery_empty_constructor", (DL_FUNC) &FLasher_test_FLFishery_empty_constructor, 0},
-    {"FLasher_test_simple_FLFishery_sexp_constructor", (DL_FUNC) &FLasher_test_simple_FLFishery_sexp_constructor, 1},
-    {"FLasher_test_FLFishery_sexp_constructor", (DL_FUNC) &FLasher_test_FLFishery_sexp_constructor, 1},
-    {"FLasher_test_FLFishery_as_wrap", (DL_FUNC) &FLasher_test_FLFishery_as_wrap, 1},
-    {"FLasher_test_FLFishery_copy_constructor", (DL_FUNC) &FLasher_test_FLFishery_copy_constructor, 1},
-    {"FLasher_test_FLFishery_assignment_operator", (DL_FUNC) &FLasher_test_FLFishery_assignment_operator, 1},
-    {"FLasher_test_FLFishery_const_catches_get_accessors", (DL_FUNC) &FLasher_test_FLFishery_const_catches_get_accessors, 8},
-    {"FLasher_test_FLFishery_catches_get_accessors", (DL_FUNC) &FLasher_test_FLFishery_catches_get_accessors, 8},
-    {"FLasher_test_FLFishery_const_economics_get_accessors", (DL_FUNC) &FLasher_test_FLFishery_const_economics_get_accessors, 6},
-    {"FLasher_test_FLFishery_const_get_hperiod", (DL_FUNC) &FLasher_test_FLFishery_const_get_hperiod, 7},
-    {"FLasher_test_FLFishery_get_hperiod", (DL_FUNC) &FLasher_test_FLFishery_get_hperiod, 7},
-    {"FLasher_test_FLFishery_set_hperiod", (DL_FUNC) &FLasher_test_FLFishery_set_hperiod, 8},
-    {"FLasher_test_FLFishery_get_effort_subset", (DL_FUNC) &FLasher_test_FLFishery_get_effort_subset, 3},
-    {"FLasher_test_FLFishery_get_effort", (DL_FUNC) &FLasher_test_FLFishery_get_effort, 1},
-    {"FLasher_test_FLFishery_economics_get_accessors", (DL_FUNC) &FLasher_test_FLFishery_economics_get_accessors, 6},
-    {"FLasher_test_FLFishery_set_accessors", (DL_FUNC) &FLasher_test_FLFishery_set_accessors, 9},
-    {"FLasher_test_FLFishery_copy_constructor2", (DL_FUNC) &FLasher_test_FLFishery_copy_constructor2, 9},
-    {"FLasher_test_FLFishery_assignment_operator2", (DL_FUNC) &FLasher_test_FLFishery_assignment_operator2, 9},
-    {"FLasher_test_FLFisheryAD_empty_constructor", (DL_FUNC) &FLasher_test_FLFisheryAD_empty_constructor, 0},
-    {"FLasher_test_simple_FLFisheryAD_sexp_constructor", (DL_FUNC) &FLasher_test_simple_FLFisheryAD_sexp_constructor, 1},
-    {"FLasher_test_FLFisheryAD_sexp_constructor", (DL_FUNC) &FLasher_test_FLFisheryAD_sexp_constructor, 1},
-    {"FLasher_test_FLFisheryAD_as_wrap", (DL_FUNC) &FLasher_test_FLFisheryAD_as_wrap, 1},
-    {"FLasher_test_FLFisheryAD_copy_constructor", (DL_FUNC) &FLasher_test_FLFisheryAD_copy_constructor, 1},
-    {"FLasher_test_FLFisheryAD_assignment_operator", (DL_FUNC) &FLasher_test_FLFisheryAD_assignment_operator, 1},
-    {"FLasher_test_FLFisheryAD_const_catches_get_accessors", (DL_FUNC) &FLasher_test_FLFisheryAD_const_catches_get_accessors, 8},
-    {"FLasher_test_FLFisheryAD_catches_get_accessors", (DL_FUNC) &FLasher_test_FLFisheryAD_catches_get_accessors, 8},
-    {"FLasher_test_FLFisheryAD_const_economics_get_accessors", (DL_FUNC) &FLasher_test_FLFisheryAD_const_economics_get_accessors, 6},
-    {"FLasher_test_FLFisheryAD_economics_get_accessors", (DL_FUNC) &FLasher_test_FLFisheryAD_economics_get_accessors, 6},
-    {"FLasher_test_FLFisheryAD_set_accessors", (DL_FUNC) &FLasher_test_FLFisheryAD_set_accessors, 9},
-    {"FLasher_test_FLFisheryAD_copy_constructor2", (DL_FUNC) &FLasher_test_FLFisheryAD_copy_constructor2, 9},
-    {"FLasher_test_FLFisheryAD_assignment_operator2", (DL_FUNC) &FLasher_test_FLFisheryAD_assignment_operator2, 9},
-    {"FLasher_test_FLFisheryAD_const_iterator", (DL_FUNC) &FLasher_test_FLFisheryAD_const_iterator, 1},
-    {"FLasher_test_FLFisheryAD_iterator", (DL_FUNC) &FLasher_test_FLFisheryAD_iterator, 8},
-    {"FLasher_test_FLFisheries_sexp_constructor", (DL_FUNC) &FLasher_test_FLFisheries_sexp_constructor, 1},
-    {"FLasher_test_FLFisheries_as_wrap", (DL_FUNC) &FLasher_test_FLFisheries_as_wrap, 1},
-    {"FLasher_test_FLFisheries_get_nfisheries", (DL_FUNC) &FLasher_test_FLFisheries_get_nfisheries, 1},
-    {"FLasher_test_FLFisheries_copy_constructor", (DL_FUNC) &FLasher_test_FLFisheries_copy_constructor, 1},
-    {"FLasher_test_FLFisheries_copy_constructor2", (DL_FUNC) &FLasher_test_FLFisheries_copy_constructor2, 5},
-    {"FLasher_test_FLFisheries_assignment_operator", (DL_FUNC) &FLasher_test_FLFisheries_assignment_operator, 1},
-    {"FLasher_test_FLFisheries_assignment_operator2", (DL_FUNC) &FLasher_test_FLFisheries_assignment_operator2, 5},
-    {"FLasher_test_FLFisheries_const_get_single", (DL_FUNC) &FLasher_test_FLFisheries_const_get_single, 4},
-    {"FLasher_test_FLFisheries_get_single", (DL_FUNC) &FLasher_test_FLFisheries_get_single, 4},
-    {"FLasher_test_FLFisheries_const_get_double", (DL_FUNC) &FLasher_test_FLFisheries_const_get_double, 4},
-    {"FLasher_test_FLFisheries_get_double", (DL_FUNC) &FLasher_test_FLFisheries_get_double, 4},
-    {"FLasher_test_FLFisheries_set_single", (DL_FUNC) &FLasher_test_FLFisheries_set_single, 5},
-    {"FLasher_test_FLFisheries_set_double", (DL_FUNC) &FLasher_test_FLFisheries_set_double, 5},
-    {"FLasher_test_FLFishery_revenue", (DL_FUNC) &FLasher_test_FLFishery_revenue, 1},
-    {"FLasher_test_FLFishery_revenue_subset", (DL_FUNC) &FLasher_test_FLFishery_revenue_subset, 3},
-    {"FLasher_test_FLFisheriesAD_sexp_constructor", (DL_FUNC) &FLasher_test_FLFisheriesAD_sexp_constructor, 1},
-    {"FLasher_test_FLFisheriesAD_as_wrap", (DL_FUNC) &FLasher_test_FLFisheriesAD_as_wrap, 1},
-    {"FLasher_test_FLFisheriesAD_get_nfisheries", (DL_FUNC) &FLasher_test_FLFisheriesAD_get_nfisheries, 1},
-    {"FLasher_test_FLFisheriesAD_copy_constructor", (DL_FUNC) &FLasher_test_FLFisheriesAD_copy_constructor, 1},
-    {"FLasher_test_FLFisheriesAD_copy_constructor2", (DL_FUNC) &FLasher_test_FLFisheriesAD_copy_constructor2, 5},
-    {"FLasher_test_FLFisheriesAD_assignment_operator", (DL_FUNC) &FLasher_test_FLFisheriesAD_assignment_operator, 1},
-    {"FLasher_test_FLFisheriesAD_assignment_operator2", (DL_FUNC) &FLasher_test_FLFisheriesAD_assignment_operator2, 5},
-    {"FLasher_test_FLFisheriesAD_const_get_single", (DL_FUNC) &FLasher_test_FLFisheriesAD_const_get_single, 4},
-    {"FLasher_test_FLFisheriesAD_get_single", (DL_FUNC) &FLasher_test_FLFisheriesAD_get_single, 4},
-    {"FLasher_test_FLFisheriesAD_const_get_double", (DL_FUNC) &FLasher_test_FLFisheriesAD_const_get_double, 4},
-    {"FLasher_test_FLFisheriesAD_get_double", (DL_FUNC) &FLasher_test_FLFisheriesAD_get_double, 4},
-    {"FLasher_test_FLFisheriesAD_set_single", (DL_FUNC) &FLasher_test_FLFisheriesAD_set_single, 5},
-    {"FLasher_test_FLFisheriesAD_set_double", (DL_FUNC) &FLasher_test_FLFisheriesAD_set_double, 5},
-    {"FLasher_test_FLFisheriesAD_const_iterator", (DL_FUNC) &FLasher_test_FLFisheriesAD_const_iterator, 1},
-    {"FLasher_test_FLFisheriesAD_iterator", (DL_FUNC) &FLasher_test_FLFisheriesAD_iterator, 2},
-    {"FLasher_test_FLQuantAD_as_wrap", (DL_FUNC) &FLasher_test_FLQuantAD_as_wrap, 1},
-    {"FLasher_test_FLQuantAD_basic_constructor", (DL_FUNC) &FLasher_test_FLQuantAD_basic_constructor, 0},
-    {"FLasher_test_FLQuantAD_sexp_constructor", (DL_FUNC) &FLasher_test_FLQuantAD_sexp_constructor, 1},
-    {"FLasher_test_FLQuantAD_dim_constructor", (DL_FUNC) &FLasher_test_FLQuantAD_dim_constructor, 6},
-    {"FLasher_test_FLQuantAD_copy_constructor", (DL_FUNC) &FLasher_test_FLQuantAD_copy_constructor, 1},
-    {"FLasher_test_FLQuantAD_copy_constructor2", (DL_FUNC) &FLasher_test_FLQuantAD_copy_constructor2, 8},
-    {"FLasher_test_FLQuantAD_assignment_operator", (DL_FUNC) &FLasher_test_FLQuantAD_assignment_operator, 1},
-    {"FLasher_test_FLQuantAD_assignment_operator2", (DL_FUNC) &FLasher_test_FLQuantAD_assignment_operator2, 8},
-    {"FLasher_test_FLQuantAD_from_FLQuant_constructor", (DL_FUNC) &FLasher_test_FLQuantAD_from_FLQuant_constructor, 1},
-    {"FLasher_test_FLQuantAD_get_units", (DL_FUNC) &FLasher_test_FLQuantAD_get_units, 1},
-    {"FLasher_test_FLQuantAD_get_dim", (DL_FUNC) &FLasher_test_FLQuantAD_get_dim, 1},
-    {"FLasher_test_FLQuantAD_get_dimnames", (DL_FUNC) &FLasher_test_FLQuantAD_get_dimnames, 1},
-    {"FLasher_test_FLQuantAD_get_size", (DL_FUNC) &FLasher_test_FLQuantAD_get_size, 1},
-    {"FLasher_test_FLQuantAD_get_nquant", (DL_FUNC) &FLasher_test_FLQuantAD_get_nquant, 1},
-    {"FLasher_test_FLQuantAD_get_nyear", (DL_FUNC) &FLasher_test_FLQuantAD_get_nyear, 1},
-    {"FLasher_test_FLQuantAD_get_nunit", (DL_FUNC) &FLasher_test_FLQuantAD_get_nunit, 1},
-    {"FLasher_test_FLQuantAD_get_nseason", (DL_FUNC) &FLasher_test_FLQuantAD_get_nseason, 1},
-    {"FLasher_test_FLQuantAD_get_narea", (DL_FUNC) &FLasher_test_FLQuantAD_get_narea, 1},
-    {"FLasher_test_FLQuantAD_get_niter", (DL_FUNC) &FLasher_test_FLQuantAD_get_niter, 1},
-    {"FLasher_test_FLQuantAD_get_data_element", (DL_FUNC) &FLasher_test_FLQuantAD_get_data_element, 7},
-    {"FLasher_test_FLQuantAD_get_const_single_index_accessor", (DL_FUNC) &FLasher_test_FLQuantAD_get_const_single_index_accessor, 2},
-    {"FLasher_test_FLQuantAD_get_single_index_accessor", (DL_FUNC) &FLasher_test_FLQuantAD_get_single_index_accessor, 2},
-    {"FLasher_test_FLQuantAD_set_single_index_accessor", (DL_FUNC) &FLasher_test_FLQuantAD_set_single_index_accessor, 3},
-    {"FLasher_test_FLQuantAD_const_get_accessor", (DL_FUNC) &FLasher_test_FLQuantAD_const_get_accessor, 7},
-    {"FLasher_test_FLQuantAD_get_accessor", (DL_FUNC) &FLasher_test_FLQuantAD_get_accessor, 7},
-    {"FLasher_test_FLQuantAD_set_accessor", (DL_FUNC) &FLasher_test_FLQuantAD_set_accessor, 8},
-    {"FLasher_test_FLQuantAD_get_const_indices_accessor", (DL_FUNC) &FLasher_test_FLQuantAD_get_const_indices_accessor, 2},
-    {"FLasher_test_FLQuantAD_get_indices_accessor", (DL_FUNC) &FLasher_test_FLQuantAD_get_indices_accessor, 2},
-    {"FLasher_test_FLQuantAD_set_indices_accessor", (DL_FUNC) &FLasher_test_FLQuantAD_set_indices_accessor, 3},
-    {"FLasher_test_FLQuantAD_set_dimnames", (DL_FUNC) &FLasher_test_FLQuantAD_set_dimnames, 2},
-    {"FLasher_test_FLQuantAD_FLQuantAD_match_dims", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuantAD_match_dims, 2},
-    {"FLasher_test_FLQuantAD_FLQuant_match_dims", (DL_FUNC) &FLasher_test_FLQuantAD_FLQuant_match_dims, 2},
-    {"FLasher_test_FLQuant_FLQuantAD_match_dims", (DL_FUNC) &FLasher_test_FLQuant_FLQuantAD_match_dims, 2},
-    {"FLasher_test_FLQuantAD_fill", (DL_FUNC) &FLasher_test_FLQuantAD_fill, 2},
-    {"FLasher_test_FLQuantAD_fill_double", (DL_FUNC) &FLasher_test_FLQuantAD_fill_double, 2},
-    {"FLasher_testFLCppAD", (DL_FUNC) &FLasher_testFLCppAD, 1},
-    {"FLasher_FLPar_units", (DL_FUNC) &FLasher_FLPar_units, 1},
-    {"FLasher_test_FLQuant_as_wrap", (DL_FUNC) &FLasher_test_FLQuant_as_wrap, 1},
-    {"FLasher_test_FLQuant_basic_constructor", (DL_FUNC) &FLasher_test_FLQuant_basic_constructor, 0},
-    {"FLasher_test_FLQuant_sexp_constructor", (DL_FUNC) &FLasher_test_FLQuant_sexp_constructor, 1},
-    {"FLasher_test_FLQuant_dim_constructor", (DL_FUNC) &FLasher_test_FLQuant_dim_constructor, 6},
-    {"FLasher_test_FLQuant_dim_value_constructor", (DL_FUNC) &FLasher_test_FLQuant_dim_value_constructor, 7},
-    {"FLasher_test_FLQuant_intvec_dim_constructor", (DL_FUNC) &FLasher_test_FLQuant_intvec_dim_constructor, 1},
-    {"FLasher_test_FLQuant_intvec_dim_value_constructor", (DL_FUNC) &FLasher_test_FLQuant_intvec_dim_value_constructor, 2},
-    {"FLasher_test_FLQuant_copy_constructor", (DL_FUNC) &FLasher_test_FLQuant_copy_constructor, 1},
-    {"FLasher_test_FLQuant_copy_constructor2", (DL_FUNC) &FLasher_test_FLQuant_copy_constructor2, 8},
-    {"FLasher_test_FLQuant_assignment_operator", (DL_FUNC) &FLasher_test_FLQuant_assignment_operator, 1},
-    {"FLasher_test_FLQuant_assignment_operator2", (DL_FUNC) &FLasher_test_FLQuant_assignment_operator2, 8},
-    {"FLasher_test_FLQuant_from_FLQuantAD_constructor", (DL_FUNC) &FLasher_test_FLQuant_from_FLQuantAD_constructor, 1},
-    {"FLasher_test_FLQuant_get_data", (DL_FUNC) &FLasher_test_FLQuant_get_data, 1},
-    {"FLasher_test_FLQuant_get_units", (DL_FUNC) &FLasher_test_FLQuant_get_units, 1},
-    {"FLasher_test_FLQuant_get_dim", (DL_FUNC) &FLasher_test_FLQuant_get_dim, 1},
-    {"FLasher_test_FLQuant_get_dimnames", (DL_FUNC) &FLasher_test_FLQuant_get_dimnames, 1},
-    {"FLasher_test_FLQuant_get_dimnames2", (DL_FUNC) &FLasher_test_FLQuant_get_dimnames2, 1},
-    {"FLasher_test_FLQuant_get_size", (DL_FUNC) &FLasher_test_FLQuant_get_size, 1},
-    {"FLasher_test_FLQuant_get_nquant", (DL_FUNC) &FLasher_test_FLQuant_get_nquant, 1},
-    {"FLasher_test_FLQuant_get_nyear", (DL_FUNC) &FLasher_test_FLQuant_get_nyear, 1},
-    {"FLasher_test_FLQuant_get_nunit", (DL_FUNC) &FLasher_test_FLQuant_get_nunit, 1},
-    {"FLasher_test_FLQuant_get_nseason", (DL_FUNC) &FLasher_test_FLQuant_get_nseason, 1},
-    {"FLasher_test_FLQuant_get_narea", (DL_FUNC) &FLasher_test_FLQuant_get_narea, 1},
-    {"FLasher_test_FLQuant_get_niter", (DL_FUNC) &FLasher_test_FLQuant_get_niter, 1},
-    {"FLasher_test_FLQuant_get_first_age", (DL_FUNC) &FLasher_test_FLQuant_get_first_age, 1},
-    {"FLasher_test_FLQuant_get_data_element", (DL_FUNC) &FLasher_test_FLQuant_get_data_element, 7},
-    {"FLasher_test_FLQuant_get_const_single_index_accessor", (DL_FUNC) &FLasher_test_FLQuant_get_const_single_index_accessor, 2},
-    {"FLasher_test_FLQuant_get_single_index_accessor", (DL_FUNC) &FLasher_test_FLQuant_get_single_index_accessor, 2},
-    {"FLasher_test_FLQuant_set_single_index_accessor", (DL_FUNC) &FLasher_test_FLQuant_set_single_index_accessor, 3},
-    {"FLasher_test_FLQuant_const_get_accessor", (DL_FUNC) &FLasher_test_FLQuant_const_get_accessor, 7},
-    {"FLasher_test_FLQuant_get_accessor", (DL_FUNC) &FLasher_test_FLQuant_get_accessor, 7},
-    {"FLasher_test_FLQuant_set_accessor", (DL_FUNC) &FLasher_test_FLQuant_set_accessor, 8},
-    {"FLasher_test_FLQuant_get_const_indices_accessor", (DL_FUNC) &FLasher_test_FLQuant_get_const_indices_accessor, 2},
-    {"FLasher_test_FLQuant_get_indices_accessor", (DL_FUNC) &FLasher_test_FLQuant_get_indices_accessor, 2},
-    {"FLasher_test_FLQuant_set_indices_accessor", (DL_FUNC) &FLasher_test_FLQuant_set_indices_accessor, 3},
-    {"FLasher_test_FLQuant_get_all_iters", (DL_FUNC) &FLasher_test_FLQuant_get_all_iters, 6},
-    {"FLasher_test_FLQuant_set_data", (DL_FUNC) &FLasher_test_FLQuant_set_data, 2},
-    {"FLasher_test_FLQuant_set_dimnames", (DL_FUNC) &FLasher_test_FLQuant_set_dimnames, 2},
-    {"FLasher_test_FLQuant_set_units", (DL_FUNC) &FLasher_test_FLQuant_set_units, 2},
-    {"FLasher_test_FLQuant_subset", (DL_FUNC) &FLasher_test_FLQuant_subset, 13},
-    {"FLasher_test_FLQuant_neat_subset", (DL_FUNC) &FLasher_test_FLQuant_neat_subset, 3},
-    {"FLasher_test_FLQuant_propagate_iters", (DL_FUNC) &FLasher_test_FLQuant_propagate_iters, 2},
-    {"FLasher_test_FLQuant_fill", (DL_FUNC) &FLasher_test_FLQuant_fill, 2},
-    {"FLasher_test_FLQuant_FLQuant_match_dims", (DL_FUNC) &FLasher_test_FLQuant_FLQuant_match_dims, 2},
-    {"FLasher_test_FLPar_to_FLQuant", (DL_FUNC) &FLasher_test_FLPar_to_FLQuant, 1},
-    {"FLasher_test_for_range", (DL_FUNC) &FLasher_test_for_range, 2},
-    {"FLasher_test_for_range_const", (DL_FUNC) &FLasher_test_for_range_const, 2},
-    {"FLasher_test_FLQuant_for_iterator", (DL_FUNC) &FLasher_test_FLQuant_for_iterator, 2},
-    {"FLasher_test_FLQuant_for_iterator_const", (DL_FUNC) &FLasher_test_FLQuant_for_iterator_const, 2},
-    {"FLasher_test_FLQuant_lambda", (DL_FUNC) &FLasher_test_FLQuant_lambda, 2},
-    {"FLasher_test_DD_pow", (DL_FUNC) &FLasher_test_DD_pow, 2},
-    {"FLasher_test_DAD_pow", (DL_FUNC) &FLasher_test_DAD_pow, 2},
-    {"FLasher_test_ADD_pow", (DL_FUNC) &FLasher_test_ADD_pow, 2},
-    {"FLasher_test_ADAD_pow", (DL_FUNC) &FLasher_test_ADAD_pow, 2},
-    {"FLasher_test_input_subsetter_ADAD", (DL_FUNC) &FLasher_test_input_subsetter_ADAD, 4},
-    {"FLasher_test_input_subsetter_DD", (DL_FUNC) &FLasher_test_input_subsetter_DD, 4},
-    {"FLasher_test_input_subsetter_ADD", (DL_FUNC) &FLasher_test_input_subsetter_ADD, 4},
-    {"FLasher_test_input_subsetter_DAD", (DL_FUNC) &FLasher_test_input_subsetter_DAD, 4},
-    {"FLasher_test_year_season_to_timestep_FLQuant_double", (DL_FUNC) &FLasher_test_year_season_to_timestep_FLQuant_double, 3},
-    {"FLasher_test_year_season_to_timestep_FLQuant_adouble", (DL_FUNC) &FLasher_test_year_season_to_timestep_FLQuant_adouble, 3},
-    {"FLasher_test_year_season_to_timestep", (DL_FUNC) &FLasher_test_year_season_to_timestep, 3},
-    {"FLasher_test_timestep_to_year_season_FLQuant_double", (DL_FUNC) &FLasher_test_timestep_to_year_season_FLQuant_double, 2},
-    {"FLasher_test_timestep_to_year_season_FLQuant_adouble", (DL_FUNC) &FLasher_test_timestep_to_year_season_FLQuant_adouble, 2},
-    {"FLasher_test_timestep_to_year_season", (DL_FUNC) &FLasher_test_timestep_to_year_season, 2},
-    {"FLasher_test_FLQuant7_as_wrap", (DL_FUNC) &FLasher_test_FLQuant7_as_wrap, 1},
-    {"FLasher_test_FLQuant7_empty_wrap", (DL_FUNC) &FLasher_test_FLQuant7_empty_wrap, 0},
-    {"FLasher_test_FLQuant7_basic_constructor", (DL_FUNC) &FLasher_test_FLQuant7_basic_constructor, 0},
-    {"FLasher_test_FLQuant7_sexp_constructor", (DL_FUNC) &FLasher_test_FLQuant7_sexp_constructor, 1},
-    {"FLasher_test_FLQuant7_FLQuant_constructor", (DL_FUNC) &FLasher_test_FLQuant7_FLQuant_constructor, 1},
-    {"FLasher_test_FLQuant7_copy_constructor", (DL_FUNC) &FLasher_test_FLQuant7_copy_constructor, 1},
-    {"FLasher_test_FLQuant7_copy_constructor2", (DL_FUNC) &FLasher_test_FLQuant7_copy_constructor2, 9},
-    {"FLasher_test_FLQuant7_assignment_operator", (DL_FUNC) &FLasher_test_FLQuant7_assignment_operator, 1},
-    {"FLasher_test_FLQuant7_assignment_operator2", (DL_FUNC) &FLasher_test_FLQuant7_assignment_operator2, 9},
-    {"FLasher_test_FLQuant7_function_operator", (DL_FUNC) &FLasher_test_FLQuant7_function_operator, 2},
-    {"FLasher_test_FLQuant7_get_ndim7", (DL_FUNC) &FLasher_test_FLQuant7_get_ndim7, 1},
-    {"FLasher_test_FLQuant7_const_get_single_index_accessor", (DL_FUNC) &FLasher_test_FLQuant7_const_get_single_index_accessor, 2},
-    {"FLasher_test_FLQuant7_get_single_index_accessor", (DL_FUNC) &FLasher_test_FLQuant7_get_single_index_accessor, 2},
-    {"FLasher_test_FLQuant7_set_single_index_accessor", (DL_FUNC) &FLasher_test_FLQuant7_set_single_index_accessor, 3},
-    {"FLasher_test_FLQuant7_const_get_accessor", (DL_FUNC) &FLasher_test_FLQuant7_const_get_accessor, 8},
-    {"FLasher_test_FLQuant7_get_accessor", (DL_FUNC) &FLasher_test_FLQuant7_get_accessor, 8},
-    {"FLasher_test_FLQuant7_set_accessor", (DL_FUNC) &FLasher_test_FLQuant7_set_accessor, 9},
-    {"FLasher_test_FLQuant7_const_default_dim7_get_accessor", (DL_FUNC) &FLasher_test_FLQuant7_const_default_dim7_get_accessor, 1},
-    {"FLasher_test_FLQuant7_default_dim7_get_accessor", (DL_FUNC) &FLasher_test_FLQuant7_default_dim7_get_accessor, 1},
-    {"FLasher_test_FLQuant7_default_dim7_set_accessor", (DL_FUNC) &FLasher_test_FLQuant7_default_dim7_set_accessor, 2},
-    {"FLasher_test_FLQuant7_const_default_dim7_get_accessor_multi", (DL_FUNC) &FLasher_test_FLQuant7_const_default_dim7_get_accessor_multi, 7},
-    {"FLasher_test_FLQuant7_default_dim7_get_accessor_multi", (DL_FUNC) &FLasher_test_FLQuant7_default_dim7_get_accessor_multi, 7},
-    {"FLasher_test_FLQuant7_default_dim7_set_accessor_multi", (DL_FUNC) &FLasher_test_FLQuant7_default_dim7_set_accessor_multi, 8},
-    {"FLasher_test_FLQuant7AD_as_wrap", (DL_FUNC) &FLasher_test_FLQuant7AD_as_wrap, 1},
-    {"FLasher_test_FLQuant7AD_empty_wrap", (DL_FUNC) &FLasher_test_FLQuant7AD_empty_wrap, 0},
-    {"FLasher_test_FLQuant7AD_basic_constructor", (DL_FUNC) &FLasher_test_FLQuant7AD_basic_constructor, 0},
-    {"FLasher_test_FLQuant7AD_sexp_constructor", (DL_FUNC) &FLasher_test_FLQuant7AD_sexp_constructor, 1},
-    {"FLasher_test_FLQuant7AD_FLQuant_constructor", (DL_FUNC) &FLasher_test_FLQuant7AD_FLQuant_constructor, 1},
-    {"FLasher_test_FLQuant7AD_copy_constructor", (DL_FUNC) &FLasher_test_FLQuant7AD_copy_constructor, 1},
-    {"FLasher_test_FLQuant7AD_copy_constructor2", (DL_FUNC) &FLasher_test_FLQuant7AD_copy_constructor2, 9},
-    {"FLasher_test_FLQuant7AD_assignment_operator", (DL_FUNC) &FLasher_test_FLQuant7AD_assignment_operator, 1},
-    {"FLasher_test_FLQuant7AD_assignment_operator2", (DL_FUNC) &FLasher_test_FLQuant7AD_assignment_operator2, 9},
-    {"FLasher_test_FLQuant7AD_function_operator", (DL_FUNC) &FLasher_test_FLQuant7AD_function_operator, 2},
-    {"FLasher_test_FLQuant7AD_get_ndim7", (DL_FUNC) &FLasher_test_FLQuant7AD_get_ndim7, 1},
-    {"FLasher_test_FLQuant7AD_const_get_single_index_accessor", (DL_FUNC) &FLasher_test_FLQuant7AD_const_get_single_index_accessor, 2},
-    {"FLasher_test_FLQuant7AD_get_single_index_accessor", (DL_FUNC) &FLasher_test_FLQuant7AD_get_single_index_accessor, 2},
-    {"FLasher_test_FLQuant7AD_set_single_index_accessor", (DL_FUNC) &FLasher_test_FLQuant7AD_set_single_index_accessor, 3},
-    {"FLasher_test_FLQuant7AD_const_get_accessor", (DL_FUNC) &FLasher_test_FLQuant7AD_const_get_accessor, 8},
-    {"FLasher_test_FLQuant7AD_get_accessor", (DL_FUNC) &FLasher_test_FLQuant7AD_get_accessor, 8},
-    {"FLasher_test_FLQuant7AD_set_accessor", (DL_FUNC) &FLasher_test_FLQuant7AD_set_accessor, 9},
-    {"FLasher_test_FLQuant7AD_const_default_dim7_get_accessor", (DL_FUNC) &FLasher_test_FLQuant7AD_const_default_dim7_get_accessor, 1},
-    {"FLasher_test_FLQuant7AD_default_dim7_get_accessor", (DL_FUNC) &FLasher_test_FLQuant7AD_default_dim7_get_accessor, 1},
-    {"FLasher_test_FLQuant7AD_default_dim7_set_accessor", (DL_FUNC) &FLasher_test_FLQuant7AD_default_dim7_set_accessor, 2},
-    {"FLasher_test_FLQuant7AD_const_default_dim7_get_accessor_multi", (DL_FUNC) &FLasher_test_FLQuant7AD_const_default_dim7_get_accessor_multi, 7},
-    {"FLasher_test_FLQuant7AD_default_dim7_get_accessor_multi", (DL_FUNC) &FLasher_test_FLQuant7AD_default_dim7_get_accessor_multi, 7},
-    {"FLasher_test_FLQuant7AD_default_dim7_set_accessor_multi", (DL_FUNC) &FLasher_test_FLQuant7AD_default_dim7_set_accessor_multi, 8},
-    {"FLasher_test_FLQ_in_FLS", (DL_FUNC) &FLasher_test_FLQ_in_FLS, 1},
-    {"FLasher_test_FLStock_sexp_constructor", (DL_FUNC) &FLasher_test_FLStock_sexp_constructor, 1},
-    {"FLasher_test_FLStock_wrap", (DL_FUNC) &FLasher_test_FLStock_wrap, 1},
-    {"FLasher_test_FLStock_as", (DL_FUNC) &FLasher_test_FLStock_as, 1},
-    {"FLasher_test_FLStock_as_wrap", (DL_FUNC) &FLasher_test_FLStock_as_wrap, 1},
-    {"FLasher_test_FLStock_copy_constructor", (DL_FUNC) &FLasher_test_FLStock_copy_constructor, 8},
-    {"FLasher_test_FLStock_assignment_operator", (DL_FUNC) &FLasher_test_FLStock_assignment_operator, 8},
-    {"FLasher_test_fwdBiol_sexp_constructor", (DL_FUNC) &FLasher_test_fwdBiol_sexp_constructor, 1},
-    {"FLasher_test_fwdBiolAD_sexp_constructor", (DL_FUNC) &FLasher_test_fwdBiolAD_sexp_constructor, 1},
-    {"FLasher_test_fwdBiol_as_wrap", (DL_FUNC) &FLasher_test_fwdBiol_as_wrap, 1},
-    {"FLasher_test_fwdBiolAD_as_wrap", (DL_FUNC) &FLasher_test_fwdBiolAD_as_wrap, 1},
-    {"FLasher_test_fwdBiol_fwdSR_constructor", (DL_FUNC) &FLasher_test_fwdBiol_fwdSR_constructor, 5},
-    {"FLasher_test_fwdBiolAD_fwdSRAD_constructor", (DL_FUNC) &FLasher_test_fwdBiolAD_fwdSRAD_constructor, 5},
-    {"FLasher_test_fwdBiol_FLSR_bits_constructor", (DL_FUNC) &FLasher_test_fwdBiol_FLSR_bits_constructor, 5},
-    {"FLasher_test_fwdBiolAD_FLSR_residuals_constructor", (DL_FUNC) &FLasher_test_fwdBiolAD_FLSR_residuals_constructor, 3},
-    {"FLasher_test_fwdBiolAD_FLSR_bits_constructor", (DL_FUNC) &FLasher_test_fwdBiolAD_FLSR_bits_constructor, 5},
-    {"FLasher_test_fwdBiol_copy_constructor", (DL_FUNC) &FLasher_test_fwdBiol_copy_constructor, 1},
-    {"FLasher_test_fwdBiolAD_copy_constructor", (DL_FUNC) &FLasher_test_fwdBiolAD_copy_constructor, 1},
-    {"FLasher_test_fwdBiol_copy_constructor2", (DL_FUNC) &FLasher_test_fwdBiol_copy_constructor2, 8},
-    {"FLasher_test_fwdBiolAD_copy_constructor2", (DL_FUNC) &FLasher_test_fwdBiolAD_copy_constructor2, 8},
-    {"FLasher_test_fwdBiol_assignment_operator", (DL_FUNC) &FLasher_test_fwdBiol_assignment_operator, 1},
-    {"FLasher_test_fwdBiolAD_assignment_operator", (DL_FUNC) &FLasher_test_fwdBiolAD_assignment_operator, 1},
-    {"FLasher_test_fwdBiol_assignment_operator2", (DL_FUNC) &FLasher_test_fwdBiol_assignment_operator2, 8},
-    {"FLasher_test_fwdBiolAD_assignment_operator2", (DL_FUNC) &FLasher_test_fwdBiolAD_assignment_operator2, 8},
-    {"FLasher_test_fwdBiol_const_get_accessors", (DL_FUNC) &FLasher_test_fwdBiol_const_get_accessors, 7},
-    {"FLasher_test_fwdBiol_const_get_accessors_subset", (DL_FUNC) &FLasher_test_fwdBiol_const_get_accessors_subset, 3},
-    {"FLasher_test_fwdBiol_get_accessors", (DL_FUNC) &FLasher_test_fwdBiol_get_accessors, 7},
-    {"FLasher_test_fwdBiolAD_const_get_accessors", (DL_FUNC) &FLasher_test_fwdBiolAD_const_get_accessors, 7},
-    {"FLasher_test_fwdBiolAD_get_accessors", (DL_FUNC) &FLasher_test_fwdBiolAD_get_accessors, 7},
-    {"FLasher_test_fwdBiol_set_accessors", (DL_FUNC) &FLasher_test_fwdBiol_set_accessors, 8},
-    {"FLasher_test_fwdBiolAD_set_accessors", (DL_FUNC) &FLasher_test_fwdBiolAD_set_accessors, 8},
-    {"FLasher_fwdBiolAD_biomass_FLQ", (DL_FUNC) &FLasher_fwdBiolAD_biomass_FLQ, 1},
-    {"FLasher_fwdBiolAD_biomass_subset", (DL_FUNC) &FLasher_fwdBiolAD_biomass_subset, 3},
-    {"FLasher_test_fwdBiolAD_n_direct_set_accessor", (DL_FUNC) &FLasher_test_fwdBiolAD_n_direct_set_accessor, 8},
-    {"FLasher_test_fwdBiolAD_n_direct_get_accessor", (DL_FUNC) &FLasher_test_fwdBiolAD_n_direct_get_accessor, 7},
-    {"FLasher_test_fwdBiol_srp_timelag", (DL_FUNC) &FLasher_test_fwdBiol_srp_timelag, 1},
-    {"FLasher_test_fwdBiols_as_wrap", (DL_FUNC) &FLasher_test_fwdBiols_as_wrap, 1},
-    {"FLasher_test_fwdBiolsAD_as_wrap", (DL_FUNC) &FLasher_test_fwdBiolsAD_as_wrap, 1},
-    {"FLasher_test_fwdBiolsAD_fwdBiolAD_constructor", (DL_FUNC) &FLasher_test_fwdBiolsAD_fwdBiolAD_constructor, 3},
-    {"FLasher_test_fwdBiolsAD_const_get_single_index_accessor", (DL_FUNC) &FLasher_test_fwdBiolsAD_const_get_single_index_accessor, 2},
-    {"FLasher_test_fwdBiolsAD_get_single_index_accessor", (DL_FUNC) &FLasher_test_fwdBiolsAD_get_single_index_accessor, 2},
-    {"FLasher_test_fwdBiolsAD_const_get_value_accessor", (DL_FUNC) &FLasher_test_fwdBiolsAD_const_get_value_accessor, 8},
-    {"FLasher_test_fwdBiolsAD_get_value_accessor", (DL_FUNC) &FLasher_test_fwdBiolsAD_get_value_accessor, 8},
-    {"FLasher_test_fwdBiolsAD_set_single_index_accessor", (DL_FUNC) &FLasher_test_fwdBiolsAD_set_single_index_accessor, 5},
-    {"FLasher_test_fwdBiolsAD_set_value_accessor", (DL_FUNC) &FLasher_test_fwdBiolsAD_set_value_accessor, 9},
-    {"FLasher_test_fwdBiolsAD_copy_constructor", (DL_FUNC) &FLasher_test_fwdBiolsAD_copy_constructor, 4},
-    {"FLasher_test_fwdBiolsAD_assignment_operator", (DL_FUNC) &FLasher_test_fwdBiolsAD_assignment_operator, 4},
-    {"FLasher_test_fwdBiolsAD_const_iterator", (DL_FUNC) &FLasher_test_fwdBiolsAD_const_iterator, 1},
-    {"FLasher_test_fwdBiolsAD_iterator", (DL_FUNC) &FLasher_test_fwdBiolsAD_iterator, 8},
-    {"FLasher_test_as_wrap_fwdControl", (DL_FUNC) &FLasher_test_as_wrap_fwdControl, 1},
-    {"FLasher_test_fwdControl_copy_constructor", (DL_FUNC) &FLasher_test_fwdControl_copy_constructor, 1},
-    {"FLasher_test_fwdControl_assignment_operator", (DL_FUNC) &FLasher_test_fwdControl_assignment_operator, 1},
-    {"FLasher_test_fwdControl_get_target", (DL_FUNC) &FLasher_test_fwdControl_get_target, 1},
-    {"FLasher_test_fwdControl_get_ntarget", (DL_FUNC) &FLasher_test_fwdControl_get_ntarget, 1},
-    {"FLasher_test_fwdControl_get_niter", (DL_FUNC) &FLasher_test_fwdControl_get_niter, 1},
-    {"FLasher_test_fwdControl_get_nsim_target", (DL_FUNC) &FLasher_test_fwdControl_get_nsim_target, 2},
-    {"FLasher_test_fwdControl_get_target_row", (DL_FUNC) &FLasher_test_fwdControl_get_target_row, 3},
-    {"FLasher_test_fwdControl_get_target_rows", (DL_FUNC) &FLasher_test_fwdControl_get_target_rows, 2},
-    {"FLasher_test_fwdControl_get_target_int_col", (DL_FUNC) &FLasher_test_fwdControl_get_target_int_col, 3},
-    {"FLasher_test_fwdControl_get_target_int_col2", (DL_FUNC) &FLasher_test_fwdControl_get_target_int_col2, 4},
-    {"FLasher_test_fwdControl_get_target_list_int_col", (DL_FUNC) &FLasher_test_fwdControl_get_target_list_int_col, 3},
-    {"FLasher_test_fwdControl_get_target_list_int_col2", (DL_FUNC) &FLasher_test_fwdControl_get_target_list_int_col2, 4},
-    {"FLasher_test_fwdControl_get_target_num_col", (DL_FUNC) &FLasher_test_fwdControl_get_target_num_col, 3},
-    {"FLasher_test_fwdControl_get_target_num_col2", (DL_FUNC) &FLasher_test_fwdControl_get_target_num_col2, 4},
-    {"FLasher_test_fwdControl_get_target_value", (DL_FUNC) &FLasher_test_fwdControl_get_target_value, 3},
-    {"FLasher_test_fwdControl_get_target_value2", (DL_FUNC) &FLasher_test_fwdControl_get_target_value2, 4},
-    {"FLasher_test_fwdControl_get_target_quantity", (DL_FUNC) &FLasher_test_fwdControl_get_target_quantity, 3},
-    {"FLasher_test_fwdControl_get_age_range", (DL_FUNC) &FLasher_test_fwdControl_get_age_range, 3},
-    {"FLasher_test_fwdControl_get_FC", (DL_FUNC) &FLasher_test_fwdControl_get_FC, 2},
-    {"FLasher_test_fwdControl_get_B", (DL_FUNC) &FLasher_test_fwdControl_get_B, 3},
-    {"FLasher_test_fwdControl_get_F", (DL_FUNC) &FLasher_test_fwdControl_get_F, 2},
-    {"FLasher_test_fwdControl_get_FCB_nrow", (DL_FUNC) &FLasher_test_fwdControl_get_FCB_nrow, 1},
-    {"FLasher_test_fwdControl_get_FCB_row_no", (DL_FUNC) &FLasher_test_fwdControl_get_FCB_row_no, 4},
-    {"FLasher_test_fwdControl_get_FCB_nos", (DL_FUNC) &FLasher_test_fwdControl_get_FCB_nos, 5},
-    {"FLasher_test_fwdControl_shared_catch", (DL_FUNC) &FLasher_test_fwdControl_shared_catch, 2},
-    {"FLasher_test_fwdSR_empty_constructor", (DL_FUNC) &FLasher_test_fwdSR_empty_constructor, 0},
-    {"FLasher_test_fwdSR_constructor_wrap", (DL_FUNC) &FLasher_test_fwdSR_constructor_wrap, 4},
-    {"FLasher_test_fwdSR_get_nparams", (DL_FUNC) &FLasher_test_fwdSR_get_nparams, 4},
-    {"FLasher_test_fwdSR_eval", (DL_FUNC) &FLasher_test_fwdSR_eval, 6},
-    {"FLasher_test_fwdSR_get_params", (DL_FUNC) &FLasher_test_fwdSR_get_params, 5},
-    {"FLasher_test_fwdSR_copy_constructor", (DL_FUNC) &FLasher_test_fwdSR_copy_constructor, 5},
-    {"FLasher_test_fwdSR_assignment_operator", (DL_FUNC) &FLasher_test_fwdSR_assignment_operator, 5},
-    {"FLasher_test_fwdSR_predict_recruitment", (DL_FUNC) &FLasher_test_fwdSR_predict_recruitment, 6},
-    {"FLasher_test_fwdSR_does_recruitment_happen", (DL_FUNC) &FLasher_test_fwdSR_does_recruitment_happen, 7},
-    {"FLasher_test_operatingModel_empty_constructor", (DL_FUNC) &FLasher_test_operatingModel_empty_constructor, 0},
-    {"FLasher_test_operatingModel_full_constructor", (DL_FUNC) &FLasher_test_operatingModel_full_constructor, 3},
-    {"FLasher_test_operatingModel_get_niter", (DL_FUNC) &FLasher_test_operatingModel_get_niter, 3},
-    {"FLasher_test_operatingModel_get_exp_z_pre_spwn", (DL_FUNC) &FLasher_test_operatingModel_get_exp_z_pre_spwn, 6},
-    {"FLasher_test_operatingModel_f_prop_spwn_FLQ_subset", (DL_FUNC) &FLasher_test_operatingModel_f_prop_spwn_FLQ_subset, 7},
-    {"FLasher_test_operatingModel_SRP_FLQ_subset", (DL_FUNC) &FLasher_test_operatingModel_SRP_FLQ_subset, 6},
-    {"FLasher_test_operatingModel_total_SRP_FLQ_subset", (DL_FUNC) &FLasher_test_operatingModel_total_SRP_FLQ_subset, 6},
-    {"FLasher_test_operatingModel_calc_rec", (DL_FUNC) &FLasher_test_operatingModel_calc_rec, 6},
-    {"FLasher_test_operatingModel_get_f_FCB", (DL_FUNC) &FLasher_test_operatingModel_get_f_FCB, 6},
-    {"FLasher_test_operatingModel_get_f_FCB_subset", (DL_FUNC) &FLasher_test_operatingModel_get_f_FCB_subset, 8},
-    {"FLasher_test_operatingModel_get_f_B_subset", (DL_FUNC) &FLasher_test_operatingModel_get_f_B_subset, 6},
-    {"FLasher_test_operatingModel_get_f_B", (DL_FUNC) &FLasher_test_operatingModel_get_f_B, 4},
-    {"FLasher_test_operatingModel_fbar_FCB", (DL_FUNC) &FLasher_test_operatingModel_fbar_FCB, 8},
-    {"FLasher_test_operatingModel_fbar_B", (DL_FUNC) &FLasher_test_operatingModel_fbar_B, 6},
-    {"FLasher_test_operatingModel_nunit_z_subset", (DL_FUNC) &FLasher_test_operatingModel_nunit_z_subset, 6},
-    {"FLasher_test_operatingModel_nunit_f_B_subset", (DL_FUNC) &FLasher_test_operatingModel_nunit_f_B_subset, 6},
-    {"FLasher_test_operatingModel_nunit_f_FCB_subset", (DL_FUNC) &FLasher_test_operatingModel_nunit_f_FCB_subset, 8},
-    {"FLasher_test_operatingModel_survivors", (DL_FUNC) &FLasher_test_operatingModel_survivors, 6},
-    {"FLasher_test_operatingModel_project_biols", (DL_FUNC) &FLasher_test_operatingModel_project_biols, 4},
-    {"FLasher_test_operatingModel_project_fisheries", (DL_FUNC) &FLasher_test_operatingModel_project_fisheries, 4},
-    {"FLasher_test_operatingModel_run", (DL_FUNC) &FLasher_test_operatingModel_run, 7},
-    {"FLasher_test_operatingModel_run2", (DL_FUNC) &FLasher_test_operatingModel_run2, 7},
-    {"FLasher_test_operatingModel_eval_om", (DL_FUNC) &FLasher_test_operatingModel_eval_om, 9},
-    {"FLasher_test_operatingModel_get_target_value_hat", (DL_FUNC) &FLasher_test_operatingModel_get_target_value_hat, 5},
-    {"FLasher_test_operatingModel_get_target_value_hat2", (DL_FUNC) &FLasher_test_operatingModel_get_target_value_hat2, 4},
-    {"FLasher_test_operatingModel_get_target_value", (DL_FUNC) &FLasher_test_operatingModel_get_target_value, 5},
-    {"FLasher_test_operatingModel_get_target_value2", (DL_FUNC) &FLasher_test_operatingModel_get_target_value2, 4},
-    {"FLasher_test_operatingModel_get_target_hat_indices", (DL_FUNC) &FLasher_test_operatingModel_get_target_hat_indices, 7},
-    {"FLasher_test_operatingModel_catches_subset", (DL_FUNC) &FLasher_test_operatingModel_catches_subset, 6},
-    {"FLasher_test_operatingModel_landings_subset", (DL_FUNC) &FLasher_test_operatingModel_landings_subset, 6},
-    {"FLasher_test_operatingModel_discards_subset", (DL_FUNC) &FLasher_test_operatingModel_discards_subset, 6},
-    {"FLasher_test_operatingModel_catch_n_subset", (DL_FUNC) &FLasher_test_operatingModel_catch_n_subset, 6},
-    {"FLasher_test_operatingModel_landings_n_subset", (DL_FUNC) &FLasher_test_operatingModel_landings_n_subset, 6},
-    {"FLasher_test_operatingModel_discards_n_subset", (DL_FUNC) &FLasher_test_operatingModel_discards_n_subset, 6},
-    {"FLasher_test_operatingModel_ssb_start", (DL_FUNC) &FLasher_test_operatingModel_ssb_start, 6},
-    {"FLasher_test_operatingModel_biomass_start", (DL_FUNC) &FLasher_test_operatingModel_biomass_start, 6},
-    {"FLasher_test_operatingModel_ssb_end", (DL_FUNC) &FLasher_test_operatingModel_ssb_end, 6},
-    {"FLasher_test_operatingModel_ssb_spawn", (DL_FUNC) &FLasher_test_operatingModel_ssb_spawn, 6},
-    {"FLasher_test_operatingModel_ssb_flash", (DL_FUNC) &FLasher_test_operatingModel_ssb_flash, 6},
-    {"FLasher_test_operatingModel_biomass_flash", (DL_FUNC) &FLasher_test_operatingModel_biomass_flash, 6},
-    {"FLasher_test_operatingModel_biomass_end", (DL_FUNC) &FLasher_test_operatingModel_biomass_end, 6},
-    {"FLasher_test_operatingModel_biomass_spawn", (DL_FUNC) &FLasher_test_operatingModel_biomass_spawn, 6},
-    {"FLasher_test_operatingModel_spawn_before_fishing", (DL_FUNC) &FLasher_test_operatingModel_spawn_before_fishing, 6},
-    {"FLasher_test_operatingModel_fishing_before_spawn", (DL_FUNC) &FLasher_test_operatingModel_fishing_before_spawn, 6},
-    {"FLasher_test_max3", (DL_FUNC) &FLasher_test_max3, 1},
-    {"FLasher_test_max2", (DL_FUNC) &FLasher_test_max2, 1},
-    {"FLasher_test_max", (DL_FUNC) &FLasher_test_max, 1},
-    {"FLasher_test_standard_conditional", (DL_FUNC) &FLasher_test_standard_conditional, 1},
-    {"FLasher_test_cppad_conditional", (DL_FUNC) &FLasher_test_cppad_conditional, 1},
-    {"FLasher_test_euclid_norm", (DL_FUNC) &FLasher_test_euclid_norm, 1},
-    {"FLasher_test_NR_quad_iters", (DL_FUNC) &FLasher_test_NR_quad_iters, 6},
-    {"FLasher_test_NR_linear", (DL_FUNC) &FLasher_test_NR_linear, 6},
-    {"FLasher_eval_user_function", (DL_FUNC) &FLasher_eval_user_function, 2},
-    {"FLasher_eval_user_gradient", (DL_FUNC) &FLasher_eval_user_gradient, 2},
+    {"_FLasher_operatingModelRun", (DL_FUNC) &_FLasher_operatingModelRun, 7},
+    {"_FLasher_test_FLQuant_FLQuant_multiplier_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuant_FLQuant_multiplier_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuant_multiplier_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuant_multiplier_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuantAD_multiplier_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuantAD_multiplier_assignment_operator, 2},
+    {"_FLasher_test_FLQuant_double_multiplier_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuant_double_multiplier_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_double_multiplier_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_double_multiplier_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_adouble_multiplier_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_adouble_multiplier_assignment_operator, 2},
+    {"_FLasher_test_FLQuant_FLQuant_multiplier_operator", (DL_FUNC) &_FLasher_test_FLQuant_FLQuant_multiplier_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuant_multiplier_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuant_multiplier_operator, 2},
+    {"_FLasher_test_FLQuant_FLQuantAD_multiplier_operator", (DL_FUNC) &_FLasher_test_FLQuant_FLQuantAD_multiplier_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuantAD_multiplier_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuantAD_multiplier_operator, 2},
+    {"_FLasher_test_FLQuant_double_multiplier_operator", (DL_FUNC) &_FLasher_test_FLQuant_double_multiplier_operator, 2},
+    {"_FLasher_test_double_FLQuant_multiplier_operator", (DL_FUNC) &_FLasher_test_double_FLQuant_multiplier_operator, 2},
+    {"_FLasher_test_double_FLQuantAD_multiplier_operator", (DL_FUNC) &_FLasher_test_double_FLQuantAD_multiplier_operator, 2},
+    {"_FLasher_test_FLQuantAD_double_multiplier_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_double_multiplier_operator, 2},
+    {"_FLasher_test_FLQuant_adouble_multiplier_operator", (DL_FUNC) &_FLasher_test_FLQuant_adouble_multiplier_operator, 2},
+    {"_FLasher_test_adouble_FLQuant_multiplier_operator", (DL_FUNC) &_FLasher_test_adouble_FLQuant_multiplier_operator, 2},
+    {"_FLasher_test_FLQuantAD_adouble_multiplier_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_adouble_multiplier_operator, 2},
+    {"_FLasher_test_adouble_FLQuantAD_multiplier_operator", (DL_FUNC) &_FLasher_test_adouble_FLQuantAD_multiplier_operator, 2},
+    {"_FLasher_test_FLQuant_FLQuant_division_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuant_FLQuant_division_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuant_division_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuant_division_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuantAD_division_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuantAD_division_assignment_operator, 2},
+    {"_FLasher_test_FLQuant_double_division_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuant_double_division_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_double_division_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_double_division_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_adouble_division_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_adouble_division_assignment_operator, 2},
+    {"_FLasher_test_FLQuant_FLQuant_division_operator", (DL_FUNC) &_FLasher_test_FLQuant_FLQuant_division_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuant_division_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuant_division_operator, 2},
+    {"_FLasher_test_FLQuant_FLQuantAD_division_operator", (DL_FUNC) &_FLasher_test_FLQuant_FLQuantAD_division_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuantAD_division_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuantAD_division_operator, 2},
+    {"_FLasher_test_FLQuant_double_division_operator", (DL_FUNC) &_FLasher_test_FLQuant_double_division_operator, 2},
+    {"_FLasher_test_double_FLQuant_division_operator", (DL_FUNC) &_FLasher_test_double_FLQuant_division_operator, 2},
+    {"_FLasher_test_double_FLQuantAD_division_operator", (DL_FUNC) &_FLasher_test_double_FLQuantAD_division_operator, 2},
+    {"_FLasher_test_FLQuantAD_double_division_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_double_division_operator, 2},
+    {"_FLasher_test_FLQuant_adouble_division_operator", (DL_FUNC) &_FLasher_test_FLQuant_adouble_division_operator, 2},
+    {"_FLasher_test_adouble_FLQuant_division_operator", (DL_FUNC) &_FLasher_test_adouble_FLQuant_division_operator, 2},
+    {"_FLasher_test_FLQuantAD_adouble_division_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_adouble_division_operator, 2},
+    {"_FLasher_test_adouble_FLQuantAD_division_operator", (DL_FUNC) &_FLasher_test_adouble_FLQuantAD_division_operator, 2},
+    {"_FLasher_test_FLQuant_FLQuant_subtraction_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuant_FLQuant_subtraction_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuant_subtraction_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuant_subtraction_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuantAD_subtraction_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuantAD_subtraction_assignment_operator, 2},
+    {"_FLasher_test_FLQuant_double_subtraction_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuant_double_subtraction_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_double_subtraction_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_double_subtraction_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_adouble_subtraction_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_adouble_subtraction_assignment_operator, 2},
+    {"_FLasher_test_FLQuant_FLQuant_subtraction_operator", (DL_FUNC) &_FLasher_test_FLQuant_FLQuant_subtraction_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuant_subtraction_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuant_subtraction_operator, 2},
+    {"_FLasher_test_FLQuant_FLQuantAD_subtraction_operator", (DL_FUNC) &_FLasher_test_FLQuant_FLQuantAD_subtraction_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuantAD_subtraction_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuantAD_subtraction_operator, 2},
+    {"_FLasher_test_FLQuant_double_subtraction_operator", (DL_FUNC) &_FLasher_test_FLQuant_double_subtraction_operator, 2},
+    {"_FLasher_test_double_FLQuant_subtraction_operator", (DL_FUNC) &_FLasher_test_double_FLQuant_subtraction_operator, 2},
+    {"_FLasher_test_double_FLQuantAD_subtraction_operator", (DL_FUNC) &_FLasher_test_double_FLQuantAD_subtraction_operator, 2},
+    {"_FLasher_test_FLQuantAD_double_subtraction_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_double_subtraction_operator, 2},
+    {"_FLasher_test_FLQuant_adouble_subtraction_operator", (DL_FUNC) &_FLasher_test_FLQuant_adouble_subtraction_operator, 2},
+    {"_FLasher_test_adouble_FLQuant_subtraction_operator", (DL_FUNC) &_FLasher_test_adouble_FLQuant_subtraction_operator, 2},
+    {"_FLasher_test_FLQuantAD_adouble_subtraction_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_adouble_subtraction_operator, 2},
+    {"_FLasher_test_adouble_FLQuantAD_subtraction_operator", (DL_FUNC) &_FLasher_test_adouble_FLQuantAD_subtraction_operator, 2},
+    {"_FLasher_test_FLQuant_FLQuant_addition_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuant_FLQuant_addition_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuant_addition_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuant_addition_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuantAD_addition_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuantAD_addition_assignment_operator, 2},
+    {"_FLasher_test_FLQuant_double_addition_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuant_double_addition_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_double_addition_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_double_addition_assignment_operator, 2},
+    {"_FLasher_test_FLQuantAD_adouble_addition_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_adouble_addition_assignment_operator, 2},
+    {"_FLasher_test_FLQuant_FLQuant_addition_operator", (DL_FUNC) &_FLasher_test_FLQuant_FLQuant_addition_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuant_addition_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuant_addition_operator, 2},
+    {"_FLasher_test_FLQuant_FLQuantAD_addition_operator", (DL_FUNC) &_FLasher_test_FLQuant_FLQuantAD_addition_operator, 2},
+    {"_FLasher_test_FLQuantAD_FLQuantAD_addition_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuantAD_addition_operator, 2},
+    {"_FLasher_test_FLQuant_double_addition_operator", (DL_FUNC) &_FLasher_test_FLQuant_double_addition_operator, 2},
+    {"_FLasher_test_double_FLQuant_addition_operator", (DL_FUNC) &_FLasher_test_double_FLQuant_addition_operator, 2},
+    {"_FLasher_test_double_FLQuantAD_addition_operator", (DL_FUNC) &_FLasher_test_double_FLQuantAD_addition_operator, 2},
+    {"_FLasher_test_FLQuantAD_double_addition_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_double_addition_operator, 2},
+    {"_FLasher_test_FLQuant_adouble_addition_operator", (DL_FUNC) &_FLasher_test_FLQuant_adouble_addition_operator, 2},
+    {"_FLasher_test_adouble_FLQuant_addition_operator", (DL_FUNC) &_FLasher_test_adouble_FLQuant_addition_operator, 2},
+    {"_FLasher_test_FLQuantAD_adouble_addition_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_adouble_addition_operator, 2},
+    {"_FLasher_test_adouble_FLQuantAD_addition_operator", (DL_FUNC) &_FLasher_test_adouble_FLQuantAD_addition_operator, 2},
+    {"_FLasher_test_FLQuant_log", (DL_FUNC) &_FLasher_test_FLQuant_log, 1},
+    {"_FLasher_test_FLQuantAD_log", (DL_FUNC) &_FLasher_test_FLQuantAD_log, 1},
+    {"_FLasher_test_FLQuant_exp", (DL_FUNC) &_FLasher_test_FLQuant_exp, 1},
+    {"_FLasher_test_FLQuantAD_exp", (DL_FUNC) &_FLasher_test_FLQuantAD_exp, 1},
+    {"_FLasher_test_composite_arithmetic_operators", (DL_FUNC) &_FLasher_test_composite_arithmetic_operators, 3},
+    {"_FLasher_test_FLQuant_quant_sum", (DL_FUNC) &_FLasher_test_FLQuant_quant_sum, 1},
+    {"_FLasher_test_FLQuantAD_quant_sum", (DL_FUNC) &_FLasher_test_FLQuantAD_quant_sum, 1},
+    {"_FLasher_test_FLQuant_quant_mean", (DL_FUNC) &_FLasher_test_FLQuant_quant_mean, 1},
+    {"_FLasher_test_FLQuant_year_sum", (DL_FUNC) &_FLasher_test_FLQuant_year_sum, 1},
+    {"_FLasher_test_FLQuant_year_mean", (DL_FUNC) &_FLasher_test_FLQuant_year_mean, 1},
+    {"_FLasher_test_FLQuantAD_quant_mean", (DL_FUNC) &_FLasher_test_FLQuantAD_quant_mean, 1},
+    {"_FLasher_test_FLQuant_max_quant", (DL_FUNC) &_FLasher_test_FLQuant_max_quant, 1},
+    {"_FLasher_test_FLQuantAD_max_quant", (DL_FUNC) &_FLasher_test_FLQuantAD_max_quant, 1},
+    {"_FLasher_test_FLQuant_scale_by_max_quant", (DL_FUNC) &_FLasher_test_FLQuant_scale_by_max_quant, 1},
+    {"_FLasher_test_FLQuantAD_scale_by_max_quant", (DL_FUNC) &_FLasher_test_FLQuantAD_scale_by_max_quant, 1},
+    {"_FLasher_test_FLQuantAD_unit_sum", (DL_FUNC) &_FLasher_test_FLQuantAD_unit_sum, 1},
+    {"_FLasher_test_sweep_multADAD", (DL_FUNC) &_FLasher_test_sweep_multADAD, 2},
+    {"_FLasher_test_sweep_multDD", (DL_FUNC) &_FLasher_test_sweep_multDD, 2},
+    {"_FLasher_test_sweep_multADD", (DL_FUNC) &_FLasher_test_sweep_multADD, 2},
+    {"_FLasher_test_sweep_multDAD", (DL_FUNC) &_FLasher_test_sweep_multDAD, 2},
+    {"_FLasher_test_sweep_divADAD", (DL_FUNC) &_FLasher_test_sweep_divADAD, 2},
+    {"_FLasher_test_sweep_divDD", (DL_FUNC) &_FLasher_test_sweep_divDD, 2},
+    {"_FLasher_test_sweep_divADD", (DL_FUNC) &_FLasher_test_sweep_divADD, 2},
+    {"_FLasher_test_sweep_divDAD", (DL_FUNC) &_FLasher_test_sweep_divDAD, 2},
+    {"_FLasher_test_sweep_plusADAD", (DL_FUNC) &_FLasher_test_sweep_plusADAD, 2},
+    {"_FLasher_test_sweep_plusDD", (DL_FUNC) &_FLasher_test_sweep_plusDD, 2},
+    {"_FLasher_test_sweep_plusADD", (DL_FUNC) &_FLasher_test_sweep_plusADD, 2},
+    {"_FLasher_test_sweep_plusDAD", (DL_FUNC) &_FLasher_test_sweep_plusDAD, 2},
+    {"_FLasher_test_sweep_minusADAD", (DL_FUNC) &_FLasher_test_sweep_minusADAD, 2},
+    {"_FLasher_test_sweep_minusDD", (DL_FUNC) &_FLasher_test_sweep_minusDD, 2},
+    {"_FLasher_test_sweep_minusADD", (DL_FUNC) &_FLasher_test_sweep_minusADD, 2},
+    {"_FLasher_test_sweep_minusDAD", (DL_FUNC) &_FLasher_test_sweep_minusDAD, 2},
+    {"_FLasher_test_int_is_na", (DL_FUNC) &_FLasher_test_int_is_na, 1},
+    {"_FLasher_test_double_is_na", (DL_FUNC) &_FLasher_test_double_is_na, 1},
+    {"_FLasher_test_simple_FLCatch_sexp_constructor", (DL_FUNC) &_FLasher_test_simple_FLCatch_sexp_constructor, 1},
+    {"_FLasher_test_FLCatch_sexp_constructor", (DL_FUNC) &_FLasher_test_FLCatch_sexp_constructor, 1},
+    {"_FLasher_test_FLCatchAD_sexp_constructor", (DL_FUNC) &_FLasher_test_FLCatchAD_sexp_constructor, 1},
+    {"_FLasher_test_FLCatch_as_wrap", (DL_FUNC) &_FLasher_test_FLCatch_as_wrap, 1},
+    {"_FLasher_test_FLCatchAD_as_wrap", (DL_FUNC) &_FLasher_test_FLCatchAD_as_wrap, 1},
+    {"_FLasher_test_FLCatch_copy_constructor", (DL_FUNC) &_FLasher_test_FLCatch_copy_constructor, 1},
+    {"_FLasher_test_FLCatchAD_copy_constructor", (DL_FUNC) &_FLasher_test_FLCatchAD_copy_constructor, 1},
+    {"_FLasher_test_FLCatch_copy_constructor2", (DL_FUNC) &_FLasher_test_FLCatch_copy_constructor2, 8},
+    {"_FLasher_test_FLCatchAD_copy_constructor2", (DL_FUNC) &_FLasher_test_FLCatchAD_copy_constructor2, 8},
+    {"_FLasher_test_FLCatch_assignment_operator", (DL_FUNC) &_FLasher_test_FLCatch_assignment_operator, 1},
+    {"_FLasher_test_FLCatchAD_assignment_operator", (DL_FUNC) &_FLasher_test_FLCatchAD_assignment_operator, 1},
+    {"_FLasher_test_FLCatch_assignment_operator2", (DL_FUNC) &_FLasher_test_FLCatch_assignment_operator2, 8},
+    {"_FLasher_test_FLCatchAD_assignment_operator2", (DL_FUNC) &_FLasher_test_FLCatchAD_assignment_operator2, 8},
+    {"_FLasher_test_FLCatch_const_get_accessors", (DL_FUNC) &_FLasher_test_FLCatch_const_get_accessors, 7},
+    {"_FLasher_test_FLCatch_const_get_accessors_subset", (DL_FUNC) &_FLasher_test_FLCatch_const_get_accessors_subset, 3},
+    {"_FLasher_test_FLCatchAD_const_get_accessors", (DL_FUNC) &_FLasher_test_FLCatchAD_const_get_accessors, 7},
+    {"_FLasher_test_FLCatch_get_accessors", (DL_FUNC) &_FLasher_test_FLCatch_get_accessors, 7},
+    {"_FLasher_test_FLCatchAD_get_accessors", (DL_FUNC) &_FLasher_test_FLCatchAD_get_accessors, 7},
+    {"_FLasher_test_FLCatch_set_accessors", (DL_FUNC) &_FLasher_test_FLCatch_set_accessors, 8},
+    {"_FLasher_test_FLCatchAD_set_accessors", (DL_FUNC) &_FLasher_test_FLCatchAD_set_accessors, 8},
+    {"_FLasher_test_FLCatch_revenue_subset", (DL_FUNC) &_FLasher_test_FLCatch_revenue_subset, 3},
+    {"_FLasher_test_FLCatch_revenue", (DL_FUNC) &_FLasher_test_FLCatch_revenue, 1},
+    {"_FLasher_test_FLCatch_landings", (DL_FUNC) &_FLasher_test_FLCatch_landings, 1},
+    {"_FLasher_test_FLCatchAD_landings", (DL_FUNC) &_FLasher_test_FLCatchAD_landings, 1},
+    {"_FLasher_test_FLCatch_discards", (DL_FUNC) &_FLasher_test_FLCatch_discards, 1},
+    {"_FLasher_test_FLCatchAD_discards", (DL_FUNC) &_FLasher_test_FLCatchAD_discards, 1},
+    {"_FLasher_test_FLCatch_catch_n", (DL_FUNC) &_FLasher_test_FLCatch_catch_n, 1},
+    {"_FLasher_test_FLCatchAD_catch_n", (DL_FUNC) &_FLasher_test_FLCatchAD_catch_n, 1},
+    {"_FLasher_test_FLCatch_catch_wt", (DL_FUNC) &_FLasher_test_FLCatch_catch_wt, 1},
+    {"_FLasher_test_FLCatchAD_catch_wt", (DL_FUNC) &_FLasher_test_FLCatchAD_catch_wt, 1},
+    {"_FLasher_test_FLCatch_catches", (DL_FUNC) &_FLasher_test_FLCatch_catches, 1},
+    {"_FLasher_test_FLCatchAD_catches", (DL_FUNC) &_FLasher_test_FLCatchAD_catches, 1},
+    {"_FLasher_test_FLCatch_discards_ratio", (DL_FUNC) &_FLasher_test_FLCatch_discards_ratio, 1},
+    {"_FLasher_test_FLCatchAD_discards_ratio", (DL_FUNC) &_FLasher_test_FLCatchAD_discards_ratio, 1},
+    {"_FLasher_test_FLCatch_landings_sel", (DL_FUNC) &_FLasher_test_FLCatch_landings_sel, 1},
+    {"_FLasher_test_FLCatchAD_landings_sel", (DL_FUNC) &_FLasher_test_FLCatchAD_landings_sel, 1},
+    {"_FLasher_test_FLCatch_discards_sel", (DL_FUNC) &_FLasher_test_FLCatch_discards_sel, 1},
+    {"_FLasher_test_FLCatchAD_discards_sel", (DL_FUNC) &_FLasher_test_FLCatchAD_discards_sel, 1},
+    {"_FLasher_test_FLCatchAD_catch_q_params", (DL_FUNC) &_FLasher_test_FLCatchAD_catch_q_params, 2},
+    {"_FLasher_test_FLCatchAD_catch_q_params_subset", (DL_FUNC) &_FLasher_test_FLCatchAD_catch_q_params_subset, 3},
+    {"_FLasher_test_FLCatches_as_wrap", (DL_FUNC) &_FLasher_test_FLCatches_as_wrap, 1},
+    {"_FLasher_test_FLCatches_sexp_constructor", (DL_FUNC) &_FLasher_test_FLCatches_sexp_constructor, 1},
+    {"_FLasher_test_FLCatches_FLCatch_constructor", (DL_FUNC) &_FLasher_test_FLCatches_FLCatch_constructor, 1},
+    {"_FLasher_test_FLCatches_copy_constructor", (DL_FUNC) &_FLasher_test_FLCatches_copy_constructor, 1},
+    {"_FLasher_test_FLCatches_copy_constructor2", (DL_FUNC) &_FLasher_test_FLCatches_copy_constructor2, 9},
+    {"_FLasher_test_FLCatches_assignment_operator", (DL_FUNC) &_FLasher_test_FLCatches_assignment_operator, 1},
+    {"_FLasher_test_FLCatches_assignment_operator2", (DL_FUNC) &_FLasher_test_FLCatches_assignment_operator2, 9},
+    {"_FLasher_test_FLCatches_function_operator", (DL_FUNC) &_FLasher_test_FLCatches_function_operator, 2},
+    {"_FLasher_test_FLCatches_get_ncatches", (DL_FUNC) &_FLasher_test_FLCatches_get_ncatches, 1},
+    {"_FLasher_test_FLCatches_const_get_single_index_accessor", (DL_FUNC) &_FLasher_test_FLCatches_const_get_single_index_accessor, 2},
+    {"_FLasher_test_FLCatches_get_single_index_accessor", (DL_FUNC) &_FLasher_test_FLCatches_get_single_index_accessor, 2},
+    {"_FLasher_test_FLCatches_const_get_value_accessor", (DL_FUNC) &_FLasher_test_FLCatches_const_get_value_accessor, 8},
+    {"_FLasher_test_FLCatches_get_value_accessor", (DL_FUNC) &_FLasher_test_FLCatches_get_value_accessor, 8},
+    {"_FLasher_test_FLCatches_set_single_index_accessor", (DL_FUNC) &_FLasher_test_FLCatches_set_single_index_accessor, 3},
+    {"_FLasher_test_FLCatches_set_value_accessor", (DL_FUNC) &_FLasher_test_FLCatches_set_value_accessor, 9},
+    {"_FLasher_test_FLCatchesAD_as_wrap", (DL_FUNC) &_FLasher_test_FLCatchesAD_as_wrap, 1},
+    {"_FLasher_test_FLCatchesAD_sexp_constructor", (DL_FUNC) &_FLasher_test_FLCatchesAD_sexp_constructor, 1},
+    {"_FLasher_test_FLCatchesAD_FLCatchAD_constructor", (DL_FUNC) &_FLasher_test_FLCatchesAD_FLCatchAD_constructor, 1},
+    {"_FLasher_test_FLCatchesAD_copy_constructor", (DL_FUNC) &_FLasher_test_FLCatchesAD_copy_constructor, 1},
+    {"_FLasher_test_FLCatchesAD_copy_constructor2", (DL_FUNC) &_FLasher_test_FLCatchesAD_copy_constructor2, 9},
+    {"_FLasher_test_FLCatchesAD_assignment_operator", (DL_FUNC) &_FLasher_test_FLCatchesAD_assignment_operator, 1},
+    {"_FLasher_test_FLCatchesAD_assignment_operator2", (DL_FUNC) &_FLasher_test_FLCatchesAD_assignment_operator2, 9},
+    {"_FLasher_test_FLCatchesAD_function_operator", (DL_FUNC) &_FLasher_test_FLCatchesAD_function_operator, 2},
+    {"_FLasher_test_FLCatchesAD_get_ncatches", (DL_FUNC) &_FLasher_test_FLCatchesAD_get_ncatches, 1},
+    {"_FLasher_test_FLCatchesAD_const_get_single_index_accessor", (DL_FUNC) &_FLasher_test_FLCatchesAD_const_get_single_index_accessor, 2},
+    {"_FLasher_test_FLCatchesAD_get_single_index_accessor", (DL_FUNC) &_FLasher_test_FLCatchesAD_get_single_index_accessor, 2},
+    {"_FLasher_test_FLCatchesAD_const_get_value_accessor", (DL_FUNC) &_FLasher_test_FLCatchesAD_const_get_value_accessor, 8},
+    {"_FLasher_test_FLCatchesAD_get_value_accessor", (DL_FUNC) &_FLasher_test_FLCatchesAD_get_value_accessor, 8},
+    {"_FLasher_test_FLCatchesAD_set_single_index_accessor", (DL_FUNC) &_FLasher_test_FLCatchesAD_set_single_index_accessor, 3},
+    {"_FLasher_test_FLCatchesAD_set_value_accessor", (DL_FUNC) &_FLasher_test_FLCatchesAD_set_value_accessor, 9},
+    {"_FLasher_test_FLCatchesAD_const_iterator", (DL_FUNC) &_FLasher_test_FLCatchesAD_const_iterator, 1},
+    {"_FLasher_test_FLCatchesAD_iterator", (DL_FUNC) &_FLasher_test_FLCatchesAD_iterator, 8},
+    {"_FLasher_test_FLFishery_empty_constructor", (DL_FUNC) &_FLasher_test_FLFishery_empty_constructor, 0},
+    {"_FLasher_test_simple_FLFishery_sexp_constructor", (DL_FUNC) &_FLasher_test_simple_FLFishery_sexp_constructor, 1},
+    {"_FLasher_test_FLFishery_sexp_constructor", (DL_FUNC) &_FLasher_test_FLFishery_sexp_constructor, 1},
+    {"_FLasher_test_FLFishery_as_wrap", (DL_FUNC) &_FLasher_test_FLFishery_as_wrap, 1},
+    {"_FLasher_test_FLFishery_copy_constructor", (DL_FUNC) &_FLasher_test_FLFishery_copy_constructor, 1},
+    {"_FLasher_test_FLFishery_assignment_operator", (DL_FUNC) &_FLasher_test_FLFishery_assignment_operator, 1},
+    {"_FLasher_test_FLFishery_const_catches_get_accessors", (DL_FUNC) &_FLasher_test_FLFishery_const_catches_get_accessors, 8},
+    {"_FLasher_test_FLFishery_catches_get_accessors", (DL_FUNC) &_FLasher_test_FLFishery_catches_get_accessors, 8},
+    {"_FLasher_test_FLFishery_const_economics_get_accessors", (DL_FUNC) &_FLasher_test_FLFishery_const_economics_get_accessors, 6},
+    {"_FLasher_test_FLFishery_const_get_hperiod", (DL_FUNC) &_FLasher_test_FLFishery_const_get_hperiod, 7},
+    {"_FLasher_test_FLFishery_get_hperiod", (DL_FUNC) &_FLasher_test_FLFishery_get_hperiod, 7},
+    {"_FLasher_test_FLFishery_set_hperiod", (DL_FUNC) &_FLasher_test_FLFishery_set_hperiod, 8},
+    {"_FLasher_test_FLFishery_get_effort_subset", (DL_FUNC) &_FLasher_test_FLFishery_get_effort_subset, 3},
+    {"_FLasher_test_FLFishery_get_effort", (DL_FUNC) &_FLasher_test_FLFishery_get_effort, 1},
+    {"_FLasher_test_FLFishery_economics_get_accessors", (DL_FUNC) &_FLasher_test_FLFishery_economics_get_accessors, 6},
+    {"_FLasher_test_FLFishery_set_accessors", (DL_FUNC) &_FLasher_test_FLFishery_set_accessors, 9},
+    {"_FLasher_test_FLFishery_copy_constructor2", (DL_FUNC) &_FLasher_test_FLFishery_copy_constructor2, 9},
+    {"_FLasher_test_FLFishery_assignment_operator2", (DL_FUNC) &_FLasher_test_FLFishery_assignment_operator2, 9},
+    {"_FLasher_test_FLFisheryAD_empty_constructor", (DL_FUNC) &_FLasher_test_FLFisheryAD_empty_constructor, 0},
+    {"_FLasher_test_simple_FLFisheryAD_sexp_constructor", (DL_FUNC) &_FLasher_test_simple_FLFisheryAD_sexp_constructor, 1},
+    {"_FLasher_test_FLFisheryAD_sexp_constructor", (DL_FUNC) &_FLasher_test_FLFisheryAD_sexp_constructor, 1},
+    {"_FLasher_test_FLFisheryAD_as_wrap", (DL_FUNC) &_FLasher_test_FLFisheryAD_as_wrap, 1},
+    {"_FLasher_test_FLFisheryAD_copy_constructor", (DL_FUNC) &_FLasher_test_FLFisheryAD_copy_constructor, 1},
+    {"_FLasher_test_FLFisheryAD_assignment_operator", (DL_FUNC) &_FLasher_test_FLFisheryAD_assignment_operator, 1},
+    {"_FLasher_test_FLFisheryAD_const_catches_get_accessors", (DL_FUNC) &_FLasher_test_FLFisheryAD_const_catches_get_accessors, 8},
+    {"_FLasher_test_FLFisheryAD_catches_get_accessors", (DL_FUNC) &_FLasher_test_FLFisheryAD_catches_get_accessors, 8},
+    {"_FLasher_test_FLFisheryAD_const_economics_get_accessors", (DL_FUNC) &_FLasher_test_FLFisheryAD_const_economics_get_accessors, 6},
+    {"_FLasher_test_FLFisheryAD_economics_get_accessors", (DL_FUNC) &_FLasher_test_FLFisheryAD_economics_get_accessors, 6},
+    {"_FLasher_test_FLFisheryAD_set_accessors", (DL_FUNC) &_FLasher_test_FLFisheryAD_set_accessors, 9},
+    {"_FLasher_test_FLFisheryAD_copy_constructor2", (DL_FUNC) &_FLasher_test_FLFisheryAD_copy_constructor2, 9},
+    {"_FLasher_test_FLFisheryAD_assignment_operator2", (DL_FUNC) &_FLasher_test_FLFisheryAD_assignment_operator2, 9},
+    {"_FLasher_test_FLFisheryAD_const_iterator", (DL_FUNC) &_FLasher_test_FLFisheryAD_const_iterator, 1},
+    {"_FLasher_test_FLFisheryAD_iterator", (DL_FUNC) &_FLasher_test_FLFisheryAD_iterator, 8},
+    {"_FLasher_test_FLFisheries_sexp_constructor", (DL_FUNC) &_FLasher_test_FLFisheries_sexp_constructor, 1},
+    {"_FLasher_test_FLFisheries_as_wrap", (DL_FUNC) &_FLasher_test_FLFisheries_as_wrap, 1},
+    {"_FLasher_test_FLFisheries_get_nfisheries", (DL_FUNC) &_FLasher_test_FLFisheries_get_nfisheries, 1},
+    {"_FLasher_test_FLFisheries_copy_constructor", (DL_FUNC) &_FLasher_test_FLFisheries_copy_constructor, 1},
+    {"_FLasher_test_FLFisheries_copy_constructor2", (DL_FUNC) &_FLasher_test_FLFisheries_copy_constructor2, 5},
+    {"_FLasher_test_FLFisheries_assignment_operator", (DL_FUNC) &_FLasher_test_FLFisheries_assignment_operator, 1},
+    {"_FLasher_test_FLFisheries_assignment_operator2", (DL_FUNC) &_FLasher_test_FLFisheries_assignment_operator2, 5},
+    {"_FLasher_test_FLFisheries_const_get_single", (DL_FUNC) &_FLasher_test_FLFisheries_const_get_single, 4},
+    {"_FLasher_test_FLFisheries_get_single", (DL_FUNC) &_FLasher_test_FLFisheries_get_single, 4},
+    {"_FLasher_test_FLFisheries_const_get_double", (DL_FUNC) &_FLasher_test_FLFisheries_const_get_double, 4},
+    {"_FLasher_test_FLFisheries_get_double", (DL_FUNC) &_FLasher_test_FLFisheries_get_double, 4},
+    {"_FLasher_test_FLFisheries_set_single", (DL_FUNC) &_FLasher_test_FLFisheries_set_single, 5},
+    {"_FLasher_test_FLFisheries_set_double", (DL_FUNC) &_FLasher_test_FLFisheries_set_double, 5},
+    {"_FLasher_test_FLFishery_revenue", (DL_FUNC) &_FLasher_test_FLFishery_revenue, 1},
+    {"_FLasher_test_FLFishery_revenue_subset", (DL_FUNC) &_FLasher_test_FLFishery_revenue_subset, 3},
+    {"_FLasher_test_FLFisheriesAD_sexp_constructor", (DL_FUNC) &_FLasher_test_FLFisheriesAD_sexp_constructor, 1},
+    {"_FLasher_test_FLFisheriesAD_as_wrap", (DL_FUNC) &_FLasher_test_FLFisheriesAD_as_wrap, 1},
+    {"_FLasher_test_FLFisheriesAD_get_nfisheries", (DL_FUNC) &_FLasher_test_FLFisheriesAD_get_nfisheries, 1},
+    {"_FLasher_test_FLFisheriesAD_copy_constructor", (DL_FUNC) &_FLasher_test_FLFisheriesAD_copy_constructor, 1},
+    {"_FLasher_test_FLFisheriesAD_copy_constructor2", (DL_FUNC) &_FLasher_test_FLFisheriesAD_copy_constructor2, 5},
+    {"_FLasher_test_FLFisheriesAD_assignment_operator", (DL_FUNC) &_FLasher_test_FLFisheriesAD_assignment_operator, 1},
+    {"_FLasher_test_FLFisheriesAD_assignment_operator2", (DL_FUNC) &_FLasher_test_FLFisheriesAD_assignment_operator2, 5},
+    {"_FLasher_test_FLFisheriesAD_const_get_single", (DL_FUNC) &_FLasher_test_FLFisheriesAD_const_get_single, 4},
+    {"_FLasher_test_FLFisheriesAD_get_single", (DL_FUNC) &_FLasher_test_FLFisheriesAD_get_single, 4},
+    {"_FLasher_test_FLFisheriesAD_const_get_double", (DL_FUNC) &_FLasher_test_FLFisheriesAD_const_get_double, 4},
+    {"_FLasher_test_FLFisheriesAD_get_double", (DL_FUNC) &_FLasher_test_FLFisheriesAD_get_double, 4},
+    {"_FLasher_test_FLFisheriesAD_set_single", (DL_FUNC) &_FLasher_test_FLFisheriesAD_set_single, 5},
+    {"_FLasher_test_FLFisheriesAD_set_double", (DL_FUNC) &_FLasher_test_FLFisheriesAD_set_double, 5},
+    {"_FLasher_test_FLFisheriesAD_const_iterator", (DL_FUNC) &_FLasher_test_FLFisheriesAD_const_iterator, 1},
+    {"_FLasher_test_FLFisheriesAD_iterator", (DL_FUNC) &_FLasher_test_FLFisheriesAD_iterator, 2},
+    {"_FLasher_test_FLQuantAD_as_wrap", (DL_FUNC) &_FLasher_test_FLQuantAD_as_wrap, 1},
+    {"_FLasher_test_FLQuantAD_basic_constructor", (DL_FUNC) &_FLasher_test_FLQuantAD_basic_constructor, 0},
+    {"_FLasher_test_FLQuantAD_sexp_constructor", (DL_FUNC) &_FLasher_test_FLQuantAD_sexp_constructor, 1},
+    {"_FLasher_test_FLQuantAD_dim_constructor", (DL_FUNC) &_FLasher_test_FLQuantAD_dim_constructor, 6},
+    {"_FLasher_test_FLQuantAD_copy_constructor", (DL_FUNC) &_FLasher_test_FLQuantAD_copy_constructor, 1},
+    {"_FLasher_test_FLQuantAD_copy_constructor2", (DL_FUNC) &_FLasher_test_FLQuantAD_copy_constructor2, 8},
+    {"_FLasher_test_FLQuantAD_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuantAD_assignment_operator, 1},
+    {"_FLasher_test_FLQuantAD_assignment_operator2", (DL_FUNC) &_FLasher_test_FLQuantAD_assignment_operator2, 8},
+    {"_FLasher_test_FLQuantAD_from_FLQuant_constructor", (DL_FUNC) &_FLasher_test_FLQuantAD_from_FLQuant_constructor, 1},
+    {"_FLasher_test_FLQuantAD_get_units", (DL_FUNC) &_FLasher_test_FLQuantAD_get_units, 1},
+    {"_FLasher_test_FLQuantAD_get_dim", (DL_FUNC) &_FLasher_test_FLQuantAD_get_dim, 1},
+    {"_FLasher_test_FLQuantAD_get_dimnames", (DL_FUNC) &_FLasher_test_FLQuantAD_get_dimnames, 1},
+    {"_FLasher_test_FLQuantAD_get_size", (DL_FUNC) &_FLasher_test_FLQuantAD_get_size, 1},
+    {"_FLasher_test_FLQuantAD_get_nquant", (DL_FUNC) &_FLasher_test_FLQuantAD_get_nquant, 1},
+    {"_FLasher_test_FLQuantAD_get_nyear", (DL_FUNC) &_FLasher_test_FLQuantAD_get_nyear, 1},
+    {"_FLasher_test_FLQuantAD_get_nunit", (DL_FUNC) &_FLasher_test_FLQuantAD_get_nunit, 1},
+    {"_FLasher_test_FLQuantAD_get_nseason", (DL_FUNC) &_FLasher_test_FLQuantAD_get_nseason, 1},
+    {"_FLasher_test_FLQuantAD_get_narea", (DL_FUNC) &_FLasher_test_FLQuantAD_get_narea, 1},
+    {"_FLasher_test_FLQuantAD_get_niter", (DL_FUNC) &_FLasher_test_FLQuantAD_get_niter, 1},
+    {"_FLasher_test_FLQuantAD_get_data_element", (DL_FUNC) &_FLasher_test_FLQuantAD_get_data_element, 7},
+    {"_FLasher_test_FLQuantAD_get_const_single_index_accessor", (DL_FUNC) &_FLasher_test_FLQuantAD_get_const_single_index_accessor, 2},
+    {"_FLasher_test_FLQuantAD_get_single_index_accessor", (DL_FUNC) &_FLasher_test_FLQuantAD_get_single_index_accessor, 2},
+    {"_FLasher_test_FLQuantAD_set_single_index_accessor", (DL_FUNC) &_FLasher_test_FLQuantAD_set_single_index_accessor, 3},
+    {"_FLasher_test_FLQuantAD_const_get_accessor", (DL_FUNC) &_FLasher_test_FLQuantAD_const_get_accessor, 7},
+    {"_FLasher_test_FLQuantAD_get_accessor", (DL_FUNC) &_FLasher_test_FLQuantAD_get_accessor, 7},
+    {"_FLasher_test_FLQuantAD_set_accessor", (DL_FUNC) &_FLasher_test_FLQuantAD_set_accessor, 8},
+    {"_FLasher_test_FLQuantAD_get_const_indices_accessor", (DL_FUNC) &_FLasher_test_FLQuantAD_get_const_indices_accessor, 2},
+    {"_FLasher_test_FLQuantAD_get_indices_accessor", (DL_FUNC) &_FLasher_test_FLQuantAD_get_indices_accessor, 2},
+    {"_FLasher_test_FLQuantAD_set_indices_accessor", (DL_FUNC) &_FLasher_test_FLQuantAD_set_indices_accessor, 3},
+    {"_FLasher_test_FLQuantAD_set_dimnames", (DL_FUNC) &_FLasher_test_FLQuantAD_set_dimnames, 2},
+    {"_FLasher_test_FLQuantAD_FLQuantAD_match_dims", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuantAD_match_dims, 2},
+    {"_FLasher_test_FLQuantAD_FLQuant_match_dims", (DL_FUNC) &_FLasher_test_FLQuantAD_FLQuant_match_dims, 2},
+    {"_FLasher_test_FLQuant_FLQuantAD_match_dims", (DL_FUNC) &_FLasher_test_FLQuant_FLQuantAD_match_dims, 2},
+    {"_FLasher_test_FLQuantAD_fill", (DL_FUNC) &_FLasher_test_FLQuantAD_fill, 2},
+    {"_FLasher_test_FLQuantAD_fill_double", (DL_FUNC) &_FLasher_test_FLQuantAD_fill_double, 2},
+    {"_FLasher_testFLCppAD", (DL_FUNC) &_FLasher_testFLCppAD, 1},
+    {"_FLasher_FLPar_units", (DL_FUNC) &_FLasher_FLPar_units, 1},
+    {"_FLasher_test_FLQuant_as_wrap", (DL_FUNC) &_FLasher_test_FLQuant_as_wrap, 1},
+    {"_FLasher_test_FLQuant_basic_constructor", (DL_FUNC) &_FLasher_test_FLQuant_basic_constructor, 0},
+    {"_FLasher_test_FLQuant_sexp_constructor", (DL_FUNC) &_FLasher_test_FLQuant_sexp_constructor, 1},
+    {"_FLasher_test_FLQuant_dim_constructor", (DL_FUNC) &_FLasher_test_FLQuant_dim_constructor, 6},
+    {"_FLasher_test_FLQuant_dim_value_constructor", (DL_FUNC) &_FLasher_test_FLQuant_dim_value_constructor, 7},
+    {"_FLasher_test_FLQuant_intvec_dim_constructor", (DL_FUNC) &_FLasher_test_FLQuant_intvec_dim_constructor, 1},
+    {"_FLasher_test_FLQuant_intvec_dim_value_constructor", (DL_FUNC) &_FLasher_test_FLQuant_intvec_dim_value_constructor, 2},
+    {"_FLasher_test_FLQuant_copy_constructor", (DL_FUNC) &_FLasher_test_FLQuant_copy_constructor, 1},
+    {"_FLasher_test_FLQuant_copy_constructor2", (DL_FUNC) &_FLasher_test_FLQuant_copy_constructor2, 8},
+    {"_FLasher_test_FLQuant_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuant_assignment_operator, 1},
+    {"_FLasher_test_FLQuant_assignment_operator2", (DL_FUNC) &_FLasher_test_FLQuant_assignment_operator2, 8},
+    {"_FLasher_test_FLQuant_from_FLQuantAD_constructor", (DL_FUNC) &_FLasher_test_FLQuant_from_FLQuantAD_constructor, 1},
+    {"_FLasher_test_FLQuant_get_data", (DL_FUNC) &_FLasher_test_FLQuant_get_data, 1},
+    {"_FLasher_test_FLQuant_get_units", (DL_FUNC) &_FLasher_test_FLQuant_get_units, 1},
+    {"_FLasher_test_FLQuant_get_dim", (DL_FUNC) &_FLasher_test_FLQuant_get_dim, 1},
+    {"_FLasher_test_FLQuant_get_dimnames", (DL_FUNC) &_FLasher_test_FLQuant_get_dimnames, 1},
+    {"_FLasher_test_FLQuant_get_dimnames2", (DL_FUNC) &_FLasher_test_FLQuant_get_dimnames2, 1},
+    {"_FLasher_test_FLQuant_get_size", (DL_FUNC) &_FLasher_test_FLQuant_get_size, 1},
+    {"_FLasher_test_FLQuant_get_nquant", (DL_FUNC) &_FLasher_test_FLQuant_get_nquant, 1},
+    {"_FLasher_test_FLQuant_get_nyear", (DL_FUNC) &_FLasher_test_FLQuant_get_nyear, 1},
+    {"_FLasher_test_FLQuant_get_nunit", (DL_FUNC) &_FLasher_test_FLQuant_get_nunit, 1},
+    {"_FLasher_test_FLQuant_get_nseason", (DL_FUNC) &_FLasher_test_FLQuant_get_nseason, 1},
+    {"_FLasher_test_FLQuant_get_narea", (DL_FUNC) &_FLasher_test_FLQuant_get_narea, 1},
+    {"_FLasher_test_FLQuant_get_niter", (DL_FUNC) &_FLasher_test_FLQuant_get_niter, 1},
+    {"_FLasher_test_FLQuant_get_first_age", (DL_FUNC) &_FLasher_test_FLQuant_get_first_age, 1},
+    {"_FLasher_test_FLQuant_get_data_element", (DL_FUNC) &_FLasher_test_FLQuant_get_data_element, 7},
+    {"_FLasher_test_FLQuant_get_const_single_index_accessor", (DL_FUNC) &_FLasher_test_FLQuant_get_const_single_index_accessor, 2},
+    {"_FLasher_test_FLQuant_get_single_index_accessor", (DL_FUNC) &_FLasher_test_FLQuant_get_single_index_accessor, 2},
+    {"_FLasher_test_FLQuant_set_single_index_accessor", (DL_FUNC) &_FLasher_test_FLQuant_set_single_index_accessor, 3},
+    {"_FLasher_test_FLQuant_const_get_accessor", (DL_FUNC) &_FLasher_test_FLQuant_const_get_accessor, 7},
+    {"_FLasher_test_FLQuant_get_accessor", (DL_FUNC) &_FLasher_test_FLQuant_get_accessor, 7},
+    {"_FLasher_test_FLQuant_set_accessor", (DL_FUNC) &_FLasher_test_FLQuant_set_accessor, 8},
+    {"_FLasher_test_FLQuant_get_const_indices_accessor", (DL_FUNC) &_FLasher_test_FLQuant_get_const_indices_accessor, 2},
+    {"_FLasher_test_FLQuant_get_indices_accessor", (DL_FUNC) &_FLasher_test_FLQuant_get_indices_accessor, 2},
+    {"_FLasher_test_FLQuant_set_indices_accessor", (DL_FUNC) &_FLasher_test_FLQuant_set_indices_accessor, 3},
+    {"_FLasher_test_FLQuant_get_all_iters", (DL_FUNC) &_FLasher_test_FLQuant_get_all_iters, 6},
+    {"_FLasher_test_FLQuant_set_data", (DL_FUNC) &_FLasher_test_FLQuant_set_data, 2},
+    {"_FLasher_test_FLQuant_set_dimnames", (DL_FUNC) &_FLasher_test_FLQuant_set_dimnames, 2},
+    {"_FLasher_test_FLQuant_set_units", (DL_FUNC) &_FLasher_test_FLQuant_set_units, 2},
+    {"_FLasher_test_FLQuant_subset", (DL_FUNC) &_FLasher_test_FLQuant_subset, 13},
+    {"_FLasher_test_FLQuant_neat_subset", (DL_FUNC) &_FLasher_test_FLQuant_neat_subset, 3},
+    {"_FLasher_test_FLQuant_propagate_iters", (DL_FUNC) &_FLasher_test_FLQuant_propagate_iters, 2},
+    {"_FLasher_test_FLQuant_fill", (DL_FUNC) &_FLasher_test_FLQuant_fill, 2},
+    {"_FLasher_test_FLQuant_FLQuant_match_dims", (DL_FUNC) &_FLasher_test_FLQuant_FLQuant_match_dims, 2},
+    {"_FLasher_test_FLPar_to_FLQuant", (DL_FUNC) &_FLasher_test_FLPar_to_FLQuant, 1},
+    {"_FLasher_test_for_range", (DL_FUNC) &_FLasher_test_for_range, 2},
+    {"_FLasher_test_for_range_const", (DL_FUNC) &_FLasher_test_for_range_const, 2},
+    {"_FLasher_test_FLQuant_for_iterator", (DL_FUNC) &_FLasher_test_FLQuant_for_iterator, 2},
+    {"_FLasher_test_FLQuant_for_iterator_const", (DL_FUNC) &_FLasher_test_FLQuant_for_iterator_const, 2},
+    {"_FLasher_test_FLQuant_lambda", (DL_FUNC) &_FLasher_test_FLQuant_lambda, 2},
+    {"_FLasher_test_DD_pow", (DL_FUNC) &_FLasher_test_DD_pow, 2},
+    {"_FLasher_test_DAD_pow", (DL_FUNC) &_FLasher_test_DAD_pow, 2},
+    {"_FLasher_test_ADD_pow", (DL_FUNC) &_FLasher_test_ADD_pow, 2},
+    {"_FLasher_test_ADAD_pow", (DL_FUNC) &_FLasher_test_ADAD_pow, 2},
+    {"_FLasher_test_input_subsetter_ADAD", (DL_FUNC) &_FLasher_test_input_subsetter_ADAD, 4},
+    {"_FLasher_test_input_subsetter_DD", (DL_FUNC) &_FLasher_test_input_subsetter_DD, 4},
+    {"_FLasher_test_input_subsetter_ADD", (DL_FUNC) &_FLasher_test_input_subsetter_ADD, 4},
+    {"_FLasher_test_input_subsetter_DAD", (DL_FUNC) &_FLasher_test_input_subsetter_DAD, 4},
+    {"_FLasher_test_year_season_to_timestep_FLQuant_double", (DL_FUNC) &_FLasher_test_year_season_to_timestep_FLQuant_double, 3},
+    {"_FLasher_test_year_season_to_timestep_FLQuant_adouble", (DL_FUNC) &_FLasher_test_year_season_to_timestep_FLQuant_adouble, 3},
+    {"_FLasher_test_year_season_to_timestep", (DL_FUNC) &_FLasher_test_year_season_to_timestep, 3},
+    {"_FLasher_test_timestep_to_year_season_FLQuant_double", (DL_FUNC) &_FLasher_test_timestep_to_year_season_FLQuant_double, 2},
+    {"_FLasher_test_timestep_to_year_season_FLQuant_adouble", (DL_FUNC) &_FLasher_test_timestep_to_year_season_FLQuant_adouble, 2},
+    {"_FLasher_test_timestep_to_year_season", (DL_FUNC) &_FLasher_test_timestep_to_year_season, 2},
+    {"_FLasher_test_FLQuant7_as_wrap", (DL_FUNC) &_FLasher_test_FLQuant7_as_wrap, 1},
+    {"_FLasher_test_FLQuant7_empty_wrap", (DL_FUNC) &_FLasher_test_FLQuant7_empty_wrap, 0},
+    {"_FLasher_test_FLQuant7_basic_constructor", (DL_FUNC) &_FLasher_test_FLQuant7_basic_constructor, 0},
+    {"_FLasher_test_FLQuant7_sexp_constructor", (DL_FUNC) &_FLasher_test_FLQuant7_sexp_constructor, 1},
+    {"_FLasher_test_FLQuant7_FLQuant_constructor", (DL_FUNC) &_FLasher_test_FLQuant7_FLQuant_constructor, 1},
+    {"_FLasher_test_FLQuant7_copy_constructor", (DL_FUNC) &_FLasher_test_FLQuant7_copy_constructor, 1},
+    {"_FLasher_test_FLQuant7_copy_constructor2", (DL_FUNC) &_FLasher_test_FLQuant7_copy_constructor2, 9},
+    {"_FLasher_test_FLQuant7_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuant7_assignment_operator, 1},
+    {"_FLasher_test_FLQuant7_assignment_operator2", (DL_FUNC) &_FLasher_test_FLQuant7_assignment_operator2, 9},
+    {"_FLasher_test_FLQuant7_function_operator", (DL_FUNC) &_FLasher_test_FLQuant7_function_operator, 2},
+    {"_FLasher_test_FLQuant7_get_ndim7", (DL_FUNC) &_FLasher_test_FLQuant7_get_ndim7, 1},
+    {"_FLasher_test_FLQuant7_const_get_single_index_accessor", (DL_FUNC) &_FLasher_test_FLQuant7_const_get_single_index_accessor, 2},
+    {"_FLasher_test_FLQuant7_get_single_index_accessor", (DL_FUNC) &_FLasher_test_FLQuant7_get_single_index_accessor, 2},
+    {"_FLasher_test_FLQuant7_set_single_index_accessor", (DL_FUNC) &_FLasher_test_FLQuant7_set_single_index_accessor, 3},
+    {"_FLasher_test_FLQuant7_const_get_accessor", (DL_FUNC) &_FLasher_test_FLQuant7_const_get_accessor, 8},
+    {"_FLasher_test_FLQuant7_get_accessor", (DL_FUNC) &_FLasher_test_FLQuant7_get_accessor, 8},
+    {"_FLasher_test_FLQuant7_set_accessor", (DL_FUNC) &_FLasher_test_FLQuant7_set_accessor, 9},
+    {"_FLasher_test_FLQuant7_const_default_dim7_get_accessor", (DL_FUNC) &_FLasher_test_FLQuant7_const_default_dim7_get_accessor, 1},
+    {"_FLasher_test_FLQuant7_default_dim7_get_accessor", (DL_FUNC) &_FLasher_test_FLQuant7_default_dim7_get_accessor, 1},
+    {"_FLasher_test_FLQuant7_default_dim7_set_accessor", (DL_FUNC) &_FLasher_test_FLQuant7_default_dim7_set_accessor, 2},
+    {"_FLasher_test_FLQuant7_const_default_dim7_get_accessor_multi", (DL_FUNC) &_FLasher_test_FLQuant7_const_default_dim7_get_accessor_multi, 7},
+    {"_FLasher_test_FLQuant7_default_dim7_get_accessor_multi", (DL_FUNC) &_FLasher_test_FLQuant7_default_dim7_get_accessor_multi, 7},
+    {"_FLasher_test_FLQuant7_default_dim7_set_accessor_multi", (DL_FUNC) &_FLasher_test_FLQuant7_default_dim7_set_accessor_multi, 8},
+    {"_FLasher_test_FLQuant7AD_as_wrap", (DL_FUNC) &_FLasher_test_FLQuant7AD_as_wrap, 1},
+    {"_FLasher_test_FLQuant7AD_empty_wrap", (DL_FUNC) &_FLasher_test_FLQuant7AD_empty_wrap, 0},
+    {"_FLasher_test_FLQuant7AD_basic_constructor", (DL_FUNC) &_FLasher_test_FLQuant7AD_basic_constructor, 0},
+    {"_FLasher_test_FLQuant7AD_sexp_constructor", (DL_FUNC) &_FLasher_test_FLQuant7AD_sexp_constructor, 1},
+    {"_FLasher_test_FLQuant7AD_FLQuant_constructor", (DL_FUNC) &_FLasher_test_FLQuant7AD_FLQuant_constructor, 1},
+    {"_FLasher_test_FLQuant7AD_copy_constructor", (DL_FUNC) &_FLasher_test_FLQuant7AD_copy_constructor, 1},
+    {"_FLasher_test_FLQuant7AD_copy_constructor2", (DL_FUNC) &_FLasher_test_FLQuant7AD_copy_constructor2, 9},
+    {"_FLasher_test_FLQuant7AD_assignment_operator", (DL_FUNC) &_FLasher_test_FLQuant7AD_assignment_operator, 1},
+    {"_FLasher_test_FLQuant7AD_assignment_operator2", (DL_FUNC) &_FLasher_test_FLQuant7AD_assignment_operator2, 9},
+    {"_FLasher_test_FLQuant7AD_function_operator", (DL_FUNC) &_FLasher_test_FLQuant7AD_function_operator, 2},
+    {"_FLasher_test_FLQuant7AD_get_ndim7", (DL_FUNC) &_FLasher_test_FLQuant7AD_get_ndim7, 1},
+    {"_FLasher_test_FLQuant7AD_const_get_single_index_accessor", (DL_FUNC) &_FLasher_test_FLQuant7AD_const_get_single_index_accessor, 2},
+    {"_FLasher_test_FLQuant7AD_get_single_index_accessor", (DL_FUNC) &_FLasher_test_FLQuant7AD_get_single_index_accessor, 2},
+    {"_FLasher_test_FLQuant7AD_set_single_index_accessor", (DL_FUNC) &_FLasher_test_FLQuant7AD_set_single_index_accessor, 3},
+    {"_FLasher_test_FLQuant7AD_const_get_accessor", (DL_FUNC) &_FLasher_test_FLQuant7AD_const_get_accessor, 8},
+    {"_FLasher_test_FLQuant7AD_get_accessor", (DL_FUNC) &_FLasher_test_FLQuant7AD_get_accessor, 8},
+    {"_FLasher_test_FLQuant7AD_set_accessor", (DL_FUNC) &_FLasher_test_FLQuant7AD_set_accessor, 9},
+    {"_FLasher_test_FLQuant7AD_const_default_dim7_get_accessor", (DL_FUNC) &_FLasher_test_FLQuant7AD_const_default_dim7_get_accessor, 1},
+    {"_FLasher_test_FLQuant7AD_default_dim7_get_accessor", (DL_FUNC) &_FLasher_test_FLQuant7AD_default_dim7_get_accessor, 1},
+    {"_FLasher_test_FLQuant7AD_default_dim7_set_accessor", (DL_FUNC) &_FLasher_test_FLQuant7AD_default_dim7_set_accessor, 2},
+    {"_FLasher_test_FLQuant7AD_const_default_dim7_get_accessor_multi", (DL_FUNC) &_FLasher_test_FLQuant7AD_const_default_dim7_get_accessor_multi, 7},
+    {"_FLasher_test_FLQuant7AD_default_dim7_get_accessor_multi", (DL_FUNC) &_FLasher_test_FLQuant7AD_default_dim7_get_accessor_multi, 7},
+    {"_FLasher_test_FLQuant7AD_default_dim7_set_accessor_multi", (DL_FUNC) &_FLasher_test_FLQuant7AD_default_dim7_set_accessor_multi, 8},
+    {"_FLasher_test_FLQ_in_FLS", (DL_FUNC) &_FLasher_test_FLQ_in_FLS, 1},
+    {"_FLasher_test_FLStock_sexp_constructor", (DL_FUNC) &_FLasher_test_FLStock_sexp_constructor, 1},
+    {"_FLasher_test_FLStock_wrap", (DL_FUNC) &_FLasher_test_FLStock_wrap, 1},
+    {"_FLasher_test_FLStock_as", (DL_FUNC) &_FLasher_test_FLStock_as, 1},
+    {"_FLasher_test_FLStock_as_wrap", (DL_FUNC) &_FLasher_test_FLStock_as_wrap, 1},
+    {"_FLasher_test_FLStock_copy_constructor", (DL_FUNC) &_FLasher_test_FLStock_copy_constructor, 8},
+    {"_FLasher_test_FLStock_assignment_operator", (DL_FUNC) &_FLasher_test_FLStock_assignment_operator, 8},
+    {"_FLasher_test_fwdBiol_sexp_constructor", (DL_FUNC) &_FLasher_test_fwdBiol_sexp_constructor, 1},
+    {"_FLasher_test_fwdBiolAD_sexp_constructor", (DL_FUNC) &_FLasher_test_fwdBiolAD_sexp_constructor, 1},
+    {"_FLasher_test_fwdBiol_as_wrap", (DL_FUNC) &_FLasher_test_fwdBiol_as_wrap, 1},
+    {"_FLasher_test_fwdBiolAD_as_wrap", (DL_FUNC) &_FLasher_test_fwdBiolAD_as_wrap, 1},
+    {"_FLasher_test_fwdBiol_fwdSR_constructor", (DL_FUNC) &_FLasher_test_fwdBiol_fwdSR_constructor, 5},
+    {"_FLasher_test_fwdBiolAD_fwdSRAD_constructor", (DL_FUNC) &_FLasher_test_fwdBiolAD_fwdSRAD_constructor, 5},
+    {"_FLasher_test_fwdBiol_FLSR_bits_constructor", (DL_FUNC) &_FLasher_test_fwdBiol_FLSR_bits_constructor, 5},
+    {"_FLasher_test_fwdBiolAD_FLSR_residuals_constructor", (DL_FUNC) &_FLasher_test_fwdBiolAD_FLSR_residuals_constructor, 3},
+    {"_FLasher_test_fwdBiolAD_FLSR_bits_constructor", (DL_FUNC) &_FLasher_test_fwdBiolAD_FLSR_bits_constructor, 5},
+    {"_FLasher_test_fwdBiol_copy_constructor", (DL_FUNC) &_FLasher_test_fwdBiol_copy_constructor, 1},
+    {"_FLasher_test_fwdBiolAD_copy_constructor", (DL_FUNC) &_FLasher_test_fwdBiolAD_copy_constructor, 1},
+    {"_FLasher_test_fwdBiol_copy_constructor2", (DL_FUNC) &_FLasher_test_fwdBiol_copy_constructor2, 8},
+    {"_FLasher_test_fwdBiolAD_copy_constructor2", (DL_FUNC) &_FLasher_test_fwdBiolAD_copy_constructor2, 8},
+    {"_FLasher_test_fwdBiol_assignment_operator", (DL_FUNC) &_FLasher_test_fwdBiol_assignment_operator, 1},
+    {"_FLasher_test_fwdBiolAD_assignment_operator", (DL_FUNC) &_FLasher_test_fwdBiolAD_assignment_operator, 1},
+    {"_FLasher_test_fwdBiol_assignment_operator2", (DL_FUNC) &_FLasher_test_fwdBiol_assignment_operator2, 8},
+    {"_FLasher_test_fwdBiolAD_assignment_operator2", (DL_FUNC) &_FLasher_test_fwdBiolAD_assignment_operator2, 8},
+    {"_FLasher_test_fwdBiol_const_get_accessors", (DL_FUNC) &_FLasher_test_fwdBiol_const_get_accessors, 7},
+    {"_FLasher_test_fwdBiol_const_get_accessors_subset", (DL_FUNC) &_FLasher_test_fwdBiol_const_get_accessors_subset, 3},
+    {"_FLasher_test_fwdBiol_get_accessors", (DL_FUNC) &_FLasher_test_fwdBiol_get_accessors, 7},
+    {"_FLasher_test_fwdBiolAD_const_get_accessors", (DL_FUNC) &_FLasher_test_fwdBiolAD_const_get_accessors, 7},
+    {"_FLasher_test_fwdBiolAD_get_accessors", (DL_FUNC) &_FLasher_test_fwdBiolAD_get_accessors, 7},
+    {"_FLasher_test_fwdBiol_set_accessors", (DL_FUNC) &_FLasher_test_fwdBiol_set_accessors, 8},
+    {"_FLasher_test_fwdBiolAD_set_accessors", (DL_FUNC) &_FLasher_test_fwdBiolAD_set_accessors, 8},
+    {"_FLasher_fwdBiolAD_biomass_FLQ", (DL_FUNC) &_FLasher_fwdBiolAD_biomass_FLQ, 1},
+    {"_FLasher_fwdBiolAD_biomass_subset", (DL_FUNC) &_FLasher_fwdBiolAD_biomass_subset, 3},
+    {"_FLasher_test_fwdBiolAD_n_direct_set_accessor", (DL_FUNC) &_FLasher_test_fwdBiolAD_n_direct_set_accessor, 8},
+    {"_FLasher_test_fwdBiolAD_n_direct_get_accessor", (DL_FUNC) &_FLasher_test_fwdBiolAD_n_direct_get_accessor, 7},
+    {"_FLasher_test_fwdBiol_srp_timelag", (DL_FUNC) &_FLasher_test_fwdBiol_srp_timelag, 1},
+    {"_FLasher_test_fwdBiols_as_wrap", (DL_FUNC) &_FLasher_test_fwdBiols_as_wrap, 1},
+    {"_FLasher_test_fwdBiolsAD_as_wrap", (DL_FUNC) &_FLasher_test_fwdBiolsAD_as_wrap, 1},
+    {"_FLasher_test_fwdBiolsAD_fwdBiolAD_constructor", (DL_FUNC) &_FLasher_test_fwdBiolsAD_fwdBiolAD_constructor, 3},
+    {"_FLasher_test_fwdBiolsAD_const_get_single_index_accessor", (DL_FUNC) &_FLasher_test_fwdBiolsAD_const_get_single_index_accessor, 2},
+    {"_FLasher_test_fwdBiolsAD_get_single_index_accessor", (DL_FUNC) &_FLasher_test_fwdBiolsAD_get_single_index_accessor, 2},
+    {"_FLasher_test_fwdBiolsAD_const_get_value_accessor", (DL_FUNC) &_FLasher_test_fwdBiolsAD_const_get_value_accessor, 8},
+    {"_FLasher_test_fwdBiolsAD_get_value_accessor", (DL_FUNC) &_FLasher_test_fwdBiolsAD_get_value_accessor, 8},
+    {"_FLasher_test_fwdBiolsAD_set_single_index_accessor", (DL_FUNC) &_FLasher_test_fwdBiolsAD_set_single_index_accessor, 5},
+    {"_FLasher_test_fwdBiolsAD_set_value_accessor", (DL_FUNC) &_FLasher_test_fwdBiolsAD_set_value_accessor, 9},
+    {"_FLasher_test_fwdBiolsAD_copy_constructor", (DL_FUNC) &_FLasher_test_fwdBiolsAD_copy_constructor, 4},
+    {"_FLasher_test_fwdBiolsAD_assignment_operator", (DL_FUNC) &_FLasher_test_fwdBiolsAD_assignment_operator, 4},
+    {"_FLasher_test_fwdBiolsAD_const_iterator", (DL_FUNC) &_FLasher_test_fwdBiolsAD_const_iterator, 1},
+    {"_FLasher_test_fwdBiolsAD_iterator", (DL_FUNC) &_FLasher_test_fwdBiolsAD_iterator, 8},
+    {"_FLasher_test_as_wrap_fwdControl", (DL_FUNC) &_FLasher_test_as_wrap_fwdControl, 1},
+    {"_FLasher_test_fwdControl_copy_constructor", (DL_FUNC) &_FLasher_test_fwdControl_copy_constructor, 1},
+    {"_FLasher_test_fwdControl_assignment_operator", (DL_FUNC) &_FLasher_test_fwdControl_assignment_operator, 1},
+    {"_FLasher_test_fwdControl_get_target", (DL_FUNC) &_FLasher_test_fwdControl_get_target, 1},
+    {"_FLasher_test_fwdControl_get_ntarget", (DL_FUNC) &_FLasher_test_fwdControl_get_ntarget, 1},
+    {"_FLasher_test_fwdControl_get_niter", (DL_FUNC) &_FLasher_test_fwdControl_get_niter, 1},
+    {"_FLasher_test_fwdControl_get_nsim_target", (DL_FUNC) &_FLasher_test_fwdControl_get_nsim_target, 2},
+    {"_FLasher_test_fwdControl_get_target_row", (DL_FUNC) &_FLasher_test_fwdControl_get_target_row, 3},
+    {"_FLasher_test_fwdControl_get_target_rows", (DL_FUNC) &_FLasher_test_fwdControl_get_target_rows, 2},
+    {"_FLasher_test_fwdControl_get_target_int_col", (DL_FUNC) &_FLasher_test_fwdControl_get_target_int_col, 3},
+    {"_FLasher_test_fwdControl_get_target_int_col2", (DL_FUNC) &_FLasher_test_fwdControl_get_target_int_col2, 4},
+    {"_FLasher_test_fwdControl_get_target_list_int_col", (DL_FUNC) &_FLasher_test_fwdControl_get_target_list_int_col, 3},
+    {"_FLasher_test_fwdControl_get_target_list_int_col2", (DL_FUNC) &_FLasher_test_fwdControl_get_target_list_int_col2, 4},
+    {"_FLasher_test_fwdControl_get_target_num_col", (DL_FUNC) &_FLasher_test_fwdControl_get_target_num_col, 3},
+    {"_FLasher_test_fwdControl_get_target_num_col2", (DL_FUNC) &_FLasher_test_fwdControl_get_target_num_col2, 4},
+    {"_FLasher_test_fwdControl_get_target_value", (DL_FUNC) &_FLasher_test_fwdControl_get_target_value, 3},
+    {"_FLasher_test_fwdControl_get_target_value2", (DL_FUNC) &_FLasher_test_fwdControl_get_target_value2, 4},
+    {"_FLasher_test_fwdControl_get_target_quantity", (DL_FUNC) &_FLasher_test_fwdControl_get_target_quantity, 3},
+    {"_FLasher_test_fwdControl_get_age_range", (DL_FUNC) &_FLasher_test_fwdControl_get_age_range, 3},
+    {"_FLasher_test_fwdControl_get_FC", (DL_FUNC) &_FLasher_test_fwdControl_get_FC, 2},
+    {"_FLasher_test_fwdControl_get_B", (DL_FUNC) &_FLasher_test_fwdControl_get_B, 3},
+    {"_FLasher_test_fwdControl_get_F", (DL_FUNC) &_FLasher_test_fwdControl_get_F, 2},
+    {"_FLasher_test_fwdControl_get_FCB_nrow", (DL_FUNC) &_FLasher_test_fwdControl_get_FCB_nrow, 1},
+    {"_FLasher_test_fwdControl_get_FCB_row_no", (DL_FUNC) &_FLasher_test_fwdControl_get_FCB_row_no, 4},
+    {"_FLasher_test_fwdControl_get_FCB_nos", (DL_FUNC) &_FLasher_test_fwdControl_get_FCB_nos, 5},
+    {"_FLasher_test_fwdControl_shared_catch", (DL_FUNC) &_FLasher_test_fwdControl_shared_catch, 2},
+    {"_FLasher_test_fwdSR_empty_constructor", (DL_FUNC) &_FLasher_test_fwdSR_empty_constructor, 0},
+    {"_FLasher_test_fwdSR_constructor_wrap", (DL_FUNC) &_FLasher_test_fwdSR_constructor_wrap, 4},
+    {"_FLasher_test_fwdSR_get_nparams", (DL_FUNC) &_FLasher_test_fwdSR_get_nparams, 4},
+    {"_FLasher_test_fwdSR_eval", (DL_FUNC) &_FLasher_test_fwdSR_eval, 6},
+    {"_FLasher_test_fwdSR_get_params", (DL_FUNC) &_FLasher_test_fwdSR_get_params, 5},
+    {"_FLasher_test_fwdSR_copy_constructor", (DL_FUNC) &_FLasher_test_fwdSR_copy_constructor, 5},
+    {"_FLasher_test_fwdSR_assignment_operator", (DL_FUNC) &_FLasher_test_fwdSR_assignment_operator, 5},
+    {"_FLasher_test_fwdSR_predict_recruitment", (DL_FUNC) &_FLasher_test_fwdSR_predict_recruitment, 6},
+    {"_FLasher_test_fwdSR_does_recruitment_happen", (DL_FUNC) &_FLasher_test_fwdSR_does_recruitment_happen, 7},
+    {"_FLasher_test_operatingModel_empty_constructor", (DL_FUNC) &_FLasher_test_operatingModel_empty_constructor, 0},
+    {"_FLasher_test_operatingModel_full_constructor", (DL_FUNC) &_FLasher_test_operatingModel_full_constructor, 3},
+    {"_FLasher_test_operatingModel_get_niter", (DL_FUNC) &_FLasher_test_operatingModel_get_niter, 3},
+    {"_FLasher_test_operatingModel_get_exp_z_pre_spwn", (DL_FUNC) &_FLasher_test_operatingModel_get_exp_z_pre_spwn, 6},
+    {"_FLasher_test_operatingModel_f_prop_spwn_FLQ_subset", (DL_FUNC) &_FLasher_test_operatingModel_f_prop_spwn_FLQ_subset, 7},
+    {"_FLasher_test_operatingModel_SRP_FLQ_subset", (DL_FUNC) &_FLasher_test_operatingModel_SRP_FLQ_subset, 6},
+    {"_FLasher_test_operatingModel_total_SRP_FLQ_subset", (DL_FUNC) &_FLasher_test_operatingModel_total_SRP_FLQ_subset, 6},
+    {"_FLasher_test_operatingModel_calc_rec", (DL_FUNC) &_FLasher_test_operatingModel_calc_rec, 6},
+    {"_FLasher_test_operatingModel_get_f_FCB", (DL_FUNC) &_FLasher_test_operatingModel_get_f_FCB, 6},
+    {"_FLasher_test_operatingModel_get_f_FCB_subset", (DL_FUNC) &_FLasher_test_operatingModel_get_f_FCB_subset, 8},
+    {"_FLasher_test_operatingModel_get_f_B_subset", (DL_FUNC) &_FLasher_test_operatingModel_get_f_B_subset, 6},
+    {"_FLasher_test_operatingModel_get_f_B", (DL_FUNC) &_FLasher_test_operatingModel_get_f_B, 4},
+    {"_FLasher_test_operatingModel_fbar_FCB", (DL_FUNC) &_FLasher_test_operatingModel_fbar_FCB, 8},
+    {"_FLasher_test_operatingModel_fbar_B", (DL_FUNC) &_FLasher_test_operatingModel_fbar_B, 6},
+    {"_FLasher_test_operatingModel_nunit_z_subset", (DL_FUNC) &_FLasher_test_operatingModel_nunit_z_subset, 6},
+    {"_FLasher_test_operatingModel_nunit_f_B_subset", (DL_FUNC) &_FLasher_test_operatingModel_nunit_f_B_subset, 6},
+    {"_FLasher_test_operatingModel_nunit_f_FCB_subset", (DL_FUNC) &_FLasher_test_operatingModel_nunit_f_FCB_subset, 8},
+    {"_FLasher_test_operatingModel_survivors", (DL_FUNC) &_FLasher_test_operatingModel_survivors, 6},
+    {"_FLasher_test_operatingModel_project_biols", (DL_FUNC) &_FLasher_test_operatingModel_project_biols, 4},
+    {"_FLasher_test_operatingModel_project_fisheries", (DL_FUNC) &_FLasher_test_operatingModel_project_fisheries, 4},
+    {"_FLasher_test_operatingModel_run", (DL_FUNC) &_FLasher_test_operatingModel_run, 7},
+    {"_FLasher_test_operatingModel_run2", (DL_FUNC) &_FLasher_test_operatingModel_run2, 7},
+    {"_FLasher_test_operatingModel_eval_om", (DL_FUNC) &_FLasher_test_operatingModel_eval_om, 9},
+    {"_FLasher_test_operatingModel_get_target_value_hat", (DL_FUNC) &_FLasher_test_operatingModel_get_target_value_hat, 5},
+    {"_FLasher_test_operatingModel_get_target_value_hat2", (DL_FUNC) &_FLasher_test_operatingModel_get_target_value_hat2, 4},
+    {"_FLasher_test_operatingModel_get_target_value", (DL_FUNC) &_FLasher_test_operatingModel_get_target_value, 5},
+    {"_FLasher_test_operatingModel_get_target_value2", (DL_FUNC) &_FLasher_test_operatingModel_get_target_value2, 4},
+    {"_FLasher_test_operatingModel_get_target_hat_indices", (DL_FUNC) &_FLasher_test_operatingModel_get_target_hat_indices, 7},
+    {"_FLasher_test_operatingModel_catches_subset", (DL_FUNC) &_FLasher_test_operatingModel_catches_subset, 6},
+    {"_FLasher_test_operatingModel_landings_subset", (DL_FUNC) &_FLasher_test_operatingModel_landings_subset, 6},
+    {"_FLasher_test_operatingModel_discards_subset", (DL_FUNC) &_FLasher_test_operatingModel_discards_subset, 6},
+    {"_FLasher_test_operatingModel_catch_n_subset", (DL_FUNC) &_FLasher_test_operatingModel_catch_n_subset, 6},
+    {"_FLasher_test_operatingModel_landings_n_subset", (DL_FUNC) &_FLasher_test_operatingModel_landings_n_subset, 6},
+    {"_FLasher_test_operatingModel_discards_n_subset", (DL_FUNC) &_FLasher_test_operatingModel_discards_n_subset, 6},
+    {"_FLasher_test_operatingModel_ssb_start", (DL_FUNC) &_FLasher_test_operatingModel_ssb_start, 6},
+    {"_FLasher_test_operatingModel_biomass_start", (DL_FUNC) &_FLasher_test_operatingModel_biomass_start, 6},
+    {"_FLasher_test_operatingModel_ssb_end", (DL_FUNC) &_FLasher_test_operatingModel_ssb_end, 6},
+    {"_FLasher_test_operatingModel_ssb_spawn", (DL_FUNC) &_FLasher_test_operatingModel_ssb_spawn, 6},
+    {"_FLasher_test_operatingModel_ssb_flash", (DL_FUNC) &_FLasher_test_operatingModel_ssb_flash, 6},
+    {"_FLasher_test_operatingModel_biomass_flash", (DL_FUNC) &_FLasher_test_operatingModel_biomass_flash, 6},
+    {"_FLasher_test_operatingModel_biomass_end", (DL_FUNC) &_FLasher_test_operatingModel_biomass_end, 6},
+    {"_FLasher_test_operatingModel_biomass_spawn", (DL_FUNC) &_FLasher_test_operatingModel_biomass_spawn, 6},
+    {"_FLasher_test_operatingModel_spawn_before_fishing", (DL_FUNC) &_FLasher_test_operatingModel_spawn_before_fishing, 6},
+    {"_FLasher_test_operatingModel_fishing_before_spawn", (DL_FUNC) &_FLasher_test_operatingModel_fishing_before_spawn, 6},
+    {"_FLasher_test_max3", (DL_FUNC) &_FLasher_test_max3, 1},
+    {"_FLasher_test_max2", (DL_FUNC) &_FLasher_test_max2, 1},
+    {"_FLasher_test_max", (DL_FUNC) &_FLasher_test_max, 1},
+    {"_FLasher_test_standard_conditional", (DL_FUNC) &_FLasher_test_standard_conditional, 1},
+    {"_FLasher_test_cppad_conditional", (DL_FUNC) &_FLasher_test_cppad_conditional, 1},
+    {"_FLasher_test_euclid_norm", (DL_FUNC) &_FLasher_test_euclid_norm, 1},
+    {"_FLasher_test_NR_quad_iters", (DL_FUNC) &_FLasher_test_NR_quad_iters, 6},
+    {"_FLasher_test_NR_linear", (DL_FUNC) &_FLasher_test_NR_linear, 6},
+    {"_FLasher_eval_user_function", (DL_FUNC) &_FLasher_eval_user_function, 2},
+    {"_FLasher_eval_user_gradient", (DL_FUNC) &_FLasher_eval_user_gradient, 2},
     {NULL, NULL, 0}
 };
 

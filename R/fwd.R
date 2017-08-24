@@ -138,7 +138,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # ENSURE biol is a list
   trg$biol <- as.list(trg$biol)
-
+  trg$relBiol <- as.list(trg$relBiol)
   # REPLACE target
   target(control) <- trg
 
@@ -152,7 +152,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     fishery@desc <- character(1)
   if(length(object@desc) == 0)
     object@desc <- character(1)
-  
+
+
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 5.0, nr_iters = 50)

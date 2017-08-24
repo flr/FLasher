@@ -790,19 +790,13 @@ void operatingModel::project_fisheries(const int timestep){
  */
 Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters){
     bool verbose = false;
-    if(verbose){
-        Rprintf("Running\n");
-    }
+    if(verbose){Rprintf("\nIn run()\n");}
     // Housekeeping
     auto niter = get_niter(); // number of iters taken from effort of first fishery
-    if(verbose){
-        Rprintf("Number of iterations to solve - niter: %i\n", niter);
-    }
+    if(verbose){Rprintf("Number of iterations to solve - niter: %i\n", niter);}
     // Effort multiplier is the independent value. There is one independent values for each effort, i.e. for each fishery
     auto neffort = fisheries.get_nfisheries();
-    if(verbose){
-        Rprintf("Number of fisheries to solve effort for: %i\n", neffort);
-    }
+    if(verbose){Rprintf("Number of fisheries to solve effort for: %i\n", neffort);}
     // The target timesteps are contiguous.
     // Update the biology in the first target timestep.
     // This ensures that we have abundance numbers in the first timestep of the projection.
@@ -875,16 +869,16 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
             if(verbose){Rprintf("Projecting biols on tape\n");}
             project_biols(target_effort_timestep+1); 
         }
-        //if(verbose){Rprintf("Back from projecting\n");}
+        if(verbose){Rprintf("Back from projecting\n");}
         // Calc error
-        //if(verbose){Rprintf("Getting desired target values from control object\n");}
+        if(verbose){Rprintf("Getting desired target values from control object\n");}
         //std::vector<adouble> target_value = get_target_value(target_count); // values of all sim targets for the target
         if(verbose){Rprintf("Getting current state of operating model\n");}
         // Get current state of operating model
         std::vector<adouble> target_value_hat = get_target_value_hat(target_count); 
         if(verbose){
             Rprintf("target_value_hat [0]: %f\n", Value(target_value_hat[0]));
-            Rprintf("target_value_hat [1]: %f\n", Value(target_value_hat[1]));
+            //Rprintf("target_value_hat [1]: %f\n", Value(target_value_hat[1]));
         }
         // Check they are the same length? 
         if (target_value_hat.size() != target_value.size()){
@@ -898,13 +892,13 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
                 //[](adouble x, adouble y){return (x - y) * (x - y);}); // squared error - not as effective
         if(verbose){
             Rprintf("target 1. target_value: %f target_value_hat: %f error: %f\n", target_value[0], Value(target_value_hat[0]), Value(error[0]));
-            Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", target_value[1], Value(target_value_hat[1]), Value(error[1]));
+            //Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", target_value[1], Value(target_value_hat[1]), Value(error[1]));
         }
         //if(verbose){Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", target_value[1], Value(target_value_hat[1]), Value(error[1]));}
         // Stop recording
         CppAD::ADFun<double> fun(effort_mult_ad, error);
         fun.optimize();
-        //if(verbose){Rprintf("Turned off tape\n\n");}
+        if(verbose){Rprintf("Turned off tape\n\n");}
         // Solve the target
         // double version of effort mult used in solver
         std::vector<double> effort_mult(neffort * niter, effort_mult_initial);
@@ -936,7 +930,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
             project_biols(target_effort_timestep+1); 
         }
     }
-    if(verbose){Rprintf("Leaving run\n");}
+    if(verbose){Rprintf("Leaving run\n\n");}
     return solver_codes;
 }
 
@@ -953,7 +947,8 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
  */
 FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) {
     bool verbose = false;
-    //Rprintf("Fishery: %i, Catch: %i, Biol: %i\n", fishery_no, catch_no, biol_no);
+    if(verbose){Rprintf("\nInside eval_om\n");}
+    if(verbose){Rprintf("Fishery: %i, Catch: %i, Biol: %i\n", fishery_no, catch_no, biol_no);}
     bool biol_na = Rcpp::IntegerVector::is_na(biol_no);
     bool catch_na = Rcpp::IntegerVector::is_na(catch_no);
     bool fishery_na = Rcpp::IntegerVector::is_na(fishery_no);
@@ -1027,7 +1022,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             if (!biol_na & fishery_na & catch_na){
                 if(verbose){Rprintf("catch is total catch from biol %i\n", biol_no);}
                 out =  unit_sum(catches(biol_no, indices_min, indices_max));
-                //Rprintf("Total catch iter 1: %f\n", Value(out(1,1,1,1,1,1)));
+                if(verbose){Rprintf("Total catch iter 1: %f\n", Value(out(1,1,1,1,1,1)));}
             }
             // Catch taken from the Fishery and Catch objects
             else if (biol_na & !fishery_na & !catch_na){
@@ -1192,6 +1187,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
             Rcpp::stop("target_type not found in switch statement - giving up\n");
             break;
     }
+    if(verbose){Rprintf("Leaving eval_om\n\n");}
     return out;
 }
 
@@ -1227,6 +1223,7 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no) {
  */
 std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, const int sim_target_no) {
     bool verbose = false;
+    if(verbose){Rprintf("\nIn get_target_value_hat\n");}
     if(verbose){Rprintf("sim_target_no: %i\n", sim_target_no);}
     std::vector<unsigned int> indices_min(1,6);
     std::vector<unsigned int> indices_max(1,6);
@@ -1240,6 +1237,7 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     auto catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
     auto Bnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "biol");
     auto no_target_components = Bnos.size();
+    if(verbose){Rprintf("no_target_components: %i\n", Bnos.size());}
     auto niters = get_niter();
     FLQuantAD target_value(1,1,1,1,1,niters); // target values are not structured by age, time or unit - only by iter
     fwdControlTargetType target_type;
@@ -1252,15 +1250,17 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
         // Evaluate the OM
         target_value = target_value + eval_om(target_type, fishery_no, catch_no, Bnos[target_component], indices_min, indices_max);
     }
+    if(verbose){Rprintf("Absolute target: %f\n", Value(target_value(1,1,1,1,1,1)));}
 
-   // Do we have a relative target? Only check year and season
+    // Do we have a relative target? Only check year and season
+    // No check to see if the control object makes sense is OK - handled elsewhere
     unsigned int rel_year = ctrl.get_target_int_col(target_no, sim_target_no, "relYear"); 
     unsigned int rel_season = ctrl.get_target_int_col(target_no, sim_target_no, "relSeason");
     bool rel_year_na = Rcpp::IntegerVector::is_na(rel_year);
     bool rel_season_na = Rcpp::IntegerVector::is_na(rel_season);
-   // Relative target given only by year and season - not F, C or B
+    // Relative target given only by year and season - not F, C or B
     if (!rel_year_na | !rel_season_na){
-        if(verbose){Rprintf("Relative target\n");}
+        if(verbose){Rprintf("Relative target in control\n");}
         auto rel_fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "relFishery");
         auto rel_catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "relCatch");
         auto rel_Bnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relBiol");
@@ -1273,8 +1273,11 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
             rel_target_value = rel_target_value + eval_om(target_type, rel_fishery_no, rel_catch_no, rel_Bnos[target_component], indices_min, indices_max);
         }
         target_value = target_value / rel_target_value;
+        if(verbose){Rprintf("Relative to absolute target: %f\n", Value(rel_target_value(1,1,1,1,1,1)));}
+        if(verbose){Rprintf("Relative target: %f\n", Value(target_value(1,1,1,1,1,1)));}
     }
     std::vector<adouble> value = target_value.get_data();
+    if(verbose){Rprintf("Leaving get_target_value_hat\n\n");}
     return value;
 } 
 //@}
@@ -1291,7 +1294,7 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
  * \param target_no References the target column in the control dataframe. Starts at 1.
  * \param sim_target_no References the target column in the control dataframe. Starts at 1.
  * \param target_component_no If we have multiple biols in a target (stored as a list), which element of that list are we dealing with. Indexing starts at 0.
- * \param relative Are we getting the relative target indices.
+ * \param relative Are we getting the relative target indices (so that the correct columns of control are accessed).
  */
 void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_min, std::vector<unsigned int>& indices_max, const int target_no, const int sim_target_no, const int target_component_no,  const bool relative) {
     // Get the key information
@@ -1299,38 +1302,43 @@ void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_m
     // Get and check FCB nos
     std::vector<unsigned int> FCB_nos;
     const bool check_FCB = true;
-    fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
-    catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
-    auto biol_nos = ctrl.get_target_list_int_col(target_no, sim_target_no, "biol");
-    biol_no = biol_nos[target_component_no];
-
+    Rcpp::IntegerVector biol_nos;
+    // Get the year, season and age range, depending if we have a relative target or not
     if (relative){
         year = ctrl.get_target_int_col(target_no, sim_target_no, "relYear"); 
         season = ctrl.get_target_int_col(target_no, sim_target_no, "relSeason");
         min_age = ctrl.get_target_int_col(target_no, sim_target_no, "relMinAge");
         max_age = ctrl.get_target_int_col(target_no, sim_target_no, "relMaxAge");
+        fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "relFishery");
+        catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "relCatch");
+        biol_nos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relBiol");
+        biol_no = biol_nos[target_component_no];
     }
     if (!relative){
         year = ctrl.get_target_int_col(target_no, sim_target_no, "year"); 
         season = ctrl.get_target_int_col(target_no, sim_target_no, "season");
         min_age = ctrl.get_target_int_col(target_no, sim_target_no, "minAge");
         max_age = ctrl.get_target_int_col(target_no, sim_target_no, "maxAge");
+        fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
+        catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
+        biol_nos = ctrl.get_target_list_int_col(target_no, sim_target_no, "biol");
+        biol_no = biol_nos[target_component_no];
     }
     // Are these NAs?
     bool year_na = Rcpp::IntegerVector::is_na(year);
     bool season_na = Rcpp::IntegerVector::is_na(season);
-    //bool fishery_na = Rcpp::IntegerVector::is_na(fishery_no);
     bool catch_na = Rcpp::IntegerVector::is_na(catch_no);
+    bool fishery_na = Rcpp::IntegerVector::is_na(fishery_no);
     bool biol_na = Rcpp::IntegerVector::is_na(biol_no);
     bool min_age_na = Rcpp::IntegerVector::is_na(min_age);
     bool max_age_na = Rcpp::IntegerVector::is_na(max_age);
-    // Check if we have the correct information
-    // Do we have at least at year and season
+    // Check if we have the required information
+    // Do we have year and season of the target
     if (year_na | season_na){
-        Rcpp::stop("In OM get_target_hat_indices. We need both Year and Season in control (inc. for relative targets if necessary).\n");
+        Rcpp::stop("In OM get_target_hat_indices. We need both Year and Season in control (including for relative targets if necessary).\n");
     }
-    // Need to know unit range but could be biol only (total catch), or catch only (total catch from several biols), or fishery only (econ)
-    // If just fishery, nunit = 1
+    // Need to know unit range of target.
+    // If just fishery, nunit = 1 (no slots in a fishery have units)
     unsigned int nunit = 1;
     // If biol not NA, choose unit from biol
     if (!biol_na){
@@ -1338,8 +1346,12 @@ void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_m
     }
     // Else if catch not NA choose unit from catch
     else if (!catch_na){
+        if(fishery_na){
+            Rcpp::stop("In OM get_target_hat_indices. Trying to get unit range from Catch but Fishery is not specified.\n");
+        }
         nunit = fisheries(fishery_no, catch_no).landings_n().get_nunit();
     }
+    // Get information for building indices
     unsigned int min_year = year;
     unsigned int max_year = year; // May change if additional info in control object
     unsigned int min_season = season;
@@ -1354,8 +1366,8 @@ void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_m
         // Make initial indices
         indices_min = {1, min_year, 1, min_season, 1, 1};
         indices_max = {1, max_year, nunit, max_season, 1, niter};
+        // Need age names - get from biol or catch (only they have age structure - fishery does not)
         std::vector<std::string> age_names;
-        // Get from biol or catch
         if(!biol_na){
             age_names = Rcpp::as<std::vector<std::string> >(biols(biol_no).n().get_dimnames()[0]);
         }
@@ -1365,7 +1377,7 @@ void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_m
         else {
             Rcpp::stop("In operatingModel::get_target_hat_indices. Unable to get age range as biol_no and catch_no are NA.\n");
         }
-        // Use find() to match names - precheck in R that they exist - if not find, returns the last
+        // Use find() to match names - precheck in R that they exist
         std::vector<std::string>::iterator age_min_iterator = find(age_names.begin(), age_names.end(), std::to_string(min_age));
         if(age_min_iterator != age_names.end()){
             indices_min[0] = std::distance(age_names.begin(), age_min_iterator)+1;

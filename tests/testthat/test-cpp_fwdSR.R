@@ -176,7 +176,10 @@ test_that("fwdSR predict_recruitment",{
     niters <- 10
     srp_in <- FLQuant(NA, dim=c(1,dim(srp)[2],4,4), iter=niters)
     srp_in[] <- abs(rnorm(prod(dim(srp_in)), mean=c(ssb(ricker)), sd=10))
-    sr_params <- FLQuant(NA, dim=c(2,dim(srp)[2],4,4), dimnames=list(param = c("a","b")), iter=niters)
+    #sr_params <- FLQuant(NA, dim=c(2,dim(srp)[2],4,4), dimnames=list(param = c("a","b")), iter=niters)
+    sr_params <- FLQuant(NA, dim=c(2,dim(srp)[2],4,4), iter=niters)
+    names(dimnames(sr_params))[1] <- "param"
+    dimnames(sr_params)[[1]] <- c("a","b")
     sr_params["a",] <- abs(rnorm(prod(dim(sr_params["a",])), mean=c(params["a",]), sd=1))
     sr_params["b",] <- abs(rnorm(prod(dim(sr_params["b",])), mean=c(params["b",]), sd=1e-6))
     # These parameters are hacked about with for the tests
