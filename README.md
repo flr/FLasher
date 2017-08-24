@@ -1,4 +1,3 @@
-
 # FLasher
 - Version: 0.0.2.9908
 - Date: 2017-08-24
@@ -30,7 +29,7 @@ or download from the [FLR releases page](https://github.com/flr/FLR/releases/lat
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/FLasher)](https://cran.r-project.org/package=FLasher)
 
 ## License
-Copyright (c) 2016-17 European Union. Released under the [EUPL v1.2](https://joinup.ec.europa.eu/sites/default/files/eupl_v1.2_en.pdf).
+Copyright (c) 2016-17 European Union. Released under the [EUPL v1.2](https://eupl.eu/1.2/en/).
 
 ## Contact
 You are welcome to:
