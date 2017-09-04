@@ -373,6 +373,10 @@ setMethod("fwd", signature(object="FLStock", fishery="ANY",
     
     # PARSE ...
     args <- list(...)
+
+    # ERROR for ctrl
+    if("ctrl" %in% names(args))
+      stop("Did you mean to give me a fwdControl object? Use 'control=' instead.")
     
     # HACK: deal with f assigned to fishery, might fail
     if(!missing(fishery)) {
