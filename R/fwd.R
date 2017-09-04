@@ -153,7 +153,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(length(object@desc) == 0)
     object@desc <- character(1)
 
-
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 5.0, nr_iters = 50)
@@ -315,6 +314,10 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     if (any(!is.na(control@target$relYear))){
         relYear_rows <- !is.na(control@target$relYear)
         control@target$relBiol[relYear_rows] <- 1
+        # And if target needs minAge and maxAge we also need relMaxAge etc
+        # Set as minAge and maxAge of control
+        control@target[,"relMinAge"] <- ifelse(is.na(control@target[,"relMinAge"]) & (control@target[,"quant"] %in% age_range_targets), control@target[,"minAge"], control@target[,"relMinAge"])
+        control@target[,"relMaxAge"] <- ifelse(is.na(control@target[,"relMaxAge"]) & (control@target[,"quant"] %in% age_range_targets), control@target[,"maxAge"], control@target[,"relMaxAge"])
     }
 
     # RUN
