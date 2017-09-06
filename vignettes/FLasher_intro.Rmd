@@ -1,0 +1,82 @@
+---
+title: "Introduction to FLasher"
+author: Finlay Scott, Iago Mosqueira - European Commission Joint Research Center
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+documentclass: article
+header-includes: 
+  - \usepackage{float}
+  - \usepackage{microtype}
+  - \usepackage[T1]{fontenc}
+  - \usepackage[bitstream-charter]{mathdesign}
+output:
+  pdf_document:
+    toc: true
+    fig_caption: yes
+    number_sections: yes
+urlcolor: blue
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{FLasher}
+tags: [FLR FLasher forecast fisheries]
+abstract:
+license: European Union Public Licence (EUPL) V.1.1
+---
+
+```{r, pkgs, echo=FALSE, message=FALSE, warnings=FALSE}
+library(FLasher)
+library(ggplotFL)
+library(knitr)
+opts_chunk$set(dev='png', cache=FALSE, fig.width=6, fig.height=6, tidy=TRUE, dpi=300, fig.pos='!h')
+options(width=60)
+```
+
+# Introduction
+
+__FLasher__ is an FLR package for performing projections through time.
+It is a sequel to an older package __FLash__ that has been widely used for projecting **FLStock** objects.
+It is anticpated that __FLasher__ eventually replaces __FLash__. The interfaces are almost the same so moving existing scripts from using __FLash__ to __FLasher__ should be straightforward.
+
+The main differences betwen __FLasher__ and __FLash__ are:
+
+* As well as performing projections on single **FLStock** objects, __FLasher__ can perform projections on a pair of **FLBiol(s)** and **FLFishery(ies)** objects to simulate mixed fishery interactions.
+* __FLasher__ can operate on a seasonal as well an annual timestep.
+* __FLasher__ is built using the __CppAD__ library, whereas __FLash__ was build using __ADOLC__ (this should be invisible to the user).
+
+# Basic principles
+
+A projection is controlled by a **fwdControl** object. This determines how long the projection runs for, and what targets the projection attempts to hit along the way.
+
+When projecting with **FLBiol(s)** and **FLFishery(ies)** objects, the fishing efforts of the **FLFishery(ies)** in each timestep are found to hit the target.
+
+Projecting with an **FLStock** is the equivalent of projecting with a single **FLBiol** and **FLFishery** (this is what happens internally).
+When an **FLStock** is being projected, the Fmultiplier in each step is found that hits the target (the assumption is made that effort and F are linearly related).
+
+# Where to start
+
+The two best places to start are:
+
+* The [tutorial](http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html) on running medium term projections with an **FLStock**.
+* The package vignette *Mixed fisheries with FLasher*, for running projections with **FLBiol(s)** and **FLFishery(ies)** objects,
+
+More details of the internal workings of __FLasher__ can be found in the vignette *FLasher reference manual*.
+There is an additional vignette on using the __FLasher__ plugin for accessing automatic differentiation capabilities in R and other nerdy things.
+
+# Moving from __FLash__ to __FLasher__
+
+If you are moving from using __FLash__ to __FLasher__ there are a few basic things to note.
+
+The first thing to note is argument names to the *fwd()* function.
+The projection is still run using the *fwd()* function. The **FLStock** argument can still be unnamed if it is passed in as the first argument. However, the **fwdControl** argument must now be named as *control*.  Additionally, the name of the *sr.residuals* argument is now simply called *residuals*
+
+```{r, eval=FALSE}
+# Will not work
+out <- fwd(stock, control, sr=srrbits, sr.residuals=residuals)
+# Will work
+out <- fwd(stock, control=control, sr=srrbits, residuals=residuals)
+```
+
+The second thing is that when making the **fwdControl** object the names of the some of the columns has changed.
+The *quantity* column is now called *quant*.
+The *val* column is now called *value*.
+
+Other differences will be added as we remember them.

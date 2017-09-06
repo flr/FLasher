@@ -21,7 +21,7 @@ abstract:
 license: European Union Public Licence (EUPL) V.1.1
 ---
 
-```{r, pkgs, echo=FALSE, message=FALSE}
+```{r, pkgs, echo=FALSE, message=FALSE, warnings=FALSE}
 library(Rcpp)
 library(FLasher)
 library(ggplotFL)
