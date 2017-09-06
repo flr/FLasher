@@ -6,25 +6,24 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
-#' Title: A method for
+#' Method for running fishery projections
 #'
-#' Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-#' odio ac rutrum luctus. Aenean placerat porttitor commodo. Pellentesque eget porta
-#' libero. Pellentesque molestie mi sed orci feugiat, non mollis enim tristique. 
+#' fwd() projects the fishery through time and attempts to hit the specified targets by finding the appropriate fishing effort.
 #'
-#' Details: Aliquam sagittis feugiat felis eget consequat. Praesent eleifend dolor massa, 
-#' vitae faucibus justo lacinia a. Cras sed erat et magna pharetra bibendum quis in 
-#' mi. Sed sodales mollis arcu, sit amet venenatis lorem fringilla vel. Vivamus vitae 
-#' ipsum sem. Donec malesuada purus at libero bibendum accumsan. Donec ipsum sapien, 
-#' feugiat blandit arcu in, dapibus dictum felis. 
+#' A projection is run on either an FLStock object (for a single species, single fishery projection), or a pair of FLBiol(s) and FLFishery(ies) objects (for more advanced mixed fisheries projections).
+#' The projection is controlled by the fwdControl object (although it is also possible to control the projection of an FLStock using a different interface).
+#' In each timestep of the projection, the fishing effort of each FLFishery (or F multiplier if object is an FLStock) is found so that the targets specified in
+#' the fwdControl object are hit.
+#' For more details and examples, see the vignettes in the package and also the tutorial at: http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html 
 #'
-#' @param object
-#' @param fishery
-#' @param control
-#' @param residuals
-#' @param sr
+#' @param object An FLStock, an FLBiol or an FLBiols object.
+#' @param fishery If object is an FLBiol(s), a FLFishery(ies). Else this argument is ignored.
+#' @param control A fwdControl object.
+#' @param residuals An FLQuant of residuals for the stock recruitment relationship (if object is an FLStock).
+#' @param sr a predictModel that describes the stock recruitment relationship (if object is an FLStock).
+#' @param ... Stormbending.
 #'
-#' @return RETURN Lorem ipsum dolor sit amet
+#' @return Either an FLStock, or a list of FLFishery and FLBiol objects.
 #'
 #' @name fwd
 #' @rdname fwd-methods
@@ -33,8 +32,6 @@
 #' @author The FLR Team
 #' @seealso \link{FLComp}
 #' @keywords classes
-#' @examples
-#'
 
 # fwd(FLBiols, FLFisheries, fwdControl) {{{
 
@@ -198,11 +195,10 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
 ) # }}}
 
-#' @rdname fwd
-#' @aliases fwd,FLBiols,FLFishery,fwdControl-method
 
 # fwd(FLBiols, FLFishery, fwdControl) {{{
-
+#' @rdname fwd-methods
+#' @aliases fwd,FLBiols,FLFishery,fwdControl-method
 setMethod("fwd", signature(object="FLBiols", fishery="FLFishery",
   control="fwdControl"),
   
@@ -217,7 +213,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFishery",
 # fwd(FLBiol, FLFisheries, fwdControl) {{{
 #' @rdname fwd-methods
 #' @aliases fwd,FLBiol,FLFisheries,fwdControl-method
-
 setMethod("fwd", signature(object="FLBiol", fishery="FLFisheries",
   control="fwdControl"),
   
