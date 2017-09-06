@@ -15,6 +15,7 @@ import(FLCore)
 import(FLFishery)
 exportClasses(
 	"fwdControl")
+export("G")
 exportMethods(
     "[",
     "[<-",
@@ -26,6 +27,5 @@ exportMethods(
     "target<-",
     "iters",
     "iters<-",
-    "draw",
-    "G"
+    "draw"
 	)
