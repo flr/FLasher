@@ -10,33 +10,42 @@
 
 setAs("FLQuants", "fwdControl",
   function(from) {
+
+    # CHECKS
+
+    # Length must be 1
+    if(length(from) > 1)
+        stop("Conversion to fwdControl only possible for an single FLQuant")
 		
 		# CONVERT
-    target <- as.data.frame(from)[,c('year', 'iter', 'data', 'qname')]
-    names(target)[3:4] <- c('value', 'quant')
+    df <- as.data.frame(from)[,c('year', 'iter', 'data', 'qname')]
+    names(df)[3:4] <- c('value', 'quant')
 
-		# ITERS
-		if(max(as.numeric(target$iter)) == 1) {
+    its <- dim(from[[1]])[6]
 
-      target <- cbind(target[,-2], fishery=as.numeric(NA), catch=as.numeric(NA),
+		# NO ITERS
+		if(its == 1) {
+
+      target <- cbind(df[,-2], fishery=as.numeric(NA), catch=as.numeric(NA),
         biol=1)
 
       return(fwdControl(target))
+
+    # ITERS
 		} else {
 
-			target <- cbind(target[target$iter == target$iter[1],][,c('year', 'data')], quant=quant)
-			names(target)[grep('data', names(target))] <- 'value'
+			target <- cbind(df[df$iter == df$iter[1],][,c('year', 'quant')])
 
-			arrt <- array(NA, dim=c(dim(target)[1], 3, dim(flq)[6]),
-				dimnames=list(seq(dim(target)[1]), c('min', 'value', 'max'), iter=dimnames(flq)$iter))
-			arrt[,'val',] <- c(flq)
+			iters <- array(NA, dim=c(dim(target)[1], 3, its),
+        dimnames=list(seq(dim(target)[1]), c("min", "value", "max"), iter=dimnames(from[[1]])$iter))
+                   
+			iters[,"value",] <- c(from[[1]])
       
       target <- cbind(target, fishery=as.numeric(NA), catch=as.numeric(NA),
         biol=1)
 			
-			return(fwdControl(target, trgtArray=arrt))
+			return(fwdControl(target=target, iters=iters))
 		}
-	stop('Conversion unsucessful')
 } ) # }}}
 
 # FLBiol -> FLBiolcpp list {{{
