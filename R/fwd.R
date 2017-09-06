@@ -6,6 +6,36 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
+#' Title: A method for
+#'
+#' Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+#' odio ac rutrum luctus. Aenean placerat porttitor commodo. Pellentesque eget porta
+#' libero. Pellentesque molestie mi sed orci feugiat, non mollis enim tristique. 
+#'
+#' Details: Aliquam sagittis feugiat felis eget consequat. Praesent eleifend dolor massa, 
+#' vitae faucibus justo lacinia a. Cras sed erat et magna pharetra bibendum quis in 
+#' mi. Sed sodales mollis arcu, sit amet venenatis lorem fringilla vel. Vivamus vitae 
+#' ipsum sem. Donec malesuada purus at libero bibendum accumsan. Donec ipsum sapien, 
+#' feugiat blandit arcu in, dapibus dictum felis. 
+#'
+#' @param object
+#' @param fishery
+#' @param control
+#' @param residuals
+#' @param sr
+#'
+#' @return RETURN Lorem ipsum dolor sit amet
+#'
+#' @name fwd
+#' @rdname fwd-methods
+#' @aliases fwd,FLBiols,FLFisheries,fwdControl-method
+#' 
+#' @author The FLR Team
+#' @seealso \link{FLComp}
+#' @keywords classes
+#' @examples
+#'
+
 # fwd(FLBiols, FLFisheries, fwdControl) {{{
 
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
@@ -168,6 +198,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
 ) # }}}
 
+#' @rdname fwd
+#' @aliases fwd,FLBiols,FLFishery,fwdControl-method
+
 # fwd(FLBiols, FLFishery, fwdControl) {{{
 
 setMethod("fwd", signature(object="FLBiols", fishery="FLFishery",
@@ -182,6 +215,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFishery",
 ) # }}}
 
 # fwd(FLBiol, FLFisheries, fwdControl) {{{
+#' @rdname fwd-methods
+#' @aliases fwd,FLBiol,FLFisheries,fwdControl-method
 
 setMethod("fwd", signature(object="FLBiol", fishery="FLFisheries",
   control="fwdControl"),
@@ -205,6 +240,8 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFisheries",
 ) # }}}
 
 # fwd(FLBiol, FLFishery, fwdControl) {{{
+#' @rdname fwd-methods
+#' @aliases fwd,FLBiol,FLFishery,fwdControl-method
 
 setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
   control="fwdControl"),
@@ -237,6 +274,8 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 
 # fwd(FLBiol, FLFishery, missing) {{{
 
+#' @rdname fwd-methods
+#' @aliases fwd,FLBiols,FLFisheries,missing-method
 setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
   control="missing"),
   
@@ -266,6 +305,8 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 
 # fwd(FLStock, missing, fwdControl) {{{
 
+#' @rdname fwd-methods
+#' @aliases fwd,FLStock,missing,fwdControl-method
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
@@ -365,6 +406,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 
 # fwd(FLStock, missing, missing, ...) {{{
 
+#' @rdname fwd-methods
+#' @aliases fwd,FLStock,missing,missing-method
 setMethod("fwd", signature(object="FLStock", fishery="ANY",
   control="missing"),
   
