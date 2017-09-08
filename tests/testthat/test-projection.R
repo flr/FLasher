@@ -10,6 +10,7 @@ test_that("Catch target, single iter",{
     data(ple4)
     year_range <- range(ple4)[c("minyear","maxyear")]
     min_year <- round(runif(1, min=year_range[1], max=(year_range[1] + round((year_range[2] - year_range[1])/2))))
+    min_year[1] <- min_year[1] + 1
     nyears <- round(runif(n=1,min=3,max=(round((year_range[2] - year_range[1])/2)-5)))
     years <- min_year:(min_year+nyears-1)
     catch_val <- rlnorm(n=nyears, mean=log(min(catch(ple4)/10)), sd=0.1)
@@ -31,6 +32,7 @@ test_that("Catch target, multiple iters",{
     landings.n(ple4p)[] <- rlnorm(n=prod(dim(landings.n(ple4p))), mean=log(c(landings.n(ple4p))), sd=0.001)
     year_range <- range(ple4p)[c("minyear","maxyear")]
     min_year <- round(runif(1, min=year_range[1], max=(year_range[1] + round((year_range[2] - year_range[1])/2))))
+    min_year[1] <- min_year[1] + 1
     nyears <- round(runif(n=1,min=3,max=(round((year_range[2] - year_range[1])/2)-5)))
     years <- min_year:(min_year+nyears-1)
     catch_val <- rlnorm(n=nyears*niters, mean=log(min(catch(ple4p)/10)), sd=0.1)
@@ -46,6 +48,7 @@ test_that("Fbar target, single iter",{
     data(ple4)
     year_range <- range(ple4)[c("minyear","maxyear")]
     min_year <- round(runif(1, min=year_range[1], max=(year_range[1] + round((year_range[2] - year_range[1])/2))))
+    min_year[1] <- min_year[1] + 1
     nyears <- round(runif(n=1,min=3,max=(round((year_range[2] - year_range[1])/2)-5)))
     years <- min_year:(min_year+nyears-1)
     f_val <- rlnorm(n=nyears, mean=log(min(fbar(ple4)/10)), sd=0.1)
@@ -67,6 +70,7 @@ test_that("Fbar target, multiple iters",{
     landings.n(ple4p)[] <- rlnorm(n=prod(dim(landings.n(ple4p))), mean=log(c(landings.n(ple4p))), sd=0.001)
     year_range <- range(ple4p)[c("minyear","maxyear")]
     min_year <- round(runif(1, min=year_range[1], max=(year_range[1] + round((year_range[2] - year_range[1])/2))))
+    min_year[1] <- min_year[1] + 1
     nyears <- round(runif(n=1,min=3,max=(round((year_range[2] - year_range[1])/2)-5)))
     years <- min_year:(min_year+nyears-1)
     f_val <- rlnorm(n=nyears*niters, mean=log(min(fbar(ple4p)/10)), sd=0.1)
@@ -82,6 +86,7 @@ test_that("Catch target with min limit, single iter",{
     data(ple4)
     year_range <- range(ple4)[c("minyear","maxyear")]
     min_year <- round(runif(1, min=year_range[1], max=(year_range[1] + round((year_range[2] - year_range[1])/2))))
+    min_year[1] <- min_year[1] + 1
     nyears <- round(runif(n=1,min=3,max=(round((year_range[2] - year_range[1])/2)-5)))
     years <- min_year:(min_year+nyears-1)
     catch_val <- rlnorm(n=nyears, mean=log(min(catch(ple4)/10)), sd=0.1)
@@ -101,7 +106,8 @@ test_that("Catch target with min limit, single iter",{
 test_that("Catch target with max limit, single iter",{
     data(ple4)
     year_range <- range(ple4)[c("minyear","maxyear")]
-    min_year <- round(runif(1, min=year_range[1], max=(year_range[1] + round((year_range[2] - year_range[1])/2))))
+    min_year <- round(runif(1, min=year_range[1]+1, max=(year_range[1] + round((year_range[2] - year_range[1])/2))))
+    min_year[1] <- min_year[1] + 1
     nyears <- round(runif(n=1,min=3,max=(round((year_range[2] - year_range[1])/2)-5)))
     years <- min_year:(min_year+nyears-1)
     catch_val <- rlnorm(n=nyears, mean=log(min(catch(ple4)/10)), sd=0.1)
@@ -122,6 +128,7 @@ test_that("Catch relative target, single iter",{
     data(ple4)
     year_range <- range(ple4)[c("minyear","maxyear")]
     min_year <- round(runif(1, min=year_range[1]+1, max=(year_range[1] + round((year_range[2] - year_range[1])/2))))
+    min_year[1] <- min_year[1] + 1
     nyears <- round(runif(n=1,min=3,max=(round((year_range[2] - year_range[1])/2)-5)))
     years <- min_year:(min_year+nyears-1)
     catch_rel_val <- runif(nyears, min=0.5, max=0.9)
@@ -137,6 +144,7 @@ test_that("Fbar relative target, single iter",{
     data(ple4)
     year_range <- range(ple4)[c("minyear","maxyear")]
     min_year <- round(runif(1, min=year_range[1], max=(year_range[1] + round((year_range[2] - year_range[1])/2))))
+    min_year[1] <- min_year[1] + 1
     nyears <- round(runif(n=1,min=3,max=(round((year_range[2] - year_range[1])/2)-5)))
     years <- min_year:(min_year+nyears-1)
     f_rel_val <- runif(nyears, min=0.5, max=0.9)
