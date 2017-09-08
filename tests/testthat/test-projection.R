@@ -148,7 +148,3 @@ test_that("Fbar relative target, single iter",{
     expect_equal(f_out, f_trg)
 })
 
-
-
-
-

@@ -182,7 +182,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control,
-    effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e9, nr_iters = 50)
+    effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
   # UPDATE object w/ new biolscpp@n
   for(i in names(object))
     n(object[[i]]) <- out$om$biols[[i]]@n
