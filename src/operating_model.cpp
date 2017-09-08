@@ -898,7 +898,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         // Stop recording
         CppAD::ADFun<double> fun(effort_mult_ad, error);
         fun.optimize();
-        if(verbose){Rprintf("Turned off tape\n\n");}
+        if(verbose){Rprintf("Turned off tape\n");}
         // Solve the target
         // double version of effort mult used in solver
         std::vector<double> effort_mult(neffort * niter, effort_mult_initial);
