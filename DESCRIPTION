@@ -1,12 +1,11 @@
 Package: FLasher
-Type: Package
 Title: Projection and Forecasting of Fish Populations, Stocks and Fleets
 Description: Projection of future population and fishery dynamics is carried out
     for a given set of management targets. A system of equations is solved, using
     Automatic Differentation (AD), for the levels of effort by fishery/fleet that
     will result in the required abundances, catches or fishing mortalities.
-Version: 0.0.2.9010
-Date: 2017-09-04
+Version: 0.0.3
+Date: 2017-09-13
 Author: Finlay Scott and Iago Mosqueira
 Maintainer: Finlay Scott <finlay.scott@ec.europa.eu> and Iago Mosqueira <iago.mosqueira@ec.europa.eu>
 Authors@R: c(person(given = 'Finlay', family = 'Scott', role = c('aut'),
@@ -31,7 +30,7 @@ Collate:
     window.R
     fcb_draw.R
 Depends:
-    FLCore(>= 2.5.0),
+    FLCore(>= 2.6.5),
     FLFishery(>= 0.1)
 Imports:
     methods,
@@ -39,7 +38,6 @@ Imports:
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Additional_repositories: http://flr-project.org/R
-Remotes: github::iagomosqueira/FLFishery
 Suggests:
     testthat,
     knitr,
@@ -48,5 +46,5 @@ License: EUPL
 VignetteBuilder: knitr
 LazyLoad: Yes
 LazyData: No
-BugReports: https://github.com/iagomosqueira/FLasher/issues
+BugReports: https://github.com/flr/FLasher/issues
 RoxygenNote: 6.0.1

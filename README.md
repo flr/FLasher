@@ -1,6 +1,6 @@
 # FLasher
-- Version: 0.0.2.9010
-- Date: 2017-09-04
+- Version: 0.0.3
+- Date: 2017-09-13
 - Author: Finlay Scott and Iago Mosqueira, EC JRC.
 - Maintainer: Finaly Scott <finlay.scott@ec.europa.eu>
 - Repository: <https://github.com/flr/FLasher/>
