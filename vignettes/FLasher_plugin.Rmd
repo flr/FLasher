@@ -2,15 +2,8 @@
 title: "The Rcpp plugin for FLasher"
 author: Finlay Scott, Iago Mosqueira - European Commission Joint Research Center
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-documentclass: article
-header-includes: 
-  - \usepackage{float}
-  - \usepackage{microtype}
-  - \usepackage[T1]{fontenc}
-  - \usepackage[bitstream-charter]{mathdesign}
 output:
-  pdf_document:
-    toc: true
+  html_document:
     fig_caption: yes
     number_sections: yes
 vignette: >

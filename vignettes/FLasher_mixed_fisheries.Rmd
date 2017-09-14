@@ -2,15 +2,8 @@
 title: "Mixed fisheries with FLasher"
 author: Finlay Scott, Iago Mosqueira - European Commission Joint Research Center
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-documentclass: article
-header-includes: 
-  - \usepackage{float}
-  - \usepackage{microtype}
-  - \usepackage[T1]{fontenc}
-  - \usepackage[bitstream-charter]{mathdesign}
 output:
-  pdf_document:
-    toc: true
+  html_document:
     fig_caption: yes
     number_sections: yes
 vignette: >
@@ -26,7 +19,7 @@ library(Rcpp)
 library(FLasher)
 library(ggplotFL)
 library(knitr)
-opts_chunk$set(dev='png', cache=FALSE, fig.width=6, fig.height=6, tidy=TRUE, dpi=300, fig.pos='!h')
+opts_chunk$set(dev='png', cache=FALSE, fig.width=6, fig.height=6, tidy=TRUE, dpi=300)
 options(width=60)
 ```
 

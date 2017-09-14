@@ -1,16 +1,16 @@
- FLasher 0.0.3
+# FLasher 0.0.3
 
- NEW FEATURES
+## NEW FEATURES
 
- USER-VISIBLE CHANGES
+## USER-VISIBLE CHANGES
 
- BUG FIXES
+## BUG FIXES
 
 - Fixed stupid intermittant bug in projection test
 - Added stf to Namespace
 - Fixed bug setting relMinAge etc and added simple projection tests
 - Fixed coerce FLQuant to fwdControl with iters
 
- DOCUMENTATION
+## DOCUMENTATION
 
 - Edits to mixed fishery vignette and new introductory vignette
