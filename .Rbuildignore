@@ -1,6 +1,8 @@
 .travis.yml
 NEWS.md
-gh-pages/
+TODO.md
+^appveyor.yml$
+docs/
 man-roxygen/
 src/Doxyfile
 Makefile
