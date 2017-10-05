@@ -1,7 +1,8 @@
 # FLasher 0.0.4
 
 ## USER-VISIBLE CHANGES
-- Added disc.nyears arg to select years to use for discards ratio calculations
+
+- Added disc.nyears arg to stf() to select years to use for discards ratio calculations
 
 # FLasher 0.0.3
 
