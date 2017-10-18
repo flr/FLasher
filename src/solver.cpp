@@ -79,8 +79,8 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
         y = fun.Forward(0, indep); 
         // Get f'(x0) -  gets Jacobian for all simultaneous targets
         //if(verbose){Rprintf("Getting SparseJacobian\n");}
-        //jac = fun.SparseJacobian(indep);
-        jac = fun.Jacobian(indep);
+        jac = fun.SparseJacobian(indep);
+        //jac = fun.Jacobian(indep);
         // Alt - does the same 
         //std::vector<double> weight(1);
         //weight[0] = 1.0;
