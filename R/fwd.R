@@ -2,19 +2,27 @@
 # fwd.R
 
 # Copyright European Union, 2016
-# Author: Iago Mosqueira (EC JRC) <iago.mosqueira@jrc.ec.europa.eu>
+# Author: Iago Mosqueira (EC JRC) <iago.mosqueira@ec.europa.eu>
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 #' Method for running fishery projections
 #'
-#' fwd() projects the fishery through time and attempts to hit the specified targets by finding the appropriate fishing effort.
+#' fwd() projects the fishery through time and attempts to hit the specified
+#' targets by finding the appropriate fishing effort.
 #'
-#' A projection is run on either an FLStock object (for a single species, single fishery projection), or a pair of FLBiol(s) and FLFishery(ies) objects (for more advanced mixed fisheries projections).
-#' The projection is controlled by the fwdControl object (although it is also possible to control the projection of an FLStock using a different interface).
-#' In each timestep of the projection, the fishing effort of each FLFishery (or F multiplier if object is an FLStock) is found so that the targets specified in
+#' A projection is run on either an FLStock object (for a single species, single
+#' fishery projection), or a pair of FLBiol(s) and FLFishery(ies) objects
+#' (for more advanced mixed fisheries projections).
+#'
+#' The projection is controlled by the fwdControl object (although it is also
+#' possible to control the projection of an FLStock using a different interface).
+#' In each timestep of the projection, the fishing effort of each FLFishery (or F 
+#' multiplier if object is an FLStock) is found so that the targets specified in
 #' the fwdControl object are hit.
-#' For more details and examples, see the vignettes in the package and also the tutorial at: http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html 
+#'
+#' For more details and examples, see the vignettes in the package and also the
+#' tutorial at: http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html 
 #'
 #' @param object An FLStock, an FLBiol or an FLBiols object.
 #' @param fishery If object is an FLBiol(s), a FLFishery(ies). Else this argument is ignored.
@@ -36,7 +44,8 @@
 # fwd(FLBiols, FLFisheries, fwdControl) {{{
 
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
-    function(object, fishery, control, residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
+    function(object, fishery, control,
+      residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
 
   # CHECK length and names of biols and residuals
   if(!all.equal(names(object), names(residuals)))
@@ -131,10 +140,11 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     # If NA -> 1
     annual_model <- dim(n(object[[1]]))[4] == 1
     if (any(!is.na(trg$relYear)) & annual_model) {
-        relYear_rows <- !is.na(trg$relYear)
-        # If relSeason is not NA or 1 throw an error
-        if (!all(trg$relSeason[relYear_rows] %in% c(NA, 1))){
-            stop("With an annual model, if you have a relative target, relSeason must be set to 1 or NA")
+      relYear_rows <- !is.na(trg$relYear)
+      # If relSeason is not NA or 1 throw an error
+      if (!all(trg$relSeason[relYear_rows] %in% c(NA, 1))){
+        stop("With an annual model, if you have a relative target,
+          relSeason must be set to 1 or NA")
         }
         # If relYear is present and relSeason is NA, set to 1
         trg$relSeason[is.na(trg$relSeason) & relYear_rows] <- 1
@@ -159,7 +169,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
         # If relCatch must have relFishery
         relCatch <- !is.na(trg$relCatch) & !is.na(trg$relFishery)
         if (any(!((relBiol | relFishery | relCatch)[relYear_rows]))){
-            stop("If relYear set must also set a relBiol, relFishery or FLFishery and relCatch")
+            stop("If relYear set must also set a relBiol, relFishery or
+              FLFishery and relCatch")
         }
     }
 
@@ -188,13 +199,13 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     n(object[[i]]) <- out$om$biols[[i]]@n
 
   # RETURN list(object, fishery, control)
-  out <- list(biols=object, fisheries=out$om$fisheries, control=control, flag=out$solver_codes)
+  out <- list(biols=object, fisheries=out$om$fisheries, control=control,
+    flag=out$solver_codes)
 
   return(out)
   }
 
 ) # }}}
-
 
 # fwd(FLBiols, FLFishery, fwdControl) {{{
 #' @rdname fwd-methods
@@ -315,12 +326,16 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 
     # COERCE to FLBiols
     B <- as(object, "FLBiol")
+
     if(is(sr, "predictModel"))
       rec(B) <- sr
     else if(is(sr, "FLSR"))
       rec(B) <- predictModel(model=model(sr), params=params(sr))
     else if(is(sr, "list")) {
-      B@rec@model <- do.call(sr$model, list())[["model"]]
+      if(is(sr$model, "character"))
+        B@rec@model <- do.call(sr$model, list())[["model"]]
+      else if(is(sr$model, "formula"))
+        B@rec@model <- sr$model
       B@rec@params <- sr$params
     }
     Bs <- FLBiols(B=B)
@@ -337,7 +352,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     control@FCB <- matrix(1, ncol=3, nrow=1, dimnames=list(1, c("F", "C", "B")))
 
     # SET @target[fcb]
-    control@target[c("fishery", "catch", "biol")] <- rep(c(NA, NA, 1), each=dim(control@target)[1])
+    control@target[c("fishery", "catch", "biol")] <- rep(c(NA, NA, 1),
+      each=dim(control@target)[1])
 
     # Some targets require minAge and maxAge to be set
     # IF minAge and maxAge are NA and target is one of them, then range(min, max)
@@ -444,41 +460,3 @@ setMethod("fwd", signature(object="FLStock", fishery="ANY",
     return(fwd(object=object, control=control, residuals=residuals, sr=sr))
   }
 ) # }}}
-
-# add_target_order {{{
-#' Add the order column to the control target
-#'
-#' Add the order column to the control target data.frame so that targets are processed in the correct order.
-#'
-#' It is important that the targets in the control object are processed in the correct order.
-#' Targets can happen simultaneously. For example, if there are multiple FLFishery objects in
-#' operating model each will need to have a target to solve for at the same time as the others.
-#' The targets are processed in a time ordered sequence (year / season).
-#' However, within the same year and season it is necessary for the min and max targets to be processed
-#' separatley and after the other targets.
-#'
-#' @param control A fwdControl object
-#' @return A fwdControl object with an order column.
-#' @export
-add_target_order <- function(control){
-    # Add temporary original order column - order gets messed about with merge
-    control@target$orig_order <- 1:nrow(control@target)
-    # Add temporary minmax column
-    control@target$minmax <- is.na(control@iters[,"value",1])
-    sim_targets <- unique(control@target[,c("year","season","minmax")])
-    # Order by year / season / minmax
-    sim_targets <- sim_targets[order(sim_targets$year, sim_targets$season, sim_targets$minmax),]
-    sim_targets$order <- 1:nrow(sim_targets)
-    # Problem - merge reorders by order column
-    control@target <- merge(control@target, sim_targets) # order should be the same
-    # Reorder by original order so that target and iters slots are consistent
-    control@target <- control@target[order(control@target$orig_order),]
-    # Reorder target and iters slots by new order
-    new_order <- order(control@target$order, control@target$fishery, control@target$catch, control@target$biol)
-    control@target <- control@target[new_order,]
-    control@iters <- control@iters[new_order,,,drop=FALSE]
-    # Remove minmax and orig_order columns
-    control@target <- control@target[,colnames(control@target) != "minmax"]
-    control@target <- control@target[,colnames(control@target) != "orig_order"]
-    return(control)
-} # }}}

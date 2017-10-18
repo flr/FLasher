@@ -17,7 +17,6 @@ license: European Union Public Licence (EUPL) V.1.1
 ```{r, pkgs, echo=FALSE, message=FALSE, warnings=FALSE}
 library(Rcpp)
 library(FLasher)
-library(ggplotFL)
 library(knitr)
 opts_chunk$set(dev='png', cache=FALSE, fig.width=6, fig.height=6, tidy=TRUE, dpi=300)
 options(width=60)
@@ -695,10 +694,5 @@ With the limit on the sole revenue being reached, it is not possible to continue
 
 # References
 
-
 Scott, F. and Mosqueira, I. 2016. Bioeconomic Modelling for Fisheries; EUR 28383 EN; doi:10.2788/722156
-
-
-
-
 
