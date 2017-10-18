@@ -4,7 +4,7 @@
  */
 
 // For timing functions
-#include <time.h>
+//#include <chrono>
 
 #include "../inst/include/operating_model.h"
 
@@ -789,6 +789,7 @@ void operatingModel::project_fisheries(const int timestep){
  * \param indep_max The maximum value of effort multipliers
  */
 Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters){
+    //auto tstartrun = std::chrono::high_resolution_clock::now();
     bool verbose = false;
     if(verbose){Rprintf("\nIn run()\n");}
     // Housekeeping
@@ -857,6 +858,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
             }
         }
         if(verbose){Rprintf("Effort after updating : %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));}
+        //auto tpreproject = std::chrono::high_resolution_clock::now();
         if(verbose){Rprintf("Projecting\n");}
         // Project fisheries in the target effort timestep
         // (landings and discards are functions of effort in the effort timestep)
@@ -896,17 +898,28 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         }
         //if(verbose){Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", target_value[1], Value(target_value_hat[1]), Value(error[1]));}
         // Stop recording
+        // auto tpretapeoff = std::chrono::high_resolution_clock::now();
+        // Use of optimize takes a long time. But solver is slightly faster
         CppAD::ADFun<double> fun(effort_mult_ad, error);
-        fun.optimize();
+        // fun.optimize();
+        // Use Dependent? Makes no difference
+        // CppAD::ADFun<double> fun;
+        // fun.Dependent(effort_mult_ad, error);
+        // fun.optimize();
+        // auto taftertapeoff = std::chrono::high_resolution_clock::now();
+
         if(verbose){Rprintf("Turned off tape\n");}
         // Solve the target
         // double version of effort mult used in solver
         std::vector<double> effort_mult(neffort * niter, effort_mult_initial);
         std::fill(effort_mult.begin(), effort_mult.end(), effort_mult_initial);
         if(verbose){Rprintf("Solving\n");}
+        //auto tpresolve = std::chrono::high_resolution_clock::now();
         std::vector<int> nr_out = newton_raphson(effort_mult, fun, niter, nsim_targets, indep_min, indep_max, nr_iters);
         if(verbose){Rprintf("Finished solving\n");}
         if(verbose){Rprintf("nr_out: %i\n", nr_out[0]);}
+        //auto taftersolve = std::chrono::high_resolution_clock::now();
+
         // Check nr_out - if not all 1 then something has gone wrong - flag up warning
         // Each iter has a success code for all sim targets - put them into a matrix
         // Ntarget x iter
@@ -929,8 +942,17 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         if ((target_effort_timestep+1) <= max_timestep){
             project_biols(target_effort_timestep+1); 
         }
+        //std::chrono::duration<double, std::milli> proj_time = tpretapeoff - tpreproject;
+        //std::chrono::duration<double, std::milli> tape_time = taftertapeoff - tpretapeoff;
+        //std::chrono::duration<double, std::milli> solv_time = taftersolve - tpresolve;
+        //Rprintf("proj_time: %f \n", proj_time.count());
+        //Rprintf("tape_time: %f \n", tape_time.count());
+        //Rprintf("solv_time: %f \n", solv_time.count());
     }
     if(verbose){Rprintf("Leaving run\n\n");}
+    //auto tendrun = std::chrono::high_resolution_clock::now();
+    //std::chrono::duration<double, std::milli> run_time = tendrun - tstartrun;
+    //Rprintf("run_time: %f \n", run_time.count());
     return solver_codes;
 }
 
