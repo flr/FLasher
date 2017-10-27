@@ -11,7 +11,8 @@ stf(object, ...)
 
 \S4method{stf}{FLStock}(object, nyears = 3, wts.nyears = 3,
   fbar.nyears = wts.nyears, f.rescale = FALSE, arith.mean = TRUE,
-  na.rm = TRUE, end = dims(object)$maxyear + nyears)
+  na.rm = TRUE, end = dims(object)$maxyear + nyears,
+  disc.nyears = wts.nyears)
 
 \S4method{stf}{FLBiol}(object, nyears = 3, wts.nyears = 3,
   arith.mean = TRUE, na.rm = TRUE, end = dims(object)$maxyear + nyears)
@@ -42,4 +43,9 @@ Extends the object by a number of years and fill in the life history characteris
 stf for FLStock
 
 stf for FLBiol
+}
+\examples{
+data(ple4)
+
+proj <- stf(ple4, 3)
 }
