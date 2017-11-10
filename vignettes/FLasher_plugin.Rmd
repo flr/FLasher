@@ -19,7 +19,7 @@ library(Rcpp)
 library(FLasher)
 library(ggplotFL)
 library(knitr)
-opts_chunk$set(dev='png', cache=FALSE, fig.width=6, fig.height=6, tidy=TRUE, dpi=300, fig.pos='!h')
+opts_chunk$set(dev='png', cache=FALSE, fig.width=4, fig.height=4, tidy=TRUE, dpi=72)
 options(width=60)
 ```
 
@@ -97,8 +97,8 @@ source_code <- "
         return y;
     }
 "
-cat(source_code, file=paste(tempdir(),"test.cpp", sep="/"))
-sourceCpp(file=paste(tempdir(),"test.cpp", sep="/"))
+cat(source_code, file=paste(tempdir(),"test-1.cpp", sep="/"))
+sourceCpp(file=paste(tempdir(),"test-1.cpp", sep="/"))
 ```
 
 ```{r}
@@ -120,8 +120,8 @@ source_code <- "
         return v;
     }
 "
-cat(source_code, file=paste(tempdir(),"test.cpp", sep="/"))
-sourceCpp(file=paste(tempdir(),"test.cpp", sep="/"))
+cat(source_code, file=paste(tempdir(),"test-2.cpp", sep="/"))
+sourceCpp(file=paste(tempdir(),"test-2.cpp", sep="/"))
 ```
 
 ```{r}
@@ -174,8 +174,8 @@ source_code <- "
         return catches;
     }
 "
-cat(source_code, file=paste(tempdir(),"test.cpp", sep="/"))
-sourceCpp(file=paste(tempdir(),"test.cpp", sep="/"))
+cat(source_code, file=paste(tempdir(),"test-3.cpp", sep="/"))
+sourceCpp(file=paste(tempdir(),"test-3.cpp", sep="/"))
 ```
 
 ```{r, "demo"}
@@ -236,8 +236,8 @@ source_code <- "
     }
 "
 
-cat(source_code, file=paste(tempdir(),"test.cpp", sep="/"))
-sourceCpp(file=paste(tempdir(),"test.cpp", sep="/"))
+cat(source_code, file=paste(tempdir(),"test-4.cpp", sep="/"))
+sourceCpp(file=paste(tempdir(),"test-4.cpp", sep="/"))
 ```
 
 We can test this by solving the function in R with *optim()* using an approximate gradient, the exact gradient function and the AD gradient.

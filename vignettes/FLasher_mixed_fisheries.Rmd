@@ -18,7 +18,7 @@ license: European Union Public Licence (EUPL) V.1.1
 library(Rcpp)
 library(FLasher)
 library(knitr)
-opts_chunk$set(dev='png', cache=FALSE, fig.width=6, fig.height=6, tidy=TRUE, dpi=300)
+opts_chunk$set(dev='png', cache=FALSE, fig.width=4, fig.height=4, tidy=TRUE, dpi=72)
 options(width=60)
 ```
 
