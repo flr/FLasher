@@ -15,7 +15,8 @@ test_that("Catch target, single iter",{
     years <- min_year:(min_year+nyears-1)
     catch_val <- rlnorm(n=nyears, mean=log(min(catch(ple4)/10)), sd=0.1)
     control=fwdControl(data.frame(year=years, quant="catch", value=catch_val))
-    res <- fwd(ple4, control=control)
+    res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
+      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
     catch_out <- c(catch(res)[,ac(years)])
     # Test to within tolerance of 1.5e-8
     expect_equal(catch_out, catch_val)
@@ -38,7 +39,8 @@ test_that("Catch target, multiple iters",{
     catch_val <- rlnorm(n=nyears*niters, mean=log(min(catch(ple4p)/10)), sd=0.1)
     control=fwdControl(data.frame(year=years, quant="catch", value=0), iters=niters)
     control@iters[,"value",] <- catch_val
-    res <- fwd(ple4p, control=control)
+    res <- fwd(ple4p, control=control, sr=predictModel(model="geomean", 
+      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
     catch_out <- c(catch(res)[,ac(years)])
     # Test to within tolerance of 1.5e-8
     expect_equal(catch_out, catch_val)
@@ -53,7 +55,8 @@ test_that("Fbar target, single iter",{
     years <- min_year:(min_year+nyears-1)
     f_val <- rlnorm(n=nyears, mean=log(min(fbar(ple4)/10)), sd=0.1)
     control=fwdControl(data.frame(year=years, quant="fbar", value=f_val))
-    res <- fwd(ple4, control=control)
+    res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
+      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
     f_out <- c(fbar(res)[,ac(years)])
     # Test to within tolerance of 1.5e-8
     expect_equal(f_out, f_val)
@@ -76,7 +79,8 @@ test_that("Fbar target, multiple iters",{
     f_val <- rlnorm(n=nyears*niters, mean=log(min(fbar(ple4p)/10)), sd=0.1)
     control=fwdControl(data.frame(year=years, quant="fbar", value=0), iters=niters)
     control@iters[,"value",] <- f_val 
-    res <- fwd(ple4p, control=control)
+    res <- fwd(ple4p, control=control, sr=predictModel(model="geomean", 
+      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
     f_out <- c(fbar(res)[,ac(years)])
     # Test to within tolerance of 1.5e-8
     expect_equal(f_out, f_val)
@@ -95,7 +99,8 @@ test_that("Catch target with min limit, single iter",{
         rbind(data.frame(year=years, quant="catch", value=catch_val, min=NA),
             data.frame(year=years, quant="catch", value=NA, min=catch_lim))
     )
-    res <- fwd(ple4, control=control)
+    res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
+      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
     catch_out <- c(catch(res)[,ac(years)])
     catch_trg <- catch_val
     catch_trg[catch_val < catch_lim] <- catch_lim
@@ -116,7 +121,8 @@ test_that("Catch target with max limit, single iter",{
         rbind(data.frame(year=years, quant="catch", value=catch_val, max=NA),
             data.frame(year=years, quant="catch", value=NA, max=catch_lim))
     )
-    res <- fwd(ple4, control=control)
+    res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
+      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
     catch_out <- c(catch(res)[,ac(years)])
     catch_trg <- catch_val
     catch_trg[catch_val > catch_lim] <- catch_lim
@@ -133,7 +139,8 @@ test_that("Catch relative target, single iter",{
     years <- min_year:(min_year+nyears-1)
     catch_rel_val <- runif(nyears, min=0.5, max=0.9)
     control=fwdControl(data.frame(year=years, quant="catch", value=catch_rel_val, relYear=years-1))
-    res <- fwd(ple4, control=control)
+    res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
+      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
     catch_out <- c(catch(res)[,ac(years)])
     catch_trg <- c(catch(ple4)[,ac(years[1]-1)]) * cumprod(catch_rel_val)
     # Test to within tolerance of 1.5e-8
@@ -149,7 +156,8 @@ test_that("Fbar relative target, single iter",{
     years <- min_year:(min_year+nyears-1)
     f_rel_val <- runif(nyears, min=0.5, max=0.9)
     control=fwdControl(data.frame(year=years, quant="fbar", value=f_rel_val, relYear=years-1))
-    res <- fwd(ple4, control=control)
+    res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
+      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
     f_out <- c(fbar(res)[,ac(years)])
     f_trg <- c(fbar(ple4)[,ac(years[1]-1)]) * cumprod(f_rel_val)
     # Test to within tolerance of 1.5e-8
