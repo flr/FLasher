@@ -2105,8 +2105,12 @@ FLQuantAD operatingModel::biomass_flash(const int biol_no,  const std::vector<un
 //'@rdname operatingModelRun
 // [[Rcpp::export]]
 Rcpp::List operatingModelRun(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double effort_mult_initial, const double indep_min, const double indep_max, const int nr_iters = 50){
+    //auto tstartrun = std::chrono::high_resolution_clock::now();
     operatingModel om(flfs, biols, ctrl);
     Rcpp::IntegerMatrix solver_codes = om.run(effort_mult_initial, indep_min, indep_max, nr_iters);
+    //auto tendrun = std::chrono::high_resolution_clock::now();
+    //std::chrono::duration<double, std::milli> run_time = tendrun - tstartrun;
+    //Rprintf("OM run_time: %f \n", run_time.count());
 	return Rcpp::List::create(Rcpp::Named("om", om),
         Rcpp::Named("solver_codes",solver_codes));
 }
