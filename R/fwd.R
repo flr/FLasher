@@ -315,7 +315,8 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
-  function(object, control, sr=predictModel(model=rec~a, params=FLPar(a=1)),
+  function(object, control,
+    sr=predictModel(model="geomean", params=FLPar(a=yearMeans(rec(object)))),
     residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {
     
     # DEAL with iters
@@ -326,17 +327,19 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # COERCE to FLBiols
     B <- as(object, "FLBiol")
 
-    if(is(sr, "predictModel"))
+    if(is(sr, "predictModel")) {
       rec(B) <- sr
-    else if(is(sr, "FLSR"))
+    } else if(is(sr, "FLSR")){
       rec(B) <- predictModel(model=model(sr), params=params(sr))
-    else if(is(sr, "list")) {
-      if(is(sr$model, "character"))
+    } else if(is(sr, "list")) {
+      if(is(sr$model, "character")) {
         B@rec@model <- do.call(sr$model, list())[["model"]]
-      else if(is(sr$model, "formula"))
+      } else if(is(sr$model, "formula")) {
         B@rec@model <- sr$model
+      }
       B@rec@params <- sr$params
     }
+    
     Bs <- FLBiols(B=B)
 
     # COERCE to FLFisheries
