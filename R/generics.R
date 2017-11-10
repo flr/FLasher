@@ -63,6 +63,7 @@ setGeneric("fillchar", function(object) standardGeneric("fillchar"))
 #' @param object The object (FLStock or FLBiol)
 #' @param nyears Number of years to extend the object
 #' @param wts.nyears Number of years to average over to get the future mean weights at age.
+#' @param disc.nyears Number of years to average over to get the future mean proportion of discards at age.
 #' @param arith.mean If TRUE the arithmetic mean is used. If FALSE the geometric mean is used. Default is TRUE.
 #' @param na.rm For the mean function.
 #' @param end My beautiful friend

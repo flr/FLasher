@@ -35,6 +35,8 @@ stf(object, ...)
 \item{na.rm}{For the mean function.}
 
 \item{end}{My beautiful friend}
+
+\item{disc.nyears}{Number of years to average over to get the future mean proportion of discards at age.}
 }
 \description{
 Similar to the old STF method in FLAssess.
