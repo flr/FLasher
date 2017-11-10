@@ -28,7 +28,7 @@
 #' @param fishery If object is an FLBiol(s), a FLFishery(ies). Else this argument is ignored.
 #' @param control A fwdControl object.
 #' @param residuals An FLQuant of residuals for the stock recruitment relationship (if object is an FLStock).
-#' @param sr a predictModel that describes the stock recruitment relationship (if object is an FLStock).
+#' @param sr a predictModel, FLSr or list that describes the stock recruitment relationship (if object is an FLStock).
 #' @param ... Stormbending.
 #'
 #' @return Either an FLStock, or a list of FLFishery and FLBiol objects.
@@ -315,9 +315,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
-  function(object, control,
-    sr=predictModel(model="geomean", params=FLPar(a=yearMeans(rec(object)))),
-    residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {
+  function(object, control, sr) {
     
     # DEAL with iters
     its <- dims(object)$iter
@@ -421,12 +419,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 
 #' @rdname fwd-methods
 #' @aliases fwd,FLStock,missing,missing-method
-setMethod("fwd", signature(object="FLStock", fishery="ANY",
-  control="missing"),
-  
-  function(object, fishery=missing, ...,
-    sr=predictModel(model="geomean", params=FLPar(a=yearMeans(rec(object)))),
-    residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {
+setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
+  function(object, fishery=missing, sr, ...) {
     
     # PARSE ...
     args <- list(...)
