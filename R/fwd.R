@@ -315,7 +315,8 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
-  function(object, control, sr) {
+  function(object, control, sr,
+    residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {  
     
     # DEAL with iters
     its <- dims(object)$iter
@@ -325,6 +326,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # COERCE to FLBiols
     B <- as(object, "FLBiol")
 
+    # PARSE sr and ADD to B
     if(is(sr, "predictModel")) {
       rec(B) <- sr
     } else if(is(sr, "FLSR")){
@@ -420,7 +422,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 #' @rdname fwd-methods
 #' @aliases fwd,FLStock,missing,missing-method
 setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
-  function(object, fishery=missing, sr, ...) {
+  function(object, fishery=missing, sr,
+    residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
     
     # PARSE ...
     args <- list(...)
