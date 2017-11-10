@@ -451,7 +451,7 @@ jukebox <- function(){
 }
 
 .onLoad <- function(libname, pkgname ) {
-	cat(paste(jukebox(),"\n",sep=""))
+  packageStartupMessage(paste(jukebox(),"\n",sep=""))
 }
 
 
