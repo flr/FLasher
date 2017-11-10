@@ -27,13 +27,11 @@
 \S4method{fwd}{FLBiol,FLFishery,missing}(object, fishery, ...,
   residuals = FLQuant(1, dimnames = dimnames(m(object))))
 
-\S4method{fwd}{FLStock,missing,fwdControl}(object, control,
-  sr = predictModel(model = rec ~ a, params = FLPar(a = 1)),
+\S4method{fwd}{FLStock,missing,fwdControl}(object, control, sr,
   residuals = FLQuant(1, dimnames = dimnames(rec(object))))
 
-\S4method{fwd}{FLStock,ANY,missing}(object, fishery = missing, ...,
-  sr = predictModel(model = rec ~ a, params = FLPar(a = 1)),
-  residuals = FLQuant(1, dimnames = dimnames(rec(object))))
+\S4method{fwd}{FLStock,ANY,missing}(object, fishery = missing, sr,
+  residuals = FLQuant(1, dimnames = dimnames(rec(object))), ...)
 }
 \arguments{
 \item{object}{An FLStock, an FLBiol or an FLBiols object.}
@@ -46,20 +44,28 @@
 
 \item{...}{Stormbending.}
 
-\item{sr}{a predictModel that describes the stock recruitment relationship (if object is an FLStock).}
+\item{sr}{a predictModel, FLSr or list that describes the stock recruitment relationship (if object is an FLStock).}
 }
 \value{
 Either an FLStock, or a list of FLFishery and FLBiol objects.
 }
 \description{
-fwd() projects the fishery through time and attempts to hit the specified targets by finding the appropriate fishing effort.
+fwd() projects the fishery through time and attempts to hit the specified
+targets by finding the appropriate fishing effort.
 }
 \details{
-A projection is run on either an FLStock object (for a single species, single fishery projection), or a pair of FLBiol(s) and FLFishery(ies) objects (for more advanced mixed fisheries projections).
-The projection is controlled by the fwdControl object (although it is also possible to control the projection of an FLStock using a different interface).
-In each timestep of the projection, the fishing effort of each FLFishery (or F multiplier if object is an FLStock) is found so that the targets specified in
+A projection is run on either an FLStock object (for a single species, single
+fishery projection), or a pair of FLBiol(s) and FLFishery(ies) objects
+(for more advanced mixed fisheries projections).
+
+The projection is controlled by the fwdControl object (although it is also
+possible to control the projection of an FLStock using a different interface).
+In each timestep of the projection, the fishing effort of each FLFishery (or F 
+multiplier if object is an FLStock) is found so that the targets specified in
 the fwdControl object are hit.
-For more details and examples, see the vignettes in the package and also the tutorial at: http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html
+
+For more details and examples, see the vignettes in the package and also the
+tutorial at: http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html
 }
 \seealso{
 \link{FLComp}
