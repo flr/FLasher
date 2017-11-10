@@ -424,7 +424,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 setMethod("fwd", signature(object="FLStock", fishery="ANY",
   control="missing"),
   
-  function(object, fishery=missing, ..., sr=predictModel(model=rec~a, params=FLPar(a=1)),
+  function(object, fishery=missing, ...,
+    sr=predictModel(model="geomean", params=FLPar(a=yearMeans(rec(object)))),
     residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {
     
     # PARSE ...
