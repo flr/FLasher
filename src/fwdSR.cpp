@@ -141,6 +141,7 @@ std::vector<double> fwdSR_base<T>::get_params(unsigned int year, unsigned int un
     }
     for (int i = 1; i <= nparams; ++i){
         model_params[i-1] = params(i,year,unit,season,area,iter);
+        //Rprintf("Year: %i Rec: %f\n",  year, model_params[i-1]);
     }
     return model_params;
 }

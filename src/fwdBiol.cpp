@@ -301,7 +301,14 @@ FLQuant_base<T> fwdBiol_base<T>::predict_recruitment(const FLQuant_base<T> srp, 
 
 template <typename T>
 bool fwdBiol_base<T>::does_recruitment_happen(unsigned int unit, unsigned int year, unsigned int season) const{
-    return srr.does_recruitment_happen(unit, year, season);
+    // Assume that spawning happens unless it's a seasonal model in which case check the params
+    bool did_spawning_happen=true;
+    auto dim = n_flq.get_dim();
+    // If seasonal model
+    if(dim[3] > 1){
+        did_spawning_happen = srr.does_recruitment_happen(unit, year, season);
+    }
+    return did_spawning_happen;
 }
 
 /*------------------------------------------------------------*/

@@ -677,6 +677,11 @@ void operatingModel::project_biols(const int timestep){
             // Insert recruitment - can only do after abundance has been updated in timestep as SRP might be from this timestep
             if (recruiting_now){
                 std::vector<adouble> rec = calc_rec(biol_counter, ucount, timestep);
+                // Check first value to see if bad for clean exit
+                if(Rcpp::NumericVector::is_na(Value(rec[0]))){
+                    Rcpp::stop("Calculated recruitment is NA. Stopping before something bad happens.\n");
+                }
+                
                 for (unsigned int icount = 1; icount <= niter; ++icount){
                     biols(biol_counter).n(1, year, ucount, season, area, icount) = rec[icount-1];
                 }
