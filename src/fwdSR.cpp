@@ -168,8 +168,22 @@ template <typename T>
 T fwdSR_base<T>::eval_model(const T srp, int year, int unit, int season, int area, int iter) const{
     // Get the parameters
     std::vector<double> model_params = get_params(year, unit, season, area, iter);
-    // Finally, evaluate the function being pointed at
-    T rec = model(srp, model_params);
+    // Check if any params are NA - if so, stop
+    // Check first value to see if bad for clean exit
+    //Rprintf("size model_params: %i \n", model_params.size());
+    T rec;
+    for (double param : model_params){
+        if(Rcpp::NumericVector::is_na(param)){
+            // Using this Rcpp::stop makes a mess - no idea why
+            //Rcpp::stop("An SR model params is NA. Cannot evaluate model. Stopping before something bad happens.\n");
+            Rcpp::warning("An SR model param is NA. Setting rec to 0 else something bad will happen.\n");
+            rec = 0.0;
+        }
+        else{
+            // Evaluate the function being pointed at
+            rec = model(srp, model_params);
+        }
+    }
     return rec;
 }
 /*!
