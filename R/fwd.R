@@ -56,6 +56,22 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   dif <- do.call(rbind, lapply(fishery,
     function(x) data.frame(dims(effort(x))[c("season", "area")])))
   dnb <- dimnames(n(object[[1]]))
+
+  # CHECK srparams' years match control years
+  cyrs <- control$year
+  ysrp <- unlist(lapply(object, function(x) {
+    # GET rec@params dimnames
+    spdn <- dimnames(rec(x, "params"))$year
+    # IF 'year' in dimnames
+    if(!is.null(spdn))
+      # CHECK control years are covered
+      all(cyrs %in% as.numeric(dimnames(rec(x, "params"))$year))
+    else
+      TRUE
+  }))
+  if(!all(ysrp))
+    stop("'years' specified in params(rec) do not match those in control")
+
   
   # ERROR if seasons are different in FLBiols or FLFisheries
   if(!all(c(dib$season, dif$season) == dib$season[1]))
