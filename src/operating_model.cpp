@@ -435,17 +435,22 @@ std::vector<adouble> operatingModel::calc_rec(const unsigned int biol_no, const 
  * \param indices_max The maximum indices quant, year, unit etc (length 6)
 */
 FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+    bool verbose = false;
+    if(verbose){Rprintf("In operatingModel::get_f FCB subsetter\n");}
     if ((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In operatingModel get_f subsetter. Indices not of length 6\n");
     }
     // Lop off the first value from the indices to get indices without quant - needed for effort and catch_q
     std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
     std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
+    if(verbose){Rprintf("Getting biomass\n");}
     FLQuantAD biomass = biols(biol_no).biomass(indices_min5, indices_max5);
+    if(verbose){Rprintf("Got biomass\n");}
     FLQuantAD sel = fisheries(fishery_no, catch_no).catch_sel()(indices_min, indices_max);
     // Need special subsetter for effort as always length 1 in the unit dimension
     std::vector<unsigned int> effort_indices_min5{indices_min5[0], 1, indices_min5[2], indices_min5[3], indices_min5[4]};  
     std::vector<unsigned int> effort_indices_max5{indices_max5[0], 1, indices_max5[2], indices_max5[3], indices_max5[4]};  
+    if(verbose){Rprintf("Getting effort\n");}
     FLQuantAD effort = fisheries(fishery_no).effort(effort_indices_min5, effort_indices_max5); // Will always have 1 in the unit dimension
     // Get q params as a whole FLQuant - just first 2 'ages' (params)
     std::vector<unsigned int> qparams_indices_min = indices_min5;
@@ -486,8 +491,8 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
 FLQuantAD operatingModel::get_f(const unsigned int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
-    //unsigned int fishery_no;
-    //unsigned int catch_no;
+    bool verbose = false;
+    if(verbose){Rprintf("In operatingModel::get_f biol subsetter\n");}
     if (biol_no > biols.get_nbiols()){
         Rcpp::stop("In OM get_f biol. biol_no is greater than number of biols\n");
     }
@@ -496,6 +501,7 @@ FLQuantAD operatingModel::get_f(const unsigned int biol_no, const std::vector<un
     // What happens if no-one is fishing that biol? FC.nrow() == 0 so loop never triggers
     FLQuantAD total_f(indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1, indices_max[5] - indices_min[5] + 1); 
     total_f.fill(0.0);
+    if(verbose){Rprintf("About to loop over FCs\n");}
     for (int f_counter=0; f_counter < FC.nrow(); ++f_counter){
         total_f = total_f + get_f(FC(f_counter,0), FC(f_counter,1), biol_no, indices_min, indices_max);
     }
@@ -614,10 +620,14 @@ FLQuantAD operatingModel::get_nunit_f(const int fishery_no, const int catch_no, 
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
 FLQuantAD operatingModel::survivors(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+    bool verbose = false;
+    if(verbose){Rprintf("In operatingModel::survivors\n");}
     if ((indices_min.size() != 6) | (indices_max.size() != 6)){
         Rcpp::stop("In operatingModel survivors subsetter. Indices not of length 6\n");
     }
+    if(verbose){Rprintf("About to get F\n");}
     FLQuantAD z_temp = get_f(biol_no, indices_min, indices_max) + biols(biol_no).m(indices_min, indices_max);
+    if(verbose){Rprintf("Got F\n");}
     FLQuantAD survivors = biols(biol_no).n(indices_min, indices_max) * exp(-1.0 * z_temp);
     return survivors;
 }
@@ -631,12 +641,13 @@ FLQuantAD operatingModel::survivors(const int biol_no, const std::vector<unsigne
  *   \param timestep The time step for the projection.
  */
 void operatingModel::project_biols(const int timestep){
-    //Rprintf("In operatingModel::project_biols\n");
+    bool verbose = false;
+    if(verbose){Rprintf("In operatingModel::project_biols\n");}
     if (timestep < 2){
         Rcpp::stop("In operatingModel::project_biols. Uses effort in previous timestep so timestep must be at least 2.");
     }
     for (unsigned int biol_counter=1; biol_counter <= biols.get_nbiols(); ++biol_counter){
-        //Rprintf("Projecting biol: %i\n", biol_counter);
+        if(verbose){Rprintf("Projecting biol: %i\n", biol_counter);}
         std::vector<unsigned int> biol_dim = biols(biol_counter).n().get_dim();
         unsigned int year = 1;
         unsigned int season = 1;
@@ -654,8 +665,10 @@ void operatingModel::project_biols(const int timestep){
         std::vector<unsigned int> prev_indices_min{1, prev_year, 1, prev_season, area, 1};
         std::vector<unsigned int> prev_indices_max{biol_dim[0], prev_year, biol_dim[2], prev_season, area, niter};
         // Get abundance at end of preceding timestep
+        if(verbose){Rprintf("About to get survivors\n");}
         FLQuantAD surv = survivors(biol_counter, prev_indices_min, prev_indices_max);
         FLQuantAD new_abundance = surv;
+        if(verbose){Rprintf("Starting to loop over units\n");}
         for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
             bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, year, season);
             // If recruiting shift survivor ages, fix plus group. Recruitment calculated later after updating abundances.

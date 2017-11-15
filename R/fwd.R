@@ -57,20 +57,33 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     function(x) data.frame(dims(effort(x))[c("season", "area")])))
   dnb <- dimnames(n(object[[1]]))
 
-  # CHECK srparams' years match control years
-  cyrs <- control$year
+
+  # CHECK srparams years match control years
+  cyrs <- unique(control$year)
   ysrp <- unlist(lapply(object, function(x) {
     # GET rec@params dimnames
     spdn <- dimnames(rec(x, "params"))$year
     # IF 'year' in dimnames
-    if(!is.null(spdn))
-      # CHECK control years are covered
-      all(cyrs %in% as.numeric(dimnames(rec(x, "params"))$year))
+    if(!is.null(spdn)){
+      # CHECK control years are covered 
+      # If final projection year is not final year of biol, then fwd projects the biol in the final+1 control year
+      # e.g. if there is room to update biol in final control year +1
+      if (max(cyrs) < max(as.numeric(dimnames(x@n)$year))){
+          cyrs <- c(cyrs, max(cyrs)+1)
+      }
+      allyrs <- all(cyrs %in% as.numeric(spdn))
+      # And check all params in the control years are not NA
+      nayrs <- FALSE
+      if(allyrs){
+          nayrs <- all(!is.na(rec(x, "params")[,ac(cyrs)]))
+      }
+      return(nayrs & allyrs)
+    }
     else
       TRUE
   }))
   if(!all(ysrp))
-    stop("'years' specified in params(rec) do not match those in control")
+    stop("'years' specified in params(rec) do not match those in control or are NA (note that the 'final control year + 1' is projected if there is room)")
 
   
   # ERROR if seasons are different in FLBiols or FLFisheries
