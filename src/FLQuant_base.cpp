@@ -388,15 +388,25 @@ T& FLQuant_base<T>::operator () (const std::vector<unsigned int> indices) {
 	return data[element];
 }
 
-// Subset
+// Subset - max_iter is not const as can be changed due to 1 or N
 template <typename T>
-FLQuant_base<T> FLQuant_base<T>::operator () (const unsigned int quant_min, const unsigned int quant_max, const unsigned int year_min, const unsigned int year_max, const unsigned int unit_min, const unsigned int unit_max, const unsigned int season_min, const unsigned int season_max, const unsigned int area_min, const unsigned int area_max, const unsigned int iter_min, const unsigned int iter_max) const {
+FLQuant_base<T> FLQuant_base<T>::operator () (const unsigned int quant_min, const unsigned int quant_max, const unsigned int year_min, const unsigned int year_max, const unsigned int unit_min, const unsigned int unit_max, const unsigned int season_min, const unsigned int season_max, const unsigned int area_min, const unsigned int area_max, const unsigned int iter_min, unsigned int iter_max) const {
     // Check ranges
     if ((quant_min < 1) || (year_min < 1)|| (unit_min < 1)|| (season_min < 1)|| (area_min < 1)|| (iter_min < 1)) {
         Rcpp::stop("In FLQuant subsetter: requested min dimensions are less than 1.\n");
     }
-    if ((quant_max > get_nquant()) || (year_max > get_nyear()) || (unit_max > get_nunit()) || (season_max > get_nseason()) || (area_max > get_narea()) || (iter_max > get_niter())){
+    // Check asked for indices are not greater than allowed - iter is a special case
+    if ((quant_max > get_nquant()) || (year_max > get_nyear()) || (unit_max > get_nunit()) || (season_max > get_nseason()) || (area_max > get_narea())){
         Rcpp::stop("In FLQuant subsetter: requested subset dimensions are outside of FLQuant bounds.\n");
+    }
+    // Iterations are a special case: Allowed 1 or N. If FLQ has 1 iter and you ask for more, you get the 1. As R.
+    if (iter_max > get_niter()){
+        if (get_niter()==1){
+            iter_max = 1;
+        }
+        else {
+            Rcpp::stop("In FLQuant subsetter: requested maximum iteration must be 1 or Niters.\n");
+        }
     }
     // Check max >= min
     if ((quant_max < quant_min) || (year_max < year_min) || (unit_max < unit_min) || (season_max < season_min) || (area_max < area_min) || (iter_max < iter_min)){
