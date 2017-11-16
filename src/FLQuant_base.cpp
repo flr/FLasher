@@ -395,22 +395,23 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const unsigned int quant_min, cons
     if ((quant_min < 1) || (year_min < 1)|| (unit_min < 1)|| (season_min < 1)|| (area_min < 1)|| (iter_min < 1)) {
         Rcpp::stop("In FLQuant subsetter: requested min dimensions are less than 1.\n");
     }
+    // Check max >= min
+    if ((quant_max < quant_min) || (year_max < year_min) || (unit_max < unit_min) || (season_max < season_min) || (area_max < area_min) || (iter_max < iter_min)){
+        Rcpp::stop("In FLQuant subsetter: min dim > max\n");
+    }
     // Check asked for indices are not greater than allowed - iter is a special case
     if ((quant_max > get_nquant()) || (year_max > get_nyear()) || (unit_max > get_nunit()) || (season_max > get_nseason()) || (area_max > get_narea())){
         Rcpp::stop("In FLQuant subsetter: requested subset dimensions are outside of FLQuant bounds.\n");
     }
     // Iterations are a special case: Allowed 1 or N. If FLQ has 1 iter and you ask for more, you get the 1. As R.
     if (iter_max > get_niter()){
-        if (get_niter()==1){
+        // If only 1 iter in FLQuant, and asking for subset 1 to N, return 1 to 1
+        if ((iter_min==1) & (get_niter()==1)){
             iter_max = 1;
         }
         else {
-            Rcpp::stop("In FLQuant subsetter: requested maximum iteration must be 1 or Niters.\n");
+            Rcpp::stop("In FLQuant subsetter: Max iter > Niters. Only allowed if FLQuant has 1 iter. Even then subset can only be 1:1 or 1:N iters.\n");
         }
-    }
-    // Check max >= min
-    if ((quant_max < quant_min) || (year_max < year_min) || (unit_max < unit_min) || (season_max < season_min) || (area_max < area_min) || (iter_max < iter_min)){
-        Rcpp::stop("In FLQuant subsetter: min dim > max\n");
     }
 
     // Using brace initialiser
