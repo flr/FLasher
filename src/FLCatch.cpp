@@ -35,7 +35,7 @@ FLCatch_base<T>::FLCatch_base(SEXP flc_sexp){
     range = flc_s4.slot("range");
     landings_n_flq = flc_s4.slot("landings.n");
     discards_n_flq = flc_s4.slot("discards.n");
-    discards_ratio_flq = discards_n_flq / (discards_n_flq + landings_n_flq);
+    discards_ratio_flq = discards_n_flq / (discards_n_flq + landings_n_flq + 1e-16);
     landings_wt_flq = flc_s4.slot("landings.wt");
     discards_wt_flq = flc_s4.slot("discards.wt");
     catch_sel_flq = flc_s4.slot("catch.sel");
