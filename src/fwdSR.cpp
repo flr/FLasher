@@ -168,21 +168,21 @@ template <typename T>
 T fwdSR_base<T>::eval_model(const T srp, int year, int unit, int season, int area, int iter) const{
     // Get the parameters
     std::vector<double> model_params = get_params(year, unit, season, area, iter);
-    // Check if any params are NA - if so, stop
+    // Check if any params are NA - if so, don't evaluate model, set rec to 0.0 for clean exit
     // Check first value to see if bad for clean exit
     //Rprintf("size model_params: %i \n", model_params.size());
-    T rec;
+    T rec = 0.0;
+    bool paramNA = false;
     for (double param : model_params){
         if(Rcpp::NumericVector::is_na(param)){
-            // Using this Rcpp::stop makes a mess - no idea why
-            //Rcpp::stop("An SR model params is NA. Cannot evaluate model. Stopping before something bad happens.\n");
-            Rcpp::warning("An SR model param is NA. Setting rec to 0 else something bad will happen.\n");
-            rec = 0.0;
+            paramNA = true;
         }
-        else{
-            // Evaluate the function being pointed at
-            rec = model(srp, model_params);
-        }
+    }
+    if (paramNA == false){
+        rec = model(srp, model_params);
+    }
+    else {
+        Rcpp::warning("An SR model param is NA. Setting rec to 0 else something bad will happen.\n");
     }
     return rec;
 }
@@ -265,7 +265,7 @@ FLQuant_base<T> fwdSR_base<T>::predict_recruitment(const FLQuant_base<T> srp, co
                             rec_temp += residuals(1, params_indices[0], params_indices[1], params_indices[2], params_indices[3], params_indices[4]);
                         }
                         rec(1, year_counter, unit_counter, season_counter, area_counter, iter_counter) = rec_temp;
-                    }}}}}
+    }}}}}
     return rec;
 }
 
