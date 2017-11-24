@@ -17,8 +17,6 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
     dit <- dim(iters)
     dni <- dimnames(iters)
     
-    # TODO TEST dimensions
-
     # COMPLETE df
     trg <- new('fwdControl')@target[rep(1, nrow(target)),]
     
@@ -67,7 +65,7 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
 
     ite <- ite[idx,,,drop=FALSE]
     rownames(ite) <- seq(len=nrow(trg))
-
+    
     return(new('fwdControl', target=trg, iters=ite, ...))
   }
 ) 
@@ -166,7 +164,7 @@ setMethod('fwdControl', signature(target='list', iters='missing'),
       
       inp <- do.call('parsefwdList', target)
 
-    return(do.call('fwdControl', inp, ...))
+    return(do.call('fwdControl', c(inp, list(...))))
     }
   }
 ) # }}}
@@ -287,6 +285,35 @@ targetOrder <- function(target, iters) {
   return(idx)
 }
 # }}}
+
+# FCB {{{
+setMethod("FCB", signature(object="ANY"),
+  function(object, ...) {
+
+    args <- c(list(object), list(...))
+
+    # OUTLIST list
+    if(length(args) == 1 & is(args[[1]], "list"))
+      args <- args[[1]]
+
+    # USE matrix
+    if(length(args) == 1 & is(args[[1]], "matrix"))
+      x <- args[[1]]
+
+  
+    # CREATE matrix
+    else
+      x <- do.call(rbind, args)
+
+    # CHECK dims
+    if(dim(x)[2] != 3)
+      stop("FCB matrix can only have 3 columns")
+
+    dimnames(x) <- list(seq(1, dim(x)[1]), c("F", "C", "B"))
+
+  return(x)
+  }
+) # }}}
 
 # fcb {{{
 

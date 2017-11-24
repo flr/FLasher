@@ -41,11 +41,11 @@ build:
 	cd ..;\
 	R CMD build $(PKGSRC) --compact-vignettes
 
-buildNV: README.md NEWS
+buildNV:
 	cd ..;\
 	R CMD build $(PKGSRC) --no-build-vignettes
 
-install: build
+install: ../$(PKGNAME)_$(PKGVERS).tar.gz
 	cd ..;\
 	R CMD INSTALL $(PKGNAME)_$(PKGVERS).tar.gz
 

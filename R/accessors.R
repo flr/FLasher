@@ -43,3 +43,12 @@ setReplaceMethod("iters", signature(object="fwdControl", value="array"),
 		return(object)
 	}
 )
+
+# FCB
+setMethod("FCB", signature(object="fwdControl"),
+  function(object) {
+    return(object@FCB)
+  }
+)
+
+

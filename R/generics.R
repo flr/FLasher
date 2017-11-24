@@ -40,6 +40,7 @@ setGeneric('target', function(object, ...) standardGeneric('target'))
 setGeneric('target<-', function(object, ..., value) standardGeneric('target<-'))
 
 # iters<-
+
 #' Access and replace the iters slot of the fwdControl
 #' @param object The fwdControl.
 #' @param value The iters array to replace the existing one with.
@@ -48,6 +49,7 @@ setGeneric('target<-', function(object, ..., value) standardGeneric('target<-'))
 setGeneric('iters<-', function(object, ..., value) standardGeneric('iters<-'))
 
 # fillchar
+
 #' Fill up character slots
 #'
 #' Fill the character slots (name etc) with something.
@@ -55,6 +57,7 @@ setGeneric('iters<-', function(object, ..., value) standardGeneric('iters<-'))
 setGeneric("fillchar", function(object) standardGeneric("fillchar"))
 
 # stf
+
 #' Prepare object for future projection
 #'
 #' Similar to the old STF method in FLAssess.
@@ -71,3 +74,7 @@ setGeneric("fillchar", function(object) standardGeneric("fillchar"))
 #' @param f.rescale Rescale F (TRUE or FALSE - default is FALSE)
 #' @param ... Other things.
 setGeneric("stf", function(object,...) standardGeneric("stf"))
+
+# FCB {{{
+setGeneric("FCB", function(object,...) standardGeneric("FCB"))
+# }}}

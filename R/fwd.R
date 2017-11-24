@@ -57,7 +57,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     function(x) data.frame(dims(effort(x))[c("season", "area")])))
   dnb <- dimnames(n(object[[1]]))
 
-
   # CHECK srparams years match control years
   cyrs <- unique(control$year)
   ysrp <- unlist(lapply(object, function(x) {
@@ -66,13 +65,14 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     # IF 'year' in dimnames
     if(!is.null(spdn)){
       # CHECK control years are covered 
-      # If final projection year is not final year of biol, then fwd projects the biol in the final+1 control year
+      # If final projection year is not final year of biol, then fwd projects
+      # the biol in the final+1 control year
       # e.g. if there is room to update biol in final control year +1
       if (max(cyrs) < max(as.numeric(dimnames(x@n)$year))){
           cyrs <- c(cyrs, max(cyrs)+1)
       }
       allyrs <- all(cyrs %in% as.numeric(spdn))
-      # And check all params in the control years are not NA
+      # CHECK all params in the control years are not NA
       nayrs <- FALSE
       if(allyrs){
           nayrs <- all(!is.na(rec(x, "params")[,ac(cyrs)]))
@@ -84,7 +84,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   }))
   if(!all(ysrp))
     stop("'years' specified in params(rec) do not match those in control or are NA (note that the 'final control year + 1' is projected if there is room)")
-
   
   # ERROR if seasons are different in FLBiols or FLFisheries
   if(!all(c(dib$season, dif$season) == dib$season[1]))
@@ -349,6 +348,10 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
   function(object, control, sr,
     residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {  
     
+    # CHECK for NAs
+    if(!verify(object, ruleset(object, "anyna"))) 
+      stop("object cannot contain any NA value, please check and correct.")
+
     # DEAL with iters
     its <- dims(object)$iter
     if(its > 1)
