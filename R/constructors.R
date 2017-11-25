@@ -315,15 +315,15 @@ setMethod("FCB", signature(object="ANY"),
   }
 ) # }}}
 
-# fcb {{{
+# guessfcb {{{
 
-#' Generate the FCB matrix
+#' Generate an FCB matrix from FLBiols and FLFisheries
 #'
 #' Tries to generate FCB matrix based on names.
 #' Internal function. Ignore.
 #' @param biols The FLBiols.
 #' @param fisheries The FLFisheries.
-fcb <- function(biols, fisheries) {
+guessfcb <- function(biols, fisheries) {
 
   # GET names
   nmf <- names(fisheries)
