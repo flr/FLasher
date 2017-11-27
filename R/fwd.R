@@ -128,26 +128,12 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(nrow(idx) != nrow(tfcb))
     stop("Misspecified target(s)")
 
-  # CONVERT to numeric 'fishery', ...
-  if (!is.numeric(trg$fishery))
-    trg[,"fishery"] <- match(trg[,"fishery"], rownames(dif))
-  #if(nrow(dif) == 1 & all(is.na(trg["fishery"])))
-  #  trg[,"fishery"] <- 1L
+  # ENSURE biol is a list
+  trg$biol <- as.list(trg$biol)
+  trg$relBiol <- as.list(trg$relBiol)
 
-  # ... 'catch', ...
-  if (!is.numeric(trg$catch)) {
-    cns <- lapply(fishery, function(x) names(x))
-    for(i in names(cns))
-      trg[,"catch"] <- as.integer(match(trg[,"catch"], cns[[i]]))
-  }
-  
-  # ... and 'biol'
-  if (is.character(trg$biol))
-    trg[,"biol"] <- match(trg[,"biol"], rownames(dib))
-
-  # If we have 2 fisheries on 1 catch, catch target is set through catch / fishery only, not biol AND catch / fishery
-  #if(nrow(dib) == 1 & all(is.na(trg["biol"])))
-  #  trg[,"biol"] <- 1L
+  # Turn F, C and B names in control columns to integer positions
+  trg <- match_posns_names(trg, names(object), lapply(fishery, names))
 
   # CONVERT 'years' and 'relYear' to position indices
   year <- relYear <- NULL # quiet R CMD check about no visible binding for gloabl variable
@@ -155,56 +141,40 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   trg <- transform(trg, year=year - mny)
   trg <- transform(trg, relYear=relYear - mny)
 
-  # TODO: CONVERT biol column to integer if character
- 
-  # TODO CHECK rel*
-  # Allow all NA
-  # IF annual model & relY, then relS == 1 A XNOR B
-  # relY AND relS? Then check relF, relC, relB as FCB
+  # Check relative columns make sense
+  # If you have any of relFishery, relCatch or reBiol, you have must have relYear
+  relFishery <- !is.na(trg$relFishery)
+  relCatch <- !is.na(trg$relCatch)
+  relBiol <- unlist(lapply(trg$relBiol, function(x) any(!is.na(x)))) # any row with at least 1 relBiol that is not NA
+  relYear <- !is.na(trg$relYear)
+  relSeason <- !is.na(trg$relSeason)
 
-    # Check if we if have any relYears AND it is an annual model
-    # If so, check relSeason is NA or 1
-    # If not -> error
-    # If NA -> 1
-    annual_model <- dim(n(object[[1]]))[4] == 1
-    if (any(!is.na(trg$relYear)) & annual_model) {
-      relYear_rows <- !is.na(trg$relYear)
-      # If relSeason is not NA or 1 throw an error
-      if (!all(trg$relSeason[relYear_rows] %in% c(NA, 1))){
-        stop("With an annual model, if you have a relative target,
-          relSeason must be set to 1 or NA")
-        }
-        # If relYear is present and relSeason is NA, set to 1
-        trg$relSeason[is.na(trg$relSeason) & relYear_rows] <- 1
+  # Check if we if have any relYears AND it is an annual model
+  # If so, check relSeason is NA or 1
+  # If not -> error
+  # If NA -> 1
+  annual_model <- dim(n(object[[1]]))[4] == 1
+  if (any(relYear) & annual_model) {
+    # If relSeason is not NA or 1 throw an error
+    if (!all(trg$relSeason[relYear] %in% c(NA, 1))){
+      stop("With an annual model, if you have a relative target, relSeason must be set to 1 or NA")
     }
+    # If relYear is present and relSeason is NA, set to 1
+    trg$relSeason[!relSeason & relYear] <- 1
+  }
+  # Update this
+  relSeason <- !is.na(trg$relSeason)
 
-    # If relYear must have relSeason and vice versa
-    if (any(!(is.na(trg$relYear) == is.na(trg$relSeason)))){
-        stop("If you have a reYear you must also have a relSeason, and vice versa")
-    }
+  # If relYear must have relSeason and vice versa
+  if (any(relYear != relSeason)){
+      stop("If you have a reYear you must also have a relSeason, and vice versa")
+  }
 
+  # if relYear, must have relFishery or relBiol, or (relCatch and relFishery)
+  if(any(relYear != (relFishery | relBiol | (relCatch & relFishery)))){
+            stop("If relYear set must also set a relBiol or relFishery or (FLFishery and relCatch), and vice versa")
+  }
 
-    # Check relative objects
-    # If relYear must also have either 
-    #   just relFishery
-    #   just relBiol
-    #   relCatch AND relFishery
-    if (any(!is.na(trg$relYear))){
-        relYear_rows <- !is.na(trg$relYear)
-        relBiol <- !is.na(trg$relBiol)
-        relFishery <- !is.na(trg$relFishery)
-        # Must have at least a relBiol or a relFishery or a (FLCatch & FLFishery)
-        # If relCatch must have relFishery
-        relCatch <- !is.na(trg$relCatch) & !is.na(trg$relFishery)
-        if (any(!((relBiol | relFishery | relCatch)[relYear_rows]))){
-            stop("If relYear set must also set a relBiol, relFishery or
-              FLFishery and relCatch")
-        }
-    }
-
-  # ENSURE biol is a list
-  trg$biol <- as.list(trg$biol)
-  trg$relBiol <- as.list(trg$relBiol)
   # REPLACE target
   target(control) <- trg
 
@@ -218,7 +188,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     fishery@desc <- character(1)
   if(length(object@desc) == 0)
     object@desc <- character(1)
-
 
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control,
