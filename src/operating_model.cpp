@@ -1292,6 +1292,24 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     unsigned int rel_season = ctrl.get_target_int_col(target_no, sim_target_no, "relSeason");
     bool rel_year_na = Rcpp::IntegerVector::is_na(rel_year);
     bool rel_season_na = Rcpp::IntegerVector::is_na(rel_season);
+    // Quick check: if relative biol, catch or fishery, is not NA but the year and season are, something has gone wrong
+    unsigned int rel_catch = ctrl.get_target_int_col(target_no, sim_target_no, "relCatch");
+    unsigned int rel_fishery = ctrl.get_target_int_col(target_no, sim_target_no, "relFishery");
+    auto rel_biols = ctrl.get_target_list_int_col(target_no, sim_target_no, "relBiol");
+    bool rel_biol_na = true;
+    for (auto rel_biol : rel_biols){
+       rel_biol_na = rel_biol_na & Rcpp::IntegerVector::is_na(rel_biol);
+    }
+    bool rel_catch_na = Rcpp::IntegerVector::is_na(rel_catch);
+    bool rel_fishery_na = Rcpp::IntegerVector::is_na(rel_fishery);
+    if ((!rel_biol_na | !rel_catch_na | !rel_fishery) & (!(!rel_year_na & !rel_season_na))){
+        Rcpp::stop("In operatingModel::get_target_value_hat. You have specifed a relative Fishery, Catch or Biol, but not relative Year and Season\n");
+    }
+    // If relative year, must also be relative season
+    if (rel_year_na != rel_season_na){
+        Rcpp::stop("In operatingModel::get_target_value_hat. If you specify a relative year you must also specify a relative season and vice versa.\n");
+
+    }
     // Relative target given only by year and season - not F, C or B
     if (!rel_year_na | !rel_season_na){
         if(verbose){Rprintf("Relative target in control\n");}
