@@ -100,7 +100,7 @@ for sizing but not stored in any slot.
 
 # CREATE targets on fishing mortality ('f') by year
 
-target <- data.frame(year=2000:2010, value=rlnorm(11), quantity='f')
+target <- data.frame(year=2000:2010, value=rlnorm(11), quant='f')
 
 fwc <- fwdControl(target=target)
 
