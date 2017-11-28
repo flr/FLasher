@@ -164,3 +164,120 @@ test_that("Fbar relative target, single iter",{
     expect_equal(f_out, f_trg)
 })
 
+#---------------------
+test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
+    data(ple4)
+    ple4_mtf <- stf(ple4, nyears = 10)
+    ple4_sr <- fmle(as.FLSR(ple4, model="bevholt"), control=list(trace=0))
+    # Simple F
+    f_status_quo <- mean(fbar(ple4)[,as.character(2005:2008)])
+    ctrl_f <- fwdControl(list(year=2009:2018, quant="f", value=f_status_quo))
+    ple4_f_sq <- fwd(ple4_mtf, control = ctrl_f, sr = ple4_sr)
+    expect_equal(c(fbar(ple4_f_sq)[,ac(2009:2018)]), rep(f_status_quo,10))
+    expect_equal(c(predict(ple4_sr,ssb=ssb(ple4_f_sq)[,ac(2008:2017)])), c(rec(ple4_f_sq)[,ac(2009:2018)]))
+    # Decreasing catch
+    future_catch <- c(catch(ple4)[,"2008"]) * 0.9^(1:10)
+    ctrl_catch <- fwdControl(list(year=2009:2018, quant = "catch", value=future_catch))
+    ple4_catch <- fwd(ple4_mtf, control = ctrl_catch, sr = ple4_sr)
+    expect_equal(c(catch(ple4_catch)[,ac(2009:2018)]), future_catch)
+    expect_equal(c(predict(ple4_sr,ssb=ssb(ple4_catch)[,ac(2008:2017)])), c(rec(ple4_catch)[,ac(2009:2018)]))
+    # SSB end
+    final_ssb <- 100000
+    ctrl_ssb <- fwdControl(list(year=2009, quant = "ssb_end", value=final_ssb))
+    ple4_ssb <- fwd(ple4_mtf, control=ctrl_ssb, sr = ple4_sr)
+    survivors <- stock.n(ple4_ssb) * exp(-harvest(ple4_ssb) - m(ple4_ssb))
+    expect_equal(c(quantSums((survivors * stock.wt(ple4_ssb) * mat(ple4_ssb))[,ac(2009)])), final_ssb)
+    # SSB at spawn
+    spawn_ssb <- 100000
+    ctrl_ssb <- fwdControl(list(year=2009, quant = "ssb_spawn", value=spawn_ssb))
+    expect_warning(fwd(ple4_mtf, control=ctrl_ssb, sr = ple4_sr))
+    m.spwn(ple4_mtf)[,ac(2009)] <- 0.5
+    harvest.spwn(ple4_mtf)[,ac(2009)] <- 0.5
+    spawn_ssb <- 100000
+    ctrl_ssb <- fwdControl(data.frame(year=2009, quant = "ssb_spawn", value=spawn_ssb))
+    ple4_ssb <- fwd(ple4_mtf, control=ctrl_ssb, sr = ple4_sr)
+    expect_equal(c(ssb(ple4_ssb)[,ac(2009)]), spawn_ssb)
+    # SRP
+    srp <- 100000
+    ctrl_ssb <- fwdControl(data.frame(year=2009, quant = "srp", value=srp))
+    ple4_ssb <- fwd(ple4_mtf, control=ctrl_ssb, sr = ple4_sr)
+    expect_equal(c(ssb(ple4_ssb)[,ac(2009)]), srp)
+    # FLash-like
+    m.spwn(ple4_mtf)[,ac(2009)] <- 0.5
+    harvest.spwn(ple4_mtf)[,ac(2009)] <- 0.5
+    flash_ssb <- 150000
+    ctrl_ssb <- fwdControl(data.frame(year=2009, quant = "ssb_flash", value=flash_ssb))
+    ple4_ssb <- fwd(ple4_mtf, control=ctrl_ssb, sr = ple4_sr)
+    expect_equal(flash_ssb,c(ssb(ple4_ssb)[,ac(2009)]))
+    m.spwn(ple4_mtf)[,ac(2009)] <- 0.0
+    harvest.spwn(ple4_mtf)[,ac(2009)] <- 0.0
+    flash_ssb <- 150000
+    ctrl_ssb <- fwdControl(data.frame(year=2009, quant = "ssb_flash", value=flash_ssb))
+    ple4_ssb <- fwd(ple4_mtf, control=ctrl_ssb, sr = ple4_sr)
+    expect_equal(c(ssb(ple4_ssb)[,ac(2010)]), flash_ssb)
+    # Longer SSB
+    m.spwn(ple4_mtf)[,ac(2009)] <- 0.0
+    harvest.spwn(ple4_mtf)[,ac(2009)] <- 0.0
+    future_ssb <- 200000
+    ctrl_ssb <- fwdControl(data.frame(year=2009:2018, quant = "ssb_flash", value=future_ssb))
+    expect_warning(ple4_ssb <- fwd(ple4_mtf, control = ctrl_ssb, sr = ple4_sr))
+    expect_equal(c(ssb(ple4_ssb)[,ac(2010:2018)]), rep(future_ssb, 9))
+    expect_equal(c(predict(ple4_sr,ssb=ssb(ple4_ssb)[,ac(2008:2017)])), c(rec(ple4_ssb)[,ac(2009:2018)]))
+    # Relative catch
+    ctrl_rel_catch <- fwdControl( data.frame(year = 2009:2018, quant = "catch", value = 0.9, relYear = 2008:2017))
+    ple4_rel_catch <- fwd(ple4_mtf, control = ctrl_rel_catch, sr = ple4_sr)
+    expect_equal(c(catch(ple4_rel_catch)[,ac(2009:2018)] / catch(ple4_rel_catch)[,ac(2008:2017)]), rep(0.9, 10))
+    expect_equal(c(predict(ple4_sr,ssb=ssb(ple4_rel_catch)[,ac(2008:2017)])), c(rec(ple4_rel_catch)[,ac(2009:2018)]))
+    # Min Max
+    f01 <- 0.1
+    min_catch <- mean(catch(ple4_mtf)[,as.character(2006:2008)])
+    ctrl_min_catch <- fwdControl( list(year=2009:2018, quant="f", value=f01), list(year=2009:2018, quant="catch", min=min_catch))
+    ple4_min_catch <- fwd(ple4_mtf, control = ctrl_min_catch, sr = ple4_sr)
+    ple4c <- catch(ple4_min_catch)[,ac(2009:2018)]
+    expect_true(all(abs((min_catch - ple4c)[((min_catch - ple4c) >= 0)]) < 1e-6))
+    # Relative targets and bounds
+    current_fbar <- c(fbar(ple4)[,"2008"])
+    f_target <- c(seq(from = current_fbar, to = f01, length = 8)[-1], rep(f01, 3))
+    rel_catch_bound <- 0.10
+    ctrl_rel_min_max_catch <- fwdControl(
+    list(year=2009:2018, quant="f", value=f_target),
+    list(year=2009:2018, quant="catch", relYear=2008:2017, max=1+rel_catch_bound, min=1-rel_catch_bound))
+    recovery<-fwd(ple4_mtf, control=ctrl_rel_min_max_catch, sr=ple4_sr)
+    ple4c <- catch(recovery)[,ac(2009:2018)]
+    expect_true(all(abs((1-rel_catch_bound - ple4c)[((1-rel_catch_bound - ple4c) >= 0)]) < 1e-6)) # these checks are weird for min and max
+    expect_true(all(abs((ple4c - 1+rel_catch_bound)[((ple4c - 1-rel_catch_bound) <= 0)]) < 1e-6))
+    # Prepare iterations
+    niters <- 20
+    ple4_mtf <- stf(ple4, nyears = 10)
+    ple4_mtf <- propagate(ple4_mtf, niters)
+    # Residuals
+    rec_residuals <- FLQuant(NA, dimnames = list(year=2009:2018, iter=1:niters))
+    sample_years <- sample(dimnames(residuals(ple4_sr))$year, niters * 10, replace = TRUE)
+    rec_residuals[] <- exp(residuals(ple4_sr)[,sample_years])
+    ple4_stoch_rec <- fwd(ple4_mtf, control = ctrl_catch, sr = ple4_sr, residuals = rec_residuals) 
+    expect_equal(c(catch(ple4_stoch_rec)[,ac(2009:2018)]),rep(future_catch,niters))
+    expect_equal(c(predict(ple4_sr,ssb=ssb(ple4_stoch_rec)[,ac(2008:2017)]) %*% rec_residuals), c(rec(ple4_stoch_rec)[,ac(2009:2018)]))
+    # Stochastic target
+    stoch_catch  <- rlnorm(10*niters, meanlog=log(future_catch), sdlog=0.3)
+    ctrl_catch_iters <- fwdControl(list(year=2009:2018, quant="catch", value=stoch_catch))
+    ple4_catch_iters <- fwd(ple4_mtf, control=ctrl_catch_iters, sr = ple4_sr)
+    expect_equal(c(catch(ple4_catch_iters)[,ac(2009:2018)]), stoch_catch)
+    # Iterations in recruitment parameters
+    sr_iters <- FLPar(NA, dimnames=list(params=c("a","b"), iter=1:niters))
+    aiters <- rlnorm(niters, meanlog=log(params(ple4_sr)["a"]), sdlog=0.5)
+    biters <- rlnorm(niters, meanlog=log(params(ple4_sr)["b"]), sdlog=0.01)
+    sr_iters["a"] <- aiters
+    sr_iters["b"] <- biters
+    ple4_sr_iters <- fwd(ple4_mtf, control=ctrl_catch, sr = list(model="bevholt", params=sr_iters))
+    expect_equal(c(catch(ple4_sr_iters)[,ac(2009:2018)]), rep(future_catch, niters))
+    srmod <- predictModel(model=bevholt()$model, params=sr_iters)
+    expect_equal(c(predict(srmod, ssb=ssb(ple4_sr_iters)[,ac(2008:2017)])), c(rec(ple4_sr_iters)[,ac(2009:2018)]))
+    # Stochastic targets and recruitment
+    ple4_iters <- fwd(ple4_mtf, control=ctrl_catch_iters, sr = list(model="bevholt", params=sr_iters), residuals = rec_residuals)
+    expect_equal(c(catch(ple4_iters)[,ac(2009:2018)]), stoch_catch)
+    expect_equal(c(predict(srmod, ssb=ssb(ple4_iters)[,ac(2008:2017)]) %*% rec_residuals), c(rec(ple4_iters)[,ac(2009:2018)]))
+})
+
+
+
+
