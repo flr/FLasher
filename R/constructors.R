@@ -123,7 +123,7 @@ setMethod('fwdControl', signature(target='data.frame', iters='missing'),
 #' @rdname fwdControl
 setMethod('fwdControl', signature(target='list', iters='missing'),
   function(target, ...) {
-
+    
     # target is LIST of LISTS
     if(is(target[[1]], 'list')) {
       
@@ -238,7 +238,6 @@ parsefwdList <- function(...) {
       stringsAsFactors = FALSE)
   }
 
-
   #  ... array components
   val <- args[names(args) %in% c('value', 'min', 'max')]
 
@@ -252,10 +251,11 @@ parsefwdList <- function(...) {
   # NEW target
   trg <- new('fwdControl')@target[rep(1, nrow(df)),]
   trg[names(df)] <- df
-
+  
   # NEW iters
-  ite <- array(NA, dim=c(nrow(trg), 3, ncol(mat)),
-    dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'), iter=seq(ncol(mat))))
+  ite <- array(NA, dim=c(nrow(trg), 3, ncol(mat) / nrow(trg)),
+    dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'),
+    iter=seq(ncol(mat) / nrow(trg))))
 
   ite[,match(rownames(mat), dimnames(ite)$val),] <- c(mat)
 
