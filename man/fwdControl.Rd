@@ -113,6 +113,13 @@ fcn <- fwdControl(data.frame(year=2000:2005, quant='f', value=0.5))
 # Construct a fwdControl with some targets having multiple Biols, specified using the G() function
 fwdControl(list(year=2000:2001, value=200, quant="catch", biol=G(1,2)),
   list(year=2002:2003, value=100, quant="catch", biol=c(1,2)))
+# Single target value
+fwdControl(list(year=2010:2014, quant='catch', value=2900))  
+# One valkue per target (year)
+fwdControl(list(year=2010:2014, quant='catch', value=seq(2900, 3500, length=5)))  
+# 40 iters in each target
+fwdControl(list(year=2010:2014, quant='catch',
+  value=rnorm(200, seq(2900, 3500, length=5))))  
 }
 \seealso{
 \link{data.frame}
