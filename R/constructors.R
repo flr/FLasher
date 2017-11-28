@@ -119,8 +119,12 @@ setMethod('fwdControl', signature(target='data.frame', iters='missing'),
 # }}}
 
 # fwdControl(target='list', iters='missing') {{{
+
 #' fwdControl constructor for list and missing
 #' @rdname fwdControl
+#' @examples
+#' fwdControl(list(year=2010:2014, quant='catch', value=2900))  
+
 setMethod('fwdControl', signature(target='list', iters='missing'),
   function(target, ...) {
     
@@ -253,15 +257,15 @@ parsefwdList <- function(...) {
   trg[names(df)] <- df
   
   # COMPUTE No. iters
-  dite <- ncol(mat) / nrow(trg)
+  dite <- max(1, ncol(mat) / nrow(trg))
   # CHECK match with length(values)
   if(dite != floor(dite))
     stop("Number of target values is not a multiple of number of targets")
 
   # NEW iters
-  ite <- array(NA, dim=c(nrow(trg), 3, max(1, dite)),
+  ite <- array(NA, dim=c(nrow(trg), 3, dite),
     dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'),
-    iter=seq(max(1, dite))))
+    iter=seq(dite)))
 
   ite[,match(rownames(mat), dimnames(ite)$val),] <- c(mat)
 
