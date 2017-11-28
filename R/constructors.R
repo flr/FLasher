@@ -253,9 +253,9 @@ parsefwdList <- function(...) {
   trg[names(df)] <- df
   
   # NEW iters
-  ite <- array(NA, dim=c(nrow(trg), 3, ncol(mat) / nrow(trg)),
+  ite <- array(NA, dim=c(nrow(trg), 3, max(1, ncol(mat) / nrow(trg))),
     dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'),
-    iter=seq(ncol(mat) / nrow(trg))))
+    iter=seq(max(1, ncol(mat) / nrow(trg)))))
 
   ite[,match(rownames(mat), dimnames(ite)$val),] <- c(mat)
 
