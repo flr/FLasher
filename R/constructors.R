@@ -273,7 +273,9 @@ parsefwdList <- function(...) {
     dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'),
     iter=seq(dite)))
 
-  ite[,match(rownames(mat), dimnames(ite)$val),] <- c(mat)
+  ite <- aperm(ite, c(2,1,3))
+  ite[match(rownames(mat), dimnames(ite)$val),,] <- c(mat)
+  ite <- aperm(ite, c(2,1,3))
 
   # RETURNS permutated array!
   return(list(target=trg, iters=ite))

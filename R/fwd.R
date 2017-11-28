@@ -46,7 +46,7 @@
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
     function(object, fishery, control,
       residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
-
+  
   # CHECK length and names of biols and residuals
   if(!all.equal(names(object), names(residuals)))
     stop("Names of biols and residuals must match exactly")
@@ -318,8 +318,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {  
     
     # CHECK for NAs
-    if(!verify(object, ruleset(object, "anyna"))) 
-      stop("object cannot contain any NA value, please check and correct.")
+    # if(!verify(object, ruleset(object, "anyna"))) 
+    #   stop("object cannot contain any NA value, please check and correct.")
 
     # DEAL with iters
     its <- dims(object)$iter
