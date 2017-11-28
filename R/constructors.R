@@ -252,10 +252,16 @@ parsefwdList <- function(...) {
   trg <- new('fwdControl')@target[rep(1, nrow(df)),]
   trg[names(df)] <- df
   
+  # COMPUTE No. iters
+  dite <- ncol(mat) / nrow(trg)
+  # CHECK match with length(values)
+  if(dite != floor(dite))
+    stop("Number of target values is not a multiple of number of targets")
+
   # NEW iters
-  ite <- array(NA, dim=c(nrow(trg), 3, max(1, ncol(mat) / nrow(trg))),
+  ite <- array(NA, dim=c(nrow(trg), 3, max(1, dite)),
     dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'),
-    iter=seq(max(1, ncol(mat) / nrow(trg)))))
+    iter=seq(max(1, dite))))
 
   ite[,match(rownames(mat), dimnames(ite)$val),] <- c(mat)
 
