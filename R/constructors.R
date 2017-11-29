@@ -187,11 +187,19 @@ setMethod('fwdControl', signature(target='list', iters='list'),
     
     args <- list(...)
 
-    # DROP FCB
-    target <- c(list(target, iters), args[!names(args) %in% c("FCB")])
+    if(any(names(args) == 'FCB')) {
+      nfcb <- match("FCB", names(args))
+      FCB <- args[nfcb]
+      args <- args[-nfcb]
+    }
+    else
+      FCB=NULL
+
+    # MERGE all but FCB
+    target <- c(list(target, iters), args)
     
     return(do.call('fwdControl',
-      c(list(target=target), args[names(args) %in% c("FCB")])))
+      c(list(target=target), FCB)))
   }
 ) # }}}
 
@@ -236,7 +244,7 @@ setMethod('fwdControl', signature(target='missing', iters='missing'),
 #' Internal function
 #' @param ... Things
 parsefwdList <- function(...) {
-
+  
   args <- list(...)
  
   if(is(args$biol, 'list') | is(args$biol, 'AsIs')) {
