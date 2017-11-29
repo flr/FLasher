@@ -234,7 +234,9 @@ test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
     ctrl_min_catch <- fwdControl( list(year=2009:2018, quant="f", value=f01), list(year=2009:2018, quant="catch", min=min_catch))
     ple4_min_catch <- fwd(ple4_mtf, control = ctrl_min_catch, sr = ple4_sr)
     ple4c <- catch(ple4_min_catch)[,ac(2009:2018)]
-    expect_true(all(abs((min_catch - ple4c)[((min_catch - ple4c) >= 0)]) < 1e-6))
+    # Expect a solving tolerance of better than 1e-6
+    expect_true(all(ple4c > (min_catch - 1e-6)))
+
     # Relative targets and bounds
     current_fbar <- c(fbar(ple4)[,"2008"])
     f_target <- c(seq(from = current_fbar, to = f01, length = 8)[-1], rep(f01, 3))
@@ -244,8 +246,9 @@ test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
     list(year=2009:2018, quant="catch", relYear=2008:2017, max=1+rel_catch_bound, min=1-rel_catch_bound))
     recovery<-fwd(ple4_mtf, control=ctrl_rel_min_max_catch, sr=ple4_sr)
     ple4c <- catch(recovery)[,ac(2009:2018)]
-    expect_true(all(abs((1-rel_catch_bound - ple4c)[((1-rel_catch_bound - ple4c) >= 0)]) < 1e-6)) # these checks are weird for min and max
-    expect_true(all(abs((ple4c - 1+rel_catch_bound)[((ple4c - 1-rel_catch_bound) <= 0)]) < 1e-6))
+    relcatch <- catch(recovery)[,ac(2009:2018)] / catch(recovery)[,ac(2008:2017)]
+    # All relative catches within bounds within tolerance
+    expect_true(all(relcatch > (1-rel_catch_bound - 1e6) & relcatch < (1+rel_catch_bound + 1e6)))
     # Prepare iterations
     niters <- 20
     ple4_mtf <- stf(ple4, nyears = 10)

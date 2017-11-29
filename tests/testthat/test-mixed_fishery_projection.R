@@ -42,8 +42,8 @@ test_that("Single fishery, two biols",{
     # Test max F of sole
     solef <- FLasher:::calc_F(test[["fisheries"]][["bt"]][["solBT"]], test[["biols"]][["sol"]], test[["fisheries"]][["bt"]]@effort)
     solfbar <- c(apply(solef[ac(2:6),ac(years)], 2:6, mean))
-    # Tricky with max test - tolerance of 1e-6
-    expect_true(all(abs((solfbar - sole_f_limit)[(solfbar - sole_f_limit >= 0)]) < 1e-6))
+    # No F on sole is greater than sole_f_limit
+    expect_true(all(solfbar < (sole_f_limit + 1e-6)))
 })
 
 test_that("Two fisheries, one biol",{
@@ -123,8 +123,8 @@ test_that("Two fisheries, two biols, economic target",{
     # Check min revenue for bt and gn - tolerance of 1e-6
     revgn <- c(Reduce("+",lapply(test[["fisheries"]][["gn"]], function(x){ quantSums(landings.n(x) * landings.wt(x) * price(x)) }))[,ac(years)])
     revbt <- c(Reduce("+",lapply(test[["fisheries"]][["bt"]], function(x){ quantSums(landings.n(x) * landings.wt(x) * price(x)) }))[,ac(years)])
-    expect_true(all(abs((bt_min_revenue - revbt)[(bt_min_revenue - revbt >= 0)]) < 1e-6))
-    expect_true(all(abs((gn_min_revenue - revgn)[(gn_min_revenue - revgn >= 0)]) < 1e-6))
+    expect_true(all(revbt > (bt_min_revenue - 1e-6)))
+    expect_true(all(revgn > (gn_min_revenue - 1e-6)))
 })
 
 
