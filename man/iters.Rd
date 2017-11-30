@@ -5,6 +5,7 @@
 \alias{iters<-}
 \alias{iters,fwdControl-method}
 \alias{iters<-,fwdControl,array-method}
+\alias{FCB<-,fwdControl,matrix-method}
 \title{Access and replace the iters slot of the fwdControl}
 \usage{
 iters(object, ...) <- value
@@ -12,6 +13,8 @@ iters(object, ...) <- value
 \S4method{iters}{fwdControl}(object)
 
 \S4method{iters}{fwdControl,array}(object) <- value
+
+\S4method{FCB}{fwdControl,matrix}(object) <- value
 }
 \arguments{
 \item{object}{The fwdControl.}
@@ -26,4 +29,6 @@ Access and replace the iters slot of the fwdControl
 Access the iters slot of the fwdControl
 
 Set the iters slot of the fwdControl
+
+Set the FCB slot of the fwdControl
 }

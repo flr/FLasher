@@ -7,6 +7,7 @@
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 # fwdControl(target='data.frame', iters='array') {{{
+
 #' fwdControl constructor for data.frame and array
 #' @rdname fwdControl
 setMethod('fwdControl', signature(target='data.frame', iters='array'),
@@ -72,8 +73,9 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
 # }}}
 
 # fwdControl(target='data.frame', iters='numeric') {{{
-#' fwdControl constructor for data.frame and numeric
+
 #' @rdname fwdControl
+
 setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
   function(target, iters, ...) {
 
@@ -94,8 +96,17 @@ setMethod('fwdControl', signature(target='data.frame', iters='numeric'),
 ) # }}}
 
 # fwdControl(target='data.frame', iters='missing') {{{
-#' fwdControl constructor for data.frame and missing
+
 #' @rdname fwdControl
+#' @examples
+#' # Vector of values by year
+#' fwdControl(data.frame(year=2010:2015, quant="f", value=seq(1, 1.3, length=6)))
+#' # Two targets, with ranges for one
+#' fwdControl(data.frame(year=rep(2010:2015, each=2),
+#'   quant=c("f", "catch"),
+#'   min=c(rbind(NA, 20000)), max=c(rbind(NA, 30000)),
+#'   value=c(rbind(seq(1, 1.3, length=6), NA))))
+
 setMethod('fwdControl', signature(target='data.frame', iters='missing'),
   function(target, ...) {
     
@@ -127,7 +138,7 @@ setMethod('fwdControl', signature(target='data.frame', iters='missing'),
 #' fwdControl(list(year=2010:2014, quant='catch', value=2900))  
 #' # One value per target (year)
 #' fwdControl(list(year=2010:2014, quant='catch', value=seq(2900, 3500, length=5)))  
-#' # 40 iters in each target
+#' # With 40 values (iters) in each target
 #' fwdControl(list(year=2010:2014, quant='catch',
 #'   value=rnorm(200, seq(2900, 3500, length=5))))  
 
@@ -313,6 +324,15 @@ targetOrder <- function(target, iters) {
 # }}}
 
 # FCB {{{
+
+#' @rdname FCB
+#' @examples
+#' # 1 fishery with catches from 2 biols
+#' FCB(c(f=1, c=1, b=2), c(f=1, c=2, b=2))
+#' # 2 fisheries with caches from 3 biols
+#' FCB(c(f=1, c=1, b=1), c(f=1, c=2, b=2),
+#'   c(f=2, c=1, b=2), c(f=2, c=2, b=2),
+#'   c(f=2, c=3, b=3))
 setMethod("FCB", signature(object="ANY"),
   function(object, ...) {
 

@@ -90,7 +90,6 @@ G <- function(...)
 #'
 #' @param control A fwdControl object
 #' @return A fwdControl object with an order column.
-#' @export
 add_target_order <- function(control){
     # Add temporary original order column - order gets messed about with merge
     control@target$orig_order <- 1:nrow(control@target)
@@ -126,7 +125,6 @@ add_target_order <- function(control){
 #' @param biol_names A vector of names in the FLBiols objects
 #' @param fishery_catch_names A named list - elements of list are vector of the catch names of each fishery
 #' @return The updated target slot
-#' @export
 match_posns_names <- function(trg, biol_names, fishery_catch_names){
     # Biols
     for(biol_col in c("biol", "relBiol")){

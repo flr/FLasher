@@ -75,6 +75,18 @@ setGeneric("fillchar", function(object) standardGeneric("fillchar"))
 #' @param ... Other things.
 setGeneric("stf", function(object,...) standardGeneric("stf"))
 
-# FCB {{{
-setGeneric("FCB", function(object,...) standardGeneric("FCB"))
-# }}}
+# FCB
+
+#' Create and extract the FCB slot in fwdControl
+#'
+#' The FCB slot in fwdControl specifies the relationships between the catches
+#' ('C') taken by each fishery ('F') from different biological units ('B').
+#'
+#' This slot is of class *matrix* and has 
+#'
+#' @name FCB
+#' @param object Input object to construct or extract from.
+#' @param ... Extract input arguments
+
+setGeneric("FCB", function(object, ...) standardGeneric("FCB"))
+setGeneric("FCB<-", function(object, ..., value) standardGeneric("FCB<-"))

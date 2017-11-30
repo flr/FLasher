@@ -6,7 +6,6 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
-
 # .qlevels - available quants for fwdControl
 .biol_quants <- c('srp', 'ssb_end', 'biomass_end', 'ssb_spawn', 'biomass_spawn', 'ssb_flash', 'biomass_flash') 
 .qlevels <-  c('catch', 'landings', 'discards', 'f', 'fbar', 'revenue', 'effort', .biol_quants)
@@ -31,10 +30,10 @@
 
 # fwdControl class {{{
 
-#' A class for the targets and limits of a fishery projection.
+#' A class for the targets and limits of a fishery and stock projection.
 #'
 #' The desired targets, limits and time steps used in fishery projections can be 
-#' specified by creating an object of class \code{fwdControl}.
+#' specified by creating an object of class `fwdControl`.
 #' 
 #' [...]
 #' 
@@ -43,12 +42,9 @@
 #' @aliases fwdControl fwdControl-methods fwdControl-class
 #' @docType class
 #'
-#' @section Slots:
-#'     \describe{
-#'     \item{target}{The table of quantities and time steps used as target (\code{data.frame}).}
-#'     \item{iters}{The values and limits for each target quantity and time step (\code{array}).}
-#'     \item{FCB}{The matrix describing which FLCatch of which FLFishery catches which FLBiol. A \code{matrix} with 3 columns: F, C, and B.}
-#' }
+#' @slot target The table of quantities and time steps used as target, *data.frame*.
+#' @slot iters The values and limits for each target quantity and time step, *array*. 
+#' @slot FCB The matrix describing which FLCatch of which FLFishery catches which FLBiol. A *matrix* with 3 columns: F, C, and B.
 #'
 #' @section Validity: \describe{
 #'     \item{VALIDITY}{Neque porro quisquam est qui dolorem ipsum.}
@@ -73,6 +69,7 @@
 #' @author Iago Mosqueira, Finlay Scott - EC JRC.
 #' @seealso \link{data.frame}
 #' @keywords classes
+#' @md 
 #' @examples
 #'
 #' # CREATE targets on fishing mortality ('f') by year

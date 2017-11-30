@@ -6,16 +6,22 @@ importFrom(stats,
 importFrom(utils,
   data)
 importFrom("methods",
-    "as", "new", "callNextMethod", "is", "slot", "slot<-")
+  "as", "new", "callNextMethod", "is", "slot", "slot<-")
 importFrom("graphics",
-    "lines", "points", "rect", "text")
+  "lines", "points", "rect", "text")
 importFrom("stats",
-    "mad")
+  "mad")
 import(FLCore)
 import(FLFishery)
 exportClasses(
 	"fwdControl")
-export("G",
+export(
+  "add_target_order",
+  "G",
+  "get_FLQuant_element",
+  "get_FLQuant_elements",
+  "make_test_operatingModel",
+  "match_posns_names",
   "random_FLBiolcpp_generator",
   "random_FLQuant_generator",
   "random_FLQuant_list_generator",
@@ -24,15 +30,13 @@ export("G",
   "random_FLFishery_generator",
   "random_FLFisheries_generator",
   "random_fwdBiols_list_generator",
-  "random_fwdControl_generator",
-  "make_test_operatingModel",
-  "get_FLQuant_element",
-  "get_FLQuant_elements"
+  "random_fwdControl_generator"
 )
 exportMethods(
   "[",
   "[<-",
   "FCB",
+  "FCB<-",
   "fwd",
   "fwdControl",
   "propagate",
