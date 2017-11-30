@@ -4,12 +4,15 @@
 \name{FCB}
 \alias{FCB}
 \alias{FCB,fwdControl-method}
+\alias{FCB<-,fwdControl,matrix-method}
 \alias{FCB,ANY-method}
 \title{Create and extract the FCB slot in fwdControl}
 \usage{
 FCB(object, ...)
 
 \S4method{FCB}{fwdControl}(object)
+
+\S4method{FCB}{fwdControl,matrix}(object) <- value
 
 \S4method{FCB}{ANY}(object, ...)
 }
@@ -21,13 +24,17 @@ FCB(object, ...)
 \description{
 The FCB slot in fwdControl specifies the relationships between the catches
 ('C') taken by each fishery ('F') from different biological units ('B').
+
+Set the FCB slot of the fwdControl
 }
 \details{
 This slot is of class *matrix* and has
 }
 \examples{
-# Assign to existing fwdControl
 control <- fwdControl()
+# Access FCB slot
+FCB(control)
+# Assign to existing fwdControl
 FCB(control) <- FCB(c(f=1, c=1, b=2), c(f=1, c=2, b=2))
 # 1 fishery with catches from 2 biols
 FCB(c(f=1, c=1, b=2), c(f=1, c=2, b=2))

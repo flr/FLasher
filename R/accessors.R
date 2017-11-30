@@ -48,9 +48,9 @@ setReplaceMethod("iters", signature(object="fwdControl", value="array"),
 
 #' @rdname FCB
 #' @examples
-#' # Assign to existing fwdControl
 #' control <- fwdControl()
-#' FCB(control) <- FCB(c(f=1, c=1, b=2), c(f=1, c=2, b=2))
+#' # Access FCB slot
+#' FCB(control)
 
 setMethod("FCB", signature(object="fwdControl"),
   function(object) {
@@ -59,7 +59,11 @@ setMethod("FCB", signature(object="fwdControl"),
 )
 
 #' Set the FCB slot of the fwdControl
-#' @rdname iters
+
+#' @rdname FCB
+#' @examples
+#' # Assign to existing fwdControl
+#' FCB(control) <- FCB(c(f=1, c=1, b=2), c(f=1, c=2, b=2))
 setReplaceMethod("FCB", signature(object="fwdControl", value="matrix"),
 	function(object, value) {
 		object@FCB <- value
