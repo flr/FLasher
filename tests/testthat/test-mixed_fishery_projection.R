@@ -127,4 +127,27 @@ test_that("Two fisheries, two biols, economic target",{
     expect_true(all(revgn > (gn_min_revenue - 1e-6)))
 })
 
+test_that("Single fishery, two catches, single TAC on two Biols",{
+    data(mixed_fishery_example_om)
+    years <- 2:20
+    bt <- flfs[["bt"]]
+    flfs2 <- FLFisheries(bt=bt)
+    fcb <- matrix(c(1,1,1,2,1,2), nrow=2, ncol=3, dimnames=list(1:2,c("F","C","B")))
+    combined_catch_target <- 250000
+    # biol by number
+    ctrl <- fwdControl(list(year=years, quant="catch", value=combined_catch_target, biol=G(1,2)), FCB=fcb)
+    test <- fwd(object=biols, fishery=flfs2, control=ctrl)
+    expect_equal(c((catch(test[["fisheries"]][[1]][[1]]) + catch(test[["fisheries"]][[1]][[2]]))[,ac(years)]), rep(combined_catch_target, length(years)))
+    # biol by name
+    ctrl <- fwdControl(list(year=years, quant="catch", value=combined_catch_target, biol=G("ple","sol")), FCB=fcb)
+    test <- fwd(object=biols, fishery=flfs2, control=ctrl)
+    expect_equal(c((catch(test[["fisheries"]][[1]][[1]]) + catch(test[["fisheries"]][[1]][[2]]))[,ac(years)]), rep(combined_catch_target, length(years)))
+    # Relative TAC
+    rel_combined_TAC <- 0.9
+    ctrl <- fwdControl(list(year=years, quant="catch", value=rel_combined_TAC, biol=G("ple","sol"), relYear=years-1, relBiol=G("ple","sol")), FCB=fcb)
+    test <- fwd(object=biols, fishery=flfs2, control=ctrl)
+    cout <- (catch(test[["fisheries"]][[1]][[1]]) + catch(test[["fisheries"]][[1]][[2]]))
+    expect_equal(c(cout[,ac(years)] / cout[,ac(years-1)]), rep(rel_combined_TAC, length(years)), tolerance=1e-6)
+})
+
 

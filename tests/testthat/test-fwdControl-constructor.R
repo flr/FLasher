@@ -199,15 +199,13 @@ test_that("list constructor multiple lists",{
         (is.na(test@iters[i,"max",]) & is.na(test@iters[i,"min",]) & test@iters[i,"value",] %in% value1[ceiling(i/2)]) | (test@iters[i,"min",] %in% min_value2[ceiling(i/2)] & test@iters[i,"max",] %in% max_value2[ceiling(i/2)] & is.na(test@iters[i,"value",]))
     }
 
-    # Multiple lists - only if FCB is included as an argument
+    # Multiple lists
     # Assume that order is order of the lists, then ordered by year
     # Else very complicated
-    fcb <- matrix(1, nrow=1, ncol=3, dimnames=list(1,c("F","C","B")))
     test <- fwdControl(
         list(year=years, quant=quant1, value=value1, biol=biol),
         list(year=years, relYear = relyears, quant=quant2, max=max_value2, biol=biol),
-        list(year=years, quant=quant3, min=min_value3, fishery=fishery, catch=catch),
-        FCB=fcb)
+        list(year=years, quant=quant3, min=min_value3, fishery=fishery, catch=catch))
     # Check year
     expect_equal(nrow(test@target), 3*nyears)
     expect_equal(test@target$year, rep(years, each=3))
@@ -247,7 +245,7 @@ test_that("list constructor - iters",{
     biol <- as.character(signif(rnorm(1)*1000,3))
     fishery <- as.character(signif(rnorm(1)*1000,3))
     catch <- as.character(signif(rnorm(1)*1000,3))
-    # Assume FCB and relyear and all that are OK - just check values
+    # Assume FCB columns and relyear and all that are OK - just check values
 
     # Multiple values over years and different over multiple iterations 
     # How are values recycled? by year or by iter?
@@ -310,8 +308,36 @@ test_that("list constructor - iters",{
 
 })
 
-
-
+test_that("Biol based targets with list of Biols",{
+    nyears <- round(runif(1,min=5,max=15))
+    value <- rnorm(nyears)
+    inityear <- round(runif(1,min=1990,max=2000)) 
+    years <- inityear:(inityear+nyears-1)
+    fcb <- matrix(c(1,1,1,2,1,2), nrow=2, ncol=3, dimnames=list(1:2,c("F","C","B")))
+    # biol by number
+    ctrl <- fwdControl(list(year=years, quant="catch", value=value, biol=G(1,2)), FCB=fcb)
+    expect_equal(unname(ctrl@iters[,"value",]), value)
+    expect_is(ctrl$biol, "list")
+    dump <- lapply(ctrl$biol, function(x){expect_equal(x, c(1,2))})
+    # biol by name
+    ctrl <- fwdControl(list(year=years, quant="catch", value=value, biol=G("ple","sol")), FCB=fcb)
+    expect_equal(unname(ctrl@iters[,"value",]), value)
+    expect_is(ctrl$biol, "list")
+    dump <- lapply(ctrl$biol, function(x){expect_equal(x, c("ple","sol"))})
+    # iterations in the target
+    niters <- round(runif(1,min=10,max=20))
+    nvalue <- rnorm(niters*nyears)
+    ctrl <- fwdControl(list(year=years, quant="catch", value=nvalue, biol=G("ple","sol")), FCB=fcb)
+    expect_equal(unname(c(ctrl@iters[,"value",])), nvalue)
+    # relative target
+    # fails - but should be OK
+    ctrl <- fwdControl(list(year=years, quant="catch", value=value, biol=G("ple","sol"), relYear=years-1, relBiol=G("ple","sol")), FCB=fcb)
+    expect_equal(unname(ctrl@iters[,"value",]), value)
+    expect_is(ctrl$biol, "list")
+    dump <- lapply(ctrl$biol, function(x){expect_equal(x, c("ple","sol"))})
+    expect_is(ctrl$relBiol, "list")
+    dump <- lapply(ctrl$relBiol, function(x){expect_equal(x, c("ple","sol"))})
+})
 
 
 

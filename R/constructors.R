@@ -257,23 +257,19 @@ setMethod('fwdControl', signature(target='missing', iters='missing'),
 parsefwdList <- function(...) {
   
   args <- list(...)
- 
-  if(is(args$biol, 'list') | is(args$biol, 'AsIs')) {
-    if(is(args$relBiol, 'list') | is(args$relBiol, 'AsIs')) {
-      df <- as.data.frame(args[!names(args) %in%
-        c('value', 'min', 'max', 'biol', 'relBiol')], stringsAsFactors = FALSE)
-      df$biol <- I(args$biol)
-      df$relBiol <- I(args$relBiol)
-    } else {
-    df <- as.data.frame(args[!names(args) %in% c('value', 'min', 'max', 'biol')],
-      stringsAsFactors = FALSE)
-    df$biol <- I(args$biol)
-    }
-  } else {
-    df <- as.data.frame(args[!names(args) %in% c('value', 'min', 'max')],
-      stringsAsFactors = FALSE)
+
+  # Identify which of biol, relBiol, fishery, catch, relFishery, relCatch are lists
+  fcbcols <- c("biol", "fishery", "catch", "relBiol", "relFishery", "relCatch")
+  fcbcols_list <- unlist(lapply(args[fcbcols], function(x) return(is(x, "list") | is(x, "AsIs"))))
+  listcols <- fcbcols[fcbcols_list]
+  # Make a data.frame dropping those columns 
+  dropcols <- c('value', 'min', 'max', listcols)
+  df <- as.data.frame(args[!names(args) %in% dropcols], stringsAsFactors = FALSE)
+  # if any (list | asis) are true, make a df without those cols add those cols as a list
+  for (i in listcols){
+    df <- do.call("$<-", list(df, i, I(args[[i]])))
   }
-  
+
   #  ... array components
   val <- args[names(args) %in% c('value', 'min', 'max')]
 

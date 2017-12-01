@@ -1,7 +1,7 @@
 # Maintainer: Finlay Scott, JRC
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
-context("Simple projections with FLStock work")
+context("Projections with FLStock")
 # If these don't work we are in trouble!
 source("expect_funs.R")
 
