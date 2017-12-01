@@ -231,15 +231,16 @@ setMethod("summary", signature(object="fwdControl"),
     tab[is.na(tab)] <- character(1)
   
     # FIND rows with ranges 
-    idx <- !is.na(object@iters[, "min",])
-    ind <- rep(seq(1, nrow(tab)), times=as.integer(idx) + 1)
-  
+    idx <- !is.na(object@iters[, "min", 1])
+    
     # DUPLICATE tab rows wth min/max
+    ind <- rep(seq(1, nrow(tab)), times=as.integer(idx) + 1)
     tab <- tab[ind,]
   
     # EXTRACT iters, COMPACT if needed
     if(dim(object@iters)[3] > 1)
-      tis <- apply(object@iters, 1:2, function(x) paste0(median(x), "(", mad(x), ")"))
+      tis <- apply(object@iters, 1:2, function(x)
+        paste0(format(median(x), digits=2), "(", format(mad(x), digits=3), ")"))
     else
       tis <- apply(object@iters, 1:2, function(x)
         ifelse(is.na(x), "", as.character(x)))
@@ -252,7 +253,7 @@ setMethod("summary", signature(object="fwdControl"),
     # MOVE min and max to value
     tis[min, "value"] <- tis[min, "min"]
     tis[min + 1, "value"] <- tis[min + 1, "max"]
-  
+
     # CREATE long table
     ltab <- cbind(tab, value=tis[,"value"], stringsAsFactors = FALSE)
   
@@ -267,6 +268,9 @@ setMethod("summary", signature(object="fwdControl"),
   
     rownames(wtab) <- NULL
   
+    # CHANGE F, C, B names
+    colnames(wtab)[1:3] <- c("F", "C", "B")
+
     # DROP F, C or B if nor used
     wtab <- wtab[, c(c(1:3)[!fcbd], seq(4, dim(wtab)[2]))]
 
