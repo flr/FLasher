@@ -35,16 +35,17 @@ export(
 exportMethods(
   "[",
   "[<-",
+  "draw",
   "FCB",
   "FCB<-",
   "fwd",
   "fwdControl",
-  "propagate",
-  "show",
-  "target",
-  "target<-",
   "iters",
   "iters<-",
-  "draw",
-  "stf"
+  "propagate",
+  "show",
+  "stf",
+  "summary",
+  "target",
+  "target<-"
 )

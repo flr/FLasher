@@ -204,3 +204,79 @@ setMethod("propagate", signature(object="fwdControl"),
     return(object)
   }
 )# }}}
+
+# summary {{{
+
+#' summary method for fwdControl
+#'
+#' @name summary
+#' @examples
+#' control <- fwdControl(data.frame(year=rep(2010:2015, each=2),
+#'   quant=c("f", "catch"), min=c(rbind(NA, 20000)), max=c(rbind(NA, 30000)),
+#'   value=c(rbind(seq(1, 1.3, length=6), NA))))
+#'
+#' summary(control)
+
+setMethod("summary", signature(object="fwdControl"),
+  function(object) {
+  
+    # EXTRACT target columns
+    tab <- object@target[, c("year", "fishery", "catch", "biol", "quant")]
+    # WILL fishery, catch and biol be output?
+    cnas <- apply(tab[,c("fishery", "catch", "biol")], 2, function(x) sum(is.na(x)))
+    fcbd <- cnas == dim(tab)[1]
+    # CONVERT factor to character
+    tab$quant <- as.character(tab$quant)
+    # CONVERT NA to empty string
+    tab[is.na(tab)] <- character(1)
+  
+    # FIND rows with ranges 
+    idx <- !is.na(object@iters[, "min",])
+    ind <- rep(seq(1, nrow(tab)), times=as.integer(idx) + 1)
+  
+    # DUPLICATE tab rows wth min/max
+    tab <- tab[ind,]
+  
+    # EXTRACT iters, COMPACT if needed
+    if(dim(object@iters)[3] > 1)
+      tis <- apply(object@iters, 1:2, function(x) paste0(median(x), "(", mad(x), ")"))
+    else
+      tis <- apply(object@iters, 1:2, function(x)
+        ifelse(is.na(x), "", as.character(x)))
+  
+    # DUPLICATE tis rows with min/max
+    tis <- tis[ind,]
+  
+    # FIND first row of duplicates
+    min <- match(seq(1, length(idx))[idx], ind)
+    # MOVE min and max to value
+    tis[min, "value"] <- tis[min, "min"]
+    tis[min + 1, "value"] <- tis[min + 1, "max"]
+  
+    # CREATE long table
+    ltab <- cbind(tab, value=tis[,"value"], stringsAsFactors = FALSE)
+  
+    # add < / > to "quant"
+    ltab[min, "quant"] <- paste(ltab[min, "quant"], ">")
+    ltab[min + 1, "quant"] <- paste(ltab[min + 1, "quant"], "<")
+  
+    # CREATE wide tab
+    wtab <- reshape(ltab, idvar=c("fishery", "catch", "biol", "quant"),
+      timevar="year", direction="wide",
+      varying=list(as.character(unique(tab$year))))
+  
+    rownames(wtab) <- NULL
+  
+    # DROP F, C or B if nor used
+    wtab <- wtab[, c(c(1:3)[!fcbd], seq(4, dim(wtab)[2]))]
+
+    # DROP NA characters
+    wtab[is.na(wtab)] <- character(1)
+  
+    # PRINT to screen
+    cat("An object of class 'fwdControl' with:\n\n")
+    print(wtab, row.names = F)
+  
+    invisible(wtab)
+  }
+) # }}}
