@@ -184,7 +184,7 @@ setMethod('fwdControl', signature(target='list', iters='missing'),
     } else {
       
       inp <- do.call('parsefwdList', target)
-
+ 
     return(do.call('fwdControl', c(inp, list(...))))
     }
   }
@@ -259,14 +259,21 @@ parsefwdList <- function(...) {
   args <- list(...)
  
   if(is(args$biol, 'list') | is(args$biol, 'AsIs')) {
+    if(is(args$relBiol, 'list') | is(args$relBiol, 'AsIs')) {
+      df <- as.data.frame(args[!names(args) %in%
+        c('value', 'min', 'max', 'biol', 'relBiol')], stringsAsFactors = FALSE)
+      df$biol <- I(args$biol)
+      df$relBiol <- I(args$relBiol)
+    } else {
     df <- as.data.frame(args[!names(args) %in% c('value', 'min', 'max', 'biol')],
       stringsAsFactors = FALSE)
     df$biol <- I(args$biol)
+    }
   } else {
     df <- as.data.frame(args[!names(args) %in% c('value', 'min', 'max')],
       stringsAsFactors = FALSE)
   }
-
+  
   #  ... array components
   val <- args[names(args) %in% c('value', 'min', 'max')]
 
