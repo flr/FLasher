@@ -849,6 +849,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         year_season_to_timestep(target_effort_year, target_effort_season, biols(1).n().get_nseason(), target_effort_timestep);
         // Get the target value based on control object and current value in the OM (if Max / Min)
         // This is not part of the operation sequence so is evaluated before we turn on the tape
+        if(verbose){Rprintf("Getting desired target values from control object\n");}
         std::vector<double> target_value = get_target_value(target_count); // values of all sim targets for the target
         // Set up effort multipliers - do all efforts and iters at same time (keep timesteps, areas seperate)
         std::vector<adouble> effort_mult_ad(neffort * niter, effort_mult_initial);
@@ -885,8 +886,6 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         }
         if(verbose){Rprintf("Back from projecting\n");}
         // Calc error
-        if(verbose){Rprintf("Getting desired target values from control object\n");}
-        //std::vector<adouble> target_value = get_target_value(target_count); // values of all sim targets for the target
         if(verbose){Rprintf("Getting current state of operating model\n");}
         // Get current state of operating model
         std::vector<adouble> target_value_hat = get_target_value_hat(target_count); 
