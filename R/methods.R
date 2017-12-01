@@ -240,10 +240,10 @@ setMethod("summary", signature(object="fwdControl"),
     # EXTRACT iters, COMPACT if needed
     if(dim(object@iters)[3] > 1)
       tis <- apply(object@iters, 1:2, function(x)
-        paste0(format(median(x), digits=2), "(", format(mad(x), digits=3), ")"))
+        paste0(format(median(x), digits=3), "(", format(mad(x), digits=2), ")"))
     else
       tis <- apply(object@iters, 1:2, function(x)
-        ifelse(is.na(x), "", as.character(x)))
+        ifelse(is.na(x), "", as.character(format(x, digits=3))))
   
     # DUPLICATE tis rows with min/max
     tis <- tis[ind,]
