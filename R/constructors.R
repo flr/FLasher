@@ -249,23 +249,27 @@ setMethod('fwdControl', signature(target='missing', iters='missing'),
 # }}}
 
 # parsefwdList {{{
-# RETURNS iters as aperm(c('val', 'iter' ,'row')) for processing
+
 #' Parse the list argument to fwd to make a fwdControl object
 #'
 #' Internal function
 #' @param ... Things
+
 parsefwdList <- function(...) {
   
   args <- list(...)
 
   # Identify which of biol, relBiol, fishery, catch, relFishery, relCatch are lists
   fcbcols <- c("biol", "fishery", "catch", "relBiol", "relFishery", "relCatch")
-  fcbcols_list <- unlist(lapply(args[fcbcols], function(x) return(is(x, "list") | is(x, "AsIs"))))
+  fcbcols_list <- unlist(lapply(args[fcbcols],
+    function(x) return(is(x, "list") | is(x, "AsIs"))))
   listcols <- fcbcols[fcbcols_list]
+  
   # Make a data.frame dropping those columns 
   dropcols <- c('value', 'min', 'max', listcols)
   df <- as.data.frame(args[!names(args) %in% dropcols], stringsAsFactors = FALSE)
-  # if any (list | asis) are true, make a df without those cols add those cols as a list
+  
+  # if any (list | asis) are true, make a df without those cols, then add as a list
   for (i in listcols){
     df <- do.call("$<-", list(df, i, I(args[[i]])))
   }
@@ -303,7 +307,8 @@ parsefwdList <- function(...) {
   return(list(target=trg, iters=ite))
 } # }}}
 
-# targetOrder(object) {{{
+# targetOrder {{{
+
 #' Get the order of targets in a fwdControl
 #'
 #' Targets must be processed by FLasher in the correct order.
@@ -336,6 +341,7 @@ targetOrder <- function(target, iters) {
 #' FCB(c(f=1, c=1, b=1), c(f=1, c=2, b=2),
 #'   c(f=2, c=1, b=2), c(f=2, c=2, b=2),
 #'   c(f=2, c=3, b=3))
+
 setMethod("FCB", signature(object="ANY"),
   function(object, ...) {
 
@@ -372,6 +378,7 @@ setMethod("FCB", signature(object="ANY"),
 #' Internal function. Ignore.
 #' @param biols The FLBiols.
 #' @param fisheries The FLFisheries.
+
 guessfcb <- function(biols, fisheries) {
 
   # GET names
