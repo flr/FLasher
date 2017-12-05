@@ -20,7 +20,8 @@ setMethod("show", signature("fwdControl"),
     nms <- names(object@target)
 
     # FIND relevant cols (!unique)
-    idx <- apply(object@target[,-c(1,2,15,16,17)], 2, function(x) length(unique(x))==1)
+    idx <- apply(object@target[,-c(1,2,15,16,17)], 2,
+      function(x) length(unique(x))==1)
     idx2 <- apply(object@target[,c(15,16,17)], 2, function(x) all(is.na(x)))
     nms <- c(nms[c(1,2)], nms[-c(1,2)][!c(idx, idx2)])
     
@@ -220,16 +221,29 @@ setMethod("propagate", signature(object="fwdControl"),
 setMethod("summary", signature(object="fwdControl"),
   function(object) {
   
+    relc <- c("relYear", "relSeason", "relFishery", "relCatch", "relBiol")
+    reli <- colSums(!is.na(object@target[,relc])) > 0
+
     # EXTRACT target columns
-    tab <- object@target[, c("year", "fishery", "catch", "biol", "quant")]
+    tab <- object@target[, c("year", "fishery", "catch", "biol", "quant",
+      relc[reli])]
+    
     # WILL fishery, catch and biol be output?
-    cnas <- apply(tab[,c("fishery", "catch", "biol")], 2, function(x) sum(is.na(x)))
+    cnas <- apply(tab[,c("fishery", "catch", "biol")], 2,
+      function(x) sum(is.na(x)))
     fcbd <- cnas == dim(tab)[1]
-    # CONVERT factor to character
-    tab$quant <- as.character(tab$quant)
+    
     # CONVERT NA to empty string
     tab[is.na(tab)] <- character(1)
-  
+
+    # CONVERT list columns to character
+    tab <- data.frame(year=tab[,"year"], apply(tab[,-1], 2,
+      function(x) unlist(lapply(x, paste, collapse=','))),
+      stringsAsFactors=FALSE)
+
+    # CONVERT factor to character
+    tab$quant <- as.character(tab$quant)
+    
     # FIND rows with ranges 
     idx <- !is.na(object@iters[, "min", 1])
     
@@ -260,8 +274,36 @@ setMethod("summary", signature(object="fwdControl"),
     # add < / > to "quant"
     ltab[min, "quant"] <- paste(ltab[min, "quant"], ">")
     ltab[min + 1, "quant"] <- paste(ltab[min + 1, "quant"], "<")
-  
-    # CREATE wide tab
+ 
+    # PARSE rel*
+    if(sum(reli) > 0) {
+
+      # FIND rows with rel
+      idx <- ltab[, relc[reli], drop=FALSE] != ""
+    
+      # HOW MANY repetitions?
+      reps <- apply(idx, 1, sum)
+    
+      # DUPLICATE rel rows
+      ind <- rep(seq(1, nrow(tab)), times=reps + 1)
+      ltab <- ltab[ind,]
+ 
+      # DUPLICATED rows     
+      dup <- match(seq(1, length(reps))[reps>0], ind)
+
+      for(i in seq(length(relc[reli]))) {
+      
+        # COPY rel* to value
+        ltab[dup + i, "value"] <- ltab[dup + i, relc[reli][i]] 
+        ltab[dup + i, "quant"] <- paste0("\U2514", "\U2500",
+          tolower(sub("rel", "", relc[reli][i])))
+
+        # DROP rel* columns
+        ltab[, relc[reli][i]] <- list(NULL)
+        }
+    }
+
+    # CREATE wide tab 
     wtab <- reshape(ltab, idvar=c("fishery", "catch", "biol", "quant"),
       timevar="year", direction="wide",
       varying=list(as.character(unique(tab$year))))
