@@ -372,16 +372,11 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
     biols <- list()
     for (bno in 1:nbiols){
         newb <- FLBiol(n=seed_flq)
-        n(newb)[] <- stock.n(fls)
-        n(newb) <- n(newb) * abs(rnorm(prod(dim(n(newb))), mean = 1, sd = sd))
-        m(newb)[] <- m(fls)
-        m(newb) <- m(newb) * abs(rnorm(prod(dim(m(newb))), mean = 1, sd = sd))
-        wt(newb)[] <- stock.wt(fls)
-        wt(newb) <- wt(newb) * abs(rnorm(prod(dim(wt(newb))), mean = 1, sd = sd))
-        mat(newb)[] <- mat(fls)
-        mat(newb) <- mat(newb) * abs(rnorm(prod(dim(mat(newb))), mean = 1, sd = sd))
-        # fec - what does this do?
-
+        newb <- as(newb, "FLBiolcpp")
+        n(newb) <- rnorm(niters, mean=stock.n(fls), sd=sd)
+        m(newb) <- rnorm(niters, mean=m(fls), sd=sd)
+        wt(newb) <- rnorm(niters, mean=stock.wt(fls), sd=sd)
+        mat(newb) <- rnorm(niters, mean=mat(fls), sd=sd)
         # Spawning depends on first age.
         # If first age > 0, spawning occurs nseasons * first age ago
         # If first age == 0 and model is annual, spawning occurs in same timestep as recruitment
@@ -399,29 +394,20 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
         }
         # spwn - if it spawns then it does so at beginning of the season - all units set to the same
         spwn(newb)[,,,spawning_seasons,] <- 0
-        newb <- as(newb, "FLBiolcpp")
         name(newb) <- paste("biol", bno, sep="")
         desc(newb) <- paste("biol", bno, sep="")
-        # Each biol has randomness based on fit above
+        # Add noise to residuals
         res_temp <- window(exp(residuals(srr)), start = 1957)
         res_temp[,"1957"] <- res_temp[,"1958"]
-        res_temp <- propagate(res_temp, niters)
-        res_dmns <- dmns
-        res_dmns$age <- "all"
-        res <- FLQuant(NA, dimnames = res_dmns)
-        res[] <- res_temp
-        res <- res * abs(rnorm(prod(dim(res)), mean = 1, sd = sd))
+        res <- abs(rnorm(niters, mean = res_temp, sd = sd))
+        # Each biol has randomness based on fit above
         srr_params <- FLQuant(NA, dimnames=list(params = c("a","b"), unit = 1:nunits, season = 1:nseasons, iter=1:niters))
         for (unit_count in 1:length(recruitment_seasons)){
-            srr_params[,,unit_count,recruitment_seasons[unit_count]] <- params(srr)
+            srr_params[,,unit_count,recruitment_seasons[unit_count]] <- abs(rnorm(niters, mean = params(srr), sd = sd))
         }
-        srr_params <- srr_params * abs(rnorm(prod(dim(srr_params)), mean = 1, sd = sd))
         newb@srmodel <- "bevholt"
         newb@srparams <- srr_params
-        # Add noise to residuals
-        res_temp <- res * abs(rnorm(prod(dim(res)), mean = 1, sd = sd))
         # Make the list of FLBiolcpp bits
-        #biol_bits <- list(biol = newb, srr_model_name = "bevholt", srr_params = srr_params, srr_residuals = res_temp, srr_residuals_mult = TRUE)
         biol_bits <- list(biol = newb, srr_residuals = res_temp, srr_residuals_mult = TRUE)
         biols[[paste("biol", bno, sep="")]] <- biol_bits
     }
@@ -435,25 +421,21 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
             newc <- FLCatch(landings.n=seed_flq)
             name(newc) <- paste("catch", fno, cno, sep="")
             desc(newc) <- paste("catch", fno, cno, sep="")
-            landings.n(newc)[] <- landings.n(fls)
-            landings.n(newc) <- landings.n(newc) * abs(rnorm(prod(dim(landings.n(newc))), mean = 1, sd = sd))
-            landings.wt(newc)[] <- landings.wt(fls)
-            landings.wt(newc) <- landings.wt(newc) * abs(rnorm(prod(dim(landings.wt(newc))), mean = 1, sd = sd))
-            discards.n(newc)[] <- discards.n(fls)
-            discards.n(newc) <- discards.n(newc) * abs(rnorm(prod(dim(discards.n(newc))), mean = 1, sd = sd))
-            discards.wt(newc)[] <- discards.wt(fls)
-            discards.wt(newc) <- discards.wt(newc) * abs(rnorm(prod(dim(discards.wt(newc))), mean = 1, sd = sd))
+            landings.n(newc) <- rnorm(niters, mean=landings.n(fls), sd=sd)
+            landings.wt(newc) <- rnorm(niters, mean=landings.wt(fls), sd=sd)
+            discards.n(newc) <- rnorm(niters, mean=discards.n(fls), sd=sd)
+            discards.wt(newc) <- rnorm(niters, mean=discards.wt(fls), sd=sd)
             # selectivity based on harvest then scaled so max is 1
-            catch.sel(newc)[] <- harvest(fls)
-            catch.sel(newc) <- catch.sel(newc) * abs(rnorm(prod(dim(catch.sel(newc))), mean = 1, sd = sd))
+            catch.sel(newc) <- rnorm(niters, mean=harvest(fls), sd=sd)
             catch.sel(newc)[] <- c(apply(catch.sel(newc), 2:6, function(x) x / max(x))) # Weird apply bug
             # no beta parameter atm
             catch.q(newc) <- FLPar(c(1.0), dimnames=list(params=c("alpha", "beta"), iter = 1))
             catch.q(newc)["beta",] <- 0.0 # Fix F calculation in code
             # price - just fill with +ve rnorm
             price(newc)[] <- abs(rnorm(prod(dim(price(newc))), mean=1, sd=sd))
-            catches[[paste("catch", cno, sep="")]] <- newc
+            catches[[cno]] <- newc
         }
+        names(catches) <- paste("catch", 1:ncatches, sep="")
         newf <- FLFishery(catches) # range not set correctly
         desc(newf) <- paste("fishery", fno, sep="")
         name(newf) <- paste("fishery", fno, sep="")
