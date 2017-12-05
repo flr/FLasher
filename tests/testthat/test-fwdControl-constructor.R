@@ -330,7 +330,6 @@ test_that("Biol based targets with list of Biols",{
     ctrl <- fwdControl(list(year=years, quant="catch", value=nvalue, biol=G("ple","sol")), FCB=fcb)
     expect_equal(unname(c(ctrl@iters[,"value",])), nvalue)
     # relative target
-    # fails - but should be OK
     ctrl <- fwdControl(list(year=years, quant="catch", value=value, biol=G("ple","sol"), relYear=years-1, relBiol=G("ple","sol")), FCB=fcb)
     expect_equal(unname(ctrl@iters[,"value",]), value)
     expect_is(ctrl$biol, "list")
@@ -340,6 +339,20 @@ test_that("Biol based targets with list of Biols",{
 })
 
 
+test_that("Combined fishery / catch lists",{
+    nyears <- round(runif(1,min=5,max=15))
+    value <- rnorm(nyears)
+    inityear <- round(runif(1,min=1990,max=2000)) 
+    years <- inityear:(inityear+nyears-1)
+    # Two fisheries, one catch each, fishing on same single biol
+    fcb <- matrix(c(1,2,1,1,1,1), nrow=2, ncol=3, dimnames=list(1:2,c("F","C","B")))
+    ctrl <- fwdControl(list(year=years, quant="catch", value=value, fishery=G("bt", "gn"), catch=G("btc", "gnc")))
+    expect_equal(unname(ctrl@iters[,"value",]), value)
+    expect_is(ctrl$fishery, "list")
+    expect_is(ctrl$catch, "list")
+    dump <- lapply(ctrl$fishery, function(x){expect_equal(x, c("bt","gn"))})
+    dump <- lapply(ctrl$catch, function(x){expect_equal(x, c("btc","gnc"))})
+})
 
 
 

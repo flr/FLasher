@@ -333,6 +333,14 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
     # Data.frame constructor - use other constructor here?
     fwc <- fwdControl(target=target, iters=target_iters)
 
+    # These need to be lists
+    fwc@target$fishery <- as.list(fwc@target$fishery)
+    fwc@target$catch <- as.list(fwc@target$catch)
+    fwc@target$biol <- as.list(fwc@target$biol)
+    fwc@target$relFishery <- as.list(fwc@target$relFishery)
+    fwc@target$relCatch <- as.list(fwc@target$relCatch)
+    fwc@target$relBiol <- as.list(fwc@target$relBiol)
+
     # Add FCB array 
     FCB <- array(c(1,1,2,2,1,2,1,2,1,2,2,3), dim=c(4,3))
     colnames(FCB) <- c("F","C","B")
@@ -373,10 +381,10 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
     for (bno in 1:nbiols){
         newb <- FLBiol(n=seed_flq)
         newb <- as(newb, "FLBiolcpp")
-        n(newb) <- rnorm(niters, mean=stock.n(fls), sd=sd)
-        m(newb) <- rnorm(niters, mean=m(fls), sd=sd)
-        wt(newb) <- rnorm(niters, mean=stock.wt(fls), sd=sd)
-        mat(newb) <- rnorm(niters, mean=mat(fls), sd=sd)
+        n(newb)[] <- c(rnorm(niters*nunits, mean=stock.n(fls), sd=sd))
+        m(newb)[] <- c(rnorm(niters*nunits, mean=m(fls), sd=sd))
+        wt(newb)[] <- c(rnorm(niters*nunits, mean=stock.wt(fls), sd=sd))
+        mat(newb)[] <- c(rnorm(niters*nunits, mean=mat(fls), sd=sd))
         # Spawning depends on first age.
         # If first age > 0, spawning occurs nseasons * first age ago
         # If first age == 0 and model is annual, spawning occurs in same timestep as recruitment
@@ -399,7 +407,8 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
         # Add noise to residuals
         res_temp <- window(exp(residuals(srr)), start = 1957)
         res_temp[,"1957"] <- res_temp[,"1958"]
-        res <- abs(rnorm(niters, mean = res_temp, sd = sd))
+        res <- FLQuant(NA, dimnames=dmns[-1])
+        res[] <- abs(rnorm(niters*nunits, mean = res_temp, sd = sd))
         # Each biol has randomness based on fit above
         srr_params <- FLQuant(NA, dimnames=list(params = c("a","b"), unit = 1:nunits, season = 1:nseasons, iter=1:niters))
         for (unit_count in 1:length(recruitment_seasons)){
@@ -408,7 +417,7 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
         newb@srmodel <- "bevholt"
         newb@srparams <- srr_params
         # Make the list of FLBiolcpp bits
-        biol_bits <- list(biol = newb, srr_residuals = res_temp, srr_residuals_mult = TRUE)
+        biol_bits <- list(biol = newb, srr_residuals = res, srr_residuals_mult = TRUE)
         biols[[paste("biol", bno, sep="")]] <- biol_bits
     }
     # Make the fisheries
@@ -421,12 +430,12 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
             newc <- FLCatch(landings.n=seed_flq)
             name(newc) <- paste("catch", fno, cno, sep="")
             desc(newc) <- paste("catch", fno, cno, sep="")
-            landings.n(newc) <- rnorm(niters, mean=landings.n(fls), sd=sd)
-            landings.wt(newc) <- rnorm(niters, mean=landings.wt(fls), sd=sd)
-            discards.n(newc) <- rnorm(niters, mean=discards.n(fls), sd=sd)
-            discards.wt(newc) <- rnorm(niters, mean=discards.wt(fls), sd=sd)
+            landings.n(newc)[] <- c(rnorm(niters*nunits, mean=landings.n(fls), sd=sd))
+            landings.wt(newc)[] <- c(rnorm(niters*nunits, mean=landings.wt(fls), sd=sd))
+            discards.n(newc)[] <- c(rnorm(niters*nunits, mean=discards.n(fls), sd=sd))
+            discards.wt(newc)[] <- c(rnorm(niters*nunits, mean=discards.wt(fls), sd=sd))
             # selectivity based on harvest then scaled so max is 1
-            catch.sel(newc) <- rnorm(niters, mean=harvest(fls), sd=sd)
+            catch.sel(newc)[] <- c(rnorm(niters*nunits, mean=harvest(fls), sd=sd))
             catch.sel(newc)[] <- c(apply(catch.sel(newc), 2:6, function(x) x / max(x))) # Weird apply bug
             # no beta parameter atm
             catch.q(newc) <- FLPar(c(1.0), dimnames=list(params=c("alpha", "beta"), iter = 1))

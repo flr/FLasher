@@ -148,6 +148,59 @@ test_that("Single fishery, two catches, single TAC on two Biols",{
     test <- fwd(object=biols, fishery=flfs2, control=ctrl)
     cout <- (catch(test[["fisheries"]][[1]][[1]]) + catch(test[["fisheries"]][[1]][[2]]))
     expect_equal(c(cout[,ac(years)] / cout[,ac(years-1)]), rep(rel_combined_TAC, length(years)), tolerance=1e-6)
+    # Wrong names in control
+    ctrl <- fwdControl(list(year=years, quant="catch", value=rel_combined_TAC, biol=G("plaice","sole"), relYear=years-1, relBiol=G("ple","sol")), FCB=fcb)
+    expect_error(fwd(object=biols, fishery=flfs2, control=ctrl))
 })
 
 
+test_that("Two fisheries, one catch each, joint catch",{
+    data(mixed_fishery_example_om)
+    bt <- FLFishery(solBT=flfs[["bt"]][["solBT"]], desc="")
+    bt@effort[] <- 1
+    gn <- FLFishery(solGN=flfs[["gn"]][["solGN"]], desc="")
+    gn@effort[] <- 1
+    flfs <- FLFisheries(bt=bt, gn=gn)
+    biols <- FLBiols(sol=biols[["sol"]])
+    sole_catch <- 10000
+    rel_catch <- 0.9
+    fcb <- matrix(c(1,2,1,1,1,1), nrow=2, ncol=3, dimnames=list(1:2,c("F","C","B")))
+    years <- 2:20
+    ctrl <- fwdControl(
+        list(year=years, quant="catch", fishery=G("bt","gn"), catch=G("solBT", "solGN"), value=sole_catch),
+        list(year=years, relYear=years, quant="catch", fishery = "bt", relFishery="gn", catch="solBT", relCatch="solGN", value=rel_catch),
+        FCB = fcb)
+    test <- fwd(object=biols, fishery=flfs, control=ctrl)
+    c11 <- catch(test[["fisheries"]][[1]][[1]])
+    c22 <- catch(test[["fisheries"]][[2]][[1]])
+    expect_equal(c((c11+c22)[,ac(years)]),rep(sole_catch, length(years)))
+    expect_equal(c((c11/c22)[,ac(years)]),rep(rel_catch, length(years)))
+    # Test with non matching names in fishery and catch
+    # Catch names in wrong order
+    ctrl <- fwdControl(
+        list(year=years, quant="catch", fishery=G("bt","gn"), catch=G("solGN", "solBT"), value=sole_catch),
+        list(year=years, relYear=years, quant="catch", fishery = "bt", relFishery="gn", catch="solBT", relCatch="solGN", value=rel_catch),
+        FCB = fcb)
+    expect_error(fwd(object=biols, fishery=flfs, control=ctrl))
+})
+
+test_that("Two fisheries, two catches each, joint catch",{
+    data(mixed_fishery_example_om)
+    rel_sol_catch <- 0.8
+    ple_f <- 0.15 # set sum of partial Fs
+    fcb <- matrix(c(1,1,1,1,2,2,2,1,1,2,2,2), byrow=TRUE, ncol=3, dimnames=list(1:4,c("F","C","B")))
+    years <- 2:20
+    # Total F target on plaice, relative catch on sole catches
+    ctrl <- fwdControl(
+        list(year=years, quant="f", minAge=2, maxAge=6, value=ple_f, fishery=G("bt","gn"), catch=G("pleBT", "pleGN"), biol="ple"), # need to specify biol too, bit awkward
+        list(year=years, quant="catch", value = 0.8, fishery="bt", catch="solBT", relYear=years, relFishery="gn", relCatch="solGN"),
+        FCB=fcb)
+    test <- fwd(object=biols, fishery=flfs, control=ctrl)
+    solc1 <- catch(test[["fisheries"]][["bt"]][["solBT"]])
+    solc2 <- catch(test[["fisheries"]][["gn"]][["solGN"]])
+    expect_equal(c((solc1/solc2)[,ac(years)]), rep(rel_sol_catch, length(years)))
+    plef1 <- FLasher:::calc_F(test[["fisheries"]][["bt"]][["pleBT"]], test[["biols"]][["ple"]], test[["fisheries"]][["bt"]]@effort)
+    plef2 <- FLasher:::calc_F(test[["fisheries"]][["gn"]][["pleGN"]], test[["biols"]][["ple"]], test[["fisheries"]][["gn"]]@effort)
+    plefbar <- c(apply((plef1+plef2)[ac(2:6),ac(years)], 2:6, mean))
+    expect_equal(c(plefbar), rep(ple_f, length(years)))
+})

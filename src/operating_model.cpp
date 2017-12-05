@@ -1266,22 +1266,34 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     // Get the Fishery, Catch, Biol[target_component] no
     // store result of evalOM
     // Sum results of evalOM
-    auto fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
-    auto catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
+    //auto fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
+    //auto catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
+    auto Fnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "fishery");
+    auto Cnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "catch");
     auto Bnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "biol");
-    auto no_target_components = Bnos.size();
-    if(verbose){Rprintf("no_target_components: %i\n", Bnos.size());}
+    // maximum length of these three
+    auto no_target_components = std::max(Fnos.size(), std::max(Bnos.size(), Cnos.size()));
+    if(verbose){Rprintf("Fnos length: %i\n", Fnos.size());}
+    if(verbose){Rprintf("Cnos length: %i\n", Cnos.size());}
+    if(verbose){Rprintf("Bnos length: %i\n", Bnos.size());}
+    if(verbose){Rprintf("no_target_components: %i\n", no_target_components);}
     auto niters = get_niter();
     FLQuantAD target_value(1,1,1,1,1,niters); // target values are not structured by age, time or unit - only by iter
     fwdControlTargetType target_type;
-    for (auto target_component=0; target_component < no_target_components; ++target_component){
+    for (long target_component=1; target_component <= no_target_components; ++target_component){ // long to get min to work...
+        auto Bno = std::min(target_component, Bnos.size()) - 1; // target_component or max no of biols in that target
+        auto Cno = std::min(target_component, Cnos.size()) - 1;
+        auto Fno = std::min(target_component, Fnos.size()) - 1;
+        if(verbose){Rprintf("Fno: %i\n", Fno);}
+        if(verbose){Rprintf("Cno: %i\n", Cno);}
+        if(verbose){Rprintf("Bno: %i\n", Bno);}
         //Rprintf("target_component: %i\n", target_component);
         // Indices of target
         get_target_hat_indices(indices_min, indices_max, target_no, sim_target_no, target_component, false);
         // Target type
         target_type = ctrl.get_target_type(target_no, sim_target_no, false);
         // Evaluate the OM
-        target_value = target_value + eval_om(target_type, fishery_no, catch_no, Bnos[target_component], indices_min, indices_max);
+        target_value = target_value + eval_om(target_type, Fnos[Fno], Cnos[Cno], Bnos[Bno], indices_min, indices_max);
     }
     if(verbose){Rprintf("Absolute target: %f\n", Value(target_value(1,1,1,1,1,1)));}
 
@@ -1292,16 +1304,22 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     bool rel_year_na = Rcpp::IntegerVector::is_na(rel_year);
     bool rel_season_na = Rcpp::IntegerVector::is_na(rel_season);
     // Quick check: if relative biol, catch or fishery, is not NA but the year and season are, something has gone wrong
-    unsigned int rel_catch = ctrl.get_target_int_col(target_no, sim_target_no, "relCatch");
-    unsigned int rel_fishery = ctrl.get_target_int_col(target_no, sim_target_no, "relFishery");
-    auto rel_biols = ctrl.get_target_list_int_col(target_no, sim_target_no, "relBiol");
+    auto rel_Cnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relCatch");
+    auto rel_Fnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relFishery");
+    auto rel_Bnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relBiol");
     bool rel_biol_na = true;
-    for (auto rel_biol : rel_biols){
+    for (auto rel_biol : rel_Bnos){
        rel_biol_na = rel_biol_na & Rcpp::IntegerVector::is_na(rel_biol);
     }
-    bool rel_catch_na = Rcpp::IntegerVector::is_na(rel_catch);
-    bool rel_fishery_na = Rcpp::IntegerVector::is_na(rel_fishery);
-    if ((!rel_biol_na | !rel_catch_na | !rel_fishery) & (!(!rel_year_na & !rel_season_na))){
+    bool rel_catch_na = true;
+    for (auto rel_catch : rel_Cnos){
+       rel_catch_na = rel_catch_na & Rcpp::IntegerVector::is_na(rel_catch);
+    }
+    bool rel_fishery_na = true;
+    for (auto rel_fishery : rel_Fnos){
+       rel_fishery_na = rel_fishery_na & Rcpp::IntegerVector::is_na(rel_fishery);
+    }
+    if ((!rel_biol_na | !rel_catch_na | !rel_fishery_na) & (!(!rel_year_na & !rel_season_na))){
         Rcpp::stop("In operatingModel::get_target_value_hat. You have specifed a relative Fishery, Catch or Biol, but not relative Year and Season\n");
     }
     // If relative year, must also be relative season
@@ -1312,16 +1330,21 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     // Relative target given only by year and season - not F, C or B
     if (!rel_year_na | !rel_season_na){
         if(verbose){Rprintf("Relative target in control\n");}
-        auto rel_fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "relFishery");
-        auto rel_catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "relCatch");
-        auto rel_Bnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relBiol");
-        auto no_target_components = rel_Bnos.size();
+        //auto rel_fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "relFishery");
+        //auto rel_catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "relCatch");
+        //auto rel_Fnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relFishery");
+        //auto rel_Cnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relCatch");
+        //auto rel_Bnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relBiol");
+        auto no_target_components = std::max(rel_Fnos.size(), std::max(rel_Bnos.size(), rel_Cnos.size()));
         FLQuantAD rel_target_value(1,1,1,1,1,niters); // target values are not structured by age, time or unit - only by iter
-        for (auto target_component=0; target_component < no_target_components; ++target_component){
+        for (long target_component=1; target_component <= no_target_components; ++target_component){
+            auto Bno = std::min(target_component, rel_Bnos.size()) - 1; // see above
+            auto Cno = std::min(target_component, rel_Cnos.size()) - 1;
+            auto Fno = std::min(target_component, rel_Fnos.size()) - 1;
             // Indices of rel target
             get_target_hat_indices(indices_min, indices_max, target_no, sim_target_no, target_component, true);
             // Evaluate the OM
-            rel_target_value = rel_target_value + eval_om(target_type, rel_fishery_no, rel_catch_no, rel_Bnos[target_component], indices_min, indices_max);
+            rel_target_value = rel_target_value + eval_om(target_type, rel_Fnos[Fno], rel_Cnos[Cno], rel_Bnos[Bno], indices_min, indices_max);
         }
         target_value = target_value / rel_target_value;
         if(verbose){Rprintf("Relative to absolute target: %f\n", Value(rel_target_value(1,1,1,1,1,1)));}
@@ -1347,34 +1370,35 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
  * \param target_component_no If we have multiple biols in a target (stored as a list), which element of that list are we dealing with. Indexing starts at 0.
  * \param relative Are we getting the relative target indices (so that the correct columns of control are accessed).
  */
-void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_min, std::vector<unsigned int>& indices_max, const int target_no, const int sim_target_no, const int target_component_no,  const bool relative) {
+void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_min, std::vector<unsigned int>& indices_max, const int target_no, const int sim_target_no, const long target_component_no,  const bool relative) {
     // Get the key information
     unsigned int year, season, fishery_no, catch_no, biol_no, min_age, max_age;
     // Get and check FCB nos
     std::vector<unsigned int> FCB_nos;
     const bool check_FCB = true;
-    Rcpp::IntegerVector biol_nos;
+    Rcpp::IntegerVector biol_nos, fishery_nos, catch_nos;
     // Get the year, season and age range, depending if we have a relative target or not
     if (relative){
         year = ctrl.get_target_int_col(target_no, sim_target_no, "relYear"); 
         season = ctrl.get_target_int_col(target_no, sim_target_no, "relSeason");
         min_age = ctrl.get_target_int_col(target_no, sim_target_no, "relMinAge");
         max_age = ctrl.get_target_int_col(target_no, sim_target_no, "relMaxAge");
-        fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "relFishery");
-        catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "relCatch");
+        fishery_nos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relFishery");
+        catch_nos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relCatch");
         biol_nos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relBiol");
-        biol_no = biol_nos[target_component_no];
     }
     if (!relative){
         year = ctrl.get_target_int_col(target_no, sim_target_no, "year"); 
         season = ctrl.get_target_int_col(target_no, sim_target_no, "season");
         min_age = ctrl.get_target_int_col(target_no, sim_target_no, "minAge");
         max_age = ctrl.get_target_int_col(target_no, sim_target_no, "maxAge");
-        fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "fishery");
-        catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "catch");
+        fishery_nos = ctrl.get_target_list_int_col(target_no, sim_target_no, "fishery");
+        catch_nos = ctrl.get_target_list_int_col(target_no, sim_target_no, "catch");
         biol_nos = ctrl.get_target_list_int_col(target_no, sim_target_no, "biol");
-        biol_no = biol_nos[target_component_no];
     }
+    fishery_no = fishery_nos[std::min(target_component_no, fishery_nos.size()) - 1];
+    catch_no = catch_nos[std::min(target_component_no, catch_nos.size()) - 1];
+    biol_no = biol_nos[std::min(target_component_no, biol_nos.size()) - 1];
     // Are these NAs?
     bool year_na = Rcpp::IntegerVector::is_na(year);
     bool season_na = Rcpp::IntegerVector::is_na(season);

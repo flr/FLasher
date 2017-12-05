@@ -104,7 +104,9 @@ add_target_order <- function(control){
     # Reorder by original order so that target and iters slots are consistent
     control@target <- control@target[order(control@target$orig_order),]
     # Reorder target and iters slots by new order
-    new_order <- order(control@target$order, control@target$fishery, control@target$catch, control@target$biol)
+    # Just get first element of each list element in fishery, catch and biol
+    #new_order <- order(control@target$order, control@target$fishery, control@target$catch, control@target$biol)
+    new_order <- order(control@target$order, unlist(lapply(control@target$fishery, "[[", 1)), unlist(lapply(control@target$catch, "[[", 1)), unlist(lapply(control@target$biol, "[[", 1)))
     control@target <- control@target[new_order,]
     control@iters <- control@iters[new_order,,,drop=FALSE]
     # Remove minmax and orig_order columns
@@ -126,13 +128,16 @@ add_target_order <- function(control){
 #' @param fishery_catch_names A named list - elements of list are vector of the catch names of each fishery
 #' @return The updated target slot
 match_posns_names <- function(trg, biol_names, fishery_catch_names){
+
+
+
     # Biols
     for(biol_col in c("biol", "relBiol")){
         # biol column is a list
         if (is.character(unlist(trg[,biol_col]))){
             # Check that all biol names in target exist
             if (!(all(unlist(trg[,biol_col]) %in% c(NA,biol_names)))){
-                stop(cat("Names in the ", biol_col, " column of the control object do not match names of the FLBiols object\n"))
+                stop(paste("Names in the ", biol_col, " column of the control object do not match names of the FLBiols object\n", sep=""))
             }
             # Match positions
             # This drops the list
@@ -141,33 +146,41 @@ match_posns_names <- function(trg, biol_names, fishery_catch_names){
     }
     # Fisheries
     for (fishery_col in c("fishery", "relFishery")){
-        if(is.character(trg[,fishery_col])){
+        # fishery column is a list
+        if (is.character(unlist(trg[,fishery_col]))){
+            fishery_names <- names(fishery_catch_names)
             # Check that all biol names in target exist
-            if (!(all(trg[,fishery_col] %in% c(NA,names(fishery_catch_names))))){
-                stop(cat("Names in the ", fishery_col, " column of the control object do not match FLFishery names of the FLFisheries object\n"))
+            if (!(all(unlist(trg[,fishery_col]) %in% c(NA,fishery_names)))){
+                stop(paste("Names in the ", fishery_col, " column of the control object do not match names of the FLFisheries object\n", sep=""))
             }
-            trg[,fishery_col] <- match(trg[,fishery_col], names(fishery_catch_names))
+            # Match positions
+            trg <- do.call("$<-", list(trg,fishery_col, lapply(trg[,fishery_col], match, fishery_names)))
         }
     }
+
     # Catches - trickier as must relate to the fishery
     for (cfcols in list(c("relCatch", "relFishery"), c("catch","fishery"))){
+        # fishery column is a list
         catch_col <- cfcols[[1]]
         fishery_col <- cfcols[[2]]
-        if(is.character(trg[,catch_col])){
-            temp <- unique(trg[,c(fishery_col,catch_col)])
-            # Remove NA relCatches - they are OK
-            temp <- temp[!is.na(temp[,catch_col]),]
-            for (fc in 1:nrow(temp)){
-                # Check that the fishery / catch combination exists
-                if (!(temp[fc,catch_col] %in% c(NA,fishery_catch_names[[temp[fc,fishery_col]]]))){
-                    stop(cat("Names in the ", catch_col, " column of the control object do not match FLCatch names of the corresponding FLFishery object\n"))
+        if(is.character(unlist(trg[,catch_col]))){
+            # Just go row by row to keep it simple and correct
+            for (fc in 1:nrow(trg)){
+                new_catch <- NULL
+                # Loop over each element in the list of that row
+                for (cn in 1:length(trg[fc, catch_col][[1]])){
+                    # get the catch name and fishery no from the target frame and check the combination exists
+                    catch_name <- trg[fc,catch_col][[1]][cn]
+                    fishery_no <- trg[fc,fishery_col][[1]][cn]
+                    if (!(catch_name %in% c(NA,fishery_catch_names[[fishery_no]]))){
+                        stop(paste("Names in the ", catch_col, " column of the control object do not match FLCatch names of the corresponding FLFishery object\n", sep=""))
+                    }
+                    # match and add to new list
+                    new_catch <- c(new_catch, match(trg[fc,catch_col][[1]][cn], fishery_catch_names[[fishery_no]]))
                 }
-                rows <- which((trg[,fishery_col] == temp[fc,fishery_col]) & (trg[,catch_col] == temp[fc,catch_col])) # Use which to drop NAs
-                trg[rows, catch_col] <- match(trg[rows, catch_col], fishery_catch_names[[temp[fc,fishery_col]]])
+                trg[fc,] <- do.call("$<-", list(trg[fc,], catch_col, list(new_catch)))
             }
         }
-        # Force to be integer
-        trg[,catch_col] <- as.integer(trg[,catch_col])
     }
     return(trg)
 }

@@ -128,9 +128,13 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(nrow(idx) != nrow(tfcb))
     stop("Misspecified target(s)")
 
-  # ENSURE biol is a list
-  trg$biol <- as.list(trg$biol)
-  trg$relBiol <- as.list(trg$relBiol)
+  # ENSURE F,C,B cols are lists
+  fcbcols <- c("biol", "fishery", "catch", "relBiol", "relFishery", "relCatch")
+  for (i in fcbcols){
+      trg <- do.call("$<-", list(trg, i, as.list(do.call("$", list(trg, i)))))
+  }
+  #trg$biol <- as.list(trg$biol)
+  #trg$relBiol <- as.list(trg$relBiol)
 
   # Turn F, C and B names in control columns to integer positions
   trg <- match_posns_names(trg, names(object), lapply(fishery, names))
@@ -143,9 +147,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # Check relative columns make sense
   # If you have any of relFishery, relCatch or reBiol, you have must have relYear
-  relFishery <- !is.na(trg$relFishery)
-  relCatch <- !is.na(trg$relCatch)
   relBiol <- unlist(lapply(trg$relBiol, function(x) any(!is.na(x)))) # any row with at least 1 relBiol that is not NA
+  relFishery <- unlist(lapply(trg$relFishery, function(x) any(!is.na(x)))) 
+  relCatch <- unlist(lapply(trg$relCatch, function(x) any(!is.na(x)))) 
   relYear <- !is.na(trg$relYear)
   relSeason <- !is.na(trg$relSeason)
 
