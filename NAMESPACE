@@ -2,7 +2,7 @@ useDynLib(FLasher)
 importFrom(Rcpp,
   evalCpp)
 importFrom(stats,
-  runif)
+  runif, reshape)
 importFrom(utils,
   data)
 importFrom("methods",

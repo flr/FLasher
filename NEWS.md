@@ -2,7 +2,8 @@
 
 ## USER-VISIBLE CHANGES
 
-- Added disc.nyears arg to stf() to select years to use for discards ratio calculations
+- Added disc.nyears arg to stf() to select years to use for discards ratio calculations.
+- If min and max for the very same target are set in separate rows, they are merged.
 
 # FLasher 0.0.3
 

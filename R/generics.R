@@ -87,6 +87,7 @@ setGeneric("stf", function(object,...) standardGeneric("stf"))
 #' @name FCB
 #' @param object Input object to construct or extract from.
 #' @param ... Extract input arguments
+#' @param value Input matrix
 
 setGeneric("FCB", function(object, ...) standardGeneric("FCB"))
 setGeneric("FCB<-", function(object, ..., value) standardGeneric("FCB<-"))

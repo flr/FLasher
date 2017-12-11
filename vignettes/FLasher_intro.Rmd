@@ -25,8 +25,7 @@ options(width=60)
 
 # Introduction
 
-__FLasher__ is an FLR package for performing projections through time.
-It is a sequel to an older package __FLash__ that has been widely used for projecting **FLStock** objects.
+__FLasher__ is an FLR package for performing stochastic projections of fish populations and fisheries through time. It is a sequel to an older package __FLash__ that has been widely used for projecting **FLStock** objects.
 It is anticpated that __FLasher__ eventually replaces __FLash__. The interfaces are almost the same so moving existing scripts from using __FLash__ to __FLasher__ should be straightforward.
 
 The main differences betwen __FLasher__ and __FLash__ are:
