@@ -20,6 +20,8 @@ FCB(object, ...)
 \item{object}{Input object to construct or extract from.}
 
 \item{...}{Extract input arguments}
+
+\item{value}{Input matrix}
 }
 \description{
 The FCB slot in fwdControl specifies the relationships between the catches
