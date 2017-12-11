@@ -67,6 +67,36 @@ setMethod('fwdControl', signature(target='data.frame', iters='array'),
     ite <- ite[idx,,,drop=FALSE]
     rownames(ite) <- seq(len=nrow(trg))
     
+    # FIND duplicates in min/max and if found ...
+    dup <- duplicated(trg)
+    
+    # ... MERGE max/min
+    if(any(dup)){
+ 
+      # Other HALF of duplicates     
+      dup2 <- duplicated(trg, fromLast=TRUE)
+
+      # GET duplicated iters
+      ix <- ite[dup,,,drop=FALSE]
+      iy <- ite[dup2,,,drop=FALSE]
+
+      ix[,c(1,3),][is.na(ix[, c(1,3),])] <- 
+        iy[,c(1,3),][!is.na(iy[, c(1,3),])]
+    
+      ite[dup2,,] <- ix
+      ite <- ite[!dup,,,drop=FALSE] 
+
+      trg <- trg[!dup,,drop=FALSE]
+
+      # RE-SET rownames
+      row.names(trg) <- seq(len=nrow(trg))
+      rownames(ite) <- seq(len=nrow(trg))
+    }
+
+    # CHECK no duplicates
+    if(any(duplicated(trg)))
+      stop("target contains duplicated rows, cannot solve")
+
     return(new('fwdControl', target=trg, iters=ite, ...))
   }
 ) 
@@ -226,23 +256,7 @@ setMethod('fwdControl', signature(target='missing', iters='missing'),
     if(length(args) == 0)
       return(new("fwdControl"))
 
-    # SEPARATE df and
-    df <- as.data.frame(args[!names(args) %in% 'value'])
-    
-    # array components
-    val <- args[['value']]
-    
-    # TURN val into matrix
-    if(is(val, 'list')) {
-      mat <- do.call(rbind, val)
-    } else {
-      mat <- t(matrix(val))
-    }
-    # CHECK no. rows in iters
-    if(nrow(df) > nrow(mat)) {
-      mat <- t(matrix(mat, nrow=length(mat), ncol=nrow(df)))
-    }
-    return(fwdControl(target=df, iters=mat))
+    return(fwdControl(target=args))
   }
 )
 

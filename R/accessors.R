@@ -64,6 +64,7 @@ setMethod("FCB", signature(object="fwdControl"),
 #' @examples
 #' # Assign to existing fwdControl
 #' FCB(control) <- FCB(c(f=1, c=1, b=2), c(f=1, c=2, b=2))
+
 setReplaceMethod("FCB", signature(object="fwdControl", value="matrix"),
 	function(object, value) {
 		object@FCB <- value
