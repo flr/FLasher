@@ -354,21 +354,3 @@ test_that("Combined fishery / catch lists",{
     dump <- lapply(ctrl$catch, function(x){expect_equal(x, c("btc","gnc"))})
 })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

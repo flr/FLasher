@@ -211,13 +211,16 @@ setMethod("propagate", signature(object="fwdControl"),
 #' summary method for fwdControl
 #'
 #' @name summary
+#' @aliases summary,fwdControl-method
+#' @docType methods
+#' @section Generic function: summary(object)
+#' @param object fwdControl object to show summary of
 #' @examples
 #' control <- fwdControl(data.frame(year=rep(2010:2015, each=2),
 #'   quant=c("f", "catch"), min=c(rbind(NA, 20000)), max=c(rbind(NA, 30000)),
 #'   value=c(rbind(seq(1, 1.3, length=6), NA))))
 #'
 #' summary(control)
-
 setMethod("summary", signature(object="fwdControl"),
   function(object) {
   

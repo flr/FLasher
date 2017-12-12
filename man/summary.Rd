@@ -3,13 +3,21 @@
 \docType{methods}
 \name{summary}
 \alias{summary}
+\alias{summary,fwdControl-method}
 \title{summary method for fwdControl}
 \usage{
 \S4method{summary}{fwdControl}(object)
 }
+\arguments{
+\item{object}{fwdControl object to show summary of}
+}
 \description{
 summary method for fwdControl
 }
+\section{Generic function}{
+ summary(object)
+}
+
 \examples{
 control <- fwdControl(data.frame(year=rep(2010:2015, each=2),
   quant=c("f", "catch"), min=c(rbind(NA, 20000)), max=c(rbind(NA, 30000)),

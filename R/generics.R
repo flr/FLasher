@@ -90,4 +90,6 @@ setGeneric("stf", function(object,...) standardGeneric("stf"))
 #' @param value Input matrix
 
 setGeneric("FCB", function(object, ...) standardGeneric("FCB"))
+
+#' @rdname FCB
 setGeneric("FCB<-", function(object, ..., value) standardGeneric("FCB<-"))

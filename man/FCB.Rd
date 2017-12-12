@@ -3,12 +3,15 @@
 \docType{methods}
 \name{FCB}
 \alias{FCB}
+\alias{FCB<-}
 \alias{FCB,fwdControl-method}
 \alias{FCB<-,fwdControl,matrix-method}
 \alias{FCB,ANY-method}
 \title{Create and extract the FCB slot in fwdControl}
 \usage{
 FCB(object, ...)
+
+FCB(object, ...) <- value
 
 \S4method{FCB}{fwdControl}(object)
 
