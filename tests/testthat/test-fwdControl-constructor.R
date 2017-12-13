@@ -282,30 +282,16 @@ test_that("list constructor - iters",{
     expect_equal(nvalue, c(test@iters[seq(1,(nyears*2)-1,2),"value",]))
     expect_equal(rep(value,niters), c(test@iters[seq(2,nyears*2,2),"min",]))
 
+    # Same single value over years but different over multiple iterations 
+    niters <- nyears+1
+    nvalue <- rnorm(niters)
+    test <- fwdControl(list(year=years, quant=quant1, value=rep(nvalue, each=nyears)))
+    expect_equal(dim(test@iters), c(nyears,3,niters))
+    expect_equal(c(test@iters[,"value",]), rep(nvalue, each=nyears))
 
-
-
-#    # Same single value over years but different over multiple iterations 
-#    # Number of niters != nyears
-#    # Pass in repetitions of the target?
-#    niters <- nyears + 1
-#    nvalue <- rnorm(niters)
-#    test <- fwdControl(list(year=years, quant=quant1, value=nvalue))
-#
-#
-#    # Same single value over years but different over multiple iterations 
-#    # Number of niters != nyears
-#    # And works when number of niters == nyears
-#    # How
-#    niters <- nyears
-#    nvalue <- rnorm(niters)
-#    test <- fwdControl(list(year=years, quant=quant1, value=nvalue))
-#
 #    # Without a list? What is this?
 #    # this is dangerous - not allow this
 #    test <- fwdControl(year=years, quant=quant1, value=nvalue)
-
-
 })
 
 test_that("Biol based targets with list of Biols",{

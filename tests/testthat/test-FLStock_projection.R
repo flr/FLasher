@@ -95,39 +95,51 @@ test_that("Catch target with min limit, single iter",{
     years <- min_year:(min_year+nyears-1)
     catch_val <- rlnorm(n=nyears, mean=log(min(catch(ple4)/10)), sd=0.1)
     catch_lim <- mean(catch_val)
-    control=fwdControl(
-        rbind(data.frame(year=years, quant="catch", value=catch_val, min=NA),
-            data.frame(year=years, quant="landings", value=NA, min=catch_lim))
-    )
-    res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
-      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
-    catch_out <- c(catch(res)[,ac(years)])
-    catch_trg <- catch_val
-    catch_trg[catch_val < catch_lim] <- catch_lim
-    # Test to within tolerance of 1.5e-8
-    #expect_equal(catch_out, catch_trg)
+    # First project without limit
+    control=fwdControl(list(year=years, quant="catch", value=catch_val))
+    res <- fwd(ple4, control=control, sr=predictModel(model="geomean", params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
+    # Get resulting fbar
+    fout <- fbar(res)[,ac(years)]
+    limit_year <- sample(years,1)
+    flim <- c(fout[,ac(limit_year)] * 1.5)
+    # New projection
+    control=fwdControl(list(year=years, quant="catch", value=catch_val),
+                       list(year=limit_year, quant="fbar", min=flim))
+    res <- fwd(ple4, control=control, sr=predictModel(model="geomean", params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
+    # All years apart from lim_year met catch OK
+    catch_out <- catch(res)[,ac(years)]
+    non_lim_years <- !(years %in% limit_year)
+    expect_equal(c(catch_out[,ac(years[non_lim_years])]), catch_val[non_lim_years])
+    # lim year has f = flim
+    expect_equal(c(fbar(res)[,ac(limit_year)]), flim)
 })
 
 test_that("Catch target with max limit, single iter",{
     data(ple4)
     year_range <- range(ple4)[c("minyear","maxyear")]
-    min_year <- round(runif(1, min=year_range[1]+1, max=(year_range[1] + round((year_range[2] - year_range[1])/2))))
+    min_year <- round(runif(1, min=year_range[1], max=(year_range[1] + round((year_range[2] - year_range[1])/2))))
     min_year[1] <- min_year[1] + 1
     nyears <- round(runif(n=1,min=3,max=(round((year_range[2] - year_range[1])/2)-5)))
     years <- min_year:(min_year+nyears-1)
     catch_val <- rlnorm(n=nyears, mean=log(min(catch(ple4)/10)), sd=0.1)
     catch_lim <- mean(catch_val)
-    control=fwdControl(
-        rbind(data.frame(year=years, quant="catch", value=catch_val, max=NA),
-            data.frame(year=years, quant="landings", value=NA, max=catch_lim))
-    )
-    res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
-      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
-    catch_out <- c(catch(res)[,ac(years)])
-    catch_trg <- catch_val
-    catch_trg[catch_val > catch_lim] <- catch_lim
-    # Test to within tolerance of 1.5e-8
-    #expect_equal(catch_out, catch_trg)
+    # First project without limit
+    control=fwdControl(list(year=years, quant="catch", value=catch_val))
+    res <- fwd(ple4, control=control, sr=predictModel(model="geomean", params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
+    # Get resulting fbar
+    fout <- fbar(res)[,ac(years)]
+    limit_year <- sample(years,1)
+    flim <- c(fout[,ac(limit_year)] * 0.5)
+    # New projection
+    control=fwdControl(list(year=years, quant="catch", value=catch_val),
+                       list(year=limit_year, quant="fbar", max=flim))
+    res <- fwd(ple4, control=control, sr=predictModel(model="geomean", params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
+    # All years apart from lim_year met catch OK
+    catch_out <- catch(res)[,ac(years)]
+    non_lim_years <- !(years %in% limit_year)
+    expect_equal(c( catch_out[,ac(years[non_lim_years])]), catch_val[non_lim_years])
+    # lim year has f = flim
+    expect_equal(c(fbar(res)[,ac(limit_year)]), flim)
 })
 
 test_that("Catch relative target, single iter",{
