@@ -8,7 +8,7 @@ output:
     number_sections: yes
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{FLasher}
+  %\VignetteIndexEntry{FLasherRef}
 tags: [FLR FLasher forecast fisheries]
 abstract:
 license: European Union Public Licence (EUPL) V.1.1

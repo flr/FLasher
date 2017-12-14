@@ -2,14 +2,11 @@
 title: "Introduction to FLasher"
 author: Finlay Scott, Iago Mosqueira - European Commission Joint Research Center
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output:
-  html_document:
-    fig_caption: yes
-    number_sections: yes
-urlcolor: blue
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{FLasher}
+  \usepackage[utf8]{inputenc}
 tags: [FLR FLasher forecast fisheries]
 abstract:
 license: European Union Public Licence (EUPL) V.1.1
@@ -48,7 +45,7 @@ When an **FLStock** is being projected, the Fmultiplier in each step is found th
 If you are moving from using __FLash__ to __FLasher__ there are a few basic things to note.
 
 The first thing to note is argument names to the *fwd()* function.
-The projection is still run using the *fwd()* function. The **FLStock** argument can still be unnamed if it is passed in as the first argument. However, the **fwdControl** argument must now be named as *control*.  Additionally, the name of the *sr.residuals* argument is now simply called *residuals*
+The projection is still run using the *fwd()* function. The **FLStock** argument can still be unnamed if it is passed in as the first argument. However, the **fwdControl** argument must now be named as *control*.  Additionally, the name of the *sr.residuals* argument is now simply *residuals*
 
 ```{r, eval=FALSE}
 # Will not work
@@ -61,7 +58,7 @@ The second thing is that when making the **fwdControl** object the names of the 
 The *quantity* column is now called *quant*.
 The *val* column is now called *value*.
 
-Other differences will be added as we remember them.
+Other differences relate to the way some calculations are carried out and will be presented below.
 
 # Where to start
 
