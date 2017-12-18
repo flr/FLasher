@@ -30,7 +30,7 @@ Collate:
   fcb_draw.R
   FLasherLib.R
 Depends:
-  FLCore(>= 2.6.5),
+  FLCore(> 2.6.5),
   FLFishery(>= 0.1)
 Imports:
   methods,
