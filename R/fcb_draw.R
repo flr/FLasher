@@ -457,6 +457,6 @@ jukebox <- function(){
 }
 
 .onAttach <- function(libname, pkgname ) {
-  packageStartupMessage(paste(jukebox(),"\n",sep=""))
+  packageStartupMessage("FLasher")
 }
 
