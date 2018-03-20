@@ -140,7 +140,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   trg <- match_posns_names(trg, names(object), lapply(fishery, names))
 
   # CONVERT 'years' and 'relYear' to position indices
-  year <- relYear <- NULL # quiet R CMD check about no visible binding for gloabl variable
+  # quiet R CMD check about no visible binding for global variable
+  year <- relYear <- NULL
   mny <- min(dib[,"minyear"]) - 1
   trg <- transform(trg, year=year - mny)
   trg <- transform(trg, relYear=relYear - mny)
@@ -192,7 +193,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     fishery@desc <- character(1)
   if(length(object@desc) == 0)
     object@desc <- character(1)
-
+  
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
@@ -348,11 +349,14 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     }
     
     Bs <- FLBiols(B=B)
-
+    
     # COERCE to FLFisheries
     F <- as(object, 'FLFishery')
     name(F) <- "F"
     names(F) <- "B"
+
+    # RESCALE effort
+    # effort(F)[] <- 1
 
     Fs <- FLFisheries(F=F)
     Fs@desc <- "F"
@@ -393,30 +397,30 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     miny <- min(control@target$year)
     maxy <- max(control@target$year)
     pyrs <- as.character(seq(miny, maxy))
-
+    
     # landings
-    object@landings <- landings(Fc)
+    object@landings[,pyrs] <- landings(Fc)[,pyrs]
     # landings.n
-    object@landings.n <- Fc@landings.n
+    object@landings.n[,pyrs] <- Fc@landings.n[,pyrs]
     # landings.wt
-    object@landings.wt <- Fc@landings.wt
+    object@landings.wt[,pyrs] <- Fc@landings.wt[,pyrs]
     # discards
-    object@discards <- discards(Fc)
+    object@discards[,pyrs] <- discards(Fc)[,pyrs]
     # discards.n
-    object@discards.n <- Fc@discards.n
+    object@discards.n[,pyrs] <- Fc@discards.n[,pyrs]
     # discards.wt
-    object@discards.wt <- Fc@discards.wt
+    object@discards.wt[,pyrs] <- Fc@discards.wt[,pyrs]
     # catch
-    object@catch <- catch(Fc)
+    object@catch[,pyrs] <- catch(Fc)[,pyrs]
     # catch.n
-    object@catch.n <- catch.n(Fc)
+    object@catch.n[,pyrs] <- catch.n(Fc)[,pyrs]
     # catch.wt
-    object@catch.wt <- catch.wt(Fc)
+    object@catch.wt[,pyrs] <- catch.wt(Fc)[,pyrs]
     # harvest (F)
     object@harvest[, pyrs] <- calc_F(Fc, Bo, eff)[, pyrs]
     units(object@harvest) <- "f"
     # stock.n
-    object@stock.n <- Bo@n
+    object@stock.n[,pyrs] <- Bo@n[,pyrs]
     # stock
     object@stock <- quantSums(object@stock.n * object@stock.wt)
 

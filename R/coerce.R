@@ -18,8 +18,12 @@ setAs("FLQuants", "fwdControl",
         stop("Conversion to fwdControl only possible for an single FLQuant")
 		
 		# CONVERT
-    df <- as.data.frame(from)[,c('year', 'iter', 'data', 'qname')]
+    df <- as.data.frame(from)[,c('year', 'iter', 'data', 'qname', 'season')]
     names(df)[3:4] <- c('value', 'quant')
+
+    # DROP season if not used
+    if(length(unique(df$season)) == 1)
+      df <- df[,1:4]
 
     its <- dim(from[[1]])[6]
 
