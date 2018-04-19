@@ -105,7 +105,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     residuals[[i]] <- window(residuals[[i]], start=year_range[1], end=year_range[2])
     biolscpp[[i]][["srr_residuals"]] <- residuals[[i]]
   }
-
+  
   # CREATE FCB, if missing and possible
   if(dim(control@FCB)[1] == 1 & all(is.na(control@FCB)))
     control@FCB <- fcb2int(guessfcb(object, fishery), object, fishery)
@@ -372,17 +372,26 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # IF minAge and maxAge are NA and target is one of them, then range(min, max)
     # Fbar and F
     age_range_targets <- c("f", "fbar")
-    control@target[,"minAge"] <- ifelse(is.na(control@target[,"minAge"]) & (control@target[,"quant"] %in% age_range_targets), range(object, "minfbar"), control@target[,"minAge"])
-    control@target[,"maxAge"] <- ifelse(is.na(control@target[,"maxAge"]) & (control@target[,"quant"] %in% age_range_targets), range(object, "maxfbar"), control@target[,"maxAge"])
+    control@target[,"minAge"] <- ifelse(
+      is.na(control@target[,"minAge"]) & (control@target[,"quant"] %in% age_range_targets),
+        range(object, "minfbar"), control@target[,"minAge"])
+    control@target[,"maxAge"] <- ifelse(
+      is.na(control@target[,"maxAge"]) & (control@target[,"quant"] %in% age_range_targets),
+        range(object, "maxfbar"), control@target[,"maxAge"])
 
-    # If relative targets (relYear) then we must also have relBiol (all FLStock targets can be related directly to the biol)
+    # If relative targets (relYear) then we must also have relBiol, as
+    #   all FLStock targets can be related directly to the biol
     if (any(!is.na(control@target$relYear))){
         relYear_rows <- !is.na(control@target$relYear)
         control@target$relBiol[relYear_rows] <- 1
         # And if target needs minAge and maxAge we also need relMaxAge etc
         # Set as minAge and maxAge of control
-        control@target[,"relMinAge"] <- ifelse(is.na(control@target[,"relMinAge"]) & (control@target[,"quant"] %in% age_range_targets), control@target[,"minAge"], control@target[,"relMinAge"])
-        control@target[,"relMaxAge"] <- ifelse(is.na(control@target[,"relMaxAge"]) & (control@target[,"quant"] %in% age_range_targets), control@target[,"maxAge"], control@target[,"relMaxAge"])
+        control@target[,"relMinAge"] <- ifelse(
+          is.na(control@target[,"relMinAge"]) & (control@target[,"quant"] %in% age_range_targets),
+            control@target[,"minAge"], control@target[,"relMinAge"])
+        control@target[,"relMaxAge"] <- ifelse(
+          is.na(control@target[,"relMaxAge"]) & (control@target[,"quant"] %in% age_range_targets),
+            control@target[,"maxAge"], control@target[,"relMaxAge"])
     }
 
     # RUN
@@ -396,6 +405,12 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # PROJECTION years
     miny <- min(control@target$year)
     maxy <- max(control@target$year)
+    
+    # RETURN one more year if ssb_flash and  *.spwn == 0
+    if(control[control$year == maxy,]$quant == "ssb_flash" & sum(spwn(Bo)[,ac(maxy)]) == 0) {
+      maxy <- min(maxy + 1, dims(Bo)$maxyear)
+    }
+    
     pyrs <- as.character(seq(miny, maxy))
     
     # landings

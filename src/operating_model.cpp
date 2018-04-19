@@ -1281,9 +1281,9 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     FLQuantAD target_value(1,1,1,1,1,niters); // target values are not structured by age, time or unit - only by iter
     fwdControlTargetType target_type;
     for (long target_component=1; target_component <= no_target_components; ++target_component){ // long to get min to work...
-        auto Bno = std::min(target_component, Bnos.size()) - 1; // target_component or max no of biols in that target
-        auto Cno = std::min(target_component, Cnos.size()) - 1;
-        auto Fno = std::min(target_component, Fnos.size()) - 1;
+        auto Bno = std::min(target_component, (long int) Bnos.size()) - 1; // target_component or max no of biols in that target
+        auto Cno = std::min(target_component, (long int) Cnos.size()) - 1;
+        auto Fno = std::min(target_component, (long int) Fnos.size()) - 1;
         if(verbose){Rprintf("Fno: %i\n", Fno);}
         if(verbose){Rprintf("Cno: %i\n", Cno);}
         if(verbose){Rprintf("Bno: %i\n", Bno);}
@@ -1338,9 +1338,9 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
         auto no_target_components = std::max(rel_Fnos.size(), std::max(rel_Bnos.size(), rel_Cnos.size()));
         FLQuantAD rel_target_value(1,1,1,1,1,niters); // target values are not structured by age, time or unit - only by iter
         for (long target_component=1; target_component <= no_target_components; ++target_component){
-            auto Bno = std::min(target_component, rel_Bnos.size()) - 1; // see above
-            auto Cno = std::min(target_component, rel_Cnos.size()) - 1;
-            auto Fno = std::min(target_component, rel_Fnos.size()) - 1;
+            auto Bno = std::min(target_component, (long int) rel_Bnos.size()) - 1; // see above
+            auto Cno = std::min(target_component, (long int) rel_Cnos.size()) - 1;
+            auto Fno = std::min(target_component, (long int) rel_Fnos.size()) - 1;
             // Indices of rel target
             get_target_hat_indices(indices_min, indices_max, target_no, sim_target_no, target_component, true);
             // Evaluate the OM
@@ -1375,7 +1375,6 @@ void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_m
     unsigned int year, season, fishery_no, catch_no, biol_no, min_age, max_age;
     // Get and check FCB nos
     std::vector<unsigned int> FCB_nos;
-    const bool check_FCB = true;
     Rcpp::IntegerVector biol_nos, fishery_nos, catch_nos;
     // Get the year, season and age range, depending if we have a relative target or not
     if (relative){
@@ -1396,9 +1395,9 @@ void operatingModel::get_target_hat_indices(std::vector<unsigned int>& indices_m
         catch_nos = ctrl.get_target_list_int_col(target_no, sim_target_no, "catch");
         biol_nos = ctrl.get_target_list_int_col(target_no, sim_target_no, "biol");
     }
-    fishery_no = fishery_nos[std::min(target_component_no, fishery_nos.size()) - 1];
-    catch_no = catch_nos[std::min(target_component_no, catch_nos.size()) - 1];
-    biol_no = biol_nos[std::min(target_component_no, biol_nos.size()) - 1];
+    fishery_no = fishery_nos[std::min(target_component_no, (long int) fishery_nos.size()) - 1];
+    catch_no = catch_nos[std::min(target_component_no, (long int) catch_nos.size()) - 1];
+    biol_no = biol_nos[std::min(target_component_no, (long int) biol_nos.size()) - 1];
     // Are these NAs?
     bool year_na = Rcpp::IntegerVector::is_na(year);
     bool season_na = Rcpp::IntegerVector::is_na(season);

@@ -13,7 +13,6 @@
 #' @param max_dims A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,10,5,4,4,5).
 #' @param min_age_name The name of the first age group.
 #' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
-#' @export
 #' @return An FLQuant
 #' @examples
 #' flq <- random_FLQuant_generator()
@@ -44,7 +43,6 @@ random_FLQuant_generator <- function(fixed_dims = rep(NA,6), min_dims = rep(1,6)
 #' @param min_elements The minimum number of elements in the list. Default is 1. 
 #' @param max_elements The maximum number of elements in the list. Default is 10. 
 #' @param ... Other arguments to pass to random_FLQuant_generator(), e.g. those that fix the size of the objects.
-#' @export
 #' @return A list of FLQuant objects
 #' @examples
 #' flq_list <- random_FLQuant_list_generator()
@@ -67,7 +65,6 @@ random_FLQuant_list_generator <- function(min_elements = 1, max_elements = 10, .
 #' 
 #' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
 #' @param ... Other arguments to pass to random_FLQuant_generator().
-#' @export
 #' @return An FLBiolcpp
 #' @examples
 #' flb <- random_FLBiolcpp_generator()
@@ -104,7 +101,6 @@ random_FLBiolcpp_generator <- function(sd=100, ...){
 #' 
 #' @param sd The standard deviation of the random numbers. Passed to rnorm() Default is 100.
 #' @param ... Other arguments passed to random_FLQuant_generator().
-#' @export
 #' @return An FLCatch
 #' @examples
 #' flc <- random_FLCatch_generator()
@@ -138,7 +134,6 @@ random_FLCatch_generator <- function(sd=100, ...){
 #' @param min_catches The minimum number of catches. Default is 2. 
 #' @param max_catches The maximum number of catches. Default is 5. 
 #' @param ... Other arguments passed to random_FLQuant_generator().
-#' @export
 #' @return An FLCatches objects
 #' @examples
 #' flcs <- random_FLCatches_generator()
@@ -171,7 +166,6 @@ random_FLCatches_generator <- function(min_catches = 2, max_catches = 5, ...){
 #' @param max_catches The maximum number of FLCatches in the catches list. Default is 5. 
 #' @param sd Standard deviation of the randomly generated FLQuant slots.
 #' @param ... Other arguments passed to random_FLCatches_generator().
-#' @export
 #' @return An FLFishery object 
 #' @examples
 #' flf <- random_FLFishery_generator(fixed_dims = c(NA,10,1,1,1,1))
@@ -205,7 +199,6 @@ random_FLFishery_generator <- function(min_catches = 2, max_catches = 5, sd = 1,
 #' @param min_fisheries The minimum number of FLFisheries in the fisheries list. Default is 2. 
 #' @param max_fisheries The maximum number of FLFisheries in the fisheries list. Default is 5. 
 #' @param ... Other arguments to pass to random_FLFishery_generator().
-#' @export
 #' @return An FLFishery object 
 #' @examples
 #' flf <- random_FLFisheries_generator(fixed_dims = c(NA,10,1,1,1,1))
@@ -231,7 +224,6 @@ random_FLFisheries_generator <- function(min_fisheries = 2, max_fisheries = 5, .
 #' @param min_biols The minimum number of fwdBiols in the list. Default is 1. 
 #' @param max_biols The maximum number of fwdBiols in the list. Default is 5. 
 #' @param ... Other arguments passed to random_FLBiolcpp_generator().
-#' @export
 #' @return A list object 
 #' @examples
 #' fwdBiols <- random_fwdBiols_list_generator()
@@ -258,7 +250,6 @@ random_fwdBiols_list_generator <- function(min_biols = 1, max_biols = 5, ...){
 #' @param max_nsim_target maximum number of simultaneous targets in each timestep
 #' @param niters the number of iterations. Default number is random integer (max = 10).
 #' 
-#' @export
 #' @return A fwdControl object
 random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), nseasons = 2, max_nsim_target = 3, niters = round(runif(1,min=5,max=10))){
     quantities <- c("f","catch","landings","discards")#, "ssb", "biomass")
@@ -359,7 +350,6 @@ random_fwdControl_generator <- function(years = 1:round(runif(1, min=2,max=3)), 
 #' @param niters The number of iterations. 
 #' @param sd The standard deviation when applying random lognormal noise to some of the slots.
 #'
-#' @export
 #' @return A list of objects for sending to C++
 make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons = 1, recruitment_age = 1, niters = 1000, sd = 0.1){
     # Interrogate FCB to get number of biols, fisheries and catches
@@ -470,7 +460,6 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
 #' @param flq The FLQuant
 #' @param indices The indices (integer vector, length 6)
 #'
-#' @export
 get_FLQuant_element <- function(flq, indices){
     dim <- dim(flq)
 	element <- indices[1] +
@@ -489,7 +478,6 @@ get_FLQuant_element <- function(flq, indices){
 #' @param indices_min The min indices (integer vector, length 6)
 #' @param indices_max The max indices (integer vector, length 6)
 #'
-#' @export
 get_FLQuant_elements <- function(flq, indices_min, indices_max){
     length_out <- prod(indices_max - indices_min + 1)
     elements <- rep(NA, length_out)

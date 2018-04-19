@@ -1,5 +1,14 @@
 # FLasher 0.0.4
 
+## NEW FEATURES
+
+- plot(FLStock, fwdControl) will add to the ggplotFL plot of an FLStock a
+  coloured area of the years being projected.
+
+## BUG FIXES
+
+- fwd(FLStock) now returns one more year if quant='ssb_flash' and object has space for it.
+
 ## USER-VISIBLE CHANGES
 
 - Added disc.nyears arg to stf() to select years to use for discards ratio calculations.

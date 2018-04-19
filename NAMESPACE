@@ -12,6 +12,7 @@ importFrom("graphics",
 importFrom("stats",
   "mad")
 import(FLCore)
+import(ggplotFL)
 import(FLFishery)
 exportClasses(
 	"fwdControl")
@@ -42,6 +43,7 @@ exportMethods(
   "fwdControl",
   "iters",
   "iters<-",
+  "plot",
   "propagate",
   "show",
   "stf",

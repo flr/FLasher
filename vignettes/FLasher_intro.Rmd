@@ -6,7 +6,6 @@ output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{FLasher}
-  \usepackage[utf8]{inputenc}
 tags: [FLR FLasher forecast fisheries]
 abstract:
 license: European Union Public Licence (EUPL) V.1.1

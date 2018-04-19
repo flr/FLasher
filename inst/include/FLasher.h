@@ -11,4 +11,4 @@
 #include "FLFishery.h"
 #include "operating_model.h"
 
-
+// [[Rcpp::plugins(cpp11)]]
