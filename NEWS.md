@@ -1,3 +1,9 @@
+# FLasher 0.0.5
+
+## NEW FEATURES
+
+- effort_max argument to fwd() will limit the change in effort by year
+
 # FLasher 0.0.4
 
 ## NEW FEATURES
