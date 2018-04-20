@@ -27,6 +27,7 @@
 #' @param object An FLStock, an FLBiol or an FLBiols object.
 #' @param fishery If object is an FLBiol(s), a FLFishery(ies). Else this argument is ignored.
 #' @param control A fwdControl object.
+#' @param effort_max Maximum yearly rate of change in effort for each fishery
 #' @param residuals An FLQuant of residuals for the stock recruitment relationship (if object is an FLStock).
 #' @param sr a predictModel, FLSr or list that describes the stock recruitment relationship (if object is an FLStock).
 #' @param ... Stormbending.
@@ -44,7 +45,7 @@
 # fwd(FLBiols, FLFisheries, fwdControl) {{{
 
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
-    function(object, fishery, control,
+    function(object, fishery, control, effort_max=rep(20, length(fishery)),
       residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
   
   # CHECK length and names of biols and residuals
@@ -194,12 +195,13 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(length(object@desc) == 0)
     object@desc <- character(1)
 
-  #**************************************
-  # Make this an argument to fwd() or as a member of fwdControl
-  # effort_max must be as long as the number of fisheries
-  effort_max = rep(1e6, length(fishery))
-  #***************************************
+  # FIND effort reference year
+  fyear <- min(control$year)
   
+  # SET total effort_max from effort_max rate
+  effort_max <- unlist(lapply(fishery, function(x)
+    max(effort(x)[,fyear - 1]) * effort_max * length(control$year)))
+
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control, effort_max=effort_max,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
@@ -325,7 +327,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
-  function(object, control, sr,
+  function(object, control, sr, effort_max=20,
     residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {  
     
     # CHECK for NAs

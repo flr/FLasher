@@ -2,6 +2,8 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #'@title Call the CPP operatingModel run method
+#'@description Call the CPP operatingModel run method
+#'@name operatingModelRun
 NULL
 
 #' Used to run the projections.
@@ -10,6 +12,7 @@ NULL
 #'@param biols List of the Biol bits.
 #'@param ctrl fwdControl.
 #'@param effort_mult_initial Initial effort multiplier.
+#'@param effort_max Maximum yearly rate of change in effort for each fishery.
 #'@param indep_min Minimum independent solver value.
 #'@param indep_max Maximum independent solver value.
 #'@param nr_iters Maximum number of iterations for solver.

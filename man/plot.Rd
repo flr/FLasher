@@ -12,6 +12,10 @@
 \item{x}{FlStock object to plot}
 
 \item{y}{fwdControl from which to extract year ranges}
+
+\item{fill}{Colour to fill projection years background}
+
+\item{...}{Any other argument to be passed to [ggplotFL::plot]}
 }
 \description{
 plot method for FLStock, fwdControl

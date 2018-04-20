@@ -1,19 +1,31 @@
 useDynLib(FLasher)
-importFrom(Rcpp,
-  evalCpp)
-importFrom(stats,
-  runif, reshape)
-importFrom(utils,
-  data)
-importFrom("methods",
-  "as", "new", "callNextMethod", "is", "slot", "slot<-")
-importFrom("graphics",
-  "lines", "points", "rect", "text")
-importFrom("stats",
-  "mad")
 import(FLCore)
 import(ggplotFL)
 import(FLFishery)
+importFrom(Rcpp,
+  "evalCpp")
+importFrom(stats,
+  "runif",
+  "reshape")
+importFrom(utils,
+  "data")
+importFrom(methods,
+  "as",
+  "new",
+  "callNextMethod",
+  "is",
+  "slot",
+  "slot<-")
+importFrom(graphics,
+  "lines",
+  "points",
+  "rect",
+  "text")
+importFrom(ggplot2,
+  "geom_vline",
+  "annotate")
+importFrom(stats,
+  "mad")
 exportClasses(
 	"fwdControl")
 export(

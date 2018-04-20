@@ -15,7 +15,8 @@
 \title{Method for running fishery projections}
 \usage{
 \S4method{fwd}{FLBiols,FLFisheries,fwdControl}(object, fishery, control,
-  residuals = lapply(lapply(object, spwn), "[<-", value = 1))
+  effort_max = rep(20, length(fishery)), residuals = lapply(lapply(object,
+  spwn), "[<-", value = 1))
 
 \S4method{fwd}{FLBiols,FLFishery,fwdControl}(object, fishery, control, ...)
 
@@ -28,7 +29,7 @@
   residuals = FLQuant(1, dimnames = dimnames(m(object))))
 
 \S4method{fwd}{FLStock,missing,fwdControl}(object, control, sr,
-  residuals = FLQuant(1, dimnames = dimnames(rec(object))))
+  effort_max = 20, residuals = FLQuant(1, dimnames = dimnames(rec(object))))
 
 \S4method{fwd}{FLStock,ANY,missing}(object, fishery = missing, sr,
   residuals = FLQuant(1, dimnames = dimnames(rec(object))), ...)
@@ -39,6 +40,8 @@
 \item{fishery}{If object is an FLBiol(s), a FLFishery(ies). Else this argument is ignored.}
 
 \item{control}{A fwdControl object.}
+
+\item{effort_max}{Maximum yearly rate of change in effort for each fishery}
 
 \item{residuals}{An FLQuant of residuals for the stock recruitment relationship (if object is an FLStock).}
 

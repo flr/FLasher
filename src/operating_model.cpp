@@ -799,6 +799,7 @@ void operatingModel::project_fisheries(const int timestep){
  *
  * \param indep_min The minimum value of effort multipliers
  * \param indep_max The maximum value of effort multipliers
+ * \param effort_max The maximum total value of effort
  */
 Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::vector<double> effort_max, const double indep_min, const double indep_max, const unsigned int nr_iters){
     //auto tstartrun = std::chrono::high_resolution_clock::now();
@@ -2158,6 +2159,8 @@ FLQuantAD operatingModel::biomass_flash(const int biol_no,  const std::vector<un
 
 
 //'@title Call the CPP operatingModel run method
+//'@description Call the CPP operatingModel run method
+//'@name operatingModelRun
 //
 //' Used to run the projections.
 //' Internal use only.
@@ -2165,6 +2168,7 @@ FLQuantAD operatingModel::biomass_flash(const int biol_no,  const std::vector<un
 //'@param biols List of the Biol bits.
 //'@param ctrl fwdControl.
 //'@param effort_mult_initial Initial effort multiplier.
+//'@param effort_max Maximum yearly rate of change in effort for each fishery.
 //'@param indep_min Minimum independent solver value.
 //'@param indep_max Maximum independent solver value.
 //'@param nr_iters Maximum number of iterations for solver.

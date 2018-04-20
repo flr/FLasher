@@ -21,7 +21,6 @@ Collate:
   fwd.R
   constructors.R
   RcppExports.R
-  help.R
   test_helper_functions.R
   rcpp_plugin.R
   data.R
@@ -36,6 +35,7 @@ Depends:
 Imports:
   methods,
   Rcpp (>= 0.12.0),
+  ggplot2,
   ggplotFL
 LinkingTo: Rcpp
 SystemRequirements: C++11

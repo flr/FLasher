@@ -6,7 +6,7 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
-# plot(FLstock, fwdControl) {{{
+# plot(FLStock, fwdControl) {{{
 
 #' plot method for FLStock, fwdControl
 #'
@@ -16,6 +16,8 @@
 #' @section Generic function: plot(x, y)
 #' @param x FlStock object to plot
 #' @param y fwdControl from which to extract year ranges
+#' @param fill Colour to fill projection years background
+#' @param ... Any other argument to be passed to [ggplotFL::plot]
 #' @examples
 #' data(ple4)
 #' control <- fwdControl(year=2000:2008, quant="f", value=0.3)
@@ -28,7 +30,7 @@ setMethod("plot", signature(x="FLStock", y="fwdControl"),
     yrs <- range(y$year)
     
     # CREATE standard plot
-    p <- plot(x)
+    p <- plot(x, ...)
 
     # GET x variable
     if(as.character(p$mapping$x) == "date") {
