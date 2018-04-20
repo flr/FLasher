@@ -45,7 +45,7 @@
 # fwd(FLBiols, FLFisheries, fwdControl) {{{
 
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
-    function(object, fishery, control, effort_max=rep(20, length(fishery)),
+    function(object, fishery, control, effort_max=rep(10, length(fishery)),
       residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
   
   # CHECK length and names of biols and residuals
@@ -173,12 +173,12 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # If relYear must have relSeason and vice versa
   if (any(relYear != relSeason)){
-      stop("If you have a reYear you must also have a relSeason, and vice versa")
+    stop("If you have a reYear you must also have a relSeason, and vice versa")
   }
 
   # if relYear, must have relFishery or relBiol, or (relCatch and relFishery)
   if(any(relYear != (relFishery | relBiol | (relCatch & relFishery)))){
-            stop("If relYear set must also set a relBiol or relFishery or (FLFishery and relCatch), and vice versa")
+    stop("If relYear set must also set a relBiol or relFishery or (FLFishery and relCatch), and vice versa")
   }
 
   # REPLACE target
@@ -199,12 +199,23 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   fyear <- min(control$year)
   
   # SET total effort_max from effort_max rate
-  effort_max <- unlist(lapply(fishery, function(x)
-    max(effort(x)[,fyear - 1]) * effort_max * length(control$year)))
+  feffort_max <- unlist(lapply(rep_len(effort_max, length(fishery)),
+    function(x) x ^ length(control$year))) *
+      # DEALING ith NAs in effort
+      unlist(lapply(fishery, function(x)
+          max(ifelse(is.na(effort(x)[,fyear - 1]), 1, effort(x)[,fyear - 1]))))
 
   # CALL oMRun
-  out <- operatingModelRun(fishery, biolscpp, control, effort_max=effort_max,
+  out <- operatingModelRun(fishery, biolscpp, control, effort_max=feffort_max,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
+  
+  # WARN if effort_max reached
+  feffort <- unlist(lapply(out$om$fisheries, function(x)
+    max(effort(x)[, unique(control$year)])))
+
+  if(any((feffort / feffort_max) == 1))
+    warning("effort_max limit was reached, please check targets or increase effort_max")
+
   # UPDATE object w/ new biolscpp@n
   for(i in names(object))
     n(object[[i]]) <- out$om$biols[[i]]@n
@@ -264,7 +275,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
   control="fwdControl"),
   
   function(object, fishery, control,
-    residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {
+    residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {
 
     # COERCE to FLBiols and FLFisheries
     Bs <- FLBiols(B=object)
@@ -279,7 +290,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
       each=dim(control@target)[1])
 
     # RUN
-    out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals))
+    out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals), ...)
 
     # PARSE output
     Fc <- out$fisheries[[1]][[1]]
@@ -296,7 +307,8 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
   control="missing"),
   
-  function(object, fishery, ..., residuals=FLQuant(1, dimnames=dimnames(m(object)))) {
+  function(object, fishery, ..., effort_max=10,
+    residuals=FLQuant(1, dimnames=dimnames(m(object)))) {
     
     # PARSE ...
     args <- list(...)
@@ -314,7 +326,8 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 
     control <- as(args, "fwdControl")
 
-    out <- fwd(object, fishery, control=control, residuals=residuals)
+    out <- fwd(object, fishery, control=control, residuals=residuals,
+      effort_max=effort_max)
 
     return(out)
   }
@@ -327,7 +340,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
-  function(object, control, sr, effort_max=20,
+  function(object, control, sr, effort_max=10,
     residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {  
     
     # CHECK for NAs
@@ -403,7 +416,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     }
 
     # RUN
-    out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals))
+    out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals),
+      effort_max=effort_max)
 
     # PARSE output
     Fc <- out$fisheries[[1]][[1]]
@@ -415,7 +429,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     maxy <- max(control@target$year)
     
     # RETURN one more year if ssb_flash and  *.spwn == 0
-    if(control[control$year == maxy,]$quant == "ssb_flash" & sum(spwn(Bo)[,ac(maxy)]) == 0) {
+    if(any(control[control$year == maxy,]$quant == "ssb_flash") &
+      sum(spwn(Bo)[,ac(maxy)]) == 0) {
       maxy <- min(maxy + 1, dims(Bo)$maxyear)
     }
     
@@ -456,7 +471,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 #' @rdname fwd-methods
 #' @aliases fwd,FLStock,missing,missing-method
 setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
-  function(object, fishery=missing, sr,
+  function(object, fishery=missing, sr, effort_max=10,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
     
     # PARSE ...
@@ -491,6 +506,7 @@ setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
     # COERCE to fwdControl
     control <- as(args, "fwdControl")
     
-    return(fwd(object=object, control=control, residuals=residuals, sr=sr))
+    return(fwd(object=object, control=control, residuals=residuals, sr=sr,
+      effort_max=effort_max))
   }
 ) # }}}

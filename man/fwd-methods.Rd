@@ -15,7 +15,7 @@
 \title{Method for running fishery projections}
 \usage{
 \S4method{fwd}{FLBiols,FLFisheries,fwdControl}(object, fishery, control,
-  effort_max = rep(20, length(fishery)), residuals = lapply(lapply(object,
+  effort_max = rep(10, length(fishery)), residuals = lapply(lapply(object,
   spwn), "[<-", value = 1))
 
 \S4method{fwd}{FLBiols,FLFishery,fwdControl}(object, fishery, control, ...)
@@ -23,16 +23,17 @@
 \S4method{fwd}{FLBiol,FLFisheries,fwdControl}(object, fishery, control, ...)
 
 \S4method{fwd}{FLBiol,FLFishery,fwdControl}(object, fishery, control,
-  residuals = FLQuant(1, dimnames = dimnames(rec(object))))
+  residuals = FLQuant(1, dimnames = dimnames(rec(object))), ...)
 
 \S4method{fwd}{FLBiol,FLFishery,missing}(object, fishery, ...,
-  residuals = FLQuant(1, dimnames = dimnames(m(object))))
+  effort_max = 10, residuals = FLQuant(1, dimnames = dimnames(m(object))))
 
 \S4method{fwd}{FLStock,missing,fwdControl}(object, control, sr,
-  effort_max = 20, residuals = FLQuant(1, dimnames = dimnames(rec(object))))
+  effort_max = 10, residuals = FLQuant(1, dimnames = dimnames(rec(object))))
 
 \S4method{fwd}{FLStock,ANY,missing}(object, fishery = missing, sr,
-  residuals = FLQuant(1, dimnames = dimnames(rec(object))), ...)
+  effort_max = 10, residuals = FLQuant(1, dimnames = dimnames(rec(object))),
+  ...)
 }
 \arguments{
 \item{object}{An FLStock, an FLBiol or an FLBiols object.}

@@ -334,5 +334,14 @@ test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
 })
 
 
+test_that("Fbar target, effort_max limiting",{
+    data(ple4)
+    control=fwdControl(year=1990, quant="fbar", value=200)
+    expect_warning(res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
+      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)])))))
+    f_out <- c(fbar(res)[,"1990"])
+    # Test to within tolerance of 1.5e-8
+    expect_true(f_out < 200)
+})
 
 
