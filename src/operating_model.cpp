@@ -800,7 +800,7 @@ void operatingModel::project_fisheries(const int timestep){
  * \param indep_min The minimum value of effort multipliers
  * \param indep_max The maximum value of effort multipliers
  */
-Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters){
+Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::vector<double> effort_max, const double indep_min, const double indep_max, const unsigned int nr_iters){
     //auto tstartrun = std::chrono::high_resolution_clock::now();
     bool verbose = false;
     if(verbose){Rprintf("\nIn run()\n");}
@@ -939,6 +939,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
         }
         if(verbose){Rprintf("effort_mult: %f\n", effort_mult[0]);}
         if(verbose){Rprintf("Updating effort with solved effort mult\n");}
+        // Update effort in fisheries based on the solved effort multiplier
         for (unsigned int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
             for (unsigned int iter_count = 1; iter_count <= niter; ++ iter_count){
                 fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) = 
@@ -946,6 +947,19 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, const 
                     effort_mult[(fisheries_count - 1) * niter + iter_count - 1] / effort_mult_initial;
             }
         }
+        // *** Check if effort is > effort max. If too big, limit it. ****
+        // effort_max must be same length as number of fisheries
+        for (unsigned int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
+            for (unsigned int iter_count = 1; iter_count <= niter; ++ iter_count){
+                // Final effort, all iters
+                adouble current_effort = fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count);
+                // Compare to this
+                // Normal comparison should be OK as we have finished taping
+                if (current_effort > effort_max[fisheries_count-1]){
+                    fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) = effort_max[fisheries_count-1];
+                }
+            }}
+        // ***** end of new effort bit
         if(verbose){Rprintf("Final effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));}
         if(verbose){Rprintf("Projecting again\n");}
         project_fisheries(target_effort_timestep); 
@@ -2156,10 +2170,10 @@ FLQuantAD operatingModel::biomass_flash(const int biol_no,  const std::vector<un
 //'@param nr_iters Maximum number of iterations for solver.
 //'@rdname operatingModelRun
 // [[Rcpp::export]]
-Rcpp::List operatingModelRun(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double effort_mult_initial, const double indep_min, const double indep_max, const int nr_iters = 50){
+Rcpp::List operatingModelRun(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, std::vector<double> effort_max, const double effort_mult_initial, const double indep_min, const double indep_max, const int nr_iters = 50){
     //auto tstartrun = std::chrono::high_resolution_clock::now();
     operatingModel om(flfs, biols, ctrl);
-    Rcpp::IntegerMatrix solver_codes = om.run(effort_mult_initial, indep_min, indep_max, nr_iters);
+    Rcpp::IntegerMatrix solver_codes = om.run(effort_mult_initial, effort_max, indep_min, indep_max, nr_iters);
     //auto tendrun = std::chrono::high_resolution_clock::now();
     //std::chrono::duration<double, std::milli> run_time = tendrun - tstartrun;
     //Rprintf("OM run_time: %f \n", run_time.count());

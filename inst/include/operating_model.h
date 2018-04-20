@@ -63,7 +63,7 @@ class operatingModel {
         FLQuantAD survivors(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const; 
         void project_biols(const int timestep); // Uses effort in previous timestep
         void project_fisheries(const int timestep); // Uses effort in that timestep
-        Rcpp::IntegerMatrix run(const double effort_mult_initial, const double indep_min, const double indep_max, const unsigned int nr_iters = 50); 
+        Rcpp::IntegerMatrix run(const double effort_mult_initial, std::vector<double> effort_max, const double indep_min, const double indep_max, const unsigned int nr_iters = 50); 
 
         // Sorting out target values - these are not const as eval_om may need to change spwn() member if SRP / SSB target 
         FLQuantAD eval_om(const fwdControlTargetType target_type, const int fishery_no, const int catch_no, const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max); // const is relaxed as ssb_flash and biomass_flash may need to project again and update biol

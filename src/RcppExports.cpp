@@ -7,25 +7,26 @@
 using namespace Rcpp;
 
 // operatingModelRun
-Rcpp::List operatingModelRun(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, const double effort_mult_initial, const double indep_min, const double indep_max, const int nr_iters);
-RcppExport SEXP _FLasher_operatingModelRun(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP effort_mult_initialSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP nr_itersSEXP) {
+Rcpp::List operatingModelRun(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, std::vector<double> effort_max, const double effort_mult_initial, const double indep_min, const double indep_max, const int nr_iters);
+RcppExport SEXP _FLasher_operatingModelRun(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP effort_maxSEXP, SEXP effort_mult_initialSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP nr_itersSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< FLFisheriesAD >::type flfs(flfsSEXP);
     Rcpp::traits::input_parameter< fwdBiolsAD >::type biols(biolsSEXP);
     Rcpp::traits::input_parameter< const fwdControl >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type effort_max(effort_maxSEXP);
     Rcpp::traits::input_parameter< const double >::type effort_mult_initial(effort_mult_initialSEXP);
     Rcpp::traits::input_parameter< const double >::type indep_min(indep_minSEXP);
     Rcpp::traits::input_parameter< const double >::type indep_max(indep_maxSEXP);
     Rcpp::traits::input_parameter< const int >::type nr_iters(nr_itersSEXP);
-    rcpp_result_gen = Rcpp::wrap(operatingModelRun(flfs, biols, ctrl, effort_mult_initial, indep_min, indep_max, nr_iters));
+    rcpp_result_gen = Rcpp::wrap(operatingModelRun(flfs, biols, ctrl, effort_max, effort_mult_initial, indep_min, indep_max, nr_iters));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_FLasher_operatingModelRun", (DL_FUNC) &_FLasher_operatingModelRun, 7},
+    {"_FLasher_operatingModelRun", (DL_FUNC) &_FLasher_operatingModelRun, 8},
     {NULL, NULL, 0}
 };
 

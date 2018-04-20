@@ -193,9 +193,15 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     fishery@desc <- character(1)
   if(length(object@desc) == 0)
     object@desc <- character(1)
+
+  #**************************************
+  # Make this an argument to fwd() or as a member of fwdControl
+  # effort_max must be as long as the number of fisheries
+  effort_max = rep(1e6, length(fishery))
+  #***************************************
   
   # CALL oMRun
-  out <- operatingModelRun(fishery, biolscpp, control,
+  out <- operatingModelRun(fishery, biolscpp, control, effort_max=effort_max,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
   # UPDATE object w/ new biolscpp@n
   for(i in names(object))
