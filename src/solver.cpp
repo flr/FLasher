@@ -48,7 +48,7 @@ double euclid_norm(std::vector<double> x){
  */
 std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const unsigned int niter, const unsigned int nsim_targets, const double indep_min, const double indep_max, const unsigned int max_iters, const double tolerance){
     bool verbose = false;
-    //Rprintf("indep.size(): %i niter: %i, nsim_targets: %i\n",indep.size(), niter, nsim_targets);
+    Rprintf("indep.size(): %i niter: %i, nsim_targets: %i\n",indep.size(), niter, nsim_targets);
     if(verbose){Rprintf("\nIn Newton Raphson\n");}
     // Check that product of niter and nsim_targets = length of indep (Jacobian must be square - otherwise cannot do LU Solve)
     if (indep.size() != (niter * nsim_targets)){

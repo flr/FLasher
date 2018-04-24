@@ -340,8 +340,13 @@ test_that("Fbar target, effort_max limiting",{
     expect_warning(res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
       params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)])))))
     f_out <- c(fbar(res)[,"1990"])
-    # Test to within tolerance of 1.5e-8
     expect_true(f_out < 200)
+
+    control=fwdControl(year=1990, quant="fbar", value=5)
+    expect_warning(res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
+      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))), effort_max=5))
+    f_out <- c(fbar(res)[,"1990"])
+    expect_true(f_out < 5)
 })
 
 

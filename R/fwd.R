@@ -134,8 +134,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   for (i in fcbcols){
       trg <- do.call("$<-", list(trg, i, as.list(do.call("$", list(trg, i)))))
   }
-  #trg$biol <- as.list(trg$biol)
-  #trg$relBiol <- as.list(trg$relBiol)
 
   # Turn F, C and B names in control columns to integer positions
   trg <- match_posns_names(trg, names(object), lapply(fishery, names))
@@ -149,7 +147,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # Check relative columns make sense
   # If you have any of relFishery, relCatch or reBiol, you have must have relYear
-  relBiol <- unlist(lapply(trg$relBiol, function(x) any(!is.na(x)))) # any row with at least 1 relBiol that is not NA
+  # any row with at least 1 relBiol that is not NA
+  relBiol <- unlist(lapply(trg$relBiol, function(x) any(!is.na(x))))
   relFishery <- unlist(lapply(trg$relFishery, function(x) any(!is.na(x)))) 
   relCatch <- unlist(lapply(trg$relCatch, function(x) any(!is.na(x)))) 
   relYear <- !is.na(trg$relYear)
@@ -180,7 +179,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(any(relYear != (relFishery | relBiol | (relCatch & relFishery)))){
     stop("If relYear set must also set a relBiol or relFishery or (FLFishery and relCatch), and vice versa")
   }
-
+  
   # REPLACE target
   target(control) <- trg
 
