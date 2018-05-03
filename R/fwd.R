@@ -45,7 +45,7 @@
 # fwd(FLBiols, FLFisheries, fwdControl) {{{
 
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
-    function(object, fishery, control, effort_max=rep(10, length(fishery)),
+    function(object, fishery, control, effort_max=rep(4, length(fishery)),
       residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
   
   # CHECK length and names of biols and residuals
@@ -200,14 +200,14 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # SET total effort_max from effort_max rate
   feffort_max <- unlist(lapply(rep_len(effort_max, length(fishery)),
     function(x) x ^ length(control$year))) *
-      # DEALING ith NAs in effort
+      # DEALING with NAs in effort
       unlist(lapply(fishery, function(x)
           max(ifelse(is.na(effort(x)[,fyear - 1]), 1, effort(x)[,fyear - 1]))))
 
   # CALL oMRun
-  out <- operatingModelRun(fishery, biolscpp, control, effort_max=feffort_max,
+  out <- operatingModelRun(fishery, biolscpp, control, effort_max=effort_max,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
-  
+
   # WARN if effort_max reached
   feffort <- unlist(lapply(out$om$fisheries, function(x)
     max(effort(x)[, unique(control$year)])))
@@ -339,8 +339,8 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
-  function(object, control, sr, effort_max=10,
-    residuals=FLQuant(1, dimnames=dimnames(rec(object)))) {  
+  function(object, control, sr, effort_max=4,
+    residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
     
     # CHECK for NAs
     # if(!verify(object, ruleset(object, "anyna"))) 
@@ -416,7 +416,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 
     # RUN
     out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals),
-      effort_max=effort_max)
+      effort_max=effort_max, ...)
 
     # PARSE output
     Fc <- out$fisheries[[1]][[1]]

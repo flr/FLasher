@@ -4,8 +4,8 @@ Description: Projection of future population and fishery dynamics is carried out
     for a given set of management targets. A system of equations is solved, using
     Automatic Differentation (AD), for the levels of effort by fishery/fleet that
     will result in the required abundances, catches or fishing mortalities.
-Version: 0.0.4.9002
-Date: 2018-04-24
+Version: 0.0.4.9003
+Date: 2018-05-03
 Authors@R: c(
   person(given = 'Finlay', family = 'Scott', role = c('aut'),
     email = 'finlay.scott@ec.europa.eu'),
