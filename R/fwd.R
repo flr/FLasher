@@ -45,7 +45,7 @@
 # fwd(FLBiols, FLFisheries, fwdControl) {{{
 
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
-    function(object, fishery, control, effort_max=rep(4, length(fishery)),
+    function(object, fishery, control, effort_max=rep(10, length(fishery)),
       residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
   
   # CHECK length and names of biols and residuals
@@ -197,23 +197,12 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # FIND effort reference year
   fyear <- min(control$year)
   
-  # SET total effort_max from effort_max rate
-  feffort_max <- unlist(lapply(rep_len(effort_max, length(fishery)),
-    function(x) x ^ length(control$year))) *
-      # DEALING with NAs in effort
-      unlist(lapply(fishery, function(x)
-          max(ifelse(is.na(effort(x)[,fyear - 1]), 1, effort(x)[,fyear - 1]))))
+  effort_max <- unlist(lapply(fishery,
+    function(x) quantile(c(effort(x)), 0.85))) * effort_max
 
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control, effort_max=effort_max,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
-
-  # WARN if effort_max reached
-  feffort <- unlist(lapply(out$om$fisheries, function(x)
-    max(effort(x)[, unique(control$year)])))
-
-  if(any((feffort / feffort_max) == 1))
-    warning("effort_max limit was reached, please check targets or increase effort_max")
 
   # UPDATE object w/ new biolscpp@n
   for(i in names(object))
@@ -347,9 +336,11 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     #   stop("object cannot contain any NA value, please check and correct.")
 
     # DEAL with iters
-    its <- dims(object)$iter
-    if(its > 1)
+    its <- max(dims(object)$iter, dim(iters(control))[3])
+    if(its > 1) {
+      # TODO propagate only necessary slots (stock.n, catch.n, harvest)
       object <- propagate(object, its)
+    }
 
     # COERCE to FLBiols
     B <- as(object, "FLBiol")
@@ -359,6 +350,12 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
       rec(B) <- sr
     } else if(is(sr, "FLSR")){
       rec(B) <- predictModel(model=model(sr), params=params(sr))
+      if(missing(residuals)) {
+        # CHECK logerror
+        if(sr@logerror)
+          # TODO CHECK dims
+          residuals <- exp(residuals(sr))
+      }
     } else if(is(sr, "list")) {
       if(is(sr$model, "character")) {
         B@rec@model <- do.call(sr$model, list())[["model"]]
@@ -372,6 +369,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     
     # COERCE to FLFisheries
     F <- as(object, 'FLFishery')
+    effort(F)[] <- 1
     name(F) <- "F"
     names(F) <- "B"
 
