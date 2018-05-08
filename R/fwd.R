@@ -197,8 +197,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # FIND effort reference year
   fyear <- min(control$year)
   
+  # SET absolute effort_max from q85 * effort_max
   effort_max <- unlist(lapply(fishery,
-    function(x) quantile(c(effort(x)), 0.85))) * effort_max
+    function(x) quantile(c(effort(x)), 0.85, na.rm=TRUE))) * effort_max
 
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control, effort_max=effort_max,
