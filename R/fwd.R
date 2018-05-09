@@ -194,15 +194,10 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(length(object@desc) == 0)
     object@desc <- character(1)
 
-  # FIND effort reference year
-  fyear <- min(control$year)
-  
-  # SET total effort_max from effort_max rate
-  feffort_max <- unlist(lapply(rep_len(effort_max, length(fishery)),
-    function(x) x ^ length(control$year))) *
-      # DEALING ith NAs in effort
-      unlist(lapply(fishery, function(x)
-          max(ifelse(is.na(effort(x)[,fyear - 1]), 1, effort(x)[,fyear - 1]))))
+  # SET absolute effort_max from q85 * effort_max
+  feffort_max <- unlist(lapply(fishery,
+    function(x) quantile(c(effort(x)), 0.85, na.rm=TRUE))) * effort_max
+  feffort_max[is.na(feffort_max)] <- effort_max
 
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control, effort_max=feffort_max,
@@ -347,9 +342,11 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     #   stop("object cannot contain any NA value, please check and correct.")
 
     # DEAL with iters
-    its <- dims(object)$iter
-    if(its > 1)
+    its <- max(dims(object)$iter, dim(iters(control))[3])
+    if(its > 1) {
+      # TODO propagate only necessary slots (stock.n, catch.n, harvest)
       object <- propagate(object, its)
+    }
 
     # COERCE to FLBiols
     B <- as(object, "FLBiol")
