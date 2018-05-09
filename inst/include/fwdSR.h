@@ -70,6 +70,9 @@ template <typename T>
 T ricker(const T srp, const std::vector<double> params);
 
 template <typename T>
+T cushing(const T srp, const std::vector<double> params);
+
+template <typename T>
 T bevholt(const T srp, const std::vector<double> params);
 
 template <typename T>
