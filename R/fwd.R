@@ -45,7 +45,7 @@
 # fwd(FLBiols, FLFisheries, fwdControl) {{{
 
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
-    function(object, fishery, control, effort_max=rep(10, length(fishery)),
+    function(object, fishery, control, effort_max=rep(1e5, length(fishery)),
       residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
   
   # CHECK length and names of biols and residuals
@@ -194,15 +194,13 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(length(object@desc) == 0)
     object@desc <- character(1)
 
-  # FIND effort reference year
-  fyear <- min(control$year)
-  
   # SET absolute effort_max from q85 * effort_max
-  effort_max <- unlist(lapply(fishery,
+  feffort_max <- unlist(lapply(fishery,
     function(x) quantile(c(effort(x)), 0.85, na.rm=TRUE))) * effort_max
+  feffort_max[is.na(feffort_max)] <- effort_max
 
   # CALL oMRun
-  out <- operatingModelRun(fishery, biolscpp, control, effort_max=effort_max,
+  out <- operatingModelRun(fishery, biolscpp, control, effort_max=feffort_max,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
 
   # UPDATE object w/ new biolscpp@n
@@ -212,6 +210,11 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # RETURN list(object, fishery, control)
   out <- list(biols=object, fisheries=out$om$fisheries, control=control,
     flag=out$solver_codes)
+
+  # WARNING for effort_max
+  if(any(unlist(
+  lapply(out$fisheries, function(x) max(effort(x), na.rm=TRUE))) == feffort_max))
+    warning("Maximum effort limit reached in one or more fisheries")
 
   return(out)
   }
@@ -329,7 +332,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
-  function(object, control, sr, effort_max=4,
+  function(object, control, sr, effort_max=200,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
     
     # CHECK for NAs
@@ -351,12 +354,12 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
       rec(B) <- sr
     } else if(is(sr, "FLSR")){
       rec(B) <- predictModel(model=model(sr), params=params(sr))
-      if(missing(residuals)) {
+    #  if(missing(residuals)) {
         # CHECK logerror
-        if(sr@logerror)
+    #    if(sr@logerror)
           # TODO CHECK dims
-          residuals <- exp(residuals(sr))
-      }
+    #      residuals <- exp(residuals(sr))
+    #  }
     } else if(is(sr, "list")) {
       if(is(sr$model, "character")) {
         B@rec@model <- do.call(sr$model, list())[["model"]]
