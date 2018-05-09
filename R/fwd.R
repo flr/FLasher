@@ -356,6 +356,12 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
       rec(B) <- sr
     } else if(is(sr, "FLSR")){
       rec(B) <- predictModel(model=model(sr), params=params(sr))
+      if(missing(residuals)) {
+        # CHECK logerror
+        if(sr@logerror)
+          # TODO CHECK dims
+          residuals <- exp(residuals(sr))
+      }
     } else if(is(sr, "list")) {
       if(is(sr$model, "character")) {
         B@rec@model <- do.call(sr$model, list())[["model"]]
@@ -369,6 +375,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     
     # COERCE to FLFisheries
     F <- as(object, 'FLFishery')
+    effort(F)[] <- 1
     name(F) <- "F"
     names(F) <- "B"
 
