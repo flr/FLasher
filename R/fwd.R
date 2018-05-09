@@ -476,6 +476,9 @@ setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
     # PARSE ...
     args <- list(...)
 
+    if ("FLBRP"%in%is(sr))
+      sr=list(params=params(sr),model=SRModelName(sr))
+    
     # ERROR for ctrl
     if("ctrl" %in% names(args))
       stop("Did you mean to give me a fwdControl object? Use 'control=' instead.")
