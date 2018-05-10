@@ -18,6 +18,8 @@ void fwdSR_base<T>::init_model_map(){
     // Fill up the map
     map_model_name_to_function["ricker"] = &ricker;
     map_model_name_to_function["Ricker"] = &ricker;
+    map_model_name_to_function["cushing"] = &cushing;
+    map_model_name_to_function["Cushing"] = &cushing;
     map_model_name_to_function["bevholt"] = &bevholt;
     map_model_name_to_function["Bevholt"] = &bevholt;
     map_model_name_to_function["constant"] = &constant;
@@ -361,6 +363,14 @@ T ricker(const T srp, const std::vector<double> params){
 }
 
 template <typename T>
+T cushing(const T srp, const std::vector<double> params){
+  T rec;
+  // rec = a * srp ^ b
+  rec = params[0] * exp(log(srp*params[1]));
+  return rec;
+}
+
+template <typename T>
 T bevholt(const T srp, const std::vector<double> params){
     T rec;
     // rec = a * srp / (b + srp)
@@ -404,6 +414,8 @@ T segreg(const T srp, const std::vector<double> params){
 // Instantiate functions
 template double ricker(const double ssb, const std::vector<double> params);
 template adouble ricker(const adouble ssb, const std::vector<double> params);
+template double cushing(const double ssb, const std::vector<double> params);
+template adouble cushing(const adouble ssb, const std::vector<double> params);
 template double bevholt(const double ssb, const std::vector<double> params);
 template adouble bevholt(const adouble ssb, const std::vector<double> params);
 template double constant(const double srp, const std::vector<double> params);
