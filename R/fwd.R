@@ -360,6 +360,9 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
           # TODO CHECK dims
     #      residuals <- exp(residuals(sr))
     #  }
+    } else if(is(sr, "FLBRP")) {
+      B@rec@model <- model(sr)
+      B@rec@params <- params(sr)
     } else if(is(sr, "list")) {
       if(is(sr$model, "character")) {
         B@rec@model <- do.call(sr$model, list())[["model"]]
