@@ -332,7 +332,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
-  function(object, control, sr, effort_max=200,
+  function(object, control, sr, effort_max=4,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
     
     # CHECK for NAs
@@ -373,12 +373,12 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     
     # COERCE to FLFisheries
     F <- as(object, 'FLFishery')
-    effort(F)[] <- 1
     name(F) <- "F"
     names(F) <- "B"
 
     # RESCALE effort
     # effort(F)[] <- 1
+    # effort(F) <- effort(F) %/% effort(F)[, ac(control$year[1])]
 
     Fs <- FLFisheries(F=F)
     Fs@desc <- "F"

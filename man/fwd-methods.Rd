@@ -29,8 +29,8 @@
   effort_max = 10, residuals = FLQuant(1, dimnames = dimnames(m(object))))
 
 \S4method{fwd}{FLStock,missing,fwdControl}(object, control, sr,
-  effort_max = 200, residuals = FLQuant(1, dimnames =
-  dimnames(rec(object))), ...)
+  effort_max = 4, residuals = FLQuant(1, dimnames = dimnames(rec(object))),
+  ...)
 
 \S4method{fwd}{FLStock,ANY,missing}(object, fishery = missing, sr,
   effort_max = 10, residuals = FLQuant(1, dimnames = dimnames(rec(object))),
