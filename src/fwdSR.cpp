@@ -29,7 +29,9 @@ void fwdSR_base<T>::init_model_map(){
     map_model_name_to_function["bevholtSS3"] = &bevholtSS3;
     map_model_name_to_function["bevholtss3"] = &bevholtSS3;
     map_model_name_to_function["BevholtSS3"] = &bevholtSS3;
-    map_model_name_to_function["segreg"] = &segreg;
+    map_model_name_to_function["cushing"] = &cushing;
+    map_model_name_to_function["Cushing"] = &cushing;
+    map_model_name_to_function["Segreg"] = &segreg;
     map_model_name_to_function["Segreg"] = &segreg;
     return;
 }
@@ -389,6 +391,14 @@ T bevholtSS3(const T srp, const std::vector<double> params){
 }
 
 template <typename T>
+T cushing(const T srp, const std::vector<double> params){
+  T rec;
+  // rec = a * srp ^ b
+  rec = params[0] * exp(log(srp*params[1]));
+  return rec;
+}
+
+template <typename T>
 T segreg(const T srp, const std::vector<double> params){
     T rec;
     // rec = if(ssb < b) a * ssb else a * b
@@ -410,5 +420,7 @@ template double constant(const double srp, const std::vector<double> params);
 template adouble constant(const adouble srp, const std::vector<double> params);
 template double bevholtSS3(const double ssb, const std::vector<double> params);
 template adouble bevholtSS3(const adouble ssb, const std::vector<double> params);
+template double cushing(const double ssb, const std::vector<double> params);
+template adouble cushing(const adouble ssb, const std::vector<double> params);
 template double segreg(const double ssb, const std::vector<double> params);
 template adouble segreg(const adouble ssb, const std::vector<double> params);

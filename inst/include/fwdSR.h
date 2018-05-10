@@ -79,4 +79,7 @@ template <typename T>
 T bevholtSS3(const T srp, const std::vector<double> params);
 
 template <typename T>
+T cushing(const T srp, const std::vector<double> params);
+
+template <typename T>
 T segreg(const T srp, const std::vector<double> params);
