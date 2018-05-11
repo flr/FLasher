@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Access and replace the target — target • FLasher</title>
+<title>summary method for fwdControl — summary • FLasher</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,12 +28,9 @@
 
 
 
-<meta property="og:title" content="Access and replace the target — target" />
+<meta property="og:title" content="summary method for fwdControl — summary" />
 
-<meta property="og:description" content="Access and replace the target slot of a fwdControl object
-Replace the target slot of a fwdControl object
-Access target slot of fwdControl
-Set target slot of fwdControl" />
+<meta property="og:description" content="summary method for fwdControl" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -110,54 +107,55 @@ Set target slot of fwdControl" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Access and replace the target</h1>
+    <h1>summary method for fwdControl</h1>
     
-    <div class="hidden name"><code>target.Rd</code></div>
+    <div class="hidden name"><code>summary.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Access and replace the target slot of a fwdControl object</p>
-<p>Replace the target slot of a fwdControl object</p>
-<p>Access target slot of fwdControl</p>
-<p>Set target slot of fwdControl</p>
+    <p>summary method for fwdControl</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>target</span>(<span class='no'>object</span>, <span class='no'>...</span>)
-
-<span class='fu'>target</span>(<span class='no'>object</span>, <span class='no'>...</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span>
-
-<span class='co'># S4 method for fwdControl</span>
-<span class='fu'>target</span>(<span class='no'>object</span>)
-
-<span class='co'># S4 method for fwdControl,data.frame</span>
-<span class='fu'>target</span>(<span class='no'>object</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span></pre>
+    <pre class="usage"><span class='co'># S4 method for fwdControl</span>
+<span class='fu'>summary</span>(<span class='no'>object</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p>The fwdControl object</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Other things.</p></td>
-    </tr>
-    <tr>
-      <th>value</th>
-      <td><p>The target object to replace the existing one with.</p></td>
+      <td><p>fwdControl object to show summary of</p></td>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="generic-function"><a class="anchor" href="#generic-function"></a>Generic function</h2>
 
+    <p>summary(object)</p>
+    
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='no'>control</span> <span class='kw'>&lt;-</span> <span class='fu'>fwdControl</span>(<span class='fu'>data.frame</span>(<span class='kw'>year</span><span class='kw'>=</span><span class='fu'>rep</span>(<span class='fl'>2010</span>:<span class='fl'>2015</span>, <span class='kw'>each</span><span class='kw'>=</span><span class='fl'>2</span>),
+  <span class='kw'>quant</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='st'>"f"</span>, <span class='st'>"catch"</span>), <span class='kw'>min</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fu'>rbind</span>(<span class='fl'>NA</span>, <span class='fl'>20000</span>)), <span class='kw'>max</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fu'>rbind</span>(<span class='fl'>NA</span>, <span class='fl'>30000</span>)),
+  <span class='kw'>value</span><span class='kw'>=</span><span class='fu'>c</span>(<span class='fu'>rbind</span>(<span class='fu'>seq</span>(<span class='fl'>1</span>, <span class='fl'>1.3</span>, <span class='kw'>length</span><span class='kw'>=</span><span class='fl'>6</span>), <span class='fl'>NA</span>))))
+
+<span class='fu'>summary</span>(<span class='no'>control</span>)</div><div class='output co'>#&gt; An object of class 'fwdControl' with:
+#&gt; 
+#&gt;    quant  2010  2011  2012  2013  2014  2015
+#&gt;        f     1  1.06  1.12  1.18  1.24   1.3
+#&gt;  catch &gt; 20000 20000 20000 20000 20000 20000
+#&gt;  catch &lt; 30000 30000 30000 30000 30000 30000</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-                </ul>
+      
+      <li><a href="#generic-function">Generic function</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

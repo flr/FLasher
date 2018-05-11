@@ -8,14 +8,17 @@
 <title>FLasher reference manual • FLasher</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><!-- mathjax --><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="FLasher reference manual">
+<meta property="og:description" content="">
+<meta name="twitter:card" content="summary">
+<!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body>
-    <div class="container template-vignette">
+    <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -24,18 +27,40 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">FLasher</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">FLasher</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.4.9006</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
+  <a href="../index.html">
+    <span class="fa fa-home fa-lg"></span>
+     
+  </a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
 <li>
-  <a href="../articles/index.html">Articles</a>
+      <a href="../articles/FLasher_intro.html">Introduction to FLasher</a>
+    </li>
+    <li>
+      <a href="../articles/FLasher_reference.html">FLasher reference manual</a>
+    </li>
+  </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right"></ul>
@@ -48,23 +73,26 @@
 
       
       </header><div class="row">
-  <div class="col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>FLasher reference manual</h1>
                         <h4 class="author">Finlay Scott, Iago Mosqueira - European Commission Joint Research Center</h4>
             
-            <h4 class="date">14 September, 2017</h4>
-          </div>
+            <h4 class="date">11 May, 2018</h4>
+      
+      
+      <div class="hidden name"><code>FLasher_reference.Rmd</code></div>
+
+    </div>
 
     
     
-<div class="contents">
 <!--
 
 -->
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
-<html><body><a href="#introduction" class="anchor"> </a></body></html>Introduction</h1>
+<a href="#introduction" class="anchor"></a>Introduction</h1>
 <p>This document focuses on the details of the projection methods of the <strong>FLasher</strong> package. These are implemented in C++ using <strong>RCpp</strong> amd <strong>CppAD</strong>. It is not intended to teach people how to use <strong>FLasher</strong> but to act as a reference for the package and describe how projections using <strong>Flasher</strong> are carried out. Particular attention is paid to the <strong>operatingModel</strong> class, and how the components of an <strong>operatingModel</strong> object (<strong>FLFisheries</strong>, <strong>fwdBiols</strong> etc.) interact.</p>
 <!--
 Details on how the basic C++ classes are implemented and used can be found in the *FLCpp* vignette.
@@ -86,17 +114,17 @@ MOVE DOWN TO WHERE FIRST USED
 </div>
 <div id="the-operatingmodel-class" class="section level1">
 <h1 class="hasAnchor">
-<html><body><a href="#the-operatingmodel-class" class="anchor"> </a></body></html>The <strong>operatingModel</strong> class</h1>
+<a href="#the-operatingmodel-class" class="anchor"></a>The <strong>operatingModel</strong> class</h1>
 <p>In <strong>FLasher</strong>, an operating model is made up of the fisheries that perform fishing activity and the biological stocks. Operating models are represented by the <strong>operatingModel</strong> class which make up the heart of the projection.</p>
 <p>ADD DIAGRAM</p>
 <div id="the-biological-stocks" class="section level2">
 <h2 class="hasAnchor">
-<html><body><a href="#the-biological-stocks" class="anchor"> </a></body></html>The biological stocks</h2>
+<a href="#the-biological-stocks" class="anchor"></a>The biological stocks</h2>
 <p>The biological stocks (Biols) in the operating model are stored as an object of class <strong>fwdBiols</strong>. This is a list of the Biols, each stored as an <strong>fwdBiol</strong> object (analagous to the <strong>FLBiol</strong> class in R). Each <strong>fwdBiol</strong> contains the abundance and life history information of the biological stock through time, such as mean weights at age, maturity etc. The stock recruitment relationship is also stored in the <strong>fwdBiol</strong> here, as an object of class <strong>fwdSR</strong>.</p>
 </div>
 <div id="the-fisheries" class="section level2">
 <h2 class="hasAnchor">
-<html><body><a href="#the-fisheries" class="anchor"> </a></body></html>The fisheries</h2>
+<a href="#the-fisheries" class="anchor"></a>The fisheries</h2>
 <p>The Fisheries are represented by an object of class <strong>FLFisheries</strong>. This is a list of <strong>FLFishery</strong> objects, each of which represents an individual Fishery. An <strong>FLFishery</strong> is a fleet (set of vessels) that has the same metier or gear type, e.g. beam trawlers or long lines. A Fishery is made up of a series of Catches, each one is represented by an object of class <strong>FLCatch</strong>. Each <strong>FLCatch</strong> object represents the catch from a fish stock (usually from a single Biol - mixing catches from more than one Biol is a special case where catches from multiple biological stocks are represented as catches from a single Biol). A Fishery may have only a single Catch, i.e. it only catches from one Biol. Multiple Catches inside a Fishery cannot catch from the same Biol, i.e. a Fishery can only catch once from a biological stock.</p>
 <p>The <strong>FLCatch</strong> object contains the landing and discard numbers and weights along with the selectivity and catchability parameters. They interact with the biological stocks by imposing fishing mortality. Fishing effort is defined at the level of the Fishery so that all Catches inside the same Fishery have the same effort.</p>
 <p>For example, if a fishery catches plaice and sole, there would be two <strong>FLCatch</strong> objects: one for plaice and one for sole. Each one would have different landing and discards weights, selectivity and catchability. However, they have the effort as fishing effort is defined at the fishery level not the catch level.</p>
@@ -106,12 +134,12 @@ Costs are at vessel level (fixed costs) but what about vessels that use multiple
 </div>
 <div id="the-projection-control" class="section level2">
 <h2 class="hasAnchor">
-<html><body><a href="#the-projection-control" class="anchor"> </a></body></html>The projection control</h2>
+<a href="#the-projection-control" class="anchor"></a>The projection control</h2>
 <p>The third main member of the <strong>operatingModel</strong> class is an <strong>fwdControl</strong> object. This specifies that timesteps, target types and values of the projection. It also describes how the Fisheries, Catches and Biols interact with each other through the <strong>FCB</strong> matrix.</p>
 </div>
 <div id="examples-of-operating-models" class="section level2">
 <h2 class="hasAnchor">
-<html><body><a href="#examples-of-operating-models" class="anchor"> </a></body></html>Examples of operating models</h2>
+<a href="#examples-of-operating-models" class="anchor"></a>Examples of operating models</h2>
 <p>The simplest operating model is one which has a single fishery with a single catch fishing a single biological stock.</p>
 <p>DIAGRAM</p>
 <p>A mixed fishery is one with technical interactions (i.e. a stock may be caught by more than fishery or type of gear). Simple example: two fisheries on one stock.</p>
@@ -120,14 +148,14 @@ Costs are at vessel level (fixed costs) but what about vessels that use multiple
 </div>
 <div id="the-projection-process" class="section level1">
 <h1 class="hasAnchor">
-<html><body><a href="#the-projection-process" class="anchor"> </a></body></html>The projection process</h1>
+<a href="#the-projection-process" class="anchor"></a>The projection process</h1>
 <p>A projection can either be annual or seasonal. The number of seasons in a year is up to the user. Each timestep of a projection, whether season or year, is handled independently.</p>
 <p>The projection is driven by the effort in the <strong>FLFisheries</strong> at that timestep (i.e. the effort in each <strong>FLFishery</strong> in the operating model). The projection is split into two stages: projecting the fisheries in a timestep (to calculate the catches in that timestep based on the effort and biological abundance in that timestep) and projecting the biology (to calculate the biological abundance in the next timestep based on the fishing mortality in the previous timestep).</p>
 <p>In both of these steps fishing mortality is the key metric that drives removals resulting in the catches and changes in the biological stock abundance.</p>
 </div>
 <div id="calculating-the-fishing-mortality" class="section level1">
 <h1 class="hasAnchor">
-<html><body><a href="#calculating-the-fishing-mortality" class="anchor"> </a></body></html>Calculating the fishing mortality</h1>
+<a href="#calculating-the-fishing-mortality" class="anchor"></a>Calculating the fishing mortality</h1>
 <p>Fishing effort drives the catches and biological stock abundance through fishing mortality. As such, it is a key metric of the model.</p>
 <p>Fishing mortality (F) is an age-structured metric that represents the impact of fishing on the stock. Inside <strong>FLasher</strong> it is the result of the interaction between an <strong>FLCatch</strong> and an <strong>fwdBiol</strong> object.</p>
 <p>The fishing mortality imposed on a Biol from a single Catch is known as the partial fishing mortality. As mentioned above, a Biol can be fished by multiple Catches.</p>
@@ -177,7 +205,7 @@ Internally, this single value is recycled over all dimensions as necessary.
 </div>
 <div id="projecting-the-fisheries" class="section level1">
 <h1 class="hasAnchor">
-<html><body><a href="#projecting-the-fisheries" class="anchor"> </a></body></html>Projecting the fisheries</h1>
+<a href="#projecting-the-fisheries" class="anchor"></a>Projecting the fisheries</h1>
 <p>In each time step of the projection, the landings and discards numbers are updated in the <strong>FLCatch</strong>es of the <strong>FLFishery</strong> objects. In <strong>FLasher</strong>, the projection is carried out using the <strong>operatingModel</strong> <em>project_fisheries()</em> method. Catch numbers at age in each time step are calculated for each of the <strong>FLCatch</strong> objects inside each of the <strong>FLFishery</strong> using the Baranov equation (REF).</p>
 <p>A biological stock may be fished by more than one <strong>FLCatch</strong>. The catch of one <strong>FLCatch</strong> from a biological stock is known as the partial catch. The total catch of a biological stock equals the sum of the partial catches from that stock.</p>
 <p><span class="math inline">\(C_{a,b} = pC_{a,b,c1} + pC_{a,b,c2} + ...\)</span></p>
@@ -197,13 +225,13 @@ Internally, this single value is recycled over all dimensions as necessary.
 <p>There is a special case where a single Catch may catch from more than one Biol (for example, where two biological stocks are considered to be a single stock by the management regime). In this special case the sum of the landings and discard numbers from each stock are in the <strong>FLCatch</strong>.</p>
 <div id="differences-with-flash-concerning-catch-weights-at-age" class="section level2">
 <h2 class="hasAnchor">
-<html><body><a href="#differences-with-flash-concerning-catch-weights-at-age" class="anchor"> </a></body></html>Differences with FLash concerning catch weights at age</h2>
+<a href="#differences-with-flash-concerning-catch-weights-at-age" class="anchor"></a>Differences with FLash concerning catch weights at age</h2>
 <p>There is a difference between <strong>FLasher</strong> and <strong>FLash</strong> concerning the calculation of total catch biomass. In <strong>FLasher</strong> and <strong>FLash</strong> catch numbers at age are the sum of the landing and discards numbers at age. In <strong>FLash</strong> the mean catch weights at age are fixed in advance in using the <em>catch.wt</em> slot. In <strong>FLasher</strong> the mean catch weights at age are calculated using the landings and discards numbers and weights at age. This means the that mean catch weights at age in <strong>FLasher</strong> are not fixed in advance but will change according to the projected landings and discards numbers. The result is that the mean catch weights at age will differ between <strong>FLash</strong> and <strong>FLasher</strong>. This difference is most noticeable when a total catch is set as a target. Both <strong>FLash</strong> and <strong>FLasher</strong> will hit the same total catch weight target but because the mean catch weights at age are different, the catch numbers at age will be different.</p>
 </div>
 </div>
 <div id="projecting-the-biology" class="section level1">
 <h1 class="hasAnchor">
-<html><body><a href="#projecting-the-biology" class="anchor"> </a></body></html>Projecting the biology</h1>
+<a href="#projecting-the-biology" class="anchor"></a>Projecting the biology</h1>
 <p>The biological stocks are projected one timestep at a time by the <em>project_biols()</em> method. The method calculates the survivors from the previous timestep and places them in the current timestep. Recruitment in the current timestep is also calculated.</p>
 <p>The Biols are processed one at a time (the order in which they appear in the <code>biols</code> member). The Biols are independent of each other and there is no interaction between them.</p>
 <p>The projection sequence is:</p>
@@ -215,7 +243,7 @@ Internally, this single value is recycled over all dimensions as necessary.
 </ul>
 <div id="calculating-survivors" class="section level2">
 <h2 class="hasAnchor">
-<html><body><a href="#calculating-survivors" class="anchor"> </a></body></html>Calculating survivors</h2>
+<a href="#calculating-survivors" class="anchor"></a>Calculating survivors</h2>
 <p>The abundances in a <strong>fwdBiol</strong> class represent the abundances at the start of a timestep, i.e. before any fishing or natural mortality occurs. The survivors at the end of a timestep, <span class="math inline">\(S\)</span>, at age, <span class="math inline">\(a\)</span>, at the end of a timestep (given by year, <span class="math inline">\(y\)</span> and season, <span class="math inline">\(s\)</span>) are calculated as:</p>
 <p><span class="math inline">\(S_{a,y,s} = N_{a,y,s} exp(-Z_{a,y,s})\)</span></p>
 <p>where <span class="math inline">\(N\)</span> is the population abundance at the start of the timestep.</p>
@@ -226,7 +254,7 @@ Internally, this single value is recycled over all dimensions as necessary.
 </div>
 <div id="recruitment" class="section level1">
 <h1 class="hasAnchor">
-<html><body><a href="#recruitment" class="anchor"> </a></body></html>Recruitment</h1>
+<a href="#recruitment" class="anchor"></a>Recruitment</h1>
 <p>Recruitment is one of the most important biological processes as it drives the dynamics and productivity of the stock. It is also a source of great uncertainty and can be strongly affected by external drivers such as environmental conditions.</p>
 <p>In <strong>Flasher</strong>, calculating recruitment has two main stages:</p>
 <ol style="list-style-type: decimal">
@@ -241,7 +269,7 @@ Internally, this single value is recycled over all dimensions as necessary.
 <p>The residuals are stored as an <strong>FLQuant</strong>. Internally, this must have the same time dimensions as the model. However, the R method <em>fwd()</em> accepts residuals just for the projection years. The first dimension of the residuals is length 1.</p>
 <div id="calculating-srp" class="section level2">
 <h2 class="hasAnchor">
-<html><body><a href="#calculating-srp" class="anchor"> </a></body></html>Calculating SRP</h2>
+<a href="#calculating-srp" class="anchor"></a>Calculating SRP</h2>
 <p>The SRP represents the total recruitment potential of the Biol at the time of spawning.</p>
 <p>As mentioned above, a biological stock may have multiple units from multiple recruitment events in a year. Although the SRP of each unit can be calculated individually, the SRP that is used to calculate recruitment is the total SRP of all units. The total SRP of a <em>fwdBiol</em> in a timestep is given by the sum of the SRPs of each unit.</p>
 <p><span class="math inline">\(SRP_{y,s} = \sum_{u=1}^{U}SRP_{y,s,u}\)</span></p>
@@ -253,7 +281,7 @@ Internally, this single value is recycled over all dimensions as necessary.
 </div>
 <div id="the-timing-of-spawning" class="section level2">
 <h2 class="hasAnchor">
-<html><body><a href="#the-timing-of-spawning" class="anchor"> </a></body></html>The timing of spawning</h2>
+<a href="#the-timing-of-spawning" class="anchor"></a>The timing of spawning</h2>
 <p>SRP is the spawning potential of the Biol <em>at the time of spawning</em>. This means that timing is very important in the calculation of the SRP.</p>
 <p>The timing of spawning is handled by the <em>spwn</em> slot of the <strong>FLBiol</strong> (in C++ it is the <em>spwn</em> member of the <strong>fwdBiol</strong> class). <em>spwn</em> is an <strong>FLQuant</strong> with a length of one in the first dimension (i.e. there is no age structure). It takes a value of 0 - 1 which describes the point in the timestep when spawning happens. For example, a value of 0 means that spawning happens at the start of the timestep, a value of 0.5 is halfway through the timestep, a value of 1 is the end of the timestep and so on. Importantly, a value of NA means that there is no spawning in that timestep and the calculated SRP of that unit in that timestep is 0 (not NA).</p>
 <p>When a Biol has multiple units, it is technically possible for different units to spawn at different times. However, this is pretty unlikely and generally, all units spawn at the same time. When there are multiple units, it is important that the resulting recruitment is placed into the correct unit (see below).</p>
@@ -297,7 +325,7 @@ The `spwn` slot of the biol reflects this, with `spwn` in both units set to NA i
 </div>
 <div id="timing-of-srp-and-recruitment" class="section level2">
 <h2 class="hasAnchor">
-<html><body><a href="#timing-of-srp-and-recruitment" class="anchor"> </a></body></html>Timing of SRP and recruitment</h2>
+<a href="#timing-of-srp-and-recruitment" class="anchor"></a>Timing of SRP and recruitment</h2>
 <p>Spawning results in recruitment at age 0. However, the first age of the model is not necessarily 0. Therefore, when calculating recruitment it is necessary to calculate the SRP in the appropriate timestep. The timelag between spawning and recruitment depends on the first age of the stock and whether the model is seasonal:</p>
 <ul>
 <li>If the first age is 0 and the model has a seasonal timestep, the timelag is 1 season i.e. the SRP comes from the previous season.</li>
@@ -334,14 +362,14 @@ Here we show a few examples of calculating the timelag between SRP and recruitme
 </div>
 <div id="the-srr-parameters-and-the-timing-of-recruitment" class="section level2">
 <h2 class="hasAnchor">
-<html><body><a href="#the-srr-parameters-and-the-timing-of-recruitment" class="anchor"> </a></body></html>The SRR parameters and the timing of recruitment</h2>
+<a href="#the-srr-parameters-and-the-timing-of-recruitment" class="anchor"></a>The SRR parameters and the timing of recruitment</h2>
 <p>Recruitment is calculated using the total SRP of the Biol. The calculation uses the SRP and the stock recruitment parameters. The SRR parameters are used to calculate the recruitment in that timestep, i.e. they are related to the timing of recruitment, not spawning.</p>
 <p>The SRR parameters are stored as an <strong>FLQuant</strong> in the <em>fwdSR</em> member of the <strong>fwdBiol</strong>. The parameters are stored in the first dimension and can be disaggregated over the other dimensions. Recruitment for each unit is calculated separately. Recruitment for a unit is only calculated if the first SRR parameter of that unit in that timestep is not NA. If the first parameter is NA in that timestep then recruitment is not calculated, even if the corresponding SRP is greater than 0. If the first parameter is not NA, recruitment is calculated, even if the corresponding SRP is 0. This means that the presence or absence of NAs in the SRR parameters determines in which timesteps recruitment happens.</p>
 <p>During a projection it is important to keep track of when recruitment occurs because it determines where survivors are placed during the projection. In the timesteps when recruitment occurs, the survivors from the previous timestep are placed in the next age group, i.e. they are one year older. In the timesteps when recruitment does not occur, the survivors from the previous timestep are placed in the same age group. For example, if the model has 4 seasons and recruitment happens in season 4, the survivors from season 2 to 3 are placed in the same age group as they were in season 2 but survivors from season 3 to 4 are placed in the next age group.</p>
 </div>
 <div id="recycling-srr-parameters" class="section level2">
 <h2 class="hasAnchor">
-<html><body><a href="#recycling-srr-parameters" class="anchor"> </a></body></html>Recycling SRR parameters</h2>
+<a href="#recycling-srr-parameters" class="anchor"></a>Recycling SRR parameters</h2>
 <p>The dimensions of the SRR parameter <strong>FLQuant</strong> do not need to match the dimension of the <code>fwdBiol</code> as the SRR parameters are recycled where necessary. For example, if the model is annual and the SRR parameters are the same every year, then the SRR parameters do not need to be disaggregated by year. If there is a trend in the SRR parameters, then you can set different parameter values in every year. The recycling works over all dimensions (expect the first dimension) including iterations.</p>
 <p>If a dimension is disaggregated it should be the same size as the rest of the model, otherwise only the first value is used. For example, if the model has 50 years and the SRR parameters have only 10 years, only the first year of the SRR parameters will be used.</p>
 <p>Due to the recycling of the SRR parameters, care must be taken to set up the SRR parameters when the model is seasonal. If the first SRR parameter in a timestep is not NA, the recruitment will be calculated. This means that if you have a seasonal model that does not recruit in every season, the SRR parameters need to be disaggregated by season. If they are not (i.e. the SRR parameters only have one season) then the parameters will be recycled over all seasons. This means that recruitment will be calculated in each season and the result placed into a different unit.</p>
@@ -501,7 +529,7 @@ The code will run, the projection is wrong.
 </div>
 <div id="multiple-recruitment-events" class="section level2">
 <h2 class="hasAnchor">
-<html><body><a href="#multiple-recruitment-events" class="anchor"> </a></body></html>Multiple recruitment events</h2>
+<a href="#multiple-recruitment-events" class="anchor"></a>Multiple recruitment events</h2>
 <p>The model can become complicated when the stock has multiple recruitment events. This is explored in more detail here.</p>
 <p>Within a year a stock may recruit multiple times. To ensure that the life history parameters of an individual (such as mean weight at age) are consistent with its recruitment season, it is necessary to account for the individuals from each recruitment event separately. For example, consider a stock that recruits in seasons 1 and 3. The recruits from each event will be placed in the first age group. However, the individuals that were recruited in season 1 will be two seasons older than those that are recruited in season 3. Consequently, their mean weight at age and other metrics will be different. We have to keep track of the individuals recruited in season 1 and season 3 separately. To do this we use the unit dimension.</p>
 <p>The unit dimension is used to store information on individuals from different recruitment events. The individuals that are produced in each recruitment event in a year must be stored in a different unit. A Biol with multiple recruitment events must have a unit for each recruitment event and must also be seasonal (recruitment can only happen once in a timestep so multiple recruitment events implies multiple timesteps in a year).</p>
@@ -562,10 +590,10 @@ This is illustrated below
 </div>
 <div id="projection-targets" class="section level1">
 <h1 class="hasAnchor">
-<html><body><a href="#projection-targets" class="anchor"> </a></body></html>Projection targets</h1>
+<a href="#projection-targets" class="anchor"></a>Projection targets</h1>
 <div id="target-types" class="section level2">
 <h2 class="hasAnchor">
-<html><body><a href="#target-types" class="anchor"> </a></body></html>Target types</h2>
+<a href="#target-types" class="anchor"></a>Target types</h2>
 <p>An enumerated type, <strong>fwdControlTargetType</strong> is used to store the target type. This is defined in the <em>fwdControl.h</em> header file. At the moment, targets cannot be set at the age or unit level. The targets are aggregated over all units and ages.</p>
 <p>It is possible for the control target to have iterations. If there are no iterations, but the model does have iterations (e.g. in the biological abundance), then the same control target value is used for all iterations.</p>
 <p>Different target types require different combinations of Fishery, Catch and Biol to be specifed in the control object. The following table describes the requirements:</p>
@@ -579,116 +607,116 @@ This is illustrated below
 <col width="48%">
 </colgroup>
 <thead><tr class="header">
-<th>Target type</th>
-<th>Fishery</th>
-<th>Catch</th>
-<th>Biol</th>
+<th align="left">Target type</th>
+<th align="left">Fishery</th>
+<th align="left">Catch</th>
+<th align="left">Biol</th>
 <th align="left">Notes</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td>Catch</td>
-<td>X</td>
-<td>X</td>
-<td></td>
+<td align="left">Catch</td>
+<td align="left">X</td>
+<td align="left">X</td>
+<td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td></td>
-<td></td>
-<td></td>
-<td>X</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">X</td>
 <td align="left">Not possible if Biol is caught by a Catch that also catches another Biol</td>
 </tr>
 <tr class="odd">
-<td>Landings</td>
-<td>X</td>
-<td>X</td>
-<td></td>
+<td align="left">Landings</td>
+<td align="left">X</td>
+<td align="left">X</td>
+<td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td></td>
-<td></td>
-<td></td>
-<td>X</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">X</td>
 <td align="left">Not possible if Biol is caught by a Catch that also catches another Biol</td>
 </tr>
 <tr class="odd">
-<td>Discards</td>
-<td>X</td>
-<td>X</td>
-<td></td>
+<td align="left">Discards</td>
+<td align="left">X</td>
+<td align="left">X</td>
+<td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td></td>
-<td></td>
-<td></td>
-<td>X</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">X</td>
 <td align="left">Not possible if Biol is caught by a Catch that also catches another Biol</td>
 </tr>
 <tr class="odd">
-<td>F</td>
-<td></td>
-<td></td>
-<td>X</td>
+<td align="left">F</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">X</td>
 <td align="left">Total F on a biol</td>
 </tr>
 <tr class="even">
-<td></td>
-<td>X</td>
-<td>X</td>
-<td>X</td>
+<td align="left"></td>
+<td align="left">X</td>
+<td align="left">X</td>
+<td align="left">X</td>
 <td align="left">Partial F of a Fishery and Catch on a Biol</td>
 </tr>
 <tr class="odd">
-<td>Effort</td>
-<td>X</td>
-<td></td>
-<td></td>
+<td align="left">Effort</td>
+<td align="left">X</td>
+<td align="left"></td>
+<td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td>Revenue</td>
-<td>X</td>
-<td></td>
-<td></td>
+<td align="left">Revenue</td>
+<td align="left">X</td>
+<td align="left"></td>
+<td align="left"></td>
 <td align="left">Total revenue of the fishery</td>
 </tr>
 <tr class="odd">
-<td></td>
-<td>X</td>
-<td>X</td>
-<td></td>
+<td align="left"></td>
+<td align="left">X</td>
+<td align="left">X</td>
+<td align="left"></td>
 <td align="left">Revenue from a single Catch</td>
 </tr>
 <tr class="even">
-<td>SSB</td>
-<td></td>
-<td></td>
-<td>X</td>
+<td align="left">SSB</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">X</td>
 <td align="left">Various SSB targets are available (see below)</td>
 </tr>
 <tr class="odd">
-<td>Biomass</td>
-<td></td>
-<td></td>
-<td>X</td>
+<td align="left">Biomass</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">X</td>
 <td align="left">Various biomass targets are available (see below)</td>
 </tr>
 <tr class="even">
-<td>SRP</td>
-<td></td>
-<td></td>
-<td>X</td>
+<td align="left">SRP</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">X</td>
 <td align="left"></td>
 </tr>
 </tbody>
 </table>
 <div id="biological-targets" class="section level3">
 <h3 class="hasAnchor">
-<html><body><a href="#biological-targets" class="anchor"> </a></body></html>Biological targets</h3>
+<a href="#biological-targets" class="anchor"></a>Biological targets</h3>
 <p>With biologically based targets we have to be careful with the timing:</p>
 <ul>
 <li>
@@ -704,7 +732,7 @@ This is illustrated below
 </div>
 <div id="fbar-targets" class="section level3">
 <h3 class="hasAnchor">
-<html><body><a href="#fbar-targets" class="anchor"> </a></body></html>Fbar targets</h3>
+<a href="#fbar-targets" class="anchor"></a>Fbar targets</h3>
 <p>Fbar targets are set at either:</p>
 <ul>
 <li>Total Fbar on a Biol;</li>
@@ -726,7 +754,7 @@ This is illustrated below
 </div>
 <div id="internally" class="section level2">
 <h2 class="hasAnchor">
-<html><body><a href="#internally" class="anchor"> </a></body></html>Internally</h2>
+<a href="#internally" class="anchor"></a>Internally</h2>
 <p>This section describes how the targets are evaluated in <strong>FLasher</strong>. It is a description of the internal workings of <strong>FLasher</strong> and is, therefore, of limited interest to most users.</p>
 <p>To solve the projection, <strong>FLasher</strong> attempts to find the fishing effort values in the appropriate timestep to hit the desired target:</p>
 <p><span class="math inline">\(error = target - \hat{target}\)</span></p>
@@ -740,8 +768,7 @@ This is illustrated below
 <p><em>get_target_value()</em> and <em>get_target_value_hat()</em> are used to get <span class="math inline">\(target\)</span> and <span class="math inline">\(\hat{target}\)</span> respectively. Both of these methods use the <em>eval_om</em> method.</p>
 <div id="get_target_value" class="section level3">
 <h3 class="hasAnchor">
-<html><body><a href="#get_target_value" class="anchor"> </a></body></html>
-<em>get_target_value()</em>
+<a href="#get_target_value" class="anchor"></a><em>get_target_value()</em>
 </h3>
 <p>This method takes the desired target value from the <strong>fwdControl</strong> object. It is called to calculate <em>what we want</em>.</p>
 <p>If the target is a minimum or maximum constraint then it is necessary to evaluate the current value of the target type in the operating model, given the current fishing effort, to see if the constraints are active. The desired target value is updated as a result. For example, if there is a maximum catch target and current catch value in the operating model is greater than the maximum catch target, the target value is set to the maximum target. If the current catch value is less than the maximum catch target, then the target value is set to the current catch value i.e. there is no need to constrain the effort as the constraint has not been breached.</p>
@@ -751,8 +778,7 @@ This is illustrated below
 </div>
 <div id="get_target_value_hat" class="section level3">
 <h3 class="hasAnchor">
-<html><body><a href="#get_target_value_hat" class="anchor"> </a></body></html>
-<em>get_target_value_hat()</em>
+<a href="#get_target_value_hat" class="anchor"></a><em>get_target_value_hat()</em>
 </h3>
 <p>This method calculates the current state of a target in the operating model, i.e. it finds out <em>where we are</em> given the current level of fishing effort. The method interrogates the <em>fwdControl</em> object and retrieves the appropriate Fishery, Catch and Biol number. It also sets up the indices ranges (year, season etc.) over which to evaluate the target type.</p>
 <p>The evaluation is carried out by the method <em>eval_om()</em>.</p>
@@ -760,8 +786,7 @@ This is illustrated below
 </div>
 <div id="eval_om" class="section level3">
 <h3 class="hasAnchor">
-<html><body><a href="#eval_om" class="anchor"> </a></body></html>
-<em>eval_om()</em>
+<a href="#eval_om" class="anchor"></a><em>eval_om()</em>
 </h3>
 <p>Calls the appropriate method for evaluating the state of the operating model, e.g. catch, discards, SSB etc.</p>
 </div>
@@ -769,14 +794,14 @@ This is illustrated below
 </div>
 <div id="references" class="section level1">
 <h1 class="hasAnchor">
-<html><body><a href="#references" class="anchor"> </a></body></html>References</h1>
-</div>
+<a href="#references" class="anchor"></a>References</h1>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
         <div id="tocnav">
-      <h2>Contents</h2>
+      <h2 class="hasAnchor">
+<a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#introduction">Introduction</a></li>
       <li>
@@ -828,11 +853,13 @@ This is illustrated below
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
 </div>
+
+  
 
   </body>
 </html>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Access and replace the target — target • FLasher</title>
+<title>Generate an FCB matrix from FLBiols and FLFisheries — guessfcb • FLasher</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,12 +28,10 @@
 
 
 
-<meta property="og:title" content="Access and replace the target — target" />
+<meta property="og:title" content="Generate an FCB matrix from FLBiols and FLFisheries — guessfcb" />
 
-<meta property="og:description" content="Access and replace the target slot of a fwdControl object
-Replace the target slot of a fwdControl object
-Access target slot of fwdControl
-Set target slot of fwdControl" />
+<meta property="og:description" content="Tries to generate FCB matrix based on names.
+Internal function. Ignore." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -110,44 +108,30 @@ Set target slot of fwdControl" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Access and replace the target</h1>
+    <h1>Generate an FCB matrix from FLBiols and FLFisheries</h1>
     
-    <div class="hidden name"><code>target.Rd</code></div>
+    <div class="hidden name"><code>guessfcb.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Access and replace the target slot of a fwdControl object</p>
-<p>Replace the target slot of a fwdControl object</p>
-<p>Access target slot of fwdControl</p>
-<p>Set target slot of fwdControl</p>
+    <p>Tries to generate FCB matrix based on names.
+Internal function. Ignore.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>target</span>(<span class='no'>object</span>, <span class='no'>...</span>)
-
-<span class='fu'>target</span>(<span class='no'>object</span>, <span class='no'>...</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span>
-
-<span class='co'># S4 method for fwdControl</span>
-<span class='fu'>target</span>(<span class='no'>object</span>)
-
-<span class='co'># S4 method for fwdControl,data.frame</span>
-<span class='fu'>target</span>(<span class='no'>object</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span></pre>
+    <pre class="usage"><span class='fu'>guessfcb</span>(<span class='no'>biols</span>, <span class='no'>fisheries</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>object</th>
-      <td><p>The fwdControl object</p></td>
+      <th>biols</th>
+      <td><p>The FLBiols.</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Other things.</p></td>
-    </tr>
-    <tr>
-      <th>value</th>
-      <td><p>The target object to replace the existing one with.</p></td>
+      <th>fisheries</th>
+      <td><p>The FLFisheries.</p></td>
     </tr>
     </table>
     

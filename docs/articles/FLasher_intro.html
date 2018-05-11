@@ -8,14 +8,17 @@
 <title>Introduction to FLasher • FLasher</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><!-- mathjax --><script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="Introduction to FLasher">
+<meta property="og:description" content="">
+<meta name="twitter:card" content="summary">
+<!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body>
-    <div class="container template-vignette">
+    <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -24,18 +27,40 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">FLasher</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">FLasher</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.4.9006</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
+  <a href="../index.html">
+    <span class="fa fa-home fa-lg"></span>
+     
+  </a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
 <li>
-  <a href="../articles/index.html">Articles</a>
+      <a href="../articles/FLasher_intro.html">Introduction to FLasher</a>
+    </li>
+    <li>
+      <a href="../articles/FLasher_reference.html">FLasher reference manual</a>
+    </li>
+  </ul>
 </li>
 <li>
-  <a href="../news/index.html">News</a>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right"></ul>
@@ -48,21 +73,26 @@
 
       
       </header><div class="row">
-  <div class="col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Introduction to FLasher</h1>
                         <h4 class="author">Finlay Scott, Iago Mosqueira - European Commission Joint Research Center</h4>
             
-            <h4 class="date">14 September, 2017</h4>
-          </div>
+            <h4 class="date">11 May, 2018</h4>
+      
+      
+      <div class="hidden name"><code>FLasher_intro.Rmd</code></div>
+
+    </div>
 
     
     
-<div class="contents">
+<pre><code>## Warning: replacing previous import 'ggplot2::%+%' by
+## 'FLCore::%+%' when loading 'ggplotFL'</code></pre>
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
-<html><body><a href="#introduction" class="anchor"> </a></body></html>Introduction</h1>
-<p><strong>FLasher</strong> is an FLR package for performing projections through time. It is a sequel to an older package <strong>FLash</strong> that has been widely used for projecting <strong>FLStock</strong> objects. It is anticpated that <strong>FLasher</strong> eventually replaces <strong>FLash</strong>. The interfaces are almost the same so moving existing scripts from using <strong>FLash</strong> to <strong>FLasher</strong> should be straightforward.</p>
+<a href="#introduction" class="anchor"></a>Introduction</h1>
+<p><strong>FLasher</strong> is an FLR package for performing stochastic projections of fish populations and fisheries through time. It is a sequel to an older package <strong>FLash</strong> that has been widely used for projecting <strong>FLStock</strong> objects. It is anticpated that <strong>FLasher</strong> eventually replaces <strong>FLash</strong>. The interfaces are almost the same so moving existing scripts from using <strong>FLash</strong> to <strong>FLasher</strong> should be straightforward.</p>
 <p>The main differences betwen <strong>FLasher</strong> and <strong>FLash</strong> are:</p>
 <ul>
 <li>As well as performing projections on single <strong>FLStock</strong> objects, <strong>FLasher</strong> can perform projections on a pair of <strong>FLBiol(s)</strong> and <strong>FLFishery(ies)</strong> objects to simulate mixed fishery interactions.</li>
@@ -74,45 +104,47 @@
 </div>
 <div id="basic-principles" class="section level1">
 <h1 class="hasAnchor">
-<html><body><a href="#basic-principles" class="anchor"> </a></body></html>Basic principles</h1>
+<a href="#basic-principles" class="anchor"></a>Basic principles</h1>
 <p>A projection is controlled by a <strong>fwdControl</strong> object. This determines how long the projection runs for, and what targets the projection attempts to hit along the way.</p>
 <p>When projecting with <strong>FLBiol(s)</strong> and <strong>FLFishery(ies)</strong> objects, the fishing efforts of the <strong>FLFishery(ies)</strong> in each timestep are found to hit the target.</p>
 <p>Projecting with an <strong>FLStock</strong> is the equivalent of projecting with a single <strong>FLBiol</strong> and <strong>FLFishery</strong> (this is what happens internally). When an <strong>FLStock</strong> is being projected, the Fmultiplier in each step is found that hits the target (the assumption is made that effort and F are linearly related).</p>
 </div>
-<div id="where-to-start" class="section level1">
-<h1 class="hasAnchor">
-<html><body><a href="#where-to-start" class="anchor"> </a></body></html>Where to start</h1>
-<p>The two best places to start are:</p>
-<ul>
-<li>The <a href="http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html">tutorial</a> on running medium term projections with an <strong>FLStock</strong>.</li>
-<li>The package vignette <em>Mixed fisheries with FLasher</em>, for running projections with <strong>FLBiol(s)</strong> and <strong>FLFishery(ies)</strong> objects,</li>
-</ul>
-<p>More details of the internal workings of <strong>FLasher</strong> can be found in the vignette <em>FLasher reference manual</em>. There is an additional vignette on using the <strong>FLasher</strong> plugin for accessing automatic differentiation capabilities in R and other nerdy things.</p>
-</div>
 <div id="moving-from-flash-to-flasher" class="section level1">
 <h1 class="hasAnchor">
-<html><body><a href="#moving-from-flash-to-flasher" class="anchor"> </a></body></html>Moving from <strong>FLash</strong> to <strong>FLasher</strong>
+<a href="#moving-from-flash-to-flasher" class="anchor"></a>Moving from <strong>FLash</strong> to <strong>FLasher</strong>
 </h1>
 <p>If you are moving from using <strong>FLash</strong> to <strong>FLasher</strong> there are a few basic things to note.</p>
-<p>The first thing to note is argument names to the <em>fwd()</em> function. The projection is still run using the <em>fwd()</em> function. The <strong>FLStock</strong> argument can still be unnamed if it is passed in as the first argument. However, the <strong>fwdControl</strong> argument must now be named as <em>control</em>. Additionally, the name of the <em>sr.residuals</em> argument is now simply called <em>residuals</em></p>
+<p>The first thing to note is argument names to the <em>fwd()</em> function. The projection is still run using the <em>fwd()</em> function. The <strong>FLStock</strong> argument can still be unnamed if it is passed in as the first argument. However, the <strong>fwdControl</strong> argument must now be named as <em>control</em>. Additionally, the name of the <em>sr.residuals</em> argument is now simply <em>residuals</em></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Will not work</span>
-out &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fwd.html">fwd</a></span>(stock, control, <span class="dt">sr =</span> srrbits, <span class="dt">sr.residuals =</span> residuals)
+out &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fwd-methods.html">fwd</a></span>(stock, control, <span class="dt">sr =</span> srrbits, <span class="dt">sr.residuals =</span> residuals)
 <span class="co"># Will work</span>
-out &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fwd.html">fwd</a></span>(stock, <span class="dt">control =</span> control, <span class="dt">sr =</span> srrbits, <span class="dt">residuals =</span> residuals)</code></pre></div>
+out &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fwd-methods.html">fwd</a></span>(stock, <span class="dt">control =</span> control, <span class="dt">sr =</span> srrbits, <span class="dt">residuals =</span> residuals)</code></pre></div>
 <p>The second thing is that when making the <strong>fwdControl</strong> object the names of the some of the columns has changed. The <em>quantity</em> column is now called <em>quant</em>. The <em>val</em> column is now called <em>value</em>.</p>
-<p>Other differences will be added as we remember them.</p>
+<p>Other differences relate to the way some calculations are carried out and will be presented below.</p>
 </div>
+<div id="where-to-start" class="section level1">
+<h1 class="hasAnchor">
+<a href="#where-to-start" class="anchor"></a>Where to start</h1>
+<p>See the tutorials at the FLR website:</p>
+<ul>
+<li>The <a href="http://www.flr-project.org/doc/Running_Medium_Term_Forecasts_with_FLasher.html">tutorial</a> on running medium term projections with an <strong>FLStock</strong>.</li>
+<li>The <a href="http://www.flr-project.org/doc/Setting_Stock_Recruitment_in_FLasher_Projections.html">tutorial</a> on setting stock recruitment for <strong>FLasher</strong> projections.</li>
+<li>The <a href="http://www.flr-project.org/doc/Mixed_Fisheries_Projections_with_FLasher.html">tutorial</a> on performing mixed fisheries projections with <strong>FLasher</strong>.</li>
+<li>The <a href="http://www.flr-project.org/doc/Using_the_FLasher_Plugin.html">tutorial</a> vignette on using the <strong>FLasher</strong> plugin for accessing Automatic Differentiation capabilities in R and other nerdy things.</li>
+</ul>
+<p>More details of the internal workings of <strong>FLasher</strong> can be found in the vignette <em>FLasher reference manual</em>.</p>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
         <div id="tocnav">
-      <h2>Contents</h2>
+      <h2 class="hasAnchor">
+<a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#introduction">Introduction</a></li>
       <li><a href="#basic-principles">Basic principles</a></li>
-      <li><a href="#where-to-start">Where to start</a></li>
       <li><a href="#moving-from-flash-to-flasher">Moving from <strong>FLash</strong> to <strong>FLasher</strong></a></li>
+      <li><a href="#where-to-start">Where to start</a></li>
       </ul>
 </div>
       </div>
@@ -125,11 +157,13 @@ out &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fwd.htm
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
 </div>
+
+  
 
   </body>
 </html>
