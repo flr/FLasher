@@ -194,11 +194,17 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(length(object@desc) == 0)
     object@desc <- character(1)
 
+  # CHANGE zero effort to small value
+  fishery <- lapply(fishery, function(x){
+    effort(x)[effort(x) == 0] <- 1e-6
+    return(x)
+  })
+
   # SET absolute effort_max from q85 * effort_max
   feffort_max <- unlist(lapply(fishery,
     function(x) quantile(c(effort(x)), 0.85, na.rm=TRUE))) * effort_max
   feffort_max[is.na(feffort_max)] <- effort_max
-
+  
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control, effort_max=feffort_max,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
@@ -382,6 +388,9 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # RESCALE effort
     # effort(F)[] <- 1
     # effort(F) <- effort(F) %/% effort(F)[, ac(control$year[1])]
+  
+    # CHANGE zero effort to small value
+    effort(F)[effort(F) == 0] <- 0.1
 
     Fs <- FLFisheries(F=F)
     Fs@desc <- "F"
