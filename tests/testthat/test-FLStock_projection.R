@@ -349,4 +349,36 @@ test_that("Fbar target, effort_max limiting",{
     expect_true(f_out < 5)
 })
 
+test_that("control as FLQuants works", {
+    data(ple4)
+    
+    # catch
+    res <- fwd(ple4, catch=catch(ple4)[,ac(2000:2008)], 
+      sr=predictModel(model="geomean",
+        params=FLPar(a=yearMeans(rec(ple4)[, ac(2000:2008)]))))
+    expect_equal(catch(ple4)[,ac(2000:2008)], catch(res)[,ac(2000:2008)])
+    
+    # landings
+    res <- fwd(ple4, landings=landings(ple4)[,ac(2000:2008)], 
+      sr=predictModel(model="geomean",
+        params=FLPar(a=yearMeans(rec(ple4)[, ac(2000:2008)]))))
+    expect_equal(landings(ple4)[,ac(2000:2008)], landings(res)[,ac(2000:2008)])
+    
+    # discards
+    res <- fwd(ple4, discards=discards(ple4)[,ac(2000:2008)], 
+      sr=predictModel(model="geomean",
+        params=FLPar(a=yearMeans(rec(ple4)[, ac(2000:2008)]))))
+    expect_equal(discards(ple4)[,ac(2000:2008)], discards(res)[,ac(2000:2008)])
+    
+    # fbar
+    res <- fwd(ple4, fbar=fbar(ple4)[,ac(2000:2008)], 
+      sr=predictModel(model="geomean",
+        params=FLPar(a=yearMeans(rec(ple4)[, ac(2000:2008)]))))
+    expect_equal(fbar(ple4)[,ac(2000:2008)], fbar(res)[,ac(2000:2008)])
 
+    # f
+    res <- fwd(ple4, f=fbar(ple4)[,ac(2000:2008)], 
+      sr=predictModel(model="geomean",
+        params=FLPar(a=yearMeans(rec(ple4)[, ac(2000:2008)]))))
+    expect_equal(fbar(ple4)[,ac(2000:2008)], fbar(res)[,ac(2000:2008)])
+})
