@@ -196,17 +196,12 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # CHANGE zero effort to small value
   fishery <- lapply(fishery, function(x){
-    effort(x)[effort(x) == 0] <- 1e-6
+    x@effort[x@effort == 0] <- 1e-6
     return(x)
   })
-
-  # SET absolute effort_max from q85 * effort_max
-  feffort_max <- unlist(lapply(fishery,
-    function(x) quantile(c(effort(x)), 0.85, na.rm=TRUE))) * effort_max
-  feffort_max[is.na(feffort_max)] <- effort_max
   
   # CALL oMRun
-  out <- operatingModelRun(fishery, biolscpp, control, effort_max=feffort_max,
+  out <- operatingModelRun(fishery, biolscpp, control, effort_max=effort_max,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
 
   # UPDATE object w/ new biolscpp@n
@@ -219,7 +214,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # WARNING for effort_max
   if(any(unlist(
-  lapply(out$fisheries, function(x) max(effort(x), na.rm=TRUE))) == feffort_max))
+  lapply(out$fisheries, function(x) max(effort(x), na.rm=TRUE))) == effort_max))
     warning("Maximum effort limit reached in one or more fisheries")
 
   return(out)
@@ -386,12 +381,9 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     names(F) <- "B"
 
     # RESCALE effort
-    # effort(F)[] <- 1
-    # effort(F) <- effort(F) %/% effort(F)[, ac(control$year[1])]
+    idx <- effort(F)[, ac(control$year[1] - 1)]
+    effort(F)[, ac(control$year[1] - 1)][idx==0] <- 1e-6
   
-    # CHANGE zero effort to small value
-    effort(F)[effort(F) == 0] <- 0.1
-
     Fs <- FLFisheries(F=F)
     Fs@desc <- "F"
 
