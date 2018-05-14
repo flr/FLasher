@@ -394,7 +394,7 @@ template <typename T>
 T cushing(const T srp, const std::vector<double> params){
   T rec;
   // rec = a * srp ^ b
-  rec = params[0] * exp(log(srp*params[1]));
+  rec = params[0] * exp(log(srp)*params[1]);
   return rec;
 }
 
