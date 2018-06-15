@@ -426,9 +426,9 @@ T survsrr(const T srp, const std::vector<double> params){
     
     double zmax = z0 + sfrac * (0.0 - z0);
     
-    T zsurv = exp((1.0 - pow((srp / SB0), beta)) * (zmax - z0) + z0);
+    T zsurv = exp((1.0 - pow((602.802 / SB0), beta)) * (zmax - z0) + z0);
 
-    rec = srp * zsurv;
+    rec = 602.802 * zsurv;
 
     return rec;
 }
