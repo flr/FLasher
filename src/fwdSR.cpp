@@ -32,7 +32,9 @@ void fwdSR_base<T>::init_model_map(){
     map_model_name_to_function["cushing"] = &cushing;
     map_model_name_to_function["Cushing"] = &cushing;
     map_model_name_to_function["Segreg"] = &segreg;
-    map_model_name_to_function["Segreg"] = &segreg;
+    map_model_name_to_function["segreg"] = &segreg;
+    map_model_name_to_function["survSRR"] = &survsrr;
+    map_model_name_to_function["survsrr"] = &survsrr;
     return;
 }
 
@@ -237,7 +239,7 @@ FLQuant_base<T> fwdSR_base<T>::predict_recruitment(const FLQuant_base<T> srp, co
     // Distance between initial_params_indices and res_dim cannot be smaller than srp_dim
     for (unsigned int dim_counter = 1; dim_counter <= 4; ++dim_counter){
         if((res_dim[dim_counter] - initial_params_indices[dim_counter-1] + 1) < srp_dim[dim_counter]){
-            Rcpp::stop("In fwdSR::predict_recruitment. Initial indicies of residuals is too small to cover the SRP\n");
+            Rcpp::stop("In fwdSR::predict_recruitment. Initial indices of residuals too small to cover the SRP\n");
         }
     }
     // Empty output object
@@ -411,6 +413,27 @@ T segreg(const T srp, const std::vector<double> params){
     return rec;
 }
 
+template <typename T>
+T survsrr(const T srp, const std::vector<double> params){
+    T rec;
+    
+    double R0 = params[0];
+    double sfrac = params[1];
+    double beta = params[2];
+    double SB0 = params[3];
+
+    double z0 = log(1.0 / (SB0 / R0));
+    
+    double zmax = z0 + sfrac * (0.0 - z0);
+    
+    T zsurv = exp((1.0 - pow((srp / SB0), beta)) * (zmax - z0) + z0);
+
+    rec = srp * zsurv;
+
+    return rec;
+}
+
+
 // Instantiate functions
 template double ricker(const double ssb, const std::vector<double> params);
 template adouble ricker(const adouble ssb, const std::vector<double> params);
@@ -424,3 +447,5 @@ template double cushing(const double ssb, const std::vector<double> params);
 template adouble cushing(const adouble ssb, const std::vector<double> params);
 template double segreg(const double ssb, const std::vector<double> params);
 template adouble segreg(const adouble ssb, const std::vector<double> params);
+template double survsrr(const double ssb, const std::vector<double> params);
+template adouble survsrr(const adouble ssb, const std::vector<double> params);

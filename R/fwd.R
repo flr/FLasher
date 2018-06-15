@@ -199,7 +199,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     x@effort[x@effort == 0] <- 1e-6
     return(x)
   })
-  
   # CALL oMRun
   out <- operatingModelRun(fishery, biolscpp, control, effort_max=effort_max,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
