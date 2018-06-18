@@ -388,7 +388,7 @@ T bevholtSS3(const T srp, const std::vector<double> params){
     double R0 = params[1];
     double v = params[2];
     T rec;
-    rec = (4.0 * s * R0 * srp) / (v * (1 - s) + srp * (5 * s - 1.0));
+    rec = (4.0 * s * R0 * srp) / (v * (1.0 - s) + srp * (5 * s - 1.0));
     return rec;
 }
 
@@ -414,7 +414,7 @@ T segreg(const T srp, const std::vector<double> params){
 }
 
 template <typename T>
-T survsrr(const T srp, const std::vector<double> params){
+T survsrr(const T ssf, const std::vector<double> params){
     T rec;
     
     double R0 = params[0];
@@ -426,9 +426,10 @@ T survsrr(const T srp, const std::vector<double> params){
     
     double zmax = z0 + sfrac * (0.0 - z0);
     
-    T zsurv = exp((1.0 - pow((srp / SB0), beta)) * (zmax - z0) + z0);
+    T zsurv = exp((1.0 - pow((ssf / SB0), beta)) * (zmax - z0) + z0);
 
-    rec = srp * zsurv;
+    // Sex ratio at recruitment set at 1:1
+    rec = ssf * zsurv * 0.5;
 
     return rec;
 }

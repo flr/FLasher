@@ -293,6 +293,7 @@ FLQuantAD operatingModel::total_srp(const int biol_no, const std::vector<unsigne
   if ((indices_min.size() != 5) | (indices_max.size() != 5)){
     Rcpp::stop("In operatingModel::total_srp subsetter. Indices not of length 5 (no age index)\n");
   }
+  // SSF FLQuantAD usrp = ssf(biol_no, indices_min, indices_max);
   FLQuantAD usrp = srp(biol_no, indices_min, indices_max);
   // Sum over units
   FLQuantAD total_srp = unit_sum(usrp);
@@ -328,6 +329,37 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
     biols(biol_no).wt(qindices_min, qindices_max) *
     biols(biol_no).mat(qindices_min, qindices_max) * exp_z_pre_spwn);
   return srp;
+}
+
+/*! \brief Calculates the spawning stock fecundity of each unit a biol at the time of spawning
+ *
+ * Calculated as SSF: N*fec*mat*exp(-Fprespwn - m*spwn) summed over age dimension
+ * where the natural mortality m is assumed to be constant over the timestep
+ * and Fprespwn is how much fishing mortality happened before spawning.
+ * Each unit is kept separate.
+ * \param biol_no The position of the biol in the biols list (starting at 1)
+ * \param indices_min The minimum indices: year, unit etc (length 5)
+ * \param indices_max The maximum indices: year, unit etc (length 5)
+ */
+FLQuantAD operatingModel::ssf(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+  // Check indices_min and indices_max are of length 5
+  if ((indices_min.size() != 5) | (indices_max.size() != 5)){
+    Rcpp::stop("In operatingModel::ssf subsetter. Indices not of length 5\n");
+  }
+  // Add age range to input indices
+  std::vector<unsigned int> qindices_min = indices_min;
+  qindices_min.insert(qindices_min.begin(), 1);
+  std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
+  std::vector<unsigned int> qindices_max = indices_max;
+  qindices_max.insert(qindices_max.begin(), dim[0]);
+  FLQuantAD exp_z_pre_spwn = get_exp_z_pre_spwn(biol_no, qindices_min, qindices_max);
+
+  // Get srp: N*mat*wt*exp(-Fprespwn - m*spwn) summed over age dimension
+  FLQuantAD ssf = quant_sum(
+    biols(biol_no).n(qindices_min, qindices_max) *
+    biols(biol_no).fec(qindices_min, qindices_max) *
+    biols(biol_no).mat(qindices_min, qindices_max) * exp_z_pre_spwn);
+  return ssf;
 }
 
 /*! \brief Calculates the proportion of fishing mortality that occurs before the stock spawns
