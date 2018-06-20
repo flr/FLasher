@@ -293,7 +293,7 @@ FLQuantAD operatingModel::total_srp(const int biol_no, const std::vector<unsigne
   if ((indices_min.size() != 5) | (indices_max.size() != 5)){
     Rcpp::stop("In operatingModel::total_srp subsetter. Indices not of length 5 (no age index)\n");
   }
-  // SSF FLQuantAD usrp = ssf(biol_no, indices_min, indices_max);
+  // FLQuantAD usrp = ssf(biol_no, indices_min, indices_max);
   FLQuantAD usrp = srp(biol_no, indices_min, indices_max);
   // Sum over units
   FLQuantAD total_srp = unit_sum(usrp);

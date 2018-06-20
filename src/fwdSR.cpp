@@ -436,17 +436,17 @@ T survsrr(const T ssf, const std::vector<double> params){
 
 
 // Instantiate functions
-template double ricker(const double ssb, const std::vector<double> params);
-template adouble ricker(const adouble ssb, const std::vector<double> params);
-template double bevholt(const double ssb, const std::vector<double> params);
-template adouble bevholt(const adouble ssb, const std::vector<double> params);
+template double ricker(const double srp, const std::vector<double> params);
+template adouble ricker(const adouble srp, const std::vector<double> params);
+template double bevholt(const double srp, const std::vector<double> params);
+template adouble bevholt(const adouble srp, const std::vector<double> params);
 template double constant(const double srp, const std::vector<double> params);
 template adouble constant(const adouble srp, const std::vector<double> params);
-template double bevholtSS3(const double ssb, const std::vector<double> params);
-template adouble bevholtSS3(const adouble ssb, const std::vector<double> params);
-template double cushing(const double ssb, const std::vector<double> params);
-template adouble cushing(const adouble ssb, const std::vector<double> params);
-template double segreg(const double ssb, const std::vector<double> params);
-template adouble segreg(const adouble ssb, const std::vector<double> params);
-template double survsrr(const double ssb, const std::vector<double> params);
-template adouble survsrr(const adouble ssb, const std::vector<double> params);
+template double bevholtSS3(const double srp, const std::vector<double> params);
+template adouble bevholtSS3(const adouble srp, const std::vector<double> params);
+template double cushing(const double srp, const std::vector<double> params);
+template adouble cushing(const adouble srp, const std::vector<double> params);
+template double segreg(const double srp, const std::vector<double> params);
+template adouble segreg(const adouble srp, const std::vector<double> params);
+template double survsrr(const double srp, const std::vector<double> params);
+template adouble survsrr(const adouble srp, const std::vector<double> params)
