@@ -383,12 +383,13 @@ T constant(const T srp, const std::vector<double> params){
 template <typename T>
 T bevholtSS3(const T srp, const std::vector<double> params){
     // (4 * s * R0 * ssb) / (v * (1 - s) + ssb * (5 * s - 1)) 
-    // SRP is * 0.5 for the sex ratio
+    // SR is the recruits sex ratio
+    double sratio = 0.5;
     double s = params[0];
     double R0 = params[1];
     double v = params[2];
     T rec;
-    rec = (4.0 * s * R0 * srp) / (v * (1.0 - s) + srp * (5 * s - 1.0));
+    rec = (4.0 * s * R0 * srp) / (v * (1.0 - s) + srp * (5 * s - 1.0)) * sratio;
     return rec;
 }
 
@@ -449,4 +450,4 @@ template adouble cushing(const adouble srp, const std::vector<double> params);
 template double segreg(const double srp, const std::vector<double> params);
 template adouble segreg(const adouble srp, const std::vector<double> params);
 template double survsrr(const double srp, const std::vector<double> params);
-template adouble survsrr(const adouble srp, const std::vector<double> params)
+template adouble survsrr(const adouble srp, const std::vector<double> params);
