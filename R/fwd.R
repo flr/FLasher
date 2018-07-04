@@ -104,6 +104,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     year_range <- range(as.numeric(bdnms$year)) 
     # Need a window equivalent for year and season
     residuals[[i]] <- window(residuals[[i]], start=year_range[1], end=year_range[2])
+    # No NAs
+    residuals[[i]][is.na(residuals[[i]])] <- 1
     biolscpp[[i]][["srr_residuals"]] <- residuals[[i]]
   }
   
@@ -422,7 +424,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # RUN
     out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals),
       effort_max=effort_max, ...)
-
+    
     # PARSE output
     Fc <- out$fisheries[[1]][[1]]
     eff <- out$fisheries[[1]]@effort
@@ -461,11 +463,11 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # harvest (F)
     object@harvest[, pyrs] <- calc_F(Fc, Bo, eff)[, pyrs]
     units(object@harvest) <- "f"
+    
     # stock.n
     object@stock.n[,pyrs] <- Bo@n[,pyrs]
     # stock
     object@stock <- quantSums(object@stock.n * object@stock.wt)
-
     return(object)
   }
 ) # }}}

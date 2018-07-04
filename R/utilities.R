@@ -16,8 +16,9 @@
 #' @param biol The FLBiol
 #' @param effort The fishing effort
 calc_F <- function(catch, biol, effort){
-    biomass <- quantSums(biol@n * biol@wt)
-    F <- catch@catch.q['alpha',] * biomass ^ (-catch@catch.q['beta',]) %*% effort %*% catch@catch.sel
+    biomass <- biol@n * biol@wt
+    F <- catch@catch.q['alpha',] * biomass ^ (-catch@catch.q['beta',]) %*%
+      effort %*% catch@catch.sel
     return(F)
 } # }}}
 

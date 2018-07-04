@@ -472,24 +472,30 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
   if ((indices_min.size() != 6) | (indices_max.size() != 6)){
     Rcpp::stop("In operatingModel get_f subsetter. Indices not of length 6\n");
   }
+  
   // Lop off the first value from the indices to get indices without quant - needed for effort and catch_q
   std::vector<unsigned int> indices_min5(indices_min.begin()+1, indices_min.end());
   std::vector<unsigned int> indices_max5(indices_max.begin()+1, indices_max.end());
+  
   if(verbose){Rprintf("Getting biomass\n");}
   FLQuantAD biomass = biols(biol_no).biomass(indices_min5, indices_max5);
+  
   if(verbose){Rprintf("Got biomass\n");}
   FLQuantAD sel = fisheries(fishery_no, catch_no).catch_sel()(indices_min, indices_max);
+  
   // Need special subsetter for effort as always length 1 in the unit dimension
   std::vector<unsigned int> effort_indices_min5{indices_min5[0], 1, indices_min5[2], indices_min5[3], indices_min5[4]};  
   std::vector<unsigned int> effort_indices_max5{indices_max5[0], 1, indices_max5[2], indices_max5[3], indices_max5[4]};  
   if(verbose){Rprintf("Getting effort\n");}
   FLQuantAD effort = fisheries(fishery_no).effort(effort_indices_min5, effort_indices_max5); // Will always have 1 in the unit dimension
+  
   // Get q params as a whole FLQuant - just first 2 'ages' (params)
   std::vector<unsigned int> qparams_indices_min = indices_min5;
   qparams_indices_min.insert(qparams_indices_min.begin(), 1); 
   std::vector<unsigned int> qparams_indices_max = indices_max5;
   qparams_indices_max.insert(qparams_indices_max.begin(), 2); 
   FLQuant qparams = fisheries(fishery_no, catch_no).catch_q_params(qparams_indices_min, qparams_indices_max);
+  
   // Subset qparams to get FLQ of the indiv params - i.e. seperating into alpha and beta - really faffy
   qparams_indices_min = {1,1,1,1,1,1};
   qparams_indices_max = qparams.get_dim();
@@ -504,6 +510,7 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
   FLQuantAD fout = sweep_mult(biomass, sel);
   return fout;
 }
+
 /*! \brief Calculate the instantaneous fishing mortality of a single biol from a single fishery / catch over all dimensions.
  * It is assumed that the fishery / catch actually fishes the biol (no check is made).
  * \param fishery_no the position of the fishery within the fisheries (starting at 1).
@@ -511,12 +518,14 @@ FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const 
  * \param biol_no the position of the biol within the biols (starting at 1).
  */
 FLQuantAD operatingModel::get_f(const int fishery_no, const int catch_no, const int biol_no) const {
+
   // Just call the subset method with full indices
   std::vector<unsigned int> indices_max = biols(biol_no).n().get_dim();
   std::vector<unsigned int> indices_min(6,1);
   FLQuantAD f = get_f(fishery_no, catch_no, biol_no, indices_min, indices_max);
   return f;
 }
+
 /*! \brief Total instantaneous fishing mortality on a biol over a subset of dimensions
  * \param biol_no the position of the biol within the biols (starting at 1).
  * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
@@ -528,8 +537,10 @@ FLQuantAD operatingModel::get_f(const unsigned int biol_no, const std::vector<un
   if (biol_no > biols.get_nbiols()){
     Rcpp::stop("In OM get_f biol. biol_no is greater than number of biols\n");
   }
+
   // We need to know the Fishery / Catches that catch the biol
   const Rcpp::IntegerMatrix FC =  ctrl.get_FC(biol_no);
+
   // What happens if no-one is fishing that biol? FC.nrow() == 0 so loop never triggers
   FLQuantAD total_f(indices_max[0] - indices_min[0] + 1, indices_max[1] - indices_min[1] + 1, indices_max[2] - indices_min[2] + 1, indices_max[3] - indices_min[3] + 1, indices_max[4] - indices_min[4] + 1, indices_max[5] - indices_min[5] + 1); 
   total_f.fill(0.0);
@@ -539,6 +550,7 @@ FLQuantAD operatingModel::get_f(const unsigned int biol_no, const std::vector<un
   }
   return total_f;
 }
+
 /*! \brief Total instantaneous fishing mortality on a biol over all dimensions
  *
  * \param biol_no the position of the biol within the biols (starting at 1).
@@ -601,6 +613,7 @@ FLQuantAD operatingModel::get_nunit_z(const int biol_no, const std::vector<unsig
  *
  */
 //@{
+
 /*! \brief Get the fishing mortality on a Biol, collapsed over the unit dimension.
  * \param biol_no the position of the biol within the biols (starting at 1).
  * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
@@ -620,6 +633,7 @@ FLQuantAD operatingModel::get_nunit_f(const int biol_no, const std::vector<unsig
   FLQuantAD nunit_f = (unit_catch * log(unit_n / unit_surv)) / (unit_n - unit_surv);
   return nunit_f;
 }
+
 /*! \brief Get the fishing mortality from an individual Catch on a Biol, collapsed over the unit dimension.
  * \param fishery_no the position of the Fishery within the Fisheries (starting at 1).
  * \param catch_no the position of the Catch within the Catches (starting at 1).
