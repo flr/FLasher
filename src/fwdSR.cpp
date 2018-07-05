@@ -147,7 +147,7 @@ std::vector<double> fwdSR_base<T>::get_params(unsigned int year, unsigned int un
     }
     for (int i = 1; i <= nparams; ++i){
         model_params[i-1] = params(i,year,unit,season,area,iter);
-        //Rprintf("Year: %i Rec: %f\n",  year, model_params[i-1]);
+    // Rprintf("Year: %i Unit: %i Season: %i Param %i: %f\n",  year, unit, season, i, model_params[i-1]);
     }
     return model_params;
 }
@@ -383,13 +383,22 @@ T constant(const T srp, const std::vector<double> params){
 template <typename T>
 T bevholtSS3(const T srp, const std::vector<double> params){
     // (4 * s * R0 * ssb) / (v * (1 - s) + ssb * (5 * s - 1)) 
-    // SR is the recruits sex ratio
-    double sratio = 0.5;
+    
     double s = params[0];
     double R0 = params[1];
     double v = params[2];
+    
+    // sratio is the recruits sex ratio
+    double sratio = 1;
+    
+    // seasp is the prop of rec for the season
+    double seasp = 1;
+    if (params.size() == 4) {
+      seasp = params[3];
+    }
+
     T rec;
-    rec = (4.0 * s * R0 * srp) / (v * (1.0 - s) + srp * (5 * s - 1.0)) * sratio;
+    rec = (4.0 * s * R0 * srp) / (v * (1.0 - s) + srp * (5 * s - 1.0)) * sratio * seasp;
     return rec;
 }
 

@@ -384,7 +384,6 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # RESCALE effort
     idx <- effort(F)[, ac(control$year[1] - 1)]
     effort(F)[, ac(control$year[1] - 1)][idx==0] <- 1e-6
-  
     Fs <- FLFisheries(F=F)
     Fs@desc <- "F"
 
@@ -429,7 +428,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     Fc <- out$fisheries[[1]][[1]]
     eff <- out$fisheries[[1]]@effort
     Bo <- out$biols[[1]]
-
+    
     # PROJECTION years
     miny <- min(control@target$year)
     maxy <- max(control@target$year)
