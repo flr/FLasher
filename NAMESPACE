@@ -15,7 +15,8 @@ importFrom(methods,
   "callNextMethod",
   "is",
   "slot",
-  "slot<-")
+  "slot<-",
+  "validObject")
 importFrom(graphics,
   "lines",
   "points",
