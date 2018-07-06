@@ -47,7 +47,11 @@
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
     function(object, fishery, control, effort_max=rep(1e5, length(fishery)),
       residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
-  
+ 
+  # CHECK valid fwdControl
+  if(!validObject(control))
+    stop("control object is not valid, please check")
+
   # CHECK length and names of biols and residuals
   if(!all.equal(names(object), names(residuals)))
     stop("Names of biols and residuals must match exactly")
