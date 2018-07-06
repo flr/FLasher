@@ -132,6 +132,9 @@ setClass("fwdControl",
     if(any(rsu == 11 | rsu == 22))
       return("Only value OR min/max allowed by row")
 
+    if(any(rsu == 0))
+      return("Every row in fwdControl must have a 'value' or 'min/max' range")
+
     # TODO: classes of data.frame columns
     # TODO: colnames in target
 
