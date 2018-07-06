@@ -388,13 +388,16 @@ T bevholtSS3(const T srp, const std::vector<double> params){
     double R0 = params[1];
     double v = params[2];
     
-    // sratio is the recruits sex ratio
+    // sratio is the recruits sex ratio, 1 if single sex model
     double sratio = 1;
+    if (params.size() > 3) {
+      sratio = params[3];
+    }
     
-    // seasp is the prop of rec for the season
+    // seasp is the prop of rec for the season, 1 if single rec
     double seasp = 1;
-    if (params.size() == 4) {
-      seasp = params[3];
+    if (params.size() > 4) {
+      seasp = params[4];
     }
 
     T rec;
@@ -432,6 +435,12 @@ T survsrr(const T ssf, const std::vector<double> params){
     double beta = params[2];
     double SB0 = params[3];
 
+    // sratio is the recruits sex ratio, default 0.5 assumes 2 sex model
+    double sratio = 0.5;
+    if (params.size() > 4) {
+      sratio = params[4];
+    }
+
     double z0 = log(1.0 / (SB0 / R0));
     
     double zmax = z0 + sfrac * (0.0 - z0);
@@ -439,7 +448,7 @@ T survsrr(const T ssf, const std::vector<double> params){
     T zsurv = exp((1.0 - pow((ssf / SB0), beta)) * (zmax - z0) + z0);
 
     // Sex ratio at recruitment set at 1:1
-    rec = ssf * zsurv * 0.5;
+    rec = ssf * zsurv * sratio;
 
     return rec;
 }
