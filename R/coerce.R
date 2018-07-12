@@ -8,22 +8,51 @@
 
 # FLQuants -> fwdControl {{{
 
+#' @examples
+#' # Single *catch* target
+#' as(FLQuants(catch=FLQuant(4500, dimnames=list(year=2000))), "fwdControl")
+#' # Single single *f* range
+#' as(FLQuants(f=FLQuant(c(0.1, 0.9),
+#'   dimnames=list(quant=c("min", "max"), year=2000))), 'fwdControl')
+#' # Single *f* target, *value* specified
+#' as(FLQuants(f=FLQuant(0.5, dimnames=list(quant=c("value"), year=2000))),
+#'   'fwdControl')
+#' # *f* target and *catch* limits
+#' as(FLQuants(f=FLQuant(0.5, dimnames=list(year=2000)),
+#'   catch=FLQuant(c(100, 4000), dimnames=list(quant=c("min", "max"), year=2000))),
+#'   'fwdControl')
+#' # *f* target and *catch* minimum
+#' as(FLQuants(f=FLQuant(0.5, dimnames=list(year=2000)),
+#'   catch=FLQuant(c(100), dimnames=list(quant=c("min"), year=2000))), 'fwdControl')
+
 setAs("FLQuants", "fwdControl",
   function(from) {
+    
+    # GET 'quant'
+    qua <- quant(from[[1]])
 
-    # CHECKS
-
-    # Length must be 1
-    if(length(from) > 1)
-        stop("Conversion to fwdControl only possible for an single FLQuant")
-		
 		# CONVERT
-    df <- as.data.frame(from)[,c('year', 'iter', 'data', 'qname', 'season')]
-    names(df)[3:4] <- c('value', 'quant')
+    df <- as.data.frame(from)[,c(qua, 'year', 'iter',
+      'data', 'qname', 'season')]
+    
+    # RESHAPE if min/max in quant
+    if(any(df[,qua] %in% c("min", "max", "value"))) {
+      df[,qua][df[,qua] == "all"] <- "value"
+      df <- reshape(df, idvar = c("year", "iter", "qname", "season"),
+      timevar = qua, direction = "wide")
+      names(df) <- gsub("data.", "", names(df))
+    # or RENAME data as value
+    } else {
+      df[, qua] <- NULL
+      names(df) <- sub("data", "value", names(df))
+    }
+
+    # RENAME qname to quant
+    names(df) <- sub("qname", "quant", names(df))
 
     # DROP season if not used
     if(length(unique(df$season)) == 1)
-      df <- df[,1:4]
+      df <- subset(df, select = -season)
 
     its <- dim(from[[1]])[6]
 

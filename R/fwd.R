@@ -56,6 +56,13 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(!all.equal(names(object), names(residuals)))
     stop("Names of biols and residuals must match exactly")
 
+  # CHECK for NAs in biol: m, n, wt
+  bnas <- unlist(lapply(object, verify,
+    m=~!is.na(m), n=~!is.na(n), wt=~!is.na(wt), report=FALSE))
+ 
+  if(!all(bnas))
+    stop("NAs present in the 'm', 'n' or 'wt' slots. Check object using verify()")  
+
   # CHECK years and dimensions match
   dib <- do.call(rbind, lapply(object, function(x) as.data.frame(dims(x))))
   dif <- do.call(rbind, lapply(fishery,
@@ -64,6 +71,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # CHECK srparams years match control years
   cyrs <- unique(control$year)
+  
   ysrp <- unlist(lapply(object, function(x) {
     # GET rec@params dimnames
     spdn <- dimnames(rec(x, "params"))$year
@@ -87,6 +95,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     else
       TRUE
   }))
+  
   if(!all(ysrp))
     stop("'years' specified in params(rec) do not match those in control or are NA (note that the 'final control year + 1' is projected if there is room)")
   
@@ -341,9 +350,12 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
   function(object, control, sr, effort_max=4,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
     
-    # CHECK for NAs
-    # if(!verify(object, ruleset(object, "anyna"))) 
-    #   stop("object cannot contain any NA value, please check and correct.")
+    # CHECK for NAs in stock: m, stock.n, stock.wt
+    snas <- verify(object, m=~!is.na(m), stock.n=~!is.na(stock.n),
+      stock.wt=~!is.na(stock.wt), report=FALSE)
+ 
+    if(!all(snas))
+      stop("NAs present in the 'm', 'stock.n' or 'stock.wt' slots. Check object using verify()")  
 
     # DEAL with iters
     its <- max(dims(object)$iter, dim(iters(control))[3])
