@@ -47,19 +47,19 @@ fwdSR_base<T>::fwdSR_base(){
 /*! \brief Main constructor for the fwdSR class
  *
  * Sets the function pointer to point at the correct SR function.
- * Assumes all dimensions (e.g. of residuals and parameters) have been checked in R (no checks made here).
+ * Assumes all dimensions (e.g. of deviances and parameters) have been checked in R (no checks made here).
  *
  * \param model_name The name of the SR function (must be present in the model map else it fails).
  * \param params_ip The SR parameters. The parameters are stored in the first dimension and can be disaggregated by time, area etc.
- * \param residuals_ip Residuals that can be applied to the predicted recruitment.
- * \param residuals_mult_ip Are the residuals multiplicative (true) or additive (false).
+ * \param deviances_ip Residuals that can be applied to the predicted recruitment.
+ * \param deviances_mult_ip Are the deviances multiplicative (true) or additive (false).
  */
 template <typename T>
-fwdSR_base<T>::fwdSR_base(const std::string model_name_ip, const FLQuant params_ip, const FLQuant residuals_ip, const bool residuals_mult_ip) {
+fwdSR_base<T>::fwdSR_base(const std::string model_name_ip, const FLQuant params_ip, const FLQuant deviances_ip, const bool deviances_mult_ip) {
     model_name = model_name_ip;
     params = params_ip;
-    residuals = residuals_ip;
-    residuals_mult = residuals_mult_ip;
+    deviances = deviances_ip;
+    deviances_mult = deviances_mult_ip;
     init_model_map();
     // Set the model pointer
     typename model_map_type::const_iterator model_pair_found = map_model_name_to_function.find(model_name_ip);
@@ -77,8 +77,8 @@ template <typename T>
 fwdSR_base<T>::operator SEXP() const{
     return Rcpp::List::create(Rcpp::Named("params", params),
                             Rcpp::Named("model_name", model_name),
-                            Rcpp::Named("residuals",residuals),
-                            Rcpp::Named("residuals_mult",residuals_mult));
+                            Rcpp::Named("deviances",deviances),
+                            Rcpp::Named("deviances_mult",deviances_mult));
 }
 
 
@@ -93,8 +93,8 @@ fwdSR_base<T>::fwdSR_base(const fwdSR_base<T>& fwdSR_source){
     model = fwdSR_source.model; // Copy the pointer - we want it to point to the same place so copying should be fine.
     model_name = fwdSR_source.model_name;
     params = fwdSR_source.params;
-    residuals = fwdSR_source.residuals;
-    residuals_mult = fwdSR_source.residuals_mult;
+    deviances = fwdSR_source.deviances;
+    deviances_mult = fwdSR_source.deviances_mult;
 }
 
 /*! \brief Assignment operator for the fwdSR class.
@@ -109,8 +109,8 @@ fwdSR_base<T>& fwdSR_base<T>::operator = (const fwdSR_base<T>& fwdSR_source){
         model = fwdSR_source.model; // Copy the pointer - we want it to point to the same place so copying should be fine.
         model_name = fwdSR_source.model_name;
         params = fwdSR_source.params;
-        residuals = fwdSR_source.residuals;
-        residuals_mult = fwdSR_source.residuals_mult;
+        deviances = fwdSR_source.deviances;
+        deviances_mult = fwdSR_source.deviances_mult;
 	}
 	return *this;
 }
@@ -210,18 +210,18 @@ T fwdSR_base<T>::eval_model(const T srp, const std::vector<unsigned int> params_
 
 /*! \brief Predict recruitment
  *
- * Calculates the recruitment from an FLQuant of SRP, including the application of residuals.
+ * Calculates the recruitment from an FLQuant of SRP, including the application of deviances.
  * The SRP can be a subset of the 'full' model SRP
  * (e.g. can be only one season out of all seasons, or several years out of all years).
  * It is therefore necessary to also pass in a vector of indices to specify the start
- * position of the SR params and residuals because we don't know the start position of the SRP argument relative to the whole operating model. 
- * i.e. we need to know the index of the params and residuals that correspond with the first value in the SRP vector.
- * The parameters and residuals dimensions are in line with the recruitment.
+ * position of the SR params and deviances because we don't know the start position of the SRP argument relative to the whole operating model. 
+ * i.e. we need to know the index of the params and deviances that correspond with the first value in the SRP vector.
+ * The parameters and deviances dimensions are in line with the recruitment.
  * e.g. parameters in year 2, season 1 are used to calculated recruitment in year 2, season 1 given the SSB NOT applied to the SSB in year 2, season 1 to calculate recruitment the following year.
- * Internally, the method calls the eval() method to calculate deterministic recruitment then applies the residuals.
+ * Internally, the method calls the eval() method to calculate deterministic recruitment then applies the deviances.
  *
  * \param srp The spawning reproductive potential that produces the recruitment.
- * \param initial_params_indices A vector of length 5 (year, unit, ... iter) to specify the start position of the indices of the SR params and residuals relative to the 'whole' operating model (starting at 1).
+ * \param initial_params_indices A vector of length 5 (year, unit, ... iter) to specify the start position of the indices of the SR params and deviances relative to the 'whole' operating model (starting at 1).
  */
 template <typename T>
 FLQuant_base<T> fwdSR_base<T>::predict_recruitment(const FLQuant_base<T> srp, const std::vector<unsigned int> initial_params_indices){ 
@@ -232,43 +232,43 @@ FLQuant_base<T> fwdSR_base<T>::predict_recruitment(const FLQuant_base<T> srp, co
     if (srp_dim[0] != 1){
         Rcpp::stop("In fwdSR::predict_recruitment. srp must be of length 1 in the first dimension.\n");
     }
-    // If residuals starting from the initial_params_indices are too small for the SRP it does not recycle = error
-    // (e.g. if you pass in subset of SRP with 10 out 20 years but the initial_params_indices has year = 15, i.e. 5 years too short in residuals)
+    // If deviances starting from the initial_params_indices are too small for the SRP it does not recycle = error
+    // (e.g. if you pass in subset of SRP with 10 out 20 years but the initial_params_indices has year = 15, i.e. 5 years too short in deviances)
     // Iters are OK
-    std::vector<unsigned int> res_dim = residuals.get_dim();
+    std::vector<unsigned int> res_dim = deviances.get_dim();
     // Distance between initial_params_indices and res_dim cannot be smaller than srp_dim
     for (unsigned int dim_counter = 1; dim_counter <= 4; ++dim_counter){
         if((res_dim[dim_counter] - initial_params_indices[dim_counter-1] + 1) < srp_dim[dim_counter]){
-            Rcpp::stop("In fwdSR::predict_recruitment. Initial indices of residuals too small to cover the SRP\n");
+            Rcpp::stop("In fwdSR::predict_recruitment. Initial indices of deviances too small to cover the SRP\n");
         }
     }
     // Empty output object
     FLQuant_base<T> rec = srp;
     rec.fill(0.0);
-    // Going to have to loop over the dimensions and update the params and residuals indices - not nice
+    // Going to have to loop over the dimensions and update the params and deviances indices - not nice
     std::vector<unsigned int> params_indices = initial_params_indices;
-    //std::vector<unsigned int> residuals_indices = initial_residuals_indices;
+    //std::vector<unsigned int> deviances_indices = initial_deviances_indices;
     for (unsigned int year_counter = 1; year_counter <= srp_dim[1]; ++year_counter){
         params_indices[0] = initial_params_indices[0] + year_counter - 1;
-        //residuals_indices[0] = initial_residuals_indices[0] + year_counter - 1;
+        //deviances_indices[0] = initial_deviances_indices[0] + year_counter - 1;
         for (unsigned int unit_counter = 1; unit_counter <= srp_dim[2]; ++unit_counter){
             params_indices[1] = initial_params_indices[1] + unit_counter - 1;
-            //residuals_indices[1] = initial_residuals_indices[1] + unit_counter - 1;
+            //deviances_indices[1] = initial_deviances_indices[1] + unit_counter - 1;
             for (unsigned int season_counter = 1; season_counter <= srp_dim[3]; ++season_counter){
                 params_indices[2] = initial_params_indices[2] + season_counter - 1;
-                //residuals_indices[2] = initial_residuals_indices[2] + season_counter - 1;
+                //deviances_indices[2] = initial_deviances_indices[2] + season_counter - 1;
                 for (unsigned int area_counter = 1; area_counter <= srp_dim[4]; ++area_counter){
                     params_indices[3] = initial_params_indices[3] + area_counter - 1;
-                    //residuals_indices[3] = initial_residuals_indices[3] + area_counter - 1;
+                    //deviances_indices[3] = initial_deviances_indices[3] + area_counter - 1;
                     for (unsigned int iter_counter = 1; iter_counter <= srp_dim[5]; ++iter_counter){
                         params_indices[4] = initial_params_indices[4] + iter_counter - 1;
-                        //residuals_indices[4] = initial_residuals_indices[4] + iter_counter - 1;
+                        //deviances_indices[4] = initial_deviances_indices[4] + iter_counter - 1;
                         T rec_temp = eval_model(srp(1, year_counter, unit_counter, season_counter, area_counter, iter_counter), params_indices);
-                        if (residuals_mult == true){
-                            rec_temp *= residuals(1, params_indices[0], params_indices[1], params_indices[2], params_indices[3], params_indices[4]);
+                        if (deviances_mult == true){
+                            rec_temp *= deviances(1, params_indices[0], params_indices[1], params_indices[2], params_indices[3], params_indices[4]);
                         }
                         else {
-                            rec_temp += residuals(1, params_indices[0], params_indices[1], params_indices[2], params_indices[3], params_indices[4]);
+                            rec_temp += deviances(1, params_indices[0], params_indices[1], params_indices[2], params_indices[3], params_indices[4]);
                         }
                         rec(1, year_counter, unit_counter, season_counter, area_counter, iter_counter) = rec_temp;
     }}}}}
@@ -294,32 +294,32 @@ int fwdSR_base<T>::get_nparams() const{
     return params.get_nquant();
 }
 
-/*! \brief Get the residuals.
+/*! \brief Get the deviances.
  *
- * Returns the residuals.
+ * Returns the deviances.
  */
 template <typename T>
-FLQuant_base<double> fwdSR_base<T>::get_residuals() const{
-    return residuals;
+FLQuant_base<double> fwdSR_base<T>::get_deviances() const{
+    return deviances;
 }
 
-/*! \brief Get the residuals multiplier.
+/*! \brief Get the deviances multiplier.
  *
- * Returns the residuals multiplier.
+ * Returns the deviances multiplier.
  */
 template <typename T>
-bool fwdSR_base<T>::get_residuals_mult() const{
-    return residuals_mult;
+bool fwdSR_base<T>::get_deviances_mult() const{
+    return deviances_mult;
 }
 
 template <typename T>
-void fwdSR_base<T>::set_residuals(const FLQuant_base<double> new_residuals){
-    residuals = new_residuals;
+void fwdSR_base<T>::set_deviances(const FLQuant_base<double> new_deviances){
+    deviances = new_deviances;
 }
 
 template <typename T>
-void fwdSR_base<T>::set_residuals_mult(const bool new_residuals_mult){
-    residuals_mult = new_residuals_mult;
+void fwdSR_base<T>::set_deviances_mult(const bool new_deviances_mult){
+    deviances_mult = new_deviances_mult;
 }
 
 //! Does recruitment happen for a unit in that timestep

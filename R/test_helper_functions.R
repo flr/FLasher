@@ -233,8 +233,8 @@ random_fwdBiols_list_generator <- function(min_biols = 1, max_biols = 5, ...){
     for (i in 1:nbiols){
         biol_bits <- list()
         biol_bits[["biol"]] <- random_FLBiolcpp_generator(...)
-        biol_bits[["srr_residuals"]] <- n(biol_bits[["biol"]])[1,]
-        biol_bits[["srr_residuals_mult"]] <- TRUE
+        biol_bits[["srr_deviances"]] <- n(biol_bits[["biol"]])[1,]
+        biol_bits[["srr_deviances_mult"]] <- TRUE
         biols[[as.character(signif(abs(runif(1,min=100,max=999)),3))]] <- biol_bits
     }
     return(biols)
@@ -407,7 +407,7 @@ make_test_operatingModel <- function(fls, FCB, nseasons = 1, recruitment_seasons
         newb@srmodel <- "bevholt"
         newb@srparams <- srr_params
         # Make the list of FLBiolcpp bits
-        biol_bits <- list(biol = newb, srr_residuals = res, srr_residuals_mult = TRUE)
+        biol_bits <- list(biol = newb, srr_deviances = res, srr_deviances_mult = TRUE)
         biols[[paste("biol", bno, sep="")]] <- biol_bits
     }
     # Make the fisheries

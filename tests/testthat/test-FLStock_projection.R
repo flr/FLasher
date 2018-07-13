@@ -298,14 +298,14 @@ test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
     ple4_mtf <- stf(ple4, nyears = 10)
     ple4_mtf <- propagate(ple4_mtf, niters)
     
-    # Residuals
+    # deviances
     
-    rec_residuals <- FLQuant(NA, dimnames = list(year=2009:2018, iter=1:niters))
+    rec_deviances <- FLQuant(NA, dimnames = list(year=2009:2018, iter=1:niters))
     sample_years <- sample(dimnames(residuals(ple4_sr))$year, niters * 10, replace = TRUE)
-    rec_residuals[] <- exp(residuals(ple4_sr)[,sample_years])
-    ple4_stoch_rec <- fwd(ple4_mtf, control = ctrl_catch, sr = ple4_sr, residuals = rec_residuals) 
+    rec_deviances[] <- exp(residuals(ple4_sr)[,sample_years])
+    ple4_stoch_rec <- fwd(ple4_mtf, control = ctrl_catch, sr = ple4_sr, deviances = rec_deviances) 
     expect_equal(c(catch(ple4_stoch_rec)[,ac(2009:2018)]),rep(future_catch,niters))
-    expect_equal(c(predict(ple4_sr,ssb=ssb(ple4_stoch_rec)[,ac(2008:2017)]) %*% rec_residuals), c(rec(ple4_stoch_rec)[,ac(2009:2018)]))
+    expect_equal(c(predict(ple4_sr,ssb=ssb(ple4_stoch_rec)[,ac(2008:2017)]) %*% rec_deviances), c(rec(ple4_stoch_rec)[,ac(2009:2018)]))
     
     # Stochastic target
     
@@ -328,9 +328,9 @@ test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
     
     # Stochastic targets and recruitment
     
-    ple4_iters <- fwd(ple4_mtf, control=ctrl_catch_iters, sr = list(model="bevholt", params=sr_iters), residuals = rec_residuals)
+    ple4_iters <- fwd(ple4_mtf, control=ctrl_catch_iters, sr = list(model="bevholt", params=sr_iters), deviances = rec_deviances)
     expect_equal(c(catch(ple4_iters)[,ac(2009:2018)]), stoch_catch)
-    expect_equal(c(predict(srmod, ssb=ssb(ple4_iters)[,ac(2008:2017)]) %*% rec_residuals), c(rec(ple4_iters)[,ac(2009:2018)]))
+    expect_equal(c(predict(srmod, ssb=ssb(ple4_iters)[,ac(2008:2017)]) %*% rec_deviances), c(rec(ple4_iters)[,ac(2009:2018)]))
 
 })
 

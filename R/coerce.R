@@ -90,6 +90,6 @@ setAs("FLBiol", "list",
 
     list(
       biol = as(from, "FLBiolcpp"),
-      srr_residuals = FLQuant(),
-      srr_residuals_mult = TRUE)
+      srr_deviances = FLQuant(),
+      srr_deviances_mult = TRUE)
   }) # }}}

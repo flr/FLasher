@@ -44,24 +44,24 @@ fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp){
     // Make fwdSR from FLBiolcpp model and params with Residuals of 1 and multiplicative
     std::vector<unsigned int> res_dims = m_flq.get_dim();
     res_dims[0] = 1;
-    FLQuant residuals(res_dims, 1.0);
+    FLQuant deviances(res_dims, 1.0);
     std::string srmodel = fwdb_s4.slot("srmodel");
     FLQuant srparams = fwdb_s4.slot("srparams");
-    fwdSR_base<T> new_srr(srmodel, srparams, residuals, true);
+    fwdSR_base<T> new_srr(srmodel, srparams, deviances, true);
     srr = new_srr;
 }
 
-// Constructor from FLBiol and residuals
-// Use delegated constructor to make fwdBiol first, then add the missing residuals
+// Constructor from FLBiol and deviances
+// Use delegated constructor to make fwdBiol first, then add the missing deviances
 template <typename T>
-fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp, const FLQuant residuals, const bool residuals_mult) : fwdBiol_base(flb_sexp){
+fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp, const FLQuant deviances, const bool deviances_mult) : fwdBiol_base(flb_sexp){
     auto biol_dim = n().get_dim();
-    auto resid_dim = residuals.get_dim();
+    auto resid_dim = deviances.get_dim();
     if ((biol_dim[1] != resid_dim[1]) || (biol_dim[2] != resid_dim[2]) || (biol_dim[3] != resid_dim[3]) || (biol_dim[4] != resid_dim[4])){
-        Rcpp::stop("In fwdBiol constructor (FLBiolcpp, residuals, residuals_mult). Dimensions 2-5 of residuals should equal those of the fwdBiol\n");
+        Rcpp::stop("In fwdBiol constructor (FLBiolcpp, deviances, deviances_mult). Dimensions 2-5 of deviances should equal those of the fwdBiol\n");
     }
-    srr.set_residuals(residuals);
-    srr.set_residuals_mult(residuals_mult);
+    srr.set_deviances(deviances);
+    srr.set_deviances_mult(deviances_mult);
 }
 
 // Constructor from FLBiol and fwdSR
@@ -69,12 +69,12 @@ fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp, const FLQuant residuals, cons
 template <typename T>
 fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp, const fwdSR_base<T> srr_in) : fwdBiol_base(flb_sexp){
     //Rprintf("In FLBiol and fwdSR constructor\n");
-    // Check size of residuals matches that of FLBiol: dims 2-5
-    auto residuals = srr_in.get_residuals();
-    auto resid_dim = residuals.get_dim();
+    // Check size of deviances matches that of FLBiol: dims 2-5
+    auto deviances = srr_in.get_deviances();
+    auto resid_dim = deviances.get_dim();
     auto biol_dim = n().get_dim();
     if ((biol_dim[1] != resid_dim[1]) || (biol_dim[2] != resid_dim[2]) || (biol_dim[3] != resid_dim[3]) || (biol_dim[4] != resid_dim[4])){
-        Rcpp::stop("In fwdBiol constructor (FLBiolcpp, fwdSR). Dimensions 2-5 of SR residuals should equal those of the fwdBiol\n");
+        Rcpp::stop("In fwdBiol constructor (FLBiolcpp, fwdSR). Dimensions 2-5 of SR deviances should equal those of the fwdBiol\n");
     }
     srr = srr_in;
 }
@@ -82,7 +82,7 @@ fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp, const fwdSR_base<T> srr_in) :
 // Constructor from FLBiol and fwdSR bits
 // Use delegated constructor
 template <typename T>
-fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult) : fwdBiol_base(flb_sexp, fwdSR_base<T>(model_name, params, residuals, residuals_mult)){
+fwdBiol_base<T>::fwdBiol_base(const SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant deviances, const bool deviances_mult) : fwdBiol_base(flb_sexp, fwdSR_base<T>(model_name, params, deviances, deviances_mult)){
 }
 
 // Copy constructor - else members can be pointed at by multiple instances
@@ -333,7 +333,7 @@ fwdBiols_base<T>::fwdBiols_base(SEXP flbs_sexp){
     biols.reserve(no_biols);
     // Go through the biols list and make the fwdBiol elements
     for (Rcpp::List flb_list: flbs_list){
-        fwdBiol_base<T> flb(flb_list["biol"], flb_list["srr_residuals"], flb_list["srr_residuals_mult"]);
+        fwdBiol_base<T> flb(flb_list["biol"], flb_list["srr_deviances"], flb_list["srr_deviances_mult"]);
         biols.emplace_back(flb);
 }
     names = flbs_list.names();

@@ -44,13 +44,13 @@ When an **FLStock** is being projected, the Fmultiplier in each step is found th
 If you are moving from using __FLash__ to __FLasher__ there are a few basic things to note.
 
 The first thing to note is argument names to the *fwd()* function.
-The projection is still run using the *fwd()* function. The **FLStock** argument can still be unnamed if it is passed in as the first argument. However, the **fwdControl** argument must now be named as *control*.  Additionally, the name of the *sr.residuals* argument is now simply *residuals*
+The projection is still run using the *fwd()* function. The **FLStock** argument can still be unnamed if it is passed in as the first argument. However, the **fwdControl** argument must now be named as *control*.  Additionally, the name of the *sr.residuals* argument is now *deviances*
 
 ```{r, eval=FALSE}
 # Will not work
 out <- fwd(stock, control, sr=srrbits, sr.residuals=residuals)
 # Will work
-out <- fwd(stock, control=control, sr=srrbits, residuals=residuals)
+out <- fwd(stock, control=control, sr=srrbits, deviances=deviances)
 ```
 
 The second thing is that when making the **fwdControl** object the names of the some of the columns has changed.

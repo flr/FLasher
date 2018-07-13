@@ -28,10 +28,10 @@ class fwdBiol_base {
     public:
         /* Constructors */
 		fwdBiol_base();
-		fwdBiol_base(const SEXP flb_sexp); // Used as intrusive 'as', takes an FLBiolcpp but with no SRR residuals information
+		fwdBiol_base(const SEXP flb_sexp); // Used as intrusive 'as', takes an FLBiolcpp but with no SRR deviances information
         fwdBiol_base(const SEXP flb_sexp, const fwdSR_base<T> srr_in);  // Pass in FLBiol and fwdSR
-        fwdBiol_base(const SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant residuals, const bool residuals_mult); // Pass in FLBiol and bits of fwdSR
-        fwdBiol_base(const SEXP flb_sexp, const FLQuant residuals, const bool residuals_mult); // Pass in FLBiol and bits of fwdSR
+        fwdBiol_base(const SEXP flb_sexp, const std::string model_name, const FLQuant params, const FLQuant deviances, const bool deviances_mult); // Pass in FLBiol and bits of fwdSR
+        fwdBiol_base(const SEXP flb_sexp, const FLQuant deviances, const bool deviances_mult); // Pass in FLBiol and bits of fwdSR
         
         operator SEXP() const; // Used as intrusive 'wrap' - returns an FLBiolcpp
 

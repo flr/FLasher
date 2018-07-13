@@ -85,18 +85,18 @@ test_that("SR models with FLStock",{
     test <- fwd(ple4mtfp, control=control, sr=list(model = "bevholt", params=bh_params))
     expect_equal(c(rec(test)[,ac(years)]), c(predict(ple4_srr, ssb=ssb(test)[,ac(years-1)])))
     
-    # Residuals 1 iter
+    # deviances 1 iter
     
     res <- FLQuant(NA, dimnames=list(year=years, iter=1))
     res[] <- sample(c(exp(residuals(ple4_srr))), prod(dim(res)), replace=TRUE)
-    test <- fwd(ple4mtf, control=control, sr=ple4_srr, residuals=res)
+    test <- fwd(ple4mtf, control=control, sr=ple4_srr, deviances=res)
     expect_equal(c(rec(test)[,ac(years)]),c(predict(ple4_srr, ssb=ssb(test)[,ac(years-1)]) %*% res))
     
-    # Residuals multi iters
+    # deviances multi iters
     
     res <- FLQuant(NA, dimnames=list(year=years, iter=1:niters))
     res[] <- sample(c(exp(residuals(ple4_srr))), prod(dim(res)), replace=TRUE)
-    test <- fwd(ple4mtfp, control=control, sr=ple4_srr, residuals=res)
+    test <- fwd(ple4mtfp, control=control, sr=ple4_srr, deviances=res)
     expect_equal(c(rec(test)[,ac(years)]),c(predict(ple4_srr, ssb=ssb(test)[,ac(years-1)]) %*% res))
     
     # Iterations in the params
@@ -118,9 +118,9 @@ test_that("SR models with FLStock",{
     
     expect_equal(c(rec(test)[,ac(years)]), c(predict(iterbh, ssb=ssb(test)[,ac(years-1)])))
     
-    # Residuals and iterations in the params
+    # deviances and iterations in the params
     
-    test <- fwd(ple4mtfp, control=control, sr=list(model="bevholt", params=iter_params), residuals=res)
+    test <- fwd(ple4mtfp, control=control, sr=list(model="bevholt", params=iter_params), deviances=res)
     expect_equal(c(rec(test)[,ac(years)]), c(predict(iterbh, ssb=ssb(test)[,ac(years-1)]) %*% res))
 })
 
@@ -171,10 +171,10 @@ test_that("SR models with FLBiol and FLFishery",{
     fisheryp[[1]] <- propagate(fishery[[1]], niters)
     biolp@rec@model <- model(ple4_srr)
     biolp@rec@params <- params(ple4_srr)
-    # Residuals
+    # deviances
     res <- FLQuant(NA, dimnames=list(year=years, iter=1:niters))
     res[] <- sample(c(exp(residuals(ple4_srr))), prod(dim(res)), replace=TRUE)
-    test <- fwd(biolp, fishery=fisheryp, control=control, residuals=res)
+    test <- fwd(biolp, fishery=fisheryp, control=control, deviances=res)
     expect_equal(c(n(test[["biols"]])[1,ac(years)]), c(predict(bh, ssb=ssb(test[["biols"]])[,ac(years-1)]) %*% res))
     # Iterations in SR pars
     vc <- vcov(ple4_srr)[,,1]
@@ -191,7 +191,7 @@ test_that("SR models with FLBiol and FLFishery",{
     biolp@rec@params <- iter_params
     test <- fwd(biolp, fishery=fisheryp, control=control)
     expect_equal(c(n(test[["biols"]])[1,ac(years)]), c(predict(iterbh, ssb=ssb(test[["biols"]])[,ac(years-1)])))
-    # Residuals and iterations in SR pars
-    test <- fwd(biolp, fishery=fisheryp, control=control, residuals=res)
+    # deviances and iterations in SR pars
+    test <- fwd(biolp, fishery=fisheryp, control=control, deviances=res)
     expect_equal(c(n(test[["biols"]])[1,ac(years)]), c(predict(iterbh, ssb=ssb(test[["biols"]])[,ac(years-1)]) %*% res))
 })

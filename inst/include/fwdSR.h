@@ -22,7 +22,7 @@ class fwdSR_base {
     public:
         // /* Constructors */
 		fwdSR_base();
-		fwdSR_base(const std::string model_name_ip, const FLQuant params_ip, const FLQuant residuals_ip, const bool residuals_mult_ip);  // Construct using model name
+		fwdSR_base(const std::string model_name_ip, const FLQuant params_ip, const FLQuant deviances_ip, const bool deviances_mult_ip);  // Construct using model name
         operator SEXP() const; // Used as intrusive 'wrap' - returns a list
 		fwdSR_base(const fwdSR_base& fwdSR_base_source); // copy constructor to ensure that copy is a deep copy - used when passing into functions
 		fwdSR_base& operator = (const fwdSR_base& fwdSR_base_source); // Assignment operator for a deep copy
@@ -31,7 +31,7 @@ class fwdSR_base {
         T eval_model(const T srp, int year, int unit, int season, int area, int iter) const;
         T eval_model(const T srp, const std::vector<unsigned int> params_indices) const;
 
-        // Predict recruitment. As eval() but also applies the residuals
+        // Predict recruitment. As eval() but also applies the deviances
         FLQuant_base<T> predict_recruitment(const FLQuant_base<T> srp, const std::vector<unsigned int> initial_params_indices);
         
         // Typedef for the SRR model functions
@@ -44,10 +44,10 @@ class fwdSR_base {
         std::string get_model_name() const;
         std::vector<double> get_params(unsigned int year, unsigned int unit, unsigned int season, unsigned int area, unsigned int iter) const;
         int get_nparams() const; // No of params in a time step - the length of the first dimension
-        FLQuant_base<double> get_residuals() const;
-        bool get_residuals_mult() const;
-        void set_residuals(const FLQuant_base<double> new_residuals);
-        void set_residuals_mult(const bool new_residuals_mult);
+        FLQuant_base<double> get_deviances() const;
+        bool get_deviances_mult() const;
+        void set_deviances(const FLQuant_base<double> new_deviances);
+        void set_deviances_mult(const bool new_deviances_mult);
 
         bool does_recruitment_happen(unsigned int unit, unsigned int year, unsigned int season) const;
 
@@ -55,8 +55,8 @@ class fwdSR_base {
         T (*model) (const T, const std::vector<double>); // Pointer to SRR function
         std::string model_name;
         FLQuant_base<double> params;
-        FLQuant_base<double> residuals;
-        bool residuals_mult;
+        FLQuant_base<double> deviances;
+        bool deviances_mult;
         model_map_type map_model_name_to_function; // Map for the SRR models
 };
 

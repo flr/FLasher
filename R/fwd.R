@@ -28,7 +28,8 @@
 #' @param fishery If object is an FLBiol(s), a FLFishery(ies). Else this argument is ignored.
 #' @param control A fwdControl object.
 #' @param effort_max Maximum yearly rate of change in effort for each fishery
-#' @param residuals An FLQuant of residuals for the stock recruitment relationship (if object is an FLStock).
+#' @param deviances An FLQuant of deviances for the stock recruitment relationship (if object is an FLStock).
+#' @param residuals Old argument name for deviances, to be deleted
 #' @param sr a predictModel, FLSr or list that describes the stock recruitment relationship (if object is an FLStock).
 #' @param ... Stormbending.
 #'
@@ -46,15 +47,15 @@
 
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
     function(object, fishery, control, effort_max=rep(1e5, length(fishery)),
-      residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
+     deviances=residuals, residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
  
   # CHECK valid fwdControl
   if(!validObject(control))
     stop("control object is not valid, please check")
 
-  # CHECK length and names of biols and residuals
-  if(!all.equal(names(object), names(residuals)))
-    stop("Names of biols and residuals must match exactly")
+  # CHECK length and names of biols and deviances
+  if(!all.equal(names(object), names(deviances)))
+    stop("Names of biols and deviances must match exactly")
 
   # TODO years
   # CHECK for NAs in biol: m, n, wt
@@ -108,19 +109,19 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(max(dib$area) > 1 | max(dif$area > 1))
     stop("fwd() cannot deal (yet) with multiple areas")
 
-  # CONVERT biols to list(list(object, name, params, residuals, mult))
+  # CONVERT biols to list(list(object, name, params, deviances, mult))
   biolscpp <- lapply(object, as, "list")
 
-  # Residuals must be same dim 2-5 as the biol
-  # ADD residuals
+  # deviances must be same dim 2-5 as the biol
+  # ADD deviances
   for(i in names(biolscpp)) {
     bdnms <- dimnames(n(biolscpp[[i]][["biol"]]))
     year_range <- range(as.numeric(bdnms$year)) 
     # Need a window equivalent for year and season
-    residuals[[i]] <- window(residuals[[i]], start=year_range[1], end=year_range[2])
+    deviances[[i]] <- window(deviances[[i]], start=year_range[1], end=year_range[2])
     # No NAs
-    residuals[[i]][is.na(residuals[[i]])] <- 1
-    biolscpp[[i]][["srr_residuals"]] <- residuals[[i]]
+    deviances[[i]][is.na(deviances[[i]])] <- 1
+    biolscpp[[i]][["srr_deviances"]] <- deviances[[i]]
   }
   
   # CREATE FCB, if missing and possible
@@ -282,7 +283,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFisheries",
 setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
   control="fwdControl"),
   
-  function(object, fishery, control,
+  function(object, fishery, control, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {
 
     # COERCE to FLBiols and FLFisheries
@@ -298,7 +299,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
       each=dim(control@target)[1])
 
     # RUN
-    out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals), ...)
+    out <- fwd(Bs, Fs, control, deviances=FLQuants(B=deviances), ...)
 
     # PARSE output
     Fc <- out$fisheries[[1]][[1]]
@@ -315,7 +316,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
   control="missing"),
   
-  function(object, fishery, ..., effort_max=10,
+  function(object, fishery, ..., effort_max=10, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(m(object)))) {
     
     # PARSE ...
@@ -334,7 +335,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 
     control <- as(args, "fwdControl")
 
-    out <- fwd(object, fishery, control=control, residuals=residuals,
+    out <- fwd(object, fishery, control=control, deviances=deviances,
       effort_max=effort_max)
 
     return(out)
@@ -348,7 +349,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
-  function(object, control, sr, effort_max=4,
+  function(object, control, sr, effort_max=4, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
     
     # CHECK for NAs in stock: m, stock.n, stock.wt in control$year[1] - 1
@@ -445,7 +446,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     }
 
     # RUN
-    out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals),
+    out <- fwd(Bs, Fs, control, deviances=FLQuants(B=deviances),
       effort_max=effort_max, ...)
 
     # PARSE output
@@ -495,7 +496,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 #' @rdname fwd-methods
 #' @aliases fwd,FLStock,missing,missing-method
 setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
-  function(object, fishery=missing, sr, effort_max=10,
+  function(object, fishery=missing, sr, effort_max=10, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
     
     # PARSE ...
@@ -530,7 +531,7 @@ setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
     # COERCE to fwdControl
     control <- as(args, "fwdControl")
     
-    return(fwd(object=object, control=control, residuals=residuals, sr=sr,
+    return(fwd(object=object, control=control, deviances=deviances, sr=sr,
       effort_max=effort_max))
   }
 ) # }}}

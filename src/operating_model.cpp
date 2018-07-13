@@ -56,17 +56,17 @@ operatingModel::operatingModel(const FLFisheriesAD fisheries_in, const fwdBiolsA
     if ((landings_dim11[1] != biol_dim[1]) | (landings_dim11[3] != biol_dim[3])){
       Rcpp::stop("In operatingModel constructor. All biols and catches must have the same year and season range.\n");
     }
-    // While we're checking biols, check the residuals are the right size
-    std::vector<unsigned int> res_dim = biols_in(biol_no).get_srr().get_residuals().get_dim();
+    // While we're checking biols, check the deviances are the right size
+    std::vector<unsigned int> res_dim = biols_in(biol_no).get_srr().get_deviances().get_dim();
     // Loop over and check 2 - 5
     for (int dim_counter = 1; dim_counter < 5; ++dim_counter){
       if(res_dim[dim_counter] != biol_dim[dim_counter]){
-        Rcpp::stop("In operatingModel constructor. Problem with biol: %i. Dimensions 2-5 of residuals must match those of biol.\n", biol_no);
+        Rcpp::stop("In operatingModel constructor. Problem with biol: %i. Dimensions 2-5 of deviances must match those of biol.\n", biol_no);
       }
     }
     // Residuals iters 1 or n
     if (!((res_dim[5] == 1) | (res_dim[5] == biol_dim[5]))){
-        Rcpp::stop("In operatingModel constructor. Problem with biol: %i. Iterations of residuals must be 1 or match those of biol.\n", biol_no);
+        Rcpp::stop("In operatingModel constructor. Problem with biol: %i. Iterations of deviances must be 1 or match those of biol.\n", biol_no);
     }
     // Check age structure for Biol and Catch dims = fisheries catching biols must have the same dims
     Rcpp::IntegerMatrix FC = ctrl_in.get_FC(biol_no);
