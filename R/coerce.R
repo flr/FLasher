@@ -17,6 +17,9 @@
 #' # Single *f* target, *value* specified
 #' as(FLQuants(f=FLQuant(0.5, dimnames=list(quant=c("value"), year=2000))),
 #'   'fwdControl')
+#' # *catch* and *ssb* targets
+#' as(FLQuants(catch=FLQuant(4500, dimnames=list(year=2000)),
+#'    ssb_end=FLQuant(12000, dimnames=list(year=2000))), "fwdControl")
 #' # *f* target and *catch* limits
 #' as(FLQuants(f=FLQuant(0.5, dimnames=list(year=2000)),
 #'   catch=FLQuant(c(100, 4000), dimnames=list(quant=c("min", "max"), year=2000))),
@@ -32,8 +35,8 @@ setAs("FLQuants", "fwdControl",
     qua <- quant(from[[1]])
 
 		# CONVERT
-    df <- as.data.frame(from)[,c(qua, 'year', 'iter',
-      'data', 'qname', 'season')]
+    df <- as.data.frame(from)[,c(qua, "year", "iter",
+      "data", "qname", "season")]
     
     # RESHAPE if min/max in quant
     if(any(df[,qua] %in% c("min", "max", "value"))) {
@@ -52,7 +55,7 @@ setAs("FLQuants", "fwdControl",
 
     # DROP season if not used
     if(length(unique(df$season)) == 1)
-      df <- subset(df, select = -season)
+      df$season <- NULL
 
     its <- dim(from[[1]])[6]
 
