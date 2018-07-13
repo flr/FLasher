@@ -331,6 +331,7 @@ test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
     ple4_iters <- fwd(ple4_mtf, control=ctrl_catch_iters, sr = list(model="bevholt", params=sr_iters), residuals = rec_residuals)
     expect_equal(c(catch(ple4_iters)[,ac(2009:2018)]), stoch_catch)
     expect_equal(c(predict(srmod, ssb=ssb(ple4_iters)[,ac(2008:2017)]) %*% rec_residuals), c(rec(ple4_iters)[,ac(2009:2018)]))
+
 })
 
 

@@ -402,8 +402,9 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     names(F) <- "B"
 
     # RESCALE to 1 at year[1]
-    #effort(F) <- effort(F) %/% effort(F)[, ac(miny - 1)]
-    #effort(F)[, ac(pyrs)] <- 0
+    # effort(F) <- effort(F) %/% effort(F)[, ac(miny - 1)]
+    effort(F)[, ac(pyrs[-1])] <- 0
+
     Fs <- FLFisheries(F=F)
     Fs@desc <- "F"
 
@@ -446,7 +447,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # RUN
     out <- fwd(Bs, Fs, control, residuals=FLQuants(B=residuals),
       effort_max=effort_max, ...)
-    
+
     # PARSE output
     Fc <- out$fisheries[[1]][[1]]
     eff <- out$fisheries[[1]]@effort
