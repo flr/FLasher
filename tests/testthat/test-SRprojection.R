@@ -104,7 +104,7 @@ test_that("SR models with FLStock",{
     vc <- vcov(ple4_srr)[,,1]
     invsd <- solve(sqrt(diag(diag(vc))))
     corr_matrix <- invsd %*% vc %*% invsd
-    newsd <- diag(c(params(ple4_srr)) * 0.25)
+    newsd <- diag(c(params(ple4_srr)) * 0.10)
     newvc <- newsd %*% corr_matrix %*% newsd
     newparams <- mvrnorm(niters, mu = c(params(ple4_srr)), Sigma=newvc)
     newparams[newparams<=0] <- 1
@@ -180,7 +180,7 @@ test_that("SR models with FLBiol and FLFishery",{
     vc <- vcov(ple4_srr)[,,1]
     invsd <- solve(sqrt(diag(diag(vc))))
     corr_matrix <- invsd %*% vc %*% invsd
-    newsd <- diag(c(params(ple4_srr)) * 0.25)
+    newsd <- diag(c(params(ple4_srr)) * 0.10)
     newvc <- newsd %*% corr_matrix %*% newsd
     newparams <- mvrnorm(niters, mu = c(params(ple4_srr)), Sigma=newvc)
     newparams[newparams<=0] <- 1
