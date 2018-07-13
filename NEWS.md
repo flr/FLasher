@@ -1,8 +1,16 @@
-# FLasher 0.0.5
+# FLasher 0.1.0
 
 ## NEW FEATURES
 
-- effort_max argument to fwd() will limit the change in effort by year
+- effort_max argument to fwd() set a maximum valuw for effort. Similar to FLash::maxF, as scale of effort values in fwd(FLStock) is set by fbar.
+- Certain slots in FLStock are checked for NAs in year before projection to avoid R crashing.
+- New stock-recruitment relationship added, survsrr, for low fecundity species (Taylor et al, 2013).
+- Projections are now correct for multiple units, either sex or birth seasons.
+
+## BUG FIXES
+
+- SRR predictions now work correctly for 2-sex OMs (FLStock or FLBiol).
+- Check for fwdControl rows not being all NA.
 
 # FLasher 0.0.4
 
