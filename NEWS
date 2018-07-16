@@ -7,6 +7,10 @@
 - New stock-recruitment relationship added, survsrr, for low fecundity species (Taylor et al, 2013).
 - Projections are now correct for multiple units, either sex or birth seasons.
 
+ USER-VISIBLE CHANGES
+
+- The residuals argument to fwd() is now called 'deviances', and this name is used in all R and C++ code. 'residuals' is still accepted, but will be deprecated in the next minor version.
+
  BUG FIXES
 
 - SRR predictions now work correctly for 2-sex OMs (FLStock or FLBiol).

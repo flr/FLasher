@@ -114,9 +114,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # FIND iters with no NAs in target
   idn <- !c(unlist(apply(is.na(control@iters), 3, function(x) any(rowSums(x) == 3))))
-
+  
   # CONVERT biols to list(list(object, name, params, deviances, mult)), SUBSET idn
-  biolscpp <- lapply(object, function(x) as(qapply(x, iter, idn), "list"))
+  biolscpp <- lapply(object, function(x) as(iter(x, idn), "list"))
   deviances <- iter(deviances, idn)
 
   # deviances must be same dim 2-5 as the biol
