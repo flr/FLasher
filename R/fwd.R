@@ -245,6 +245,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # UPDATE object w/ new biolscpp@n
   for(i in names(object)) {
     n(object[[i]])[,,,,,idn] <- out$om$biols[[i]]@n
+    # SET not-run iters, on cyrs, as NA
     n(object[[i]])[,ac(cyrs),,,,!idn] <- NA
   }
   
@@ -255,12 +256,14 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
     # UPDATE fishery[idn]
     fsh@effort[,,,,,idn] <- effort(out$om$fisheries[[i]])
+    # SET not-run iters, on cyrs, as NA
     fsh@effort[,ac(cyrs),,,,!idn] <- NA
     fsh@capacity[,,,,,idn] <- capacity(out$om$fisheries[[i]])
 
     for(j in names(fsh)) {
       # UPDATE catches
         fsh[[j]][,,,,,idn] <- out$om$fisheries[[i]][[j]]
+        # SET not-run iters, on cyrs, as NA
         for(sl in c("landings.n", "discards.n"))
           slot(fsh[[j]], sl)[,,,,,!idn] <- NA
     }

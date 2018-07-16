@@ -123,18 +123,6 @@ setClass("fwdControl",
     if(nrow(object@target) != dim(object@iters)[1])
       return("Mismatch in number of rows in target and array")
     
-#    # value & min/max
-#    idx <- !is.na(object@iters)
-#    ids <- idx[,1,] + idx[,3,] + (10 * idx[,2,])
-#    ids <- idx[,1,,drop=FALSE] + idx[,3,,drop=FALSE] + (10 * idx[,2,,drop=FALSE])
-#    rsu <- rowSums(ids / dim(idx)[3])
-#
-#    if(any(rsu == 11 | rsu == 22))
-#      return("Only value OR min/max allowed by row")
-#
-#    if(any(rsu == 0))
-#      return("Every row in fwdControl must have a 'value' or 'min/max' range")
-#
     # TODO: classes of data.frame columns
     # TODO: colnames in target
 
