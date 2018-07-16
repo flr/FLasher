@@ -248,7 +248,6 @@ test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
     harvest.spwn(ple4_mtf)[,ac(2009)] <- 0.0
     future_ssb <- 200000
     ctrl_ssb <- fwdControl(data.frame(year=2009:2018, quant = "ssb_flash", value=future_ssb))
-
     expect_warning(ple4_ssb <- fwd(ple4_mtf, control = ctrl_ssb, sr = ple4_sr))
     expect_equal(c(ssb(ple4_ssb)[,ac(2010:2018)]), rep(future_ssb, 9))
     expect_equal(c(predict(ple4_sr,ssb=ssb(ple4_ssb)[,ac(2008:2017)])), c(rec(ple4_ssb)[,ac(2009:2018)]))

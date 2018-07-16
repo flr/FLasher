@@ -112,6 +112,13 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # CONVERT biols to list(list(object, name, params, deviances, mult))
   biolscpp <- lapply(object, as, "list")
 
+  # FIND iters with no NAs in target
+  idn <- !c(unlist(apply(is.na(control@iters), 3, function(x) any(rowSums(x) == 3))))
+
+  # CONVERT biols to list(list(object, name, params, deviances, mult)), SUBSET idn
+  biolscpp <- lapply(object, function(x) as(qapply(x, iter, idn), "list"))
+  deviances <- iter(deviances, idn)
+
   # deviances must be same dim 2-5 as the biol
   # ADD deviances
   for(i in names(biolscpp)) {
@@ -216,21 +223,56 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     x@effort[x@effort == 0] <- 1e-6
     return(x)
   })
+
+  # SUBSET fishery & control TODO iter(fwdControl)<-
+  control@iters <- control@iters[,,idn, drop=FALSE]
+  
+  # SUBSET fishery, new object TODO iter(FLFishery)<-
+  rfishery <- lapply(fishery, function(x) {
+    x <- iter(x, idn)
+    x@.Data <- lapply(x, iter, idn)
+    return(x)    
+  })
+
+  # STOP if all iters have NAs in target
+  if(all(!idn))
+    stop("objects have a single iter and target contains NA.")
+
   # CALL oMRun
-  out <- operatingModelRun(fishery, biolscpp, control, effort_max=effort_max,
+  out <- operatingModelRun(rfishery, biolscpp, control, effort_max=effort_max,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
 
   # UPDATE object w/ new biolscpp@n
-  for(i in names(object))
-    n(object[[i]]) <- out$om$biols[[i]]@n
+  for(i in names(object)) {
+    n(object[[i]])[,,,,,idn] <- out$om$biols[[i]]@n
+    n(object[[i]])[,ac(cyrs),,,,!idn] <- NA
+  }
+  
+  # UPDATE fisheries
+  for(i in names(fishery)) {
+
+    fsh <- fishery[[i]]
+
+    # UPDATE fishery[idn]
+    fsh@effort[,,,,,idn] <- effort(out$om$fisheries[[i]])
+    fsh@effort[,ac(cyrs),,,,!idn] <- NA
+    fsh@capacity[,,,,,idn] <- capacity(out$om$fisheries[[i]])
+
+    for(j in names(fsh)) {
+      # UPDATE catches
+        fsh[[j]][,,,,,idn] <- out$om$fisheries[[i]][[j]]
+        for(sl in c("landings.n", "discards.n"))
+          slot(fsh[[j]], sl)[,,,,,!idn] <- NA
+    }
+    fishery[[i]] <- fsh
+  }
 
   # RETURN list(object, fishery, control)
-  out <- list(biols=object, fisheries=out$om$fisheries, control=control,
+  out <- list(biols=object, fisheries=fishery, control=control,
     flag=out$solver_codes)
 
   # WARNING for effort_max
-  if(any(unlist(
-  lapply(out$fisheries, function(x) max(effort(x), na.rm=TRUE))) == effort_max))
+  if(any(unlist(lapply(fishery, function(x) max(x@effort, na.rm=TRUE))) == effort_max))
     warning("Maximum effort limit reached in one or more fisheries")
 
   return(out)
