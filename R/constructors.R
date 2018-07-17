@@ -289,7 +289,7 @@ parsefwdList <- function(...) {
   }
 
   #  ... array components
-  val <- args[names(args) %in% c('value', 'min', 'max')]
+  val <- lapply(args[names(args) %in% c('value', 'min', 'max')], c)
 
   # TURN val into matrix
   if(is(val, 'list')) {

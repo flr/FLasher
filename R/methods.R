@@ -146,8 +146,8 @@ setMethod("[<-", signature(x="fwdControl", value="ANY"),
 setMethod("$", signature(x="fwdControl"),
   function(x, name) {
 
-    if(name == "value")
-      return(x@iters[,"value"])
+    if(name %in% c("min", "value", "max"))
+      return(x@iters[,name,])
     else
       return(x@target[,name])
   }

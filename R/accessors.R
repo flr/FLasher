@@ -6,6 +6,8 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
+# target, iters {{{
+
 # target
 #' Access target slot of fwdControl
 #' @rdname target
@@ -42,7 +44,7 @@ setReplaceMethod("iters", signature(object="fwdControl", value="array"),
 		object@iters <- value
 		return(object)
 	}
-)
+) # }}}
 
 # FCB {{{
 
