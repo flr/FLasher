@@ -24,7 +24,7 @@ test_that("SR models with FLStock",{
     stock(ple4) <- computeStock(ple4)
     nyears <- 10
     ple4mtf <- stf(ple4, nyears)
-    years <- 2009:(2008+nyears)
+    years <- seq(dims(ple4)$maxyear + 1, dims(ple4mtf)$maxyear)
     catch_target <- 100
     
     # Not interested in hitting a target - just that the SR is OK
@@ -45,14 +45,14 @@ test_that("SR models with FLStock",{
     
     # Fix the parameters
   
-    geomeanrec <- exp(mean(log(rec(ple4)[,ac(2006:2008)])))
+    geomeanrec <- exp(mean(log(rec(ple4)[,ac(years[1] - c(1, 2, 3))])))
     test <- fwd(ple4mtf, control=control, sr=list(model = "geomean", params=FLPar(a=geomeanrec)))
     expect_equal(c(rec(test)[,ac(years)]), rep(geomeanrec, nyears))
     
     # Time varying fixed parameters
     
     decrec <- seq(900, 500, length=nyears)
-    decpar <- FLPar(decrec, dimnames=list(params="a", year=2009:2018, iter=1))
+    decpar <- FLPar(decrec, dimnames=list(params="a", year=years, iter=1))
     test <- fwd(ple4mtf, control=control, sr=list(model = "geomean", params=decpar))
     expect_equal(c(rec(test)[,ac(years)]), decrec)
     
@@ -65,7 +65,7 @@ test_that("SR models with FLStock",{
     
     a <- c(params(ple4_srr)["a"])
     acycle <- a * (1 + sin(seq(from=0,to=2*pi,length=10))/10)
-    srpar <- FLPar(NA, dimnames=list(params=c("a","b"), year=2009:2018, iter=1))
+    srpar <- FLPar(NA, dimnames=list(params=c("a","b"), year=years, iter=1))
     srpar["a"] <- acycle
     srpar["b"] <- c(params(ple4_srr)["b"])
     test <- fwd(ple4mtf, control=control, sr=list(model = "bevholt", params=srpar))
@@ -139,7 +139,7 @@ test_that("SR models with FLBiol and FLFishery",{
     stock(ple4) <- computeStock(ple4)
     nyears <- 10
     ple4mtf <- stf(ple4, nyears)
-    years <- 2009:(2008+nyears)
+    years <- seq(2018, length=nyears)
     catch_target <- 100
     # Not interested in hitting a target - just that the SR is OK
     control <- fwdControl(data.frame(year=years, quant="catch", value=catch_target))
@@ -158,7 +158,7 @@ test_that("SR models with FLBiol and FLFishery",{
     expect_equal(c(n(test[["biols"]])[1,ac(years)]), c(predict(bh, ssb=ssb(test[["biols"]])[,ac(years-1)])))
     # Time varying parameters
     decrec <- seq(900, 500, length=10)
-    decpar <- FLPar(decrec, dimnames=list(params="a", year=2009:2018, iter=1))
+    decpar <- FLPar(decrec, dimnames=list(params="a", year=control$year, iter=1))
     biol@rec@model <- geomean()[["model"]]
     biol@rec@params <- decpar
     test <- fwd(biol, fishery=fishery, control=control)

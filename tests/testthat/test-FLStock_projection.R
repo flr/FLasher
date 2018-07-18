@@ -209,19 +209,18 @@ test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
     
     # SSB at spawn
     
-    spawn_ssb <- 100000
+    spawn_ssb <- 200000
     ctrl_ssb <- fwdControl(list(year=2009, quant = "ssb_spawn", value=spawn_ssb))
     expect_warning(fwd(ple4_mtf, control=ctrl_ssb, sr = ple4_sr))
     m.spwn(ple4_mtf)[,ac(2009)] <- 0.5
     harvest.spwn(ple4_mtf)[,ac(2009)] <- 0.5
-    spawn_ssb <- 100000
     ctrl_ssb <- fwdControl(data.frame(year=2009, quant = "ssb_spawn", value=spawn_ssb))
     ple4_ssb <- fwd(ple4_mtf, control=ctrl_ssb, sr = ple4_sr)
     expect_equal(c(ssb(ple4_ssb)[,ac(2009)]), spawn_ssb)
     
     # SRP
     
-    srp <- 100000
+    srp <- 200000
     ctrl_ssb <- fwdControl(data.frame(year=2009, quant = "srp", value=srp))
     ple4_ssb <- fwd(ple4_mtf, control=ctrl_ssb, sr = ple4_sr)
     expect_equal(c(ssb(ple4_ssb)[,ac(2009)]), srp)
@@ -244,13 +243,13 @@ test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
     
     # Longer SSB
     
-    m.spwn(ple4_mtf)[,ac(2009)] <- 0.0
-    harvest.spwn(ple4_mtf)[,ac(2009)] <- 0.0
-    future_ssb <- 200000
-    ctrl_ssb <- fwdControl(data.frame(year=2009:2018, quant = "ssb_flash", value=future_ssb))
+    m.spwn(ple4_mtf)[,ac(dims(ple4)$maxyear + 1)] <- 0.0
+    harvest.spwn(ple4_mtf)[,ac(dims(ple4)$maxyear + 1)] <- 0.0
+    future_ssb <- c(ssb(ple4)[,'2017']) * 0.8
+    ctrl_ssb <- fwdControl(data.frame(year=seq(2018, 2027), quant = "ssb_flash", value=future_ssb))
     expect_warning(ple4_ssb <- fwd(ple4_mtf, control = ctrl_ssb, sr = ple4_sr))
-    expect_equal(c(ssb(ple4_ssb)[,ac(2010:2018)]), rep(future_ssb, 9))
-    expect_equal(c(predict(ple4_sr,ssb=ssb(ple4_ssb)[,ac(2008:2017)])), c(rec(ple4_ssb)[,ac(2009:2018)]))
+    expect_equal(c(ssb(ple4_ssb)[,ac(2019:2027)]), rep(future_ssb, 9))
+    expect_equal(c(predict(ple4_sr,ssb=ssb(ple4_ssb)[,ac(2019:2026)])), c(rec(ple4_ssb)[,ac(2020:2027)]))
 
     # Relative catch
 
