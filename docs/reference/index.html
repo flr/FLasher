@@ -21,14 +21,17 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
 
 
 
 <meta property="og:title" content="Function reference" />
+
 
 
 <!-- mathjax -->
@@ -55,7 +58,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.4.9006</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.5.0</span>
       </span>
     </div>
 
@@ -110,6 +113,7 @@
     <table class="ref-index">
 
     <colgroup>
+      
       <col class="alias" />
       <col class="title" />
     </colgroup>
@@ -122,241 +126,247 @@
         </th>
       </tr>
       <tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="FCB.html">FCB()</a></code> <code><a href="FCB.html">`FCB<-`()</a></code> </p>
         </td>
         <td><p>Create and extract the FCB slot in fwdControl</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="FCBDrawing.html">FCBDrawing()</a></code> </p>
         </td>
         <td><p>A class for drawing the FCB matrix</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="add_target_order.html">add_target_order()</a></code> </p>
         </td>
         <td><p>Add the order column to the control target</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="basicBlock.html">basicBlock</a></code> </p>
         </td>
         <td><p>A base class for drawing FCB bits</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="biolBlock.html">biolBlock</a></code> </p>
         </td>
         <td><p>A class for drawing a biological stock</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="calc_F.html">calc_F()</a></code> </p>
         </td>
         <td><p>Calculate fishing mortality</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="catchBlock.html">catchBlock</a></code> </p>
         </td>
         <td><p>A class for drawing a catch</p></td>
       </tr><tr>
-        <!--  -->
+        
+        <td>
+          <p><code><a href="coerce.html">coerce</a></code> </p>
+        </td>
+        <td><p>Methods for coercing objects between classes</p></td>
+      </tr><tr>
+        
         <td>
           <p><code><a href="draw-FCB.html">draw()</a></code> </p>
         </td>
         <td><p>Generic method for drawing components the FCB matrix</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="fcb2int.html">fcb2int()</a></code> </p>
         </td>
         <td><p>fcb2int function</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="fillchar.html">fillchar()</a></code> </p>
         </td>
         <td><p>Fill up character slots</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="fisheryBlock.html">fisheryBlock</a></code> </p>
         </td>
         <td><p>A class for drawing a fishery</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="fwd-methods.html">fwd(<i>&lt;FLBiols&gt;</i>,<i>&lt;FLFisheries&gt;</i>,<i>&lt;fwdControl&gt;</i>)</a></code> <code><a href="fwd-methods.html">fwd(<i>&lt;FLBiols&gt;</i>,<i>&lt;FLFishery&gt;</i>,<i>&lt;fwdControl&gt;</i>)</a></code> <code><a href="fwd-methods.html">fwd(<i>&lt;FLBiol&gt;</i>,<i>&lt;FLFisheries&gt;</i>,<i>&lt;fwdControl&gt;</i>)</a></code> <code><a href="fwd-methods.html">fwd(<i>&lt;FLBiol&gt;</i>,<i>&lt;FLFishery&gt;</i>,<i>&lt;fwdControl&gt;</i>)</a></code> <code><a href="fwd-methods.html">fwd(<i>&lt;FLBiol&gt;</i>,<i>&lt;FLFishery&gt;</i>,<i>&lt;missing&gt;</i>)</a></code> <code><a href="fwd-methods.html">fwd(<i>&lt;FLStock&gt;</i>,<i>&lt;missing&gt;</i>,<i>&lt;fwdControl&gt;</i>)</a></code> <code><a href="fwd-methods.html">fwd(<i>&lt;FLStock&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;missing&gt;</i>)</a></code> </p>
         </td>
         <td><p>Method for running fishery projections</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="fwdControl-accessors.html">`[`(<i>&lt;fwdControl&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="fwdControl-accessors.html">`[<-`(<i>&lt;fwdControl&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;vector&gt;</i>)</a></code> <code><a href="fwdControl-accessors.html">`[<-`(<i>&lt;fwdControl&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;ANY&gt;</i>)</a></code> <code><a href="fwdControl-accessors.html">`$`(<i>&lt;fwdControl&gt;</i>)</a></code> <code><a href="fwdControl-accessors.html">`$<-`(<i>&lt;fwdControl&gt;</i>,<i>&lt;vector&gt;</i>)</a></code> <code><a href="fwdControl-accessors.html">`$<-`(<i>&lt;fwdControl&gt;</i>,<i>&lt;AsIs&gt;</i>)</a></code> </p>
         </td>
         <td><p>Set and replacement accessors for fwdControl</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="fwdControl.html">fwdControl()</a></code> <code><a href="fwdControl.html">G()</a></code> </p>
         </td>
         <td><p>A class for the targets and limits of a fishery and stock projection.</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="get_FLQuant_element.html">get_FLQuant_element()</a></code> </p>
         </td>
         <td><p>Return 1D element index of an FLQuant</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="get_FLQuant_elements.html">get_FLQuant_elements()</a></code> </p>
         </td>
         <td><p>Return 1D vector of element indices of an FLQuant</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="guessfcb.html">guessfcb()</a></code> </p>
         </td>
         <td><p>Generate an FCB matrix from FLBiols and FLFisheries</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="inlineCxxPlugin.html">inlineCxxPlugin()</a></code> </p>
         </td>
         <td><p>Make the plug in for inline Cxx</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="iters.html">`iters<-`()</a></code> <code><a href="iters.html">iters(<i>&lt;fwdControl&gt;</i>)</a></code> </p>
         </td>
         <td><p>Access and replace the iters slot of the fwdControl</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="make_test_operatingModel.html">make_test_operatingModel()</a></code> </p>
         </td>
         <td><p>Make a test operating model from a single FLStock object</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="match_posns_names.html">match_posns_names()</a></code> </p>
         </td>
         <td><p>Change names of biols, catches and fisheries in the control object into integer positions</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="mixed_fishery_example.html">biols</a></code> <code><a href="mixed_fishery_example.html">flfs</a></code> </p>
         </td>
         <td><p>An FLBiols object used in mixed fishery vignette</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="operatingModelRun.html">operatingModelRun()</a></code> </p>
         </td>
         <td><p>Call the CPP operatingModel run method</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="parsefwdList.html">parsefwdList()</a></code> </p>
         </td>
         <td><p>Parse the list argument to fwd to make a fwdControl object</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="plot.html">plot(<i>&lt;FLStock&gt;</i>,<i>&lt;fwdControl&gt;</i>)</a></code> </p>
         </td>
         <td><p>plot method for FLStock, fwdControl</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="propagate-fwdControl-method.html">propagate(<i>&lt;fwdControl&gt;</i>)</a></code> </p>
         </td>
         <td><p>Propagate the fwdControl</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="random_FLBiolcpp_generator.html">random_FLBiolcpp_generator()</a></code> </p>
         </td>
         <td><p>Generate randomly sized and filled FLBiolcpp objects</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="random_FLCatch_generator.html">random_FLCatch_generator()</a></code> </p>
         </td>
         <td><p>Generate randomly sized and filled FLCatch objects</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="random_FLCatches_generator.html">random_FLCatches_generator()</a></code> </p>
         </td>
         <td><p>Generates an FLCatches object - a list of randomly sized and filled FLCatch objects</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="random_FLFisheries_generator.html">random_FLFisheries_generator()</a></code> </p>
         </td>
         <td><p>Generate a randomly filled and sized FLFisheries object</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="random_FLFishery_generator.html">random_FLFishery_generator()</a></code> </p>
         </td>
         <td><p>Generate a randomly filled and sized FLFishery object</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="random_FLQuant_generator.html">random_FLQuant_generator()</a></code> </p>
         </td>
         <td><p>Generate randomly sized and filled FLQuant objects</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="random_FLQuant_list_generator.html">random_FLQuant_list_generator()</a></code> </p>
         </td>
         <td><p>Generate lists of randomly sized and filled FLQuant objects</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="random_fwdBiols_list_generator.html">random_fwdBiols_list_generator()</a></code> </p>
         </td>
         <td><p>Generates a list that can be passed to the CPP fwdBiols constructor</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="random_fwdControl_generator.html">random_fwdControl_generator()</a></code> </p>
         </td>
         <td><p>Random fwdControl object creator</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="show-fwdControl-method.html">show(<i>&lt;fwdControl&gt;</i>)</a></code> </p>
         </td>
         <td><p>Show method for fwdControl</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="stf.html">stf()</a></code> </p>
         </td>
         <td><p>Prepare object for future projection</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="summary.html">summary(<i>&lt;fwdControl&gt;</i>)</a></code> </p>
         </td>
         <td><p>summary method for fwdControl</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="target.html">target()</a></code> <code><a href="target.html">`target<-`()</a></code> </p>
         </td>
         <td><p>Access and replace the target</p></td>
       </tr><tr>
-        <!--  -->
+        
         <td>
           <p><code><a href="targetOrder.html">targetOrder()</a></code> </p>
         </td>

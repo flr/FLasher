@@ -8,8 +8,8 @@
 <title>FLasher reference manual • FLasher</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="FLasher reference manual">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script><meta property="og:title" content="FLasher reference manual">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.4.9006</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.5.0</span>
       </span>
     </div>
 
@@ -78,7 +78,7 @@
       <h1>FLasher reference manual</h1>
                         <h4 class="author">Finlay Scott, Iago Mosqueira - European Commission Joint Research Center</h4>
             
-            <h4 class="date">11 May, 2018</h4>
+            <h4 class="date">18 July, 2018</h4>
       
       
       <div class="hidden name"><code>FLasher_reference.Rmd</code></div>
@@ -265,8 +265,8 @@ Internally, this single value is recycled over all dimensions as necessary.
 <p>A Biol may spawn and recruit more than one time in a year, e.g. it can recruit in multiple seasons, but recruitment can only happen once in a timestep. This means that if there are multiple recruitment events in a year, the model must be seasonal. When a stock recruits more than one time in year, the resulting recruitment from each event is placed into a different unit of the stock. For example, if the stock recruits twice a year, then the stock must have at least two units. This is because life-history characteristics, such as the mean weights at age, will be different for individuals that are recruited at different times of the year. A unit can only recruit once per year.</p>
 <p>The recruitment of each unit of a <strong>fwdBiol</strong> is calculated separately and may have different stock recruitment parameters. However, the SRP that produces the recruitment is the total SRP across all units, i.e. the SRP of each individual unit is not considered, only the total.</p>
 <p>The abundance in an <strong>fwdBiol</strong> is the abundance at the start of the timestep. The calculated recruitment is inserted into the abundance in the same timestep meaning that we calculate recruitment at the start of the timestep. It is inserted into the first age group of the biol.</p>
-<p>The final step in calculating recruitment is the application of residuals. This is an additional multiplier applied to the calculated recruitment. The residuals can be used to introduce further uncertainty on the recruitment.</p>
-<p>The residuals are stored as an <strong>FLQuant</strong>. Internally, this must have the same time dimensions as the model. However, the R method <em>fwd()</em> accepts residuals just for the projection years. The first dimension of the residuals is length 1.</p>
+<p>The final step in calculating recruitment is the application of deviances. This is an additional multiplier applied to the calculated recruitment. The deviances can be used to introduce further uncertainty on the recruitment.</p>
+<p>The deviances are stored as an <strong>FLQuant</strong>. Internally, this must have the same time dimensions as the model. However, the R method <em>fwd()</em> accepts deviances just for the projection years. The first dimension of the deviances is length 1.</p>
 <div id="calculating-srp" class="section level2">
 <h2 class="hasAnchor">
 <a href="#calculating-srp" class="anchor"></a>Calculating SRP</h2>
@@ -384,18 +384,18 @@ Here we show a few examples of how the parameters are recycled.
 
 
 ```r
-## Set up some random residuals - not used in calculation
-#residuals <- FLQuant(1, dimnames = list(year = 1:10, iter = 1:10))
-#residuals_mult <- TRUE
+## Set up some random deviances - not used in calculation
+#deviances <- FLQuant(1, dimnames = list(year = 1:10, iter = 1:10))
+#deviances_mult <- TRUE
 ## Set the SRR parameters - no structure in the time dimension - only disaggregated by parameter
 #srr_params <- FLQuant(c(10, 0.001), dimnames=list(param = c("a","b")))
 #srr_params
 ## Get the parameters in year 1
-#test_fwdSR_get_params("ricker", srr_params, residuals, residuals_mult, c(1,1,1,1,1))
+#test_fwdSR_get_params("ricker", srr_params, deviances, deviances_mult, c(1,1,1,1,1))
 ## Get the parameters in year 2 - the same due to recycling
-#test_fwdSR_get_params("ricker", srr_params, residuals, residuals_mult, c(2,1,1,1,1))
+#test_fwdSR_get_params("ricker", srr_params, deviances, deviances_mult, c(2,1,1,1,1))
 ## Get the  parameters in year 5 - the same due to recycling
-#test_fwdSR_get_params("ricker", srr_params, residuals, residuals_mult, c(5,1,1,1,1))
+#test_fwdSR_get_params("ricker", srr_params, deviances, deviances_mult, c(5,1,1,1,1))
 ```
 
 The SRR parameters can vary over dimensions 2-6 of an FLQuant (time, unit, area and iter).
@@ -404,22 +404,22 @@ We also call a different iteration, even though the parameters only have one ite
 
 
 ```r
-## Set up some random residuals - not used in calculation
-#residuals <- FLQuant(1, dimnames = list(year = 1:5, iter = 1:10))
-#residuals_mult <- TRUE
+## Set up some random deviances - not used in calculation
+#deviances <- FLQuant(1, dimnames = list(year = 1:5, iter = 1:10))
+#deviances_mult <- TRUE
 ## SRR parameters change over time
 #srr_params <- FLQuant(NA, dimnames=list(param=c("a","b"), year=1:5))
 #srr_params[1,] <- seq(8,12,length=5)
 #srr_params[2,] <- seq(0.0008,0.0012, length=5)
 #srr_params
 ## Year 1, iter 1
-#test_fwdSR_get_params("ricker", srr_params, residuals, residuals_mult, c(1,1,1,1,1))
+#test_fwdSR_get_params("ricker", srr_params, deviances, deviances_mult, c(1,1,1,1,1))
 ## Year 2, iter 5 (recycling over iterations)
-#test_fwdSR_get_params("ricker", srr_params, residuals, residuals_mult, c(2,1,1,1,5))
+#test_fwdSR_get_params("ricker", srr_params, deviances, deviances_mult, c(2,1,1,1,5))
 ## Year 5, iter 10 (recycling over iterations)
-#test_fwdSR_get_params("ricker", srr_params, residuals, residuals_mult, c(5,1,1,1,10))
+#test_fwdSR_get_params("ricker", srr_params, deviances, deviances_mult, c(5,1,1,1,10))
 ## Asking for Year outside than SRR params - only the first year is returned
-#test_fwdSR_get_params("ricker", srr_params, residuals, residuals_mult, c(10,1,1,1,1))
+#test_fwdSR_get_params("ricker", srr_params, deviances, deviances_mult, c(10,1,1,1,1))
 ```
 
 ## Example of single recruitment events

@@ -21,9 +21,11 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
 
 
@@ -33,6 +35,7 @@
 <meta property="og:description" content="fwd() projects the fishery through time and attempts to hit the specified
 targets by finding the appropriate fishing effort." />
 <meta name="twitter:card" content="summary" />
+
 
 
 <!-- mathjax -->
@@ -59,7 +62,7 @@ targets by finding the appropriate fishing effort." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.4.9006</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.5.0</span>
       </span>
     </div>
 
@@ -122,7 +125,7 @@ targets by finding the appropriate fishing effort.</p>
 
     <pre class="usage"><span class='co'># S4 method for FLBiols,FLFisheries,fwdControl</span>
 <span class='fu'>fwd</span>(<span class='no'>object</span>, <span class='no'>fishery</span>, <span class='no'>control</span>,
-  <span class='kw'>effort_max</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='fl'>1e+05</span>, <span class='fu'>length</span>(<span class='no'>fishery</span>)),
+  <span class='kw'>effort_max</span> <span class='kw'>=</span> <span class='fu'>rep</span>(<span class='fl'>1e+05</span>, <span class='fu'>length</span>(<span class='no'>fishery</span>)), <span class='kw'>deviances</span> <span class='kw'>=</span> <span class='no'>residuals</span>,
   <span class='kw'>residuals</span> <span class='kw'>=</span> <span class='fu'>lapply</span>(<span class='fu'>lapply</span>(<span class='no'>object</span>, <span class='no'>spwn</span>), <span class='st'>"[&lt;-"</span>, <span class='kw'>value</span> <span class='kw'>=</span> <span class='fl'>1</span>))
 
 <span class='co'># S4 method for FLBiols,FLFishery,fwdControl</span>
@@ -133,21 +136,23 @@ targets by finding the appropriate fishing effort.</p>
 
 <span class='co'># S4 method for FLBiol,FLFishery,fwdControl</span>
 <span class='fu'>fwd</span>(<span class='no'>object</span>, <span class='no'>fishery</span>, <span class='no'>control</span>,
-  <span class='kw'>residuals</span> <span class='kw'>=</span> <span class='fu'>FLQuant</span>(<span class='fl'>1</span>, <span class='kw'>dimnames</span> <span class='kw'>=</span> <span class='fu'>dimnames</span>(<span class='fu'>rec</span>(<span class='no'>object</span>))), <span class='no'>...</span>)
+  <span class='kw'>deviances</span> <span class='kw'>=</span> <span class='no'>residuals</span>, <span class='kw'>residuals</span> <span class='kw'>=</span> <span class='fu'>FLQuant</span>(<span class='fl'>1</span>, <span class='kw'>dimnames</span> <span class='kw'>=</span>
+  <span class='fu'>dimnames</span>(<span class='fu'>rec</span>(<span class='no'>object</span>))), <span class='no'>...</span>)
 
 <span class='co'># S4 method for FLBiol,FLFishery,missing</span>
 <span class='fu'>fwd</span>(<span class='no'>object</span>, <span class='no'>fishery</span>, <span class='no'>...</span>,
-  <span class='kw'>effort_max</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>residuals</span> <span class='kw'>=</span> <span class='fu'>FLQuant</span>(<span class='fl'>1</span>, <span class='kw'>dimnames</span> <span class='kw'>=</span> <span class='fu'>dimnames</span>(<span class='fu'>m</span>(<span class='no'>object</span>))))
+  <span class='kw'>effort_max</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>deviances</span> <span class='kw'>=</span> <span class='no'>residuals</span>, <span class='kw'>residuals</span> <span class='kw'>=</span> <span class='fu'>FLQuant</span>(<span class='fl'>1</span>, <span class='kw'>dimnames</span>
+  <span class='kw'>=</span> <span class='fu'>dimnames</span>(<span class='fu'>m</span>(<span class='no'>object</span>))))
 
 <span class='co'># S4 method for FLStock,missing,fwdControl</span>
 <span class='fu'>fwd</span>(<span class='no'>object</span>, <span class='no'>control</span>, <span class='no'>sr</span>,
-  <span class='kw'>effort_max</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>residuals</span> <span class='kw'>=</span> <span class='fu'>FLQuant</span>(<span class='fl'>1</span>, <span class='kw'>dimnames</span> <span class='kw'>=</span> <span class='fu'>dimnames</span>(<span class='fu'>rec</span>(<span class='no'>object</span>))),
-  <span class='no'>...</span>)
+  <span class='kw'>effort_max</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>deviances</span> <span class='kw'>=</span> <span class='no'>residuals</span>, <span class='kw'>residuals</span> <span class='kw'>=</span> <span class='fu'>FLQuant</span>(<span class='fl'>1</span>, <span class='kw'>dimnames</span> <span class='kw'>=</span>
+  <span class='fu'>dimnames</span>(<span class='fu'>rec</span>(<span class='no'>object</span>))), <span class='no'>...</span>)
 
 <span class='co'># S4 method for FLStock,ANY,missing</span>
 <span class='fu'>fwd</span>(<span class='no'>object</span>, <span class='kw'>fishery</span> <span class='kw'>=</span> <span class='no'>missing</span>, <span class='no'>sr</span>,
-  <span class='kw'>effort_max</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>residuals</span> <span class='kw'>=</span> <span class='fu'>FLQuant</span>(<span class='fl'>1</span>, <span class='kw'>dimnames</span> <span class='kw'>=</span> <span class='fu'>dimnames</span>(<span class='fu'>rec</span>(<span class='no'>object</span>))),
-  <span class='no'>...</span>)</pre>
+  <span class='kw'>effort_max</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>deviances</span> <span class='kw'>=</span> <span class='no'>residuals</span>, <span class='kw'>residuals</span> <span class='kw'>=</span> <span class='fu'>FLQuant</span>(<span class='fl'>1</span>, <span class='kw'>dimnames</span>
+  <span class='kw'>=</span> <span class='fu'>dimnames</span>(<span class='fu'>rec</span>(<span class='no'>object</span>))), <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -169,8 +174,12 @@ targets by finding the appropriate fishing effort.</p>
       <td><p>Maximum yearly rate of change in effort for each fishery</p></td>
     </tr>
     <tr>
+      <th>deviances</th>
+      <td><p>An FLQuant of deviances for the stock recruitment relationship (if object is an FLStock).</p></td>
+    </tr>
+    <tr>
       <th>residuals</th>
-      <td><p>An FLQuant of residuals for the stock recruitment relationship (if object is an FLStock).</p></td>
+      <td><p>Old argument name for deviances, to be deleted</p></td>
     </tr>
     <tr>
       <th>...</th>

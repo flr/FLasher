@@ -1,4 +1,4 @@
-# FLasher 0.1.0
+# FLasher 0.5.0
 
 ## NEW FEATURES
 

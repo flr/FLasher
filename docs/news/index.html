@@ -21,14 +21,17 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
 
 
 
 <meta property="og:title" content="Changelog" />
+
 
 
 <!-- mathjax -->
@@ -55,7 +58,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.0.4.9006</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.5.0</span>
       </span>
     </div>
 
@@ -108,14 +111,32 @@
       
     </div>
 
-    <div id="flasher-0-0-5" class="section level1">
+    <div id="flasher-0-5-0" class="section level1">
 <h1 class="page-header">
-<a href="#flasher-0-0-5" class="anchor"></a>FLasher 0.0.5</h1>
+<a href="#flasher-0-5-0" class="anchor"></a>FLasher 0.5.0</h1>
 <div id="new-features" class="section level2">
 <h2 class="hasAnchor">
 <a href="#new-features" class="anchor"></a>NEW FEATURES</h2>
 <ul>
-<li>effort_max argument to fwd() will limit the change in effort by year</li>
+<li>effort_max argument to fwd() set a maximum valuw for effort. Similar to FLash::maxF, as scale of effort values in fwd(FLStock) is set by fbar.</li>
+<li>Certain slots in FLStock are checked for NAs in year before projection to avoid R crashing.</li>
+<li>New stock-recruitment relationship added, survsrr, for low fecundity species (Taylor et al, 2013).</li>
+<li>Projections are now correct for multiple units, either sex or birth seasons.</li>
+</ul>
+</div>
+<div id="user-visible-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#user-visible-changes" class="anchor"></a>USER-VISIBLE CHANGES</h2>
+<ul>
+<li>The residuals argument to fwd() is now called ‘deviances’, and this name is used in all R and C++ code. ‘residuals’ is still accepted, but will be deprecated in the next minor version.</li>
+</ul>
+</div>
+<div id="bug-fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes" class="anchor"></a>BUG FIXES</h2>
+<ul>
+<li>SRR predictions now work correctly for 2-sex OMs (FLStock or FLBiol).</li>
+<li>Check for fwdControl rows not being all NA.</li>
 </ul>
 </div>
 </div>
@@ -129,16 +150,16 @@
 <li>plot(FLStock, fwdControl) will add to the ggplotFL plot of an FLStock a coloured area of the years being projected.</li>
 </ul>
 </div>
-<div id="bug-fixes" class="section level2">
+<div id="bug-fixes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes" class="anchor"></a>BUG FIXES</h2>
+<a href="#bug-fixes-1" class="anchor"></a>BUG FIXES</h2>
 <ul>
 <li>fwd(FLStock) now returns one more year if quant=‘ssb_flash’ and object has space for it.</li>
 </ul>
 </div>
-<div id="user-visible-changes" class="section level2">
+<div id="user-visible-changes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#user-visible-changes" class="anchor"></a>USER-VISIBLE CHANGES</h2>
+<a href="#user-visible-changes-1" class="anchor"></a>USER-VISIBLE CHANGES</h2>
 <ul>
 <li>Added disc.nyears arg to stf() to select years to use for discards ratio calculations.</li>
 <li>If min and max for the very same target are set in separate rows, they are merged.</li>
@@ -148,9 +169,9 @@
     <div id="flasher-0-0-3" class="section level1">
 <h1 class="page-header">
 <a href="#flasher-0-0-3" class="anchor"></a>FLasher 0.0.3</h1>
-<div id="bug-fixes-1" class="section level2">
+<div id="bug-fixes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-1" class="anchor"></a>BUG FIXES</h2>
+<a href="#bug-fixes-2" class="anchor"></a>BUG FIXES</h2>
 <ul>
 <li>Fixed stupid intermittant bug in projection test</li>
 <li>Added stf to Namespace</li>
@@ -172,7 +193,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-        <li><a href="#flasher-0-0-5">0.0.5</a></li>
+        <li><a href="#flasher-0-5-0">0.5.0</a></li>
         <li><a href="#flasher-0-0-4">0.0.4</a></li>
         <li><a href="#flasher-0-0-3">0.0.3</a></li>
       </ul>
