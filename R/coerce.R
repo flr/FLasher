@@ -6,8 +6,35 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
+#' Methods for coercing objects between classes
+#'
+#' A call to *as(from, 'to')* will coerce the object *from*, of a certain class,
+#' to one of class *to*, as specified in the method.
+#'
+#' An object of class *FLQuants* can be coerced into a *fwdControl*, through a
+#' call to *as.data.frame*. The name of the element, or elements, in the object
+#' specifies the 'quant' in *fwdControl*. The 'quant' in the *FLQuant* object, the
+#' name of the first dimension, is ignored unles is one of 'min', 'value' or 'max'.
+#' See the examples below on how to pass one or more *FLQuant* objects to *fwd*.
+#'
+#' @param from Object to be coerced into one of another class.
+#' @param to Name of the output class, *character*.
+#'
+#' @return An object of the requested class.
+#'
+#' @name coerce
+#' @rdname coerce
+#'
+#' @author Iago Mosqueira. EC JRC.
+#' @seealso [coerce]
+#' @keywords methods
+#' @md
+NULL
+
 # FLQuants -> fwdControl {{{
 
+#' @name coerce
+#' @rdname coerce
 #' @examples
 #' # Single *catch* target
 #' as(FLQuants(catch=FLQuant(4500, dimnames=list(year=2000))), "fwdControl")
@@ -27,7 +54,6 @@
 #' # *f* target and *catch* minimum
 #' as(FLQuants(f=FLQuant(0.5, dimnames=list(year=2000)),
 #'   catch=FLQuant(c(100), dimnames=list(quant=c("min"), year=2000))), 'fwdControl')
-
 setAs("FLQuants", "fwdControl",
   function(from) {
     
