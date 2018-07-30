@@ -118,7 +118,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # CONVERT biols to list(list(object, name, params, deviances, mult)), SUBSET idn
   biolscpp <- lapply(object, function(x) as(iter(x, idn), "list"))
   deviances <- iter(deviances, idn)
-
   # deviances must be same dim 2-5 as the biol
   # ADD deviances
   for(i in names(biolscpp)) {
@@ -228,11 +227,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   control@iters <- control@iters[,,idn, drop=FALSE]
   
   # SUBSET fishery, new object TODO iter(FLFishery)<-
-  rfishery <- lapply(fishery, function(x) {
-    x <- iter(x, idn)
-    x@.Data <- lapply(x, iter, idn)
-    return(x)    
-  })
+  rfishery <- lapply(fishery, iter, idn)
 
   # STOP if all iters have NAs in target
   if(all(!idn))
