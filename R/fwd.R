@@ -109,9 +109,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(max(dib$area) > 1 | max(dif$area > 1))
     stop("fwd() cannot deal (yet) with multiple areas")
 
-  # CONVERT biols to list(list(object, name, params, deviances, mult))
-  biolscpp <- lapply(object, as, "list")
-
   # FIND iters with no NAs in target
   idn <- !c(unlist(apply(is.na(control@iters), 3, function(x) any(rowSums(x) == 3))))
   
