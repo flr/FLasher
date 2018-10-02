@@ -59,6 +59,10 @@ setMethod("show", signature("fwdControl"),
 setMethod("[", signature(x="fwdControl"),
   function(x, i, j) {
 
+    # IF i is character, interpret as year
+    if(is.character(i))
+      i <- which(x@target$year == i)
+
     # 'i' applies to rows in both target and iters
     if(!missing(i)) {
       x@target <- x@target[i,,drop=FALSE]
