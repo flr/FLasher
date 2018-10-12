@@ -13,9 +13,11 @@ importFrom(methods,
   "as",
   "new",
   "callNextMethod",
+  "initialize",
   "is",
   "slot",
   "slot<-",
+  "slotNames",
   "validObject")
 importFrom(graphics,
   "lines",
@@ -28,9 +30,11 @@ importFrom(ggplot2,
 importFrom(stats,
   "mad")
 exportClasses(
-	"fwdControl")
+	"fwdControl",
+  "FLStockfec")
 export(
   "add_target_order",
+  "FLStockfec",
   "G",
   "get_FLQuant_element",
   "get_FLQuant_elements",
@@ -59,6 +63,7 @@ exportMethods(
   "plot",
   "propagate",
   "show",
+  "srp",
   "stf",
   "summary",
   "target",

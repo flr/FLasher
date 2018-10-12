@@ -35,8 +35,8 @@ draw(object, ...)
 \S4method{draw}{matrix}(object, fisheryNames = NULL, catchNames = NULL,
   biolNames = NULL)
 
-\S4method{draw}{fwdControl}(object, fisheryNames = NULL, catchNames = NULL,
-  biolNames = NULL)
+\S4method{draw}{fwdControl}(object, fisheryNames = NULL,
+  catchNames = NULL, biolNames = NULL)
 }
 \arguments{
 \item{object}{The object - link{basicBlock}, link{biolBlock}, link{fisheryBlock}, link{catchBlock}, link{matrix}, link{FCBDrawing}}
@@ -54,20 +54,6 @@ Nothing. Just draws something
 }
 \description{
 Used to draw individual components or the whole FCB matrix
-
-Method for drawing the basic block of the FCB matrix
-
-Method for drawing the biological block of the FCB matrix
-
-Method for drawing the fishery block of the FCB matrix
-
-Method for drawing the catch block of the FCB matrix
-
-Method for drawing the \link{FCBDrawing} object
-
-Method for drawing the FCB matric
-
-Method for drawing the FCB matric in the \link{fwdControl}
 }
 \examples{
 FCB <- matrix(c(1,1,1,1,2,2,2,1,2,2,2,3,2,2,4), nrow=5, byrow=TRUE)

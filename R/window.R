@@ -118,4 +118,3 @@ setMethod('stf', signature(object='FLBiol'),
     return(res)
   }
 ) # }}}
-

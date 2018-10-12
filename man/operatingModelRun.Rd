@@ -2,11 +2,10 @@
 % Please edit documentation in R/RcppExports.R
 \name{operatingModelRun}
 \alias{operatingModelRun}
-\alias{operatingModelRun}
 \title{Call the CPP operatingModel run method}
 \usage{
-operatingModelRun(flfs, biols, ctrl, effort_max, effort_mult_initial, indep_min,
-  indep_max, nr_iters = 50L)
+operatingModelRun(flfs, biols, ctrl, effort_max, effort_mult_initial,
+  indep_min, indep_max, nr_iters = 50L)
 }
 \arguments{
 \item{flfs}{FLFisheries.}
@@ -27,7 +26,4 @@ operatingModelRun(flfs, biols, ctrl, effort_max, effort_mult_initial, indep_min,
 }
 \description{
 Call the CPP operatingModel run method
-
-Used to run the projections.
-Internal use only.
 }

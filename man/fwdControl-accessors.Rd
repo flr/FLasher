@@ -39,10 +39,4 @@
 }
 \description{
 We're Pastie to be Grill You
-
-Set and replacement accessors for fwdControl
-
-Set and replacement accessors for fwdControl
-
-Set and replacement accessors for fwdControl
 }

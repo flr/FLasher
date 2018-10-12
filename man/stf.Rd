@@ -15,7 +15,8 @@ stf(object, ...)
   disc.nyears = wts.nyears)
 
 \S4method{stf}{FLBiol}(object, nyears = 3, wts.nyears = 3,
-  arith.mean = TRUE, na.rm = TRUE, end = dims(object)$maxyear + nyears)
+  arith.mean = TRUE, na.rm = TRUE, end = dims(object)$maxyear +
+  nyears)
 }
 \arguments{
 \item{object}{The object (FLStock or FLBiol)}
@@ -41,10 +42,6 @@ stf(object, ...)
 \description{
 Similar to the old STF method in FLAssess.
 Extends the object by a number of years and fill in the life history characteristics by taking a mean of the last few years.
-
-stf for FLStock
-
-stf for FLBiol
 }
 \examples{
 data(ple4)

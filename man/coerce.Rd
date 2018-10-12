@@ -2,7 +2,6 @@
 % Please edit documentation in R/coerce.R
 \name{coerce}
 \alias{coerce}
-\alias{coerce}
 \title{Methods for coercing objects between classes}
 \arguments{
 \item{from}{Object to be coerced into one of another class.}

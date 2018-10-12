@@ -28,6 +28,7 @@ Collate:
   window.R
   fcb_draw.R
   FLasherLib.R
+  FLStockfec.R
   plot.R
 Depends:
   FLCore(> 2.6.5),
@@ -48,4 +49,4 @@ VignetteBuilder: knitr
 LazyLoad: Yes
 LazyData: No
 BugReports: https://github.com/flr/FLasher/issues
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0

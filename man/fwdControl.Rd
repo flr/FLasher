@@ -6,7 +6,6 @@
 \alias{fwdControl}
 \alias{fwdControl-methods}
 \alias{fwdControl-class}
-\alias{fwdControl}
 \alias{G}
 \alias{fwdControl,data.frame,array-method}
 \alias{fwdControl,data.frame,numeric-method}
@@ -45,14 +44,6 @@ specified by creating an object of class \code{fwdControl}.
 
 Constructor for fwdControl objects.
 Bare bones man pages. Better to look at the vignettes and tutorials.
-
-fwdControl constructor for data.frame and array
-
-fwdControl constructor for list and missing
-
-fwdControl constructor for a series of list
-
-fwdControl constructor for mising and missing
 }
 \details{
 \link{...}

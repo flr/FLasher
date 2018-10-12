@@ -20,23 +20,24 @@
 
 \S4method{fwd}{FLBiols,FLFishery,fwdControl}(object, fishery, control, ...)
 
-\S4method{fwd}{FLBiol,FLFisheries,fwdControl}(object, fishery, control, ...)
+\S4method{fwd}{FLBiol,FLFisheries,fwdControl}(object, fishery, control,
+  ...)
 
 \S4method{fwd}{FLBiol,FLFishery,fwdControl}(object, fishery, control,
   deviances = residuals, residuals = FLQuant(1, dimnames =
   dimnames(rec(object))), ...)
 
 \S4method{fwd}{FLBiol,FLFishery,missing}(object, fishery, ...,
-  effort_max = 10, deviances = residuals, residuals = FLQuant(1, dimnames
-  = dimnames(m(object))))
+  effort_max = 10, deviances = residuals, residuals = FLQuant(1,
+  dimnames = dimnames(m(object))))
 
 \S4method{fwd}{FLStock,missing,fwdControl}(object, control, sr,
-  effort_max = 4, deviances = residuals, residuals = FLQuant(1, dimnames =
-  dimnames(rec(object))), ...)
+  effort_max = 4, deviances = residuals, residuals = FLQuant(1,
+  dimnames = dimnames(rec(object))), ...)
 
 \S4method{fwd}{FLStock,ANY,missing}(object, fishery = missing, sr,
-  effort_max = 10, deviances = residuals, residuals = FLQuant(1, dimnames
-  = dimnames(rec(object))), ...)
+  effort_max = 10, deviances = residuals, residuals = FLQuant(1,
+  dimnames = dimnames(rec(object))), ...)
 }
 \arguments{
 \item{object}{An FLStock, an FLBiol or an FLBiols object.}
