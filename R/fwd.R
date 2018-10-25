@@ -229,8 +229,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # STOP if all iters have NAs in target
   if(all(!idn))
     stop("objects have a single iter and target contains NA.")
-
-  # CALL oMRun
+  
+  # CALL operatingModelRun
   out <- operatingModelRun(rfishery, biolscpp, control, effort_max=effort_max,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
   
@@ -448,9 +448,12 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # SET @FCB
     control@FCB <- matrix(1, ncol=3, nrow=1, dimnames=list(1, c("F", "C", "B")))
 
-    # SET @target[fcb]
+    # SET @target[fcb] as biol
     control@target[c("fishery", "catch", "biol")] <- rep(c(NA, NA, 1),
       each=dim(control@target)[1])
+    # EXCEPT for effort and revenue
+    control@target[control@target$quant %in% c("revenue", "effort"),
+      c("fishery", "biol")] <- rep(c(1, NA), each=dim(control@target)[1])
 
     # CHECK targets that require minAge and maxAge to be set
     # IF minAge and maxAge are NA and target is one of them, then range(min, max)

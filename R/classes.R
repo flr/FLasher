@@ -2,7 +2,7 @@
 # FLasher/R/classes.R
 
 # Copyright European Union, 2016
-# Author: Iago Mosqueira (EC JRC) <iago.mosqueira@jrc.ec.europa.eu>
+# Author: Iago Mosqueira (EC JRC) <iago.mosqueira@ec.europa.eu>
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
@@ -15,7 +15,7 @@
 # .fcb, .vfcb - Possible fishery-catch-biol combinations in @target {{{
 .fcb <- list(
   list(quant=c("effort", "revenue"), fishery=TRUE, catch=FALSE, biol=FALSE),
-  list(quant=c("revenue"), fishery=TRUE,catch=TRUE, biol=FALSE),
+  list(quant=c("revenue"), fishery=TRUE, catch=TRUE, biol=FALSE),
   list(quant=c("fbar", "f"), fishery=c(TRUE, FALSE), catch=c(TRUE, FALSE), biol=c(TRUE,TRUE)),
   list(quant=c("catch", "landings", "discards"),
     fishery=c(TRUE, FALSE),catch=c(TRUE, FALSE), biol=c(FALSE, TRUE)),
