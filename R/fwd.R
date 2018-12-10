@@ -261,7 +261,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     }
     fishery[[i]] <- fsh
   }
-
+  
   # RETURN list(object, fishery, control)
   out <- list(biols=object, fisheries=fishery, control=control,
     flag=out$solver_codes)
@@ -386,7 +386,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
-  function(object, control, sr, effort_max=4, deviances=residuals,
+  function(object, control, sr, maxF=4, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
     
     # CHECK for NAs in stock: m, stock.n, stock.wt in control$year[1] - 1
@@ -445,15 +445,39 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     Fs <- FLFisheries(F=F)
     Fs@desc <- "F"
 
-    # SET @FCB
+    # SET @FCB as c(1,1,1)
     control@FCB <- matrix(1, ncol=3, nrow=1, dimnames=list(1, c("F", "C", "B")))
 
     # SET @target[fcb] as biol
-    control@target[c("fishery", "catch", "biol")] <- rep(c(NA, NA, 1),
-      each=dim(control@target)[1])
+    brows <- !control@target$quant %in% c("effort", "revenue")
+    control@target[brows, c("fishery", "catch", "biol")] <-
+      rep(c(NA, NA, 1), each=sum(brows))
+    
     # EXCEPT for effort and revenue
-    control@target[control@target$quant %in% c("revenue", "effort"),
-      c("fishery", "biol")] <- rep(c(1, NA), each=dim(control@target)[1])
+    if(sum(!brows) > 0) {
+      control@target[brows, c("fishery", "catch", "biol")] <-
+        rep(c(1, NA, NA), each=sum(!brows))
+    }
+    
+    # ADD maxF to control
+    
+    maxFc <- fwdControl(year=control$year, quant="fbar", min=0, max=maxF,
+      biol=1)
+
+    target <- rbind(control@target, maxFc@target)
+    
+    diters <- c(dim(target)[1], 3, dim(control@iters)[3])
+
+    iters <- array(NA, dim=diters, dimnames=list(
+      row=seq(diters[1]), val=c("min", "value", "max"),
+      iter=seq(diters[3])))
+
+    dlim <- dim(control@iters)[1]
+    iters[seq(1, dlim) ,,] <- control@iters
+    iters[seq(dlim + 1, diters[1]),,] <- maxFc@iters
+
+    control@target <- target
+    control@iters <- iters
 
     # CHECK targets that require minAge and maxAge to be set
     # IF minAge and maxAge are NA and target is one of them, then range(min, max)
@@ -467,26 +491,34 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
       is.na(control@target[,"maxAge"]) & (control@target[,"quant"] %in% age_range_targets),
         range(object, "maxfbar"), control@target[,"maxAge"])
 
-    # If relative targets (relYear) then we must also have relBiol, as
-    #   all FLStock targets can be related directly to the biol
+    # CHECK relBiol or relFishery if relYear
     if (any(!is.na(control@target$relYear))){
-        relYear_rows <- !is.na(control@target$relYear)
-        control@target$relBiol[relYear_rows] <- 1
-        # And if target needs minAge and maxAge we also need relMaxAge etc
-        # Set as minAge and maxAge of control
-        control@target[,"relMinAge"] <- ifelse(
-          is.na(control@target[,"relMinAge"]) &
-            (control@target[,"quant"] %in% age_range_targets),
-          control@target[,"minAge"], control@target[,"relMinAge"])
-        control@target[,"relMaxAge"] <- ifelse(
-          is.na(control@target[,"relMaxAge"]) &
-            (control@target[,"quant"] %in% age_range_targets),
-          control@target[,"maxAge"], control@target[,"relMaxAge"])
+
+      # BIOL target
+
+      # FISHERY target
+
     }
 
+    # If relative targets (relYear) then we must also have relBiol, as
+    #   all FLStock targets can be related directly to the biol
+#    if (any(!is.na(control@target$relYear))){
+#        relYear_rows <- !is.na(control@target$relYear)
+#        control@target$relBiol[relYear_rows] <- 1
+#        # And if target needs minAge and maxAge we also need relMaxAge etc
+#        # Set as minAge and maxAge of control
+#        control@target[,"relMinAge"] <- ifelse(
+#          is.na(control@target[,"relMinAge"]) &
+#            (control@target[,"quant"] %in% age_range_targets),
+#          control@target[,"minAge"], control@target[,"relMinAge"])
+#        control@target[,"relMaxAge"] <- ifelse(
+#          is.na(control@target[,"relMaxAge"]) &
+#            (control@target[,"quant"] %in% age_range_targets),
+#          control@target[,"maxAge"], control@target[,"relMaxAge"])
+#    }
+
     # RUN
-    out <- fwd(Bs, Fs, control, deviances=FLQuants(B=deviances),
-      effort_max=effort_max, ...)
+    out <- fwd(Bs, Fs, control, deviances=FLQuants(B=deviances), ...)
 
     # PARSE output
     Fc <- out$fisheries[[1]][[1]]
