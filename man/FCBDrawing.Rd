@@ -4,7 +4,6 @@
 \name{FCBDrawing}
 \alias{FCBDrawing}
 \alias{FCBDrawing-class}
-\alias{FCBDrawing}
 \alias{FCBDrawing-method}
 \alias{FCBDrawing,matrix-method}
 \alias{FCBDrawing-matrix}
@@ -12,8 +11,8 @@
 \usage{
 FCBDrawing(FCB, ...)
 
-\S4method{FCBDrawing}{matrix}(FCB, fisheryNames = NULL, catchNames = NULL,
-  biolNames = NULL)
+\S4method{FCBDrawing}{matrix}(FCB, fisheryNames = NULL,
+  catchNames = NULL, biolNames = NULL)
 }
 \arguments{
 \item{FCB}{The (FCB \link{matrix})}
@@ -30,10 +29,6 @@ FCBDrawing(FCB, ...)
 An \link{FCBDrawing} object
 }
 \description{
-A class for drawing the FCB matrix
-
-Generic constructor for making an \link{FCBDrawing} object
-
 Has to figure out the height, width and positions of the FCB components
 }
 \section{Slots}{

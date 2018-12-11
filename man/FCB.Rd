@@ -29,8 +29,6 @@ FCB(object, ...) <- value
 \description{
 The FCB slot in fwdControl specifies the relationships between the catches
 ('C') taken by each fishery ('F') from different biological units ('B').
-
-Set the FCB slot of the fwdControl
 }
 \details{
 This slot is of class *matrix* and has

@@ -333,19 +333,17 @@ test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
 })
 
 
-test_that("Fbar target, effort_max limiting",{
+test_that("Catch target, maxf limiting",{
     data(ple4)
-    control=fwdControl(year=1990, quant="fbar", value=200)
-    expect_warning(res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
-      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)])))))
-    f_out <- c(fbar(res)[,"1990"])
-    expect_true(f_out < 200)
 
-    control=fwdControl(year=1990, quant="fbar", value=5)
-    expect_warning(res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
-      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))), effort_max=5))
+    control=fwdControl(year=1990, quant="catch", value=1500000)
+    
+    res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
+      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
+    
     f_out <- c(fbar(res)[,"1990"])
-    expect_true(f_out < 5)
+    
+    expect_equal(f_out, 4)
 })
 
 test_that("control as FLQuants works", {

@@ -48,4 +48,5 @@ VignetteBuilder: knitr
 LazyLoad: Yes
 LazyData: No
 BugReports: https://github.com/flr/FLasher/issues
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
+Encoding: UTF-8

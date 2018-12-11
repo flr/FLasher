@@ -20,23 +20,24 @@
 
 \S4method{fwd}{FLBiols,FLFishery,fwdControl}(object, fishery, control, ...)
 
-\S4method{fwd}{FLBiol,FLFisheries,fwdControl}(object, fishery, control, ...)
+\S4method{fwd}{FLBiol,FLFisheries,fwdControl}(object, fishery, control,
+  ...)
 
 \S4method{fwd}{FLBiol,FLFishery,fwdControl}(object, fishery, control,
   deviances = residuals, residuals = FLQuant(1, dimnames =
   dimnames(rec(object))), ...)
 
 \S4method{fwd}{FLBiol,FLFishery,missing}(object, fishery, ...,
-  effort_max = 10, deviances = residuals, residuals = FLQuant(1, dimnames
-  = dimnames(m(object))))
+  effort_max = 10, deviances = residuals, residuals = FLQuant(1,
+  dimnames = dimnames(m(object))))
 
-\S4method{fwd}{FLStock,missing,fwdControl}(object, control, sr,
-  effort_max = 4, deviances = residuals, residuals = FLQuant(1, dimnames =
+\S4method{fwd}{FLStock,missing,fwdControl}(object, control, sr, maxF = 4,
+  deviances = residuals, residuals = FLQuant(1, dimnames =
   dimnames(rec(object))), ...)
 
 \S4method{fwd}{FLStock,ANY,missing}(object, fishery = missing, sr,
-  effort_max = 10, deviances = residuals, residuals = FLQuant(1, dimnames
-  = dimnames(rec(object))), ...)
+  effort_max = 10, deviances = residuals, residuals = FLQuant(1,
+  dimnames = dimnames(rec(object))), ...)
 }
 \arguments{
 \item{object}{An FLStock, an FLBiol or an FLBiols object.}
@@ -45,7 +46,7 @@
 
 \item{control}{A fwdControl object.}
 
-\item{effort_max}{Maximum yearly rate of change in effort for each fishery}
+\item{effort_max}{Maximum yearly rate of change in effort for each fishery.}
 
 \item{deviances}{An FLQuant of deviances for the stock recruitment relationship (if object is an FLStock).}
 
@@ -54,6 +55,8 @@
 \item{...}{Stormbending.}
 
 \item{sr}{a predictModel, FLSr or list that describes the stock recruitment relationship (if object is an FLStock).}
+
+\item{maxF}{Maximum yearly fishing mortality, when called on an FLStock object.}
 }
 \value{
 Either an FLStock, or a list of FLFishery and FLBiol objects.

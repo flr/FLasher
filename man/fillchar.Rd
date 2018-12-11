@@ -18,8 +18,4 @@ fillchar(object)
 }
 \description{
 Fill the character slots (name etc) with something.
-
-fillchar for FLFisheries
-
-fillchar for FLBiols
 }

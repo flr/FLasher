@@ -4,8 +4,9 @@
 \alias{make_test_operatingModel}
 \title{Make a test operating model from a single FLStock object}
 \usage{
-make_test_operatingModel(fls, FCB, nseasons = 1, recruitment_seasons = 1,
-  recruitment_age = 1, niters = 1000, sd = 0.1)
+make_test_operatingModel(fls, FCB, nseasons = 1,
+  recruitment_seasons = 1, recruitment_age = 1, niters = 1000,
+  sd = 0.1)
 }
 \arguments{
 \item{fls}{The FLStock that the OM is based on}

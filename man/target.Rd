@@ -27,8 +27,4 @@ target(object, ...) <- value
 Access and replace the target slot of a fwdControl object
 
 Replace the target slot of a fwdControl object
-
-Access target slot of fwdControl
-
-Set target slot of fwdControl
 }
