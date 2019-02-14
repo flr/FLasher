@@ -13,6 +13,8 @@ install:
 
 # Adapt as necessary starting from here
 
+platform: x64
+
 environment:
   global:
     USE_RTOOLS: true 
