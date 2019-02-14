@@ -1,5 +1,5 @@
 # fwd.R - DESC
-# fwd.R
+# FLasher/R/fwd.R
 
 # Copyright European Union, 2016
 # Author: Iago Mosqueira (EC JRC) <iago.mosqueira@ec.europa.eu>
@@ -17,9 +17,9 @@
 #'
 #' The projection is controlled by the fwdControl object (although it is also
 #' possible to control the projection of an FLStock using a different interface).
-#' In each timestep of the projection, the fishing effort of each FLFishery (or F 
-#' multiplier if object is an FLStock) is found so that the targets specified in
-#' the fwdControl object are hit.
+#' In each timestep of the projection, the fishing effort of each FLFishery (or
+#' the equivalent F  multiplier if object is an FLStock) is found so that the
+#' targets specified in the fwdControl object are hit.
 #'
 #' For more details and examples, see the vignettes in the package and also the
 #' tutorial at: http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html 
