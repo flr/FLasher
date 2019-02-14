@@ -28,7 +28,7 @@ environment:
 
 build_script:
   - travis-tool.sh install_deps
-  - travis-tool.sh install_github flr/FLCore flr/ggplotFL iagomosqueira/FLFishery
+  - travis-tool.sh install_github flr/FLCore flr/ggplotFL flr/FLFishery
 
 test_script:
   - travis-tool.sh run_tests
