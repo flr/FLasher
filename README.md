@@ -16,7 +16,11 @@ To install this package, start R and enter:
 
 or download from the [FLR releases page](https://github.com/flr/FLR/releases/latest)
 
-**WARNING**: FLasher requires a 64 bit installation of R.
+To install the development version, you can use:
+
+  devtools::install_github("flr/FLasher", INSTALL_opts=c("--no-multiarch"))
+
+**WARNING**: FLasher requires a 64 bit installation of R. Installation fropm source in R for Windows should be carried out using `--no-multiarch` for a 64bit-only installation.
 
 ## Documentation
 - [Help pages](http://flr-project.org/FLasher)
