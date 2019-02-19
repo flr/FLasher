@@ -232,6 +232,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     stop("objects have a single iter and target contains NA.")
   
   # CALL operatingModelRun
+browser()
   out <- operatingModelRun(rfishery, biolscpp, control, effort_max=effort_max,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
   
@@ -441,8 +442,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     name(F) <- "F"
     names(F) <- "B"
 
-    # RESCALE effort from pyrs[1]
-    effort(F)[, ac(pyrs[-1])] <- 0.1
+    # RESCALE effort for pyrs
+    # effort(F)[, ac(pyrs)] <- 0.1
 
     # CREATE fisheries
     Fs <- FLFisheries(F=F)
