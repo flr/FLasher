@@ -55,7 +55,7 @@ check:
 
 checkCRAN:
 	cd ..;\
-	R CMD check $(PKGNAME)_$(PKGVERS).tar.gz --as-cran
+	R CMD check $(PKGNAME)_$(PKGVERS).tar.gz --as-cran --use-valgrind
 
 clean:
 	cd ..;\
