@@ -1391,26 +1391,41 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
   }
   // Relative target given only by year and season - not F, C or B
   if (!rel_year_na | !rel_season_na){
-    if(verbose){Rprintf("Relative target in control\n");}
+    
+    if(verbose){
+      Rprintf("Relative target in control\n");
+    }
+    
     //auto rel_fishery_no = ctrl.get_target_int_col(target_no, sim_target_no, "relFishery");
     //auto rel_catch_no = ctrl.get_target_int_col(target_no, sim_target_no, "relCatch");
     //auto rel_Fnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relFishery");
     //auto rel_Cnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relCatch");
     //auto rel_Bnos = ctrl.get_target_list_int_col(target_no, sim_target_no, "relBiol");
     auto no_target_components = std::max(rel_Fnos.size(), std::max(rel_Bnos.size(), rel_Cnos.size()));
+    
     FLQuantAD rel_target_value(1,1,1,1,1,niters); // target values are not structured by age, time or unit - only by iter
+    
     for (long target_component=1; target_component <= no_target_components; ++target_component){
       auto Bno = std::min(target_component, (long int) rel_Bnos.size()) - 1; // see above
       auto Cno = std::min(target_component, (long int) rel_Cnos.size()) - 1;
       auto Fno = std::min(target_component, (long int) rel_Fnos.size()) - 1;
+      
       // Indices of rel target
       get_target_hat_indices(indices_min, indices_max, target_no, sim_target_no, target_component, true);
+      
       // Evaluate the OM
       rel_target_value = rel_target_value + eval_om(target_type, rel_Fnos[Fno], rel_Cnos[Cno], rel_Bnos[Bno], indices_min, indices_max);
     }
+    
     target_value = target_value / rel_target_value;
-    if(verbose){Rprintf("Relative to absolute target: %f\n", Value(rel_target_value(1,1,1,1,1,1)));}
-    if(verbose){Rprintf("Relative target: %f\n", Value(target_value(1,1,1,1,1,1)));}
+    
+    if(verbose){
+      Rprintf("Relative to absolute target: %f\n", Value(rel_target_value(1,1,1,1,1,1)));
+    }
+    
+    if(verbose){
+      Rprintf("Relative target: %f\n", Value(target_value(1,1,1,1,1,1)));
+    }
   }
   std::vector<adouble> value = target_value.get_data();
   if(verbose){Rprintf("Leaving get_target_value_hat\n\n");}
