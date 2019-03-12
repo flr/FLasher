@@ -441,9 +441,6 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     name(F) <- "F"
     names(F) <- "B"
 
-    # RESCALE effort for pyrs
-    # effort(F)[, ac(pyrs)] <- 0.1
-
     # CREATE fisheries
     Fs <- FLFisheries(F=F)
     Fs@desc <- "F"

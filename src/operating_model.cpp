@@ -329,6 +329,7 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
     biols(biol_no).n(qindices_min, qindices_max) *
     biols(biol_no).wt(qindices_min, qindices_max) *
     biols(biol_no).mat(qindices_min, qindices_max) * exp_z_pre_spwn);
+  
   return srp;
 }
 
