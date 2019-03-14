@@ -401,7 +401,7 @@ T bevholtSS3(const T srp, const std::vector<double> params){
     }
 
     T rec;
-    rec = (4.0 * s * R0 * (srp * sratio)) / (v * (1.0 - s) + (srp * sratio) * (5 * s - 1.0)) * seasp;
+    rec = (4.0 * s * R0 * srp) / (v * (1.0 - s) + srp * (5 * s - 1.0)) * sratio * seasp;
     return rec;
 }
 
