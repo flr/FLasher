@@ -290,14 +290,21 @@ FLQuantAD operatingModel::get_exp_z_pre_spwn(const int biol_no, const std::vecto
  * \param indices_max The maximum indices: year, unit, season, area, iter (length 5).
  */
 FLQuantAD operatingModel::total_srp(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+  bool verbose = false;
+  if(verbose){Rprintf("\nIn operatingModel::total_srp\n");}
   if ((indices_min.size() != 5) | (indices_max.size() != 5)){
     Rcpp::stop("In operatingModel::total_srp subsetter. Indices not of length 5 (no age index)\n");
   }
   // TODO: CHANGE srp metric
   //FLQuantAD usrp = ssf(biol_no, indices_min, indices_max);
   FLQuantAD usrp = srp(biol_no, indices_min, indices_max);
+  for (int unit_count=1; unit_count <= (indices_max[1] - indices_min[1] + 1); ++unit_count){
+    if(verbose){Rprintf("unit: %i usrp: %f\n", unit_count, Value(usrp(1,1,unit_count,1,1,1)));}
+  }
   // Sum over units
   FLQuantAD total_srp = unit_sum(usrp);
+  if(verbose){Rprintf("total_srp: %f\n", Value(total_srp(1,1,1,1,1,1)));}
+  if(verbose){Rprintf("Leaving operatingModel::total_srp\n");}
   return total_srp;
 }
 
@@ -312,6 +319,8 @@ FLQuantAD operatingModel::total_srp(const int biol_no, const std::vector<unsigne
  * \param indices_max The maximum indices: year, unit etc (length 5)
  */
 FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
+  bool verbose = false;
+  if(verbose){Rprintf("\nIn operatingModel::srp\n");}
   // Check indices_min and indices_max are of length 5
   if ((indices_min.size() != 5) | (indices_max.size() != 5)){
     Rcpp::stop("In operatingModel::srp subsetter. Indices not of length 5\n");
@@ -329,7 +338,32 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
     biols(biol_no).n(qindices_min, qindices_max) *
     biols(biol_no).wt(qindices_min, qindices_max) *
     biols(biol_no).mat(qindices_min, qindices_max) * exp_z_pre_spwn);
+    //Rprintf("n0 1: %f, n0 2: %f\n", Value(biols(biol_no).n()(1, qindices_min[1], 1, 1, 1, 1)), Value(biols(biol_no).n()(1, qindices_min[1], 2, 1, 1, 1)));
+  //if(verbose){Rprintf("unit 1 n: %f wt: %f mat: %f exp_z_pre_spwn: %f\n", 
+  //   Value(biols(biol_no).n()(1, qindices_min[1], qindices_min[2], qindices_min[3], qindices_min[4], qindices_min[5])),  
+  //   biols(biol_no).wt()(1, qindices_min[1], qindices_min[2], qindices_min[3], qindices_min[4], qindices_min[5]),  
+  //   biols(biol_no).mat()(1, qindices_min[1], qindices_min[2], qindices_min[3], qindices_min[4], qindices_min[5]),
+  //   Value(exp_z_pre_spwn(1,1,1,1,1,1)));}
+  //if(verbose){Rprintf("unit 2 n: %f wt: %f mat: %f exp_z_pre_spwn: %f\n", 
+  //   Value(biols(biol_no).n()(1, qindices_min[1], qindices_max[2], qindices_min[3], qindices_min[4], qindices_min[5])),  
+  //   biols(biol_no).wt()(1, qindices_min[1], qindices_max[2], qindices_min[3], qindices_min[4], qindices_min[5]),  
+  //   biols(biol_no).mat()(1, qindices_min[1], qindices_max[2], qindices_min[3], qindices_min[4], qindices_min[5]),
+  //   Value(exp_z_pre_spwn(1,1,2,1,1,1)));}
+
+  // WHat is going on? mat = 0 so srp should be 0
+  FLQuantAD temp = biols(biol_no).n(qindices_min, qindices_max) *
+    biols(biol_no).wt(qindices_min, qindices_max) *
+    biols(biol_no).mat(qindices_min, qindices_max) * exp_z_pre_spwn;
+  if(verbose){Rprintf("temp 1: %f\n", Value(temp(5,1,1,1,1,1)));}
+  if(verbose){Rprintf("temp 2: %f\n", Value(temp(5,1,2,1,1,1)));}
+  FLQuantAD tsrp = unit_sum(srp);
+  if(verbose){Rprintf("srp 1: %f\n", Value(srp(1,1,1,1,1,1)));}
+  if(verbose){Rprintf("srp 2: %f\n", Value(srp(1,1,2,1,1,1)));}
+  if(verbose){Rprintf("tsrp: %f\n", Value(tsrp(1,1,1,1,1,1)));}
+
+
   
+  if(verbose){Rprintf("Leaving operatingModel::srp\n");}
   return srp;
 }
 
@@ -425,7 +459,12 @@ FLQuant operatingModel::f_prop_spwn(const int fishery_no, const int biol_no, con
  * \param timestep The timestep of the recruitment (not the SSB that yields the recruitment).
  */
 std::vector<adouble> operatingModel::calc_rec(const unsigned int biol_no, const unsigned int unit, const unsigned int rec_timestep) const{
+  bool verbose = false;
+  if(verbose){Rprintf("\nIn operatingModel::calc_rec\n");}
   unsigned int srp_timestep = rec_timestep - biols(biol_no).srp_timelag();
+  if(verbose){Rprintf("biol srp_timelag: %i\n", biols(biol_no).srp_timelag());}
+  if(verbose){Rprintf("rec_timestep: %i\n", rec_timestep);}
+  if(verbose){Rprintf("srp_timestep: %i\n", srp_timestep);}
   if (srp_timestep < 1){
     Rcpp::stop("In operatingModel::calc_rec. srp_timestep outside of range");
   }
@@ -440,6 +479,7 @@ std::vector<adouble> operatingModel::calc_rec(const unsigned int biol_no, const 
   std::vector<unsigned int> srp_indices_min{srp_year, 1, srp_season, area, 1};
   std::vector<unsigned int> srp_indices_max{srp_year, biol_dim[2], srp_season, area, niter};
   FLQuantAD srpq = total_srp(biol_no, srp_indices_min, srp_indices_max);
+  if(verbose){Rprintf("total_srp: %f\n", Value(srpq(1,1,1,1,1,1)));}
   // Initial indices of the SR params are those of the recruitment timestep for the Biol
   // SR params are in step with the Recruitment not the SRP
   unsigned int initial_params_year = 0;
@@ -447,6 +487,8 @@ std::vector<adouble> operatingModel::calc_rec(const unsigned int biol_no, const 
   timestep_to_year_season(rec_timestep, biol_dim[3], initial_params_year, initial_params_season);
   std::vector<unsigned int> initial_params_indices{initial_params_year, unit, initial_params_season, area, 1};
   FLQuantAD rec = biols(biol_no).predict_recruitment(srpq, initial_params_indices);
+  if(verbose){Rprintf("rec: %f\n", Value(rec(1,1,1,1,1,1)));}
+  if(verbose){Rprintf("Leaving operatingModel::calc_rec\n");}
   return rec.get_data();
 }
 
@@ -622,6 +664,8 @@ FLQuantAD operatingModel::get_nunit_z(const int biol_no, const std::vector<unsig
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
 FLQuantAD operatingModel::get_nunit_f(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+  bool verbose = false;
+  if(verbose){Rprintf("\nIn operatingModel::get_nunit_f biol only\n");}
   if ((indices_min.size() != 6) | (indices_max.size() != 6)){
     Rcpp::stop("In operatingModel get_nunit_f B subsetter. Indices not of length 6\n");
   }
@@ -630,9 +674,19 @@ FLQuantAD operatingModel::get_nunit_f(const int biol_no, const std::vector<unsig
     Rcpp::stop("In operatingModel get_nunit_f B. Not possible to get unit combined F of a Biol that is fished by a Catch that also fishes on other Biols. This is because it is not possible to get the portion of catches of that Catch that come from a particular Biol.\n");
   }
   FLQuantAD unit_catch =  unit_sum(catch_n(biol_no, indices_min, indices_max));
+  //FLQuantAD ctemp = catch_n(biol_no, indices_min, indices_max);
+  //FLQuantAD ctemp = catch_n(1, 1, indices_min, indices_max);
+  //FLQuantAD dtemp = fisheries(1, 1).discards_n(indices_min, indices_max);
+  //FLQuantAD ltemp = fisheries(1, 1).landings_n(indices_min, indices_max);
+  //Rprintf("dn1: %f\n", Value(dtemp(1,1,1,1,1,1)));
+  //Rprintf("dn2: %f\n", Value(dtemp(1,1,2,1,1,1)));
+  //Rprintf("ln1: %f\n", Value(ltemp(1,1,1,1,1,1)));
+  //Rprintf("ln2: %f\n", Value(ltemp(1,1,2,1,1,1)));
+
   FLQuantAD unit_surv = unit_sum(survivors(biol_no, indices_min, indices_max));
   FLQuantAD unit_n = unit_sum(biols(biol_no).n(indices_min, indices_max));
   FLQuantAD nunit_f = (unit_catch * log(unit_n / unit_surv)) / (unit_n - unit_surv);
+  if(verbose){Rprintf("\nunit_catch: %f, unit_surv: %f, unit_n: %f, nunit_f: %f \n", Value(unit_catch(1,1,1,1,1,1)), Value(unit_surv(1,1,1,1,1,1)), Value(unit_n(1,1,1,1,1,1)), Value(nunit_f(1,1,1,1,1,1)));}
   return nunit_f;
 }
 
@@ -690,7 +744,8 @@ FLQuantAD operatingModel::survivors(const int biol_no, const std::vector<unsigne
  */
 void operatingModel::project_biols(const int timestep){
   bool verbose = false;
-  if(verbose){Rprintf("In operatingModel::project_biols\n");}
+  if(verbose){Rprintf("\nIn operatingModel::project_biols\n");}
+  if(verbose){Rprintf("timestep: %i\n", timestep);}
   if (timestep < 2){
     Rcpp::stop("In operatingModel::project_biols. Uses effort in previous timestep so timestep must be at least 2.");
   }
@@ -713,14 +768,17 @@ void operatingModel::project_biols(const int timestep){
     std::vector<unsigned int> prev_indices_min{1, prev_year, 1, prev_season, area, 1};
     std::vector<unsigned int> prev_indices_max{biol_dim[0], prev_year, biol_dim[2], prev_season, area, niter};
     // Get abundance at end of preceding timestep
-    if(verbose){Rprintf("About to get survivors\n");}
+    if(verbose){Rprintf("Getting survivors from previous timestep\n");}
     FLQuantAD surv = survivors(biol_counter, prev_indices_min, prev_indices_max);
     FLQuantAD new_abundance = surv;
+    if(verbose){Rprintf("Age 0 survivors surv 1: %f surv 2: %f\n", Value(surv(1,1,1,1,1,1)), Value(surv(1,1,2,1,1,1)));}
     if(verbose){Rprintf("Starting to loop over units\n");}
     for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
+      if(verbose){Rprintf("Processing survivors in unit: %i\n", ucount);}
       bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, year, season);
       // If recruiting shift survivor ages, fix plus group. Recruitment calculated later after updating abundances.
       if (recruiting_now){
+        if(verbose){Rprintf("We are recruiting so shift survivor abundance ages\n");}
         for (unsigned int icount = 1; icount <= niter; ++icount){
           for (unsigned int qcount = 2; qcount <= biol_dim[0]; ++qcount){
             new_abundance(qcount,1,ucount,1,area,icount) = surv(qcount-1,1,ucount,1,area,icount);
@@ -730,17 +788,33 @@ void operatingModel::project_biols(const int timestep){
         }
       }
       // Update biol with survivors
+      if(verbose){Rprintf("Update abdundance with new abundance\n");}
       for (unsigned int icount = 1; icount <= niter; ++icount){
         for (unsigned int qcount = 1; qcount <= biol_dim[0]; ++qcount){
           biols(biol_counter).n(qcount, year, ucount, season, area, icount) = new_abundance(qcount, 1, ucount, 1, 1, icount);
         }
       }
+    }
+    // Now do Recruitment by unit
+    // This can only be done after abundances in biol have been updated in case SRP comes from same time step that we
+    // are getting recruitment for (weird case)
+    for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
+      if(verbose){Rprintf("Processing recruitment in unit: %i\n", ucount);}
       // Insert recruitment - can only do after abundance has been updated in timestep as SRP might be from this timestep
+      // This is a bit dodgy as the abdundance in first age is from the survivors of prev. time step
+      // and will also contribute to recruitment
+      bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, year, season);
       if (recruiting_now){
+        if(verbose){Rprintf("Recruiting\n");}
+        //Rprintf("Current age0 - n0 1: %f, n0 2: %f\n", Value(biols(biol_counter).n()(1, year, 1, season, 1, 1)), Value(biols(biol_counter).n()(1, year, 2, season, 1, 1)));
         std::vector<adouble> rec = calc_rec(biol_counter, ucount, timestep);
+        if(verbose){Rprintf("Timestep: %i, Unit: %i,  Rec: %f\n", timestep, ucount, Value(rec[0]));}
         for (unsigned int icount = 1; icount <= niter; ++icount){
+          if(verbose){Rprintf("Orig. age0 value in timestep: %i, Unit: %i,  BRec: %f\n", timestep, ucount, Value(biols(biol_counter).n(1, year, ucount, season, area, icount)));}
           biols(biol_counter).n(1, year, ucount, season, area, icount) = rec[icount-1];
+          if(verbose){Rprintf("New age0 value in timestep: %i, Unit: %i,  BRec: %f\n", timestep, ucount, Value(biols(biol_counter).n(1, year, ucount, season, area, icount)));}
         }
+        if(verbose){Rprintf("Done recruiting\n");}
       }
       // If abundances are too small, set at minimum - avoid numerical issues in solver
       adouble min_abundance = 1e-6;
@@ -751,6 +825,7 @@ void operatingModel::project_biols(const int timestep){
       }
     }
   }
+  if(verbose){Rprintf("Leaving operatingModel::project_biols\n");}
   return;
 }
 
@@ -764,6 +839,8 @@ void operatingModel::project_biols(const int timestep){
   \param timestep The time step for the projection.
  */
 void operatingModel::project_fisheries(const int timestep){
+  bool verbose = false;
+  if(verbose){Rprintf("In operatingModel::project_fisheries\n");}
   // C = (pF / Z) * (1 - exp(-Z)) * N
   //Rprintf("In operatingModel::project_fisheries\n");
   // What timesteps / years / seasons are we dealing with?
@@ -787,7 +864,19 @@ void operatingModel::project_fisheries(const int timestep){
     std::vector<unsigned int> biol_dim = biols(biol_count).n().get_dim();
     std::vector<unsigned int> indices_max{biol_dim[0], year, biol_dim[2], season, area, niter};
     total_z[biol_count - 1] = biols(biol_count).m(indices_min, indices_max);
+    //// Exiting landings and discards in the timestep
+    //Rprintf("Existing landings and discards\n");
+    //FLQuantAD dtemp = fisheries(1, 1).discards_n(indices_min, indices_max);
+    //FLQuantAD ltemp = fisheries(1, 1).landings_n(indices_min, indices_max);
+    //Rprintf("dn1: %f\n", Value(dtemp(1,1,1,1,1,1)));
+    //Rprintf("dn2: %f\n", Value(dtemp(1,1,2,1,1,1)));
+    //Rprintf("ln1: %f\n", Value(ltemp(1,1,1,1,1,1)));
+    //Rprintf("ln2: %f\n", Value(ltemp(1,1,2,1,1,1)));
   }
+
+
+
+
   // Get Partial F for every row in FCB table
   // Store in the same order as FCB table - order is important will be used to access them later
   //Rprintf("Getting total Z and partial F\n");
@@ -828,15 +917,26 @@ void operatingModel::project_fisheries(const int timestep){
         unsigned int partial_f_element = ctrl.get_FCB_row_no(fishery_count, catch_count, biol_no); 
         // C = (pF / Z) * (1 - exp(-Z)) * N
         catch_temp = catch_temp + ((partial_f[partial_f_element] / total_z[biol_no-1]) * (1.0 - exp(-1.0 * total_z[biol_no-1])) * biols(biol_no).n(indices_min, indices_max));
+        //Rprintf("catch_temp: %f\n", Value(catch_temp(1,1,1,1,1,1)));
       }
       discards_ratio_temp = fisheries(fishery_count, catch_count).discards_ratio(indices_min, indices_max); 
+      //Rprintf("discards_ratio_temp: %f\n", Value(discards_ratio_temp(1,1,1,1,1,1)));
       landings = catch_temp * (1.0 - discards_ratio_temp);
       discards = catch_temp * discards_ratio_temp;
       // Stick the new landings and discards into the catch
       fisheries(fishery_count, catch_count).landings_n().insert(landings, indices_min, indices_max);
       fisheries(fishery_count, catch_count).discards_n().insert(discards, indices_min, indices_max);
+      //// Exiting landings and discards in the timestep
+      //Rprintf("Updated landings and discards\n");
+      //FLQuantAD dtemp = fisheries(1, 1).discards_n(indices_min, indices_max);
+      //FLQuantAD ltemp = fisheries(1, 1).landings_n(indices_min, indices_max);
+      //Rprintf("dn1: %f\n", Value(dtemp(1,1,1,1,1,1)));
+      //Rprintf("dn2: %f\n", Value(dtemp(1,1,2,1,1,1)));
+      //Rprintf("ln1: %f\n", Value(ltemp(1,1,1,1,1,1)));
+      //Rprintf("ln2: %f\n", Value(ltemp(1,1,2,1,1,1)));
+
   }}
-  //Rprintf("Leaving project_fisheries\n");
+  if(verbose){Rprintf("Leaving operatingModel::project_fisheries\n");}
   return;
 }
 
@@ -852,7 +952,7 @@ void operatingModel::project_fisheries(const int timestep){
 Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::vector<double> effort_max, const double indep_min, const double indep_max, const unsigned int nr_iters){
   //auto tstartrun = std::chrono::high_resolution_clock::now();
   bool verbose = false;
-  if(verbose){Rprintf("\nIn run()\n");}
+  if(verbose){Rprintf("\nIn operatingModel::run()\n");}
   // Housekeeping
   auto niter = get_niter(); // number of iters taken from effort of first fishery
   if(verbose){Rprintf("Number of iterations to solve - niter: %i\n", niter);}
@@ -879,7 +979,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::v
   unsigned int max_timestep = biol1_dim[1] * biol1_dim[3];
   // Each target is solved independently (but a target can be made up of multiple simultaneous targets)
   auto ntarget = ctrl.get_ntarget();
-  if(verbose){Rprintf("Targets to solve: %i \n", ntarget);}
+  if(verbose){Rprintf("\nTargets to solve: %i \n", ntarget);}
   // Place to store the codes from the solver routine. One code per target per iter. Ntarget x iter
   Rcpp::IntegerMatrix solver_codes(ntarget,niter);
   // Loop over targets and solve all simultaneous targets in that target set
@@ -901,8 +1001,10 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::v
     if(verbose){Rprintf("Getting desired target values from control object\n");}
     std::vector<double> target_value = get_target_value(target_count); // values of all sim targets for the target
     // Set up effort multipliers - do all efforts and iters at same time (keep timesteps, areas seperate)
+    if(verbose){Rprintf("Effort_mult_initial: %f\n", effort_mult_initial);}
     std::vector<adouble> effort_mult_ad(neffort * niter, effort_mult_initial);
-    std::fill(effort_mult_ad.begin(), effort_mult_ad.end(), effort_mult_initial);
+    std::fill(effort_mult_ad.begin(), effort_mult_ad.end(), effort_mult_initial); // Do we need this fill?
+    if(verbose){Rprintf("Effort_mult_ad: %f\n", Value(effort_mult_ad[0]));}
 
     // Turn tape on
     CppAD::Independent(effort_mult_ad);
@@ -912,6 +1014,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::v
     // Update fisheries.effort() with effort multiplier in the effort timestep (area and unit effectively ignored)
     if(verbose){Rprintf("Updating effort with multipler\n");}
     if(verbose){Rprintf("Effort before updating: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));}
+    //if(verbose){Rprintf("Effort_mult_ad: %f\n", Value(effort_mult_ad[0]));} // Accessing effort_mult_ad crashes this
     for (unsigned int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
       for (unsigned int iter_count = 1; iter_count <= niter; ++ iter_count){
         fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) = 
@@ -948,6 +1051,8 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::v
     }
     std::vector<adouble> error(target_value_hat.size());
     if(verbose){Rprintf("Calculating error\n");}
+    if(verbose){Rprintf("target_value: %f\n", target_value[0]);}
+    if(verbose){Rprintf("target_value_hat: %f\n", Value(target_value_hat[0]));}
     std::transform(target_value.begin(), target_value.end(), target_value_hat.begin(), error.begin(),
         //[](double x, adouble y){return x - y;});
         [](double x, adouble y){return y - x;});
@@ -956,10 +1061,11 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::v
       Rprintf("target 1. target_value: %f target_value_hat: %f error: %f\n", target_value[0], Value(target_value_hat[0]), Value(error[0]));
       //Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", target_value[1], Value(target_value_hat[1]), Value(error[1]));
     }
-    //if(verbose){Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", target_value[1], Value(target_value_hat[1]), Value(error[1]));}
+    if(verbose){Rprintf("Done calculating error\n");}
     // Stop recording
     // auto tpretapeoff = std::chrono::high_resolution_clock::now();
     // Use of optimize takes a long time. But solver is slightly faster
+    if(verbose){Rprintf("Turning off tape and linking effort to error\n");}
     CppAD::ADFun<double> fun(effort_mult_ad, error);
     // fun.optimize();
     // Use Dependent? Makes no difference
@@ -1101,10 +1207,12 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
       if(verbose){Rprintf("target_fbar\n");}
       // Total Fbar on a biol
       if (!biol_na & fishery_na & catch_na){
+        if(verbose){Rprintf("target_fbar with biol only \n");}
         out = fbar(biol_no, indices_min, indices_max);
       }
       // Partial Fbar from a Fishery and Catch on a Biol
       else if (!biol_na & !fishery_na & !catch_na){
+        if(verbose){Rprintf("target_fbar with fishery, catch and biol\n");}
         out = fbar(fishery_no, catch_no, biol_no, indices_min, indices_max);
       }
       else {
@@ -1343,6 +1451,7 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
   auto niters = get_niter();
   FLQuantAD target_value(1,1,1,1,1,niters); // target values are not structured by age, time or unit - only by iter
   fwdControlTargetType target_type;
+  if(verbose){Rprintf("no_target_components: %i\n", no_target_components);}
   for (long target_component=1; target_component <= no_target_components; ++target_component){ // long to get min to work...
     auto Bno = std::min(target_component, (long int) Bnos.size()) - 1; // target_component or max no of biols in that target
     auto Cno = std::min(target_component, (long int) Cnos.size()) - 1;
@@ -1356,9 +1465,10 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     // Target type
     target_type = ctrl.get_target_type(target_no, sim_target_no, false);
     // Evaluate the OM
+    if(verbose){Rprintf("Temp absolute target: %f\n", Value(target_value(1,1,1,1,1,1)));}
     target_value = target_value + eval_om(target_type, Fnos[Fno], Cnos[Cno], Bnos[Bno], indices_min, indices_max);
   }
-  if(verbose){Rprintf("Absolute target: %f\n", Value(target_value(1,1,1,1,1,1)));}
+  if(verbose){Rprintf("Final absolute target: %f\n", Value(target_value(1,1,1,1,1,1)));}
 
   // Do we have a relative target? Only check year and season
   // No check to see if the control object makes sense is OK - handled elsewhere
@@ -1676,17 +1786,21 @@ FLQuantAD operatingModel::fbar(const int fishery_no, const int catch_no, const i
  * \param indices_max The maximum indices quant, year, unit etc (length 6)
  */
 FLQuantAD operatingModel::fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+  bool verbose = false;
+  if(verbose){Rprintf("\nIn operatingModel::fbar biol only\n");}
   if((indices_min.size() != 6) | (indices_max.size() != 6)){
     Rcpp::stop("In operatingModel fbar B method. indices_min and max must be of length 6\n");
   }
   FLQuantAD fbar;
   // If a single unit is asked for, get F using get_f method
   if (indices_min[2] == indices_max[2]){
+    if(verbose){Rprintf("fbar biol with single unit\n");}
     FLQuantAD f = get_f(biol_no, indices_min, indices_max); 
     fbar = quant_mean(f);
   }
   // Else we have to fanny about with multiple units
   else {
+    if(verbose){Rprintf("fbar biol with multiple units\n");}
     FLQuantAD f = get_nunit_f(biol_no, indices_min, indices_max); 
     fbar = quant_mean(f);
   }
