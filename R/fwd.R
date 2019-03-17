@@ -460,12 +460,12 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     }
     
     # ADD maxF to control, only in years with no fbar target
-    
-    idx <- by(control@target[, c("quant", "year")], control@target$year,
-      function(x) any(c("f", "fbar") %in% x$quant))
+    idx <- by(control@target[, c("quant", "year")],
+      control@target$year, function(x) any(c("f", "fbar") %in% x$quant))
+
     yrs <- names(idx)[!idx]
 
-    if(length(yrs) > 0) {
+    if(length(yrs) > 0 & !is.null(maxF)) {
 
       # MERGE controls
       maxFc <- fwdControl(year=yrs, quant="fbar", min=0, max=maxF, biol=1)
@@ -514,6 +514,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
       control@target[control@target$quant %in% c("effort","revenue") & 
         !is.na(control@target$relYear), "relFishery"] <- 1
     }
+
+    control <- stk_target_order(control)
 
     # RUN
     out <- fwd(Bs, Fs, control, deviances=FLQuants(B=deviances), ...)

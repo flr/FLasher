@@ -78,44 +78,90 @@ G <- function(...)
 # }}}
 
 # add_target_order {{{
+
 #' Add the order column to the control target
 #'
-#' Add the order column to the control target data.frame so that targets are processed in the correct order.
+#' Add the order column to the control target data.frame so that targets are
+#' processed in the correct order.
 #'
-#' It is important that the targets in the control object are processed in the correct order.
-#' Targets can happen simultaneously. For example, if there are multiple FLFishery objects in
-#' operating model each will need to have a target to solve for at the same time as the others.
-#' The targets are processed in a time ordered sequence (year / season).
-#' However, within the same year and season it is necessary for the min and max targets to be processed
-#' separatley and after the other targets.
+#' It is important that the targets in the control object are processed in the
+#' correct order. Targets can happen simultaneously. For example, if there are
+#' multiple FLFishery objects in operating model each will need to have a target
+#' to solve for at the same time as the others. The targets are processed in a
+#' time ordered sequence (year / season).
+#' However, within the same year and season it is necessary for the min and max
+#' targets to be processed separatley and after the other targets.
 #'
 #' @param control A fwdControl object
 #' @return A fwdControl object with an order column.
+
+
+stk_target_order <- function(control) {
+
+  target <- control@target
+
+  # KEEP original order
+  target$orig_order <- seq(1, nrow(control@target))
+
+  # min and max values?
+  target$minmax <- is.na(control@iters[ ,"value", 1])
+
+  # ORDER by year, season, minmax, orig_order 
+  target <- target[order(target$year, target$season, target$minmax,
+    target$orig_order),]
+
+  #
+  target$order <- seq(1, nrow(target))
+
+  control@iters <- control@iters[target$orig_order, , , drop=FALSE]
+
+  target <- target[,colnames(target) != "minmax"]
+  target <- target[,colnames(target) != "orig_order"]
+
+  control@target <- target
+
+  return(control)
+}
+
+
 add_target_order <- function(control){
-    # Add temporary original order column - order gets messed about with merge
-    control@target$orig_order <- 1:nrow(control@target)
-    # Add temporary minmax column
-    control@target$minmax <- is.na(control@iters[,"value",1])
-    sim_targets <- unique(control@target[,c("year","season","minmax")])
-    # Order by year / season / minmax
-    sim_targets <- sim_targets[order(sim_targets$year, sim_targets$season, sim_targets$minmax),]
-    sim_targets$order <- 1:nrow(sim_targets)
-    # Problem - merge reorders by order column
-    control@target <- merge(control@target, sim_targets) # order should be the same
-    # Reorder by original order so that target and iters slots are consistent
-    control@target <- control@target[order(control@target$orig_order),]
-    # Reorder target and iters slots by new order
-    # Just get first element of each list element in fishery, catch and biol
-    #new_order <- order(control@target$order, control@target$fishery, control@target$catch, control@target$biol)
-    new_order <- order(control@target$order, unlist(lapply(control@target$fishery, "[[", 1)), unlist(lapply(control@target$catch, "[[", 1)), unlist(lapply(control@target$biol, "[[", 1)))
-    control@target <- control@target[new_order,]
-    control@iters <- control@iters[new_order,,,drop=FALSE]
-    # Remove minmax and orig_order columns
-    control@target <- control@target[,colnames(control@target) != "minmax"]
-    control@target <- control@target[,colnames(control@target) != "orig_order"]
-    return(control)
+    
+  # Add temporary original order column - order gets messed about with merge
+  control@target$orig_order <- 1:nrow(control@target)
+  
+  # Add temporary minmax column
+  control@target$minmax <- is.na(control@iters[,"value",1])
+  sim_targets <- unique(control@target[,c("year","season","minmax")])
+  
+  # Order by year / season / minmax
+  sim_targets <- sim_targets[order(sim_targets$year, sim_targets$season,
+    sim_targets$minmax),]
+  
+  sim_targets$order <- 1:nrow(sim_targets)
+  
+  # Problem - merge reorders by order column
+  control@target <- merge(control@target, sim_targets) # order should be the same
+  
+  # Reorder by original order so that target and iters slots are consistent
+  control@target <- control@target[order(control@target$orig_order),]
+  
+  # Reorder target and iters slots by new order
+  # Just get first element of each list element in fishery, catch and biol
+  new_order <- order(control@target$order, unlist(lapply(control@target$fishery,
+    "[[", 1)), unlist(lapply(control@target$catch, "[[", 1)), 
+    unlist(lapply(control@target$biol, "[[", 1)))
+  
+  control@target <- control@target[new_order,]
+  control@iters <- control@iters[new_order,,,drop=FALSE]
+  
+  # Remove minmax and orig_order columns
+  control@target <- control@target[,colnames(control@target) != "minmax"]
+  control@target <- control@target[,colnames(control@target) != "orig_order"]
+  
+  return(control)
 } # }}}
 
+# match_posns_names {{{
 #' Change names of biols, catches and fisheries in the control object into integer positions
 #'
 #' Change names of biols, catches and fisheries in the control object into integer positions
@@ -128,6 +174,7 @@ add_target_order <- function(control){
 #' @param biol_names A vector of names in the FLBiols objects
 #' @param fishery_catch_names A named list - elements of list are vector of the catch names of each fishery
 #' @return The updated target slot
+
 match_posns_names <- function(trg, biol_names, fishery_catch_names){
 
 
@@ -185,6 +232,4 @@ match_posns_names <- function(trg, biol_names, fishery_catch_names){
     }
     return(trg)
 }
-
-
-
+# }}}
