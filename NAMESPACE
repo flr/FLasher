@@ -30,7 +30,6 @@ importFrom(stats,
 exportClasses(
 	"fwdControl")
 export(
-  "add_target_order",
   "G",
   "get_FLQuant_element",
   "get_FLQuant_elements",
