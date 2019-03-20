@@ -31,6 +31,7 @@ exportClasses(
 	"fwdControl")
 export(
   "add_target_order",
+  "add_target_order_fls",
   "G",
   "get_FLQuant_element",
   "get_FLQuant_elements",
