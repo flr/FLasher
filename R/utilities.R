@@ -77,7 +77,7 @@ G <- function(...)
   return(I(list(unlist(list(...)))))
 # }}}
 
-# add_target_order {{{
+# target_order {{{
 
 #' Add the order column to the control target
 #'
@@ -96,7 +96,7 @@ G <- function(...)
 #' @return A fwdControl object with an order column.
 
 
-stk_target_order <- function(control) {
+add_target_order_fls <- function(control) {
 
   target <- control@target
 
