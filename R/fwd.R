@@ -329,17 +329,17 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
     Fs@desc <- "F"
 
     # SET @FCB
-    control@FCB <- matrix(1, ncol=3, nrow=1, dimnames=list(1, c("F", "C", "B")))
+    # control@FCB <- matrix(1, ncol=3, nrow=1, dimnames=list(1, c("F", "C", "B")))
 
     # SET @target[fcb]
-    control@target[c("fishery", "catch", "biol")] <- rep(c(NA, NA, 1),
-      each=dim(control@target)[1])
+    # control@target[c("fishery", "catch", "biol")] <- rep(c(NA, NA, 1),
+    #  each=dim(control@target)[1])
 
     # RUN
     out <- fwd(Bs, Fs, control, deviances=FLQuants(B=deviances), ...)
 
     # PARSE output
-    Fc <- out$fisheries[[1]][[1]]
+    Fc <- out$fisheries[[1]]
     Bo <- out$biols[[1]]
 
     return(list(biols=Bo, fisheries=Fc))
