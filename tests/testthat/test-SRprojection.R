@@ -142,7 +142,7 @@ test_that("SR models with FLBiol and FLFishery",{
     years <- seq(2018, length=nyears)
     catch_target <- 100
     # Not interested in hitting a target - just that the SR is OK
-    control <- fwdControl(data.frame(year=years, quant="catch", value=catch_target))
+    control <- fwdControl(data.frame(year=years, quant="catch", biol=1, value=catch_target))
     ple4_srr <- fmle(as.FLSR(ple4, model="bevholt"), control=list(trace=0))
     biol <- as(ple4mtf, "FLBiol")
     fishery <- as(ple4mtf, "FLFishery")
