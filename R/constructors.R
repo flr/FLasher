@@ -181,7 +181,8 @@ setMethod('fwdControl', signature(target='list', iters='missing'),
       inp <- lapply(target, function(x) do.call('parsefwdList', x))
       
       # target
-      trg <- do.call('rbind', c(lapply(inp, '[[', 'target'), stringsAsFactors=FALSE))
+      trg <- do.call('rbind', c(lapply(inp, '[[', 'target'),
+        stringsAsFactors=FALSE))
 
       # iters
       ites <- lapply(inp, '[[', 'iters')
@@ -221,20 +222,21 @@ setMethod('fwdControl', signature(target='list', iters='missing'),
 ) # }}}
 
 # fwdControl(target='list', iters='list') {{{
-#' fwdControl constructor for a series of list
+#' fwdControl constructor for a series of lists
 #' @rdname fwdControl
 setMethod('fwdControl', signature(target='list', iters='list'),
   function(target, iters, ...) {
     
     args <- list(...)
 
+    # EXTRACT FCB from args
     if(any(names(args) == 'FCB')) {
       nfcb <- match("FCB", names(args))
       FCB <- args[nfcb]
       args <- args[-nfcb]
-    }
-    else
+    } else {
       FCB=NULL
+    }
 
     # MERGE all but FCB
     target <- c(list(target, iters), args)
@@ -283,7 +285,7 @@ parsefwdList <- function(...) {
   dropcols <- c('value', 'min', 'max', listcols)
   df <- as.data.frame(args[!names(args) %in% dropcols], stringsAsFactors = FALSE)
   
-  # if any (list | asis) are true, make a df without those cols, then add as a list
+  # if any (list | asis) are true, make a df without those cols, then add list
   for (i in listcols){
     df <- do.call("$<-", list(df, i, I(args[[i]])))
   }
@@ -304,6 +306,11 @@ parsefwdList <- function(...) {
   
   # COMPUTE No. iters
   dite <- max(1, ncol(mat) / nrow(trg))
+
+  # BUT consider FLPar
+  if(is(args$value, "FLPar"))
+    dite <- max(unlist(lapply(val, length)))
+
   # CHECK match with length(values)
   if(dite != floor(dite))
     stop("Number of target values is not a multiple of number of targets")
@@ -312,11 +319,17 @@ parsefwdList <- function(...) {
   ite <- array(NA, dim=c(nrow(trg), 3, dite),
     dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'),
     iter=seq(dite)))
-
-  ite <- aperm(ite, c(2,1,3))
-  ite[match(rownames(mat), dimnames(ite)$val),,] <- c(mat)
-  ite <- aperm(ite, c(2,1,3))
-
+  
+  if(is(args$value, "FLPar")) {
+    ite <- aperm(ite, c(2,3,1))
+    ite[match(rownames(mat), dimnames(ite)$val),,] <- c(mat)
+    ite <- aperm(ite, c(3,1,2))
+  } else {
+    ite <- aperm(ite, c(2,1,3))
+    ite[match(rownames(mat), dimnames(ite)$val),,] <- c(mat)
+    ite <- aperm(ite, c(2,1,3))
+  }
+  
   # RETURNS permutated array!
   return(list(target=trg, iters=ite))
 } # }}}
@@ -358,17 +371,17 @@ targetOrder <- function(target, iters) {
 
 setMethod("FCB", signature(object="ANY"),
   function(object, ...) {
-
+    
     args <- c(list(object), list(...))
 
     # OUTLIST list
-    if(length(args) == 1 & is(args[[1]], "list"))
+    if(length(args) == 1 & is(args[[1]], "list")){
       args <- args[[1]]
-
+      x <- t(do.call(rbind, args))
+    
     # USE matrix
-    if(length(args) == 1 & is(args[[1]], "matrix"))
+    } else if(length(args) == 1 & is(args[[1]], "matrix"))
       x <- args[[1]]
-
   
     # CREATE matrix
     else
@@ -382,7 +395,15 @@ setMethod("FCB", signature(object="ANY"),
 
   return(x)
   }
-) # }}}
+) 
+
+
+setMethod("FCB", signature(object="missing"),
+  function(...) {
+    object <- list(...)
+    return(FCB(object))
+  }
+)  # }}}
 
 # guessfcb {{{
 

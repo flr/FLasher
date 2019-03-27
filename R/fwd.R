@@ -330,8 +330,9 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 
     # SET @FCB
     control@FCB <- matrix(1, ncol=3, nrow=1, dimnames=list(1, c("F", "C", "B")))
-
-    # SET @target[fcb]
+    
+    # TODO SET @target[fcb] if missing
+    # control@target[c("fishery", "catch", "biol")]
     # control@target[c("fishery", "catch", "biol")] <- rep(c(NA, NA, 1),
     #  each=dim(control@target)[1])
 
@@ -365,8 +366,9 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 
     # NAMES in qlevels?
     if(!names(args) %in% .qlevels)
-      stop(paste0("Names of input FLQuant(s) do not match current allowed targets: ",
-            paste(.qlevels, collapse=", ")))
+      stop(
+      paste0("Names of input FLQuant(s) do not match current allowed targets: ",
+      paste(.qlevels, collapse=", ")))
 
     args <- FLQuants(args)
 
@@ -566,7 +568,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 #' @rdname fwd-methods
 #' @aliases fwd,FLStock,missing,missing-method
 setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
-  function(object, fishery=missing, sr, effort_max=10, deviances=residuals,
+  function(object, fishery=missing, sr, maxF=4, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
     
     # PARSE ...
@@ -601,7 +603,6 @@ setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
     # COERCE to fwdControl
     control <- as(args, "fwdControl")
     
-    return(fwd(object=object, control=control, deviances=deviances, sr=sr,
-      effort_max=effort_max))
+    return(fwd(object=object, control=control, deviances=deviances, sr=sr))
   }
 ) # }}}

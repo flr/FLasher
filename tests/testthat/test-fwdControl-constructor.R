@@ -340,3 +340,12 @@ test_that("Combined fishery / catch lists",{
     dump <- lapply(ctrl$catch, function(x){expect_equal(x, c("btc","gnc"))})
 })
 
+test_that("FLPar is handled specially",{
+
+  value <- FLPar(FMSY=rnorm(50, 0.5, 3))
+  ctrl <- fwdControl(year=1980:2000, quant="f", value=value)
+  expect_equal(dim(iters(ctrl)), c(21,3,50))
+  expect_equal(iters(ctrl)[1,,], iters(ctrl)[21,,])
+  expect_equal(c(iters(ctrl)[1,'value',1]), c(value[,1]))
+})
+
