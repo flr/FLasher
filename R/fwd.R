@@ -233,7 +233,27 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # CALL operatingModelRun
   out <- operatingModelRun(rfishery, biolscpp, control, effort_max=effort_max,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
-  
+ 
+  # STRUCTURE of out
+  #
+  # out
+  # |- om
+  # |  |- biols
+  # |  |  |- B: FLBiolcpp
+  # |  |  |  \- @n
+  # |  |  \- [...]
+  # |  |- fisheries
+  # |  |  |- F: FLFisherycpp
+  # |  |  |  |- @effort
+  # |  |  |  |- @capacity
+  # |  |  |  \- [[B]]
+  # |  |  |     |- @landings.n
+  # |  |  |     \- @discards.n
+  # |  |  \- [...]
+  # |  \- ctrl
+  # \- solver_codes: data.frame (timestep x iters)
+
+
   # UPDATE object w/ new biolscpp@n
   for(i in names(object)) {
     n(object[[i]])[,,,,,idn] <- out$om$biols[[i]]@n
