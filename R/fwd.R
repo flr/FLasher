@@ -254,7 +254,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # |  \- ctrl
   # \- solver_codes: data.frame (timestep x iters)
 
-
   # UPDATE object w/ new biolscpp@n
   for(i in names(object)) {
     n(object[[i]])[,,,,,idn] <- out$om$biols[[i]]@n
