@@ -231,8 +231,15 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(all(!idn))
     stop("objects have a single iter and target contains NA.")
   
+  # RESCALE effort
+  effscale <- unlist(lapply(rfishery, function(x) max(x@effort)))
+
+  rfishery <- lapply(rfishery, function(x) {
+    x@effort <- x@effort / max(x@effort)
+    return(x) })
+  
   # CALL operatingModelRun
-  out <- operatingModelRun(rfishery, biolscpp, control, effort_max=effort_max,
+  out <- operatingModelRun(rfishery, biolscpp, control, effort_max=effort_max / effscale,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
  
   # STRUCTURE of out
@@ -256,7 +263,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # UPDATE object w/ new biolscpp@n
   for(i in names(object)) {
-    n(object[[i]])[,,,,,idn] <- out$om$biols[[i]]@n
+    n(object[[i]])[,ac(cyrs),,,,idn] <- out$om$biols[[i]]@n[,ac(cyrs),,,,]
     # SET not-run iters, on cyrs, as NA
     n(object[[i]])[,ac(cyrs),,,,!idn] <- NA
   }
@@ -265,19 +272,20 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   for(i in names(fishery)) {
 
     fsh <- fishery[[i]]
-
+    
     # UPDATE fishery[idn]
-    fsh@effort[,,,,,idn] <- effort(out$om$fisheries[[i]])
+    fsh@effort[,ac(cyrs),,,,idn] <- (effort(out$om$fisheries[[i]]) * effscale[i])[,ac(cyrs),,,,]
+    # fsh@capacity[,,,,,idn] <- capacity(out$om$fisheries[[i]])
+    
     # SET not-run iters, on cyrs, as NA
     fsh@effort[,ac(cyrs),,,,!idn] <- NA
-    fsh@capacity[,,,,,idn] <- capacity(out$om$fisheries[[i]])
-
+    
     for(j in names(fsh)) {
       # UPDATE catches
-        fsh[[j]][,,,,,idn] <- out$om$fisheries[[i]][[j]]
+        fsh[[j]][,ac(cyrs),,,,idn] <- out$om$fisheries[[i]][[j]][,ac(cyrs),,,,]
         # SET not-run iters, on cyrs, as NA
         for(sl in c("landings.n", "discards.n"))
-          slot(fsh[[j]], sl)[,,,,,!idn] <- NA
+          slot(fsh[[j]], sl)[,ac(cyrs),,,,!idn] <- NA
     }
     fishery[[i]] <- fsh
   }
