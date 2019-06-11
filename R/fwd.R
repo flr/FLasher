@@ -237,10 +237,12 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   rfishery <- lapply(rfishery, function(x) {
     x@effort <- x@effort / max(x@effort)
     return(x) })
+  # effscale[]<-1
   
   # CALL operatingModelRun
   out <- operatingModelRun(rfishery, biolscpp, control, effort_max=effort_max / effscale,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
+
  
   # STRUCTURE of out
   #
@@ -265,7 +267,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   for(i in names(object)) {
     n(object[[i]])[,ac(cyrs),,,,idn] <- out$om$biols[[i]]@n[,ac(cyrs),,,,]
     # SET not-run iters, on cyrs, as NA
-    n(object[[i]])[,ac(cyrs),,,,!idn] <- NA
+    if(any(!idn))
+      n(object[[i]])[,ac(cyrs),,,,!idn] <- NA
   }
   
   # UPDATE fisheries
@@ -274,17 +277,21 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     fsh <- fishery[[i]]
     
     # UPDATE fishery[idn]
-    fsh@effort[,ac(cyrs),,,,idn] <- (effort(out$om$fisheries[[i]]) * effscale[i])[,ac(cyrs),,,,]
+    fsh@effort[,ac(cyrs),,,,idn] <- (effort(out$om$fisheries[[i]]) *
+      effscale[i])[,ac(cyrs),,,,]
     # fsh@capacity[,,,,,idn] <- capacity(out$om$fisheries[[i]])
     
     # SET not-run iters, on cyrs, as NA
-    fsh@effort[,ac(cyrs),,,,!idn] <- NA
+    if(any(!idn))
+      fsh@effort[,ac(cyrs),,,,!idn] <- NA
     
     for(j in names(fsh)) {
       # UPDATE catches
-        fsh[[j]][,ac(cyrs),,,,idn] <- out$om$fisheries[[i]][[j]][,ac(cyrs),,,,]
-        # SET not-run iters, on cyrs, as NA
-        for(sl in c("landings.n", "discards.n"))
+      fsh[[j]][,ac(cyrs),,,,idn] <- out$om$fisheries[[i]][[j]][,ac(cyrs),,,,]
+      
+      # SET not-run iters, on cyrs, as NA
+      for(sl in c("landings.n", "discards.n"))
+        if(any(!idn))
           slot(fsh[[j]], sl)[,ac(cyrs),,,,!idn] <- NA
     }
     fishery[[i]] <- fsh
@@ -581,6 +588,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     object@catch.wt[,pyrs] <- catch.wt(Fc)[,pyrs]
     # harvest (F)
     object@harvest[, pyrs] <- calc_F(Fc, Bo, eff)[, pyrs]
+    object@harvest[, pyrs] <- harvest(n(Bo), catch.n(Fc), m(Bo))[,pyrs]
+
     units(object@harvest) <- "f"
     
     # stock.n

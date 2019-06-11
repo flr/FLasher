@@ -16,7 +16,8 @@
 .fcb <- list(
   list(quant=c("effort", "revenue"), fishery=TRUE, catch=FALSE, biol=FALSE),
   list(quant=c("revenue"), fishery=TRUE, catch=TRUE, biol=FALSE),
-  list(quant=c("fbar", "f"), fishery=c(TRUE, FALSE), catch=c(TRUE, FALSE), biol=c(TRUE,TRUE)),
+  list(quant=c("fbar", "f"), fishery=c(TRUE, FALSE), catch=c(TRUE, FALSE),
+    biol=c(TRUE,TRUE)),
   list(quant=c("catch", "landings", "discards"),
     fishery=c(TRUE, FALSE),catch=c(TRUE, FALSE), biol=c(FALSE, TRUE)),
   list(quant=.biol_quants, catch=FALSE, fishery=FALSE, biol=TRUE))
