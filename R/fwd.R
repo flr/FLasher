@@ -232,14 +232,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     stop("objects have a single iter and target contains NA.")
   
   # RESCALE effort
-  effscale <- unlist(lapply(rfishery, function(x) max(x@effort)))
-
-  rfishery <- lapply(rfishery, function(x) {
-    x@effort <- x@effort / max(x@effort)
-    return(x) })
   
   # CALL operatingModelRun
-  out <- operatingModelRun(rfishery, biolscpp, control, effort_max=effort_max / effscale,
+  out <- operatingModelRun(rfishery, biolscpp, control, effort_max=effort_max,
     effort_mult_initial = 1.0, indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
  
   # STRUCTURE of out
@@ -274,7 +269,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     fsh <- fishery[[i]]
     
     # UPDATE fishery[idn]
-    fsh@effort[,ac(cyrs),,,,idn] <- (effort(out$om$fisheries[[i]]) * effscale[i])[,ac(cyrs),,,,]
+    fsh@effort[,ac(cyrs),,,,idn] <- effort(out$om$fisheries[[i]])[,ac(cyrs),,,,]
     # fsh@capacity[,,,,,idn] <- capacity(out$om$fisheries[[i]])
     
     # SET not-run iters, on cyrs, as NA
