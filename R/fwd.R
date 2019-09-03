@@ -48,7 +48,8 @@
 
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
     function(object, fishery, control, effort_max=rep(1e5, length(fishery)),
-     deviances=residuals, residuals=lapply(lapply(object, spwn), "[<-", value=1)) {
+      deviances=residuals, residuals=lapply(lapply(object, spwn),
+      "[<-", value=1)) {
 
   # CHECK valid fwdControl
   if(!validObject(control))
@@ -111,10 +112,12 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     stop("fwd() cannot deal (yet) with multiple areas")
 
   # FIND iters with no NAs in target
-  idn <- !c(unlist(apply(is.na(control@iters), 3, function(x) any(rowSums(x) == 3))))
+  idn <- !c(unlist(apply(is.na(control@iters), 3,
+    function(x) any(rowSums(x) == 3))))
   
-  # CONVERT biols to list(list(object, name, params, deviances, mult)), SUBSET idn
+  # CONVERT biols to list(list(object, name, params, deviances, mult))
   biolscpp <- lapply(object, function(x) as(iter(x, idn), "list"))
+  # SUBSET idn
   deviances <- iter(deviances, idn)
   # deviances must be same dim 2-5 as the biol
   # ADD deviances
@@ -122,7 +125,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     bdnms <- dimnames(n(biolscpp[[i]][["biol"]]))
     year_range <- range(as.numeric(bdnms$year)) 
     # Need a window equivalent for year and season
-    deviances[[i]] <- window(deviances[[i]], start=year_range[1], end=year_range[2])
+    deviances[[i]] <- window(deviances[[i]], start=year_range[1],
+      end=year_range[2])
     # No NAs
     deviances[[i]][is.na(deviances[[i]])] <- 1
     biolscpp[[i]][["srr_deviances"]] <- deviances[[i]]
@@ -159,16 +163,16 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # Turn F, C and B names in control columns to integer positions
   trg <- match_posns_names(trg, names(object), lapply(fishery, names))
 
-  # CONVERT 'years' and 'relYear' to position indices
   # quiet R CMD check about no visible binding for global variable
   year <- relYear <- NULL
+  # CONVERT 'years' and 'relYear' to position indices
   mny <- min(dib[,"minyear"]) - 1
   trg <- transform(trg, year=year - mny)
   trg <- transform(trg, relYear=relYear - mny)
 
   # Check relative columns make sense
-  # If you have any of relFishery, relCatch or reBiol, you have must have relYear
-  # any row with at least 1 relBiol that is not NA
+  # If you have any of relFishery, relCatch or reBiol, you have must have
+  # relYear in any row with at least 1 relBiol that is not NA
   relBiol <- unlist(lapply(trg$relBiol, function(x) any(!is.na(x))))
   relFishery <- unlist(lapply(trg$relFishery, function(x) any(!is.na(x)))) 
   relCatch <- unlist(lapply(trg$relCatch, function(x) any(!is.na(x)))) 
@@ -177,13 +181,12 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # Check if we if have any relYears AND it is an annual model
   # If so, check relSeason is NA or 1
-  # If not -> error
-  # If NA -> 1
   annual_model <- dim(n(object[[1]]))[4] == 1
   if (any(relYear) & annual_model) {
     # If relSeason is not NA or 1 throw an error
     if (!all(trg$relSeason[relYear] %in% c(NA, 1))){
-      stop("With an annual model, if you have a relative target, relSeason must be set to 1 or NA")
+      stop("With an annual model, if you have a relative target,
+        relSeason must be set to 1 or NA")
     }
     # If relYear is present and relSeason is NA, set to 1
     trg$relSeason[!relSeason & relYear] <- 1
@@ -231,17 +234,13 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(all(!idn))
     stop("objects have a single iter and target contains NA.")
   
-  # RESCALE effort
+  # CALCULATE max(effort) per fishery
   effscale <- unlist(lapply(rfishery, function(x) max(x@effort)))
-
-  rfishery <- lapply(rfishery, function(x) {
-    x@effort <- x@effort / max(x@effort)
-    return(x) })
-  # effscale[]<-1
+  effscale <- 1
   
   # CALL operatingModelRun
   out <- operatingModelRun(rfishery, biolscpp, control,
-    effort_max=effort_max / effscale, effort_mult_initial = 1.0,
+    effort_max=effort_max * effscale, effort_mult_initial = 1.0,
     indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
  
   # STRUCTURE of out
@@ -427,11 +426,12 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
     
     # CHECK for NAs in stock: m, stock.n, stock.wt in control$year[1] - 1
-    snas <- verify(object[,ac(an(control$year[1]) - 1)], rules=NULL, m=~!is.na(m),
-      stock.n=~!is.na(stock.n), stock.wt=~!is.na(stock.wt), report=FALSE)
+    snas <- verify(object[,ac(an(control$year[1]) - 1)],
+      rules=NULL, m=~!is.na(m), stock.n=~!is.na(stock.n),
+      stock.wt=~!is.na(stock.wt), report=FALSE)
     if(!all(snas))
-      stop(paste("NAs present in the 'm', 'stock.n' or 'stock.wt' slots, year:",
-        an(control$year[1]) - 1))
+      stop(paste("NAs present in the 'm', 'stock.n' or 'stock.wt' slots,
+        year:", an(control$year[1]) - 1))
 
     # DEAL with iters
     its <- max(dims(object)$iter, dim(iters(control))[3])
@@ -588,8 +588,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     object@catch.wt[,pyrs] <- catch.wt(Fc)[,pyrs]
     # harvest (F)
     object@harvest[, pyrs] <- calc_F(Fc, Bo, eff)[, pyrs]
-    object@harvest[, pyrs] <- harvest(n(Bo), catch.n(Fc), m(Bo))[,pyrs]
-
+    # object@harvest[, pyrs] <- harvest(n(Bo), catch.n(Fc), m(Bo))[,pyrs]
     units(object@harvest) <- "f"
     
     # stock.n
