@@ -30,6 +30,7 @@ Collate:
   FLasherLib.R
   plot.R
 Depends:
+  R(>= 3.5),
   FLCore(> 2.6.5),
   FLFishery(>= 0.1)
 Imports:

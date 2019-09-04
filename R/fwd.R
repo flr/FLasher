@@ -27,7 +27,7 @@
 #' @param object An FLStock, an FLBiol or an FLBiols object.
 #' @param fishery If object is an FLBiol(s), a FLFishery(ies). Else this argument is ignored.
 #' @param control A fwdControl object.
-#' @param effort_max Maximum yearly rate of change in effort for each fishery.
+#' @param effort_max Sets a maximum effort limit by fishery as a multiplier over the maximum observed effort.
 #' @param maxF Maximum yearly fishing mortality, when called on an FLStock object.
 #' @param deviances An FLQuant of deviances for the stock recruitment relationship (if object is an FLStock).
 #' @param residuals Old argument name for deviances, to be deleted

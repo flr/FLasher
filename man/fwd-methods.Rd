@@ -15,7 +15,7 @@
 \title{Method for running fishery projections}
 \usage{
 \S4method{fwd}{FLBiols,FLFisheries,fwdControl}(object, fishery, control,
-  effort_max = rep(1e+05, length(fishery)), deviances = residuals,
+  effort_max = rep(100, length(fishery)), deviances = residuals,
   residuals = lapply(lapply(object, spwn), "[<-", value = 1))
 
 \S4method{fwd}{FLBiols,FLFishery,fwdControl}(object, fishery, control, ...)
@@ -36,8 +36,8 @@
   dimnames(rec(object))), ...)
 
 \S4method{fwd}{FLStock,ANY,missing}(object, fishery = missing, sr,
-  effort_max = 10, deviances = residuals, residuals = FLQuant(1,
-  dimnames = dimnames(rec(object))), ...)
+  maxF = 4, deviances = residuals, residuals = FLQuant(1, dimnames =
+  dimnames(rec(object))), ...)
 }
 \arguments{
 \item{object}{An FLStock, an FLBiol or an FLBiols object.}
@@ -46,7 +46,7 @@
 
 \item{control}{A fwdControl object.}
 
-\item{effort_max}{Maximum yearly rate of change in effort for each fishery.}
+\item{effort_max}{Sets a maximum effort limit by fishery as a multiplier over the maximum observed effort.}
 
 \item{deviances}{An FLQuant of deviances for the stock recruitment relationship (if object is an FLStock).}
 
