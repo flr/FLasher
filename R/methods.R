@@ -16,7 +16,8 @@ setMethod("show", signature("fwdControl"),
     
     cat("An object of class \"fwdControl\"\n", sep="")
 
-    # SHOW always year, min, value, max, quantity
+    # SHOW always year, min, value, max, quant
+    # TODO ensure quant is in
     nms <- names(object@target)
 
     # FIND relevant cols (!unique)
