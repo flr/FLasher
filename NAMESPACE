@@ -50,6 +50,7 @@ export(
 exportMethods(
   "[",
   "[<-",
+  "compare",
   "draw",
   "FCB",
   "FCB<-",
