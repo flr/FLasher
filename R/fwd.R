@@ -331,20 +331,32 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFishery",
 setMethod("fwd", signature(object="FLBiol", fishery="FLFisheries",
   control="fwdControl"),
   
-  function(object, fishery, control, ...) {
- 
-    # IF   
-    len <- unlist(lapply(fishery, length))
-    if(any(len > 1))
-      stop("")
-    nms <- names(fishery[[1]])[1]
-    
+  function(object, fishery, control, deviances="missing", ...) {
+  
+    # FIND biol name
+    fcb <- FCB(control)
+    if(!all(is.na(fcb)))
+      idx <- fcb$C[fcb$B == 1][1]
+    else
+      idx <- 1
+    nms <- names(fishery[[1]])[idx]
+
+    # NAME biols
     object <- FLBiols(B=object)
     names(object) <- nms
     
-    res <- fwd(object=object, fishery=fishery,
-      control=control, ...)
+    # NAME deviances
+    if(!missing(deviances)) {
+      deviances <- FLQuants(D=deviances)
+      names(deviances) <- nms
+      res <- fwd(object=object, fishery=fishery, control=control,
+        deviances=deviances, ...)
+    } else {
+      res <- fwd(object=object, fishery=fishery, control=control, ...)
+    }
+
     res$biols <- res$biols[[1]]
+
     return(res)
   }
 ) # }}}
