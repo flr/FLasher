@@ -234,13 +234,14 @@ test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
     ple4_ssb <- fwd(ple4_mtf, control=ctrl_ssb, sr = ple4_sr)
     expect_equal(flash_ssb, c(ssb(ple4_ssb)[,ac(2009)]))
     
-    m.spwn(ple4_mtf)[,ac(2009)] <- 0.0
-    harvest.spwn(ple4_mtf)[,ac(2009)] <- 0.0
-    flash_ssb <- 150000
-    ctrl_ssb <- fwdControl(data.frame(year=2009, quant = "ssb_flash", value=flash_ssb))
-    ple4_ssb <- fwd(ple4_mtf, control=ctrl_ssb, sr = ple4_sr)
-    expect_equal(c(ssb(ple4_ssb)[,ac(2010)]), flash_ssb)
-    
+#    m.spwn(ple4_mtf)[,ac(2009)] <- 0.0
+#    harvest.spwn(ple4_mtf)[,ac(2009)] <- 0.0
+#    flash_ssb <- 150000
+#    ctrl_ssb <- fwdControl(data.frame(year=2009, quant = "ssb_flash",
+#      value=flash_ssb))
+#    ple4_ssb <- fwd(ple4_mtf, control=ctrl_ssb, sr = ple4_sr)
+#    expect_equal(c(ssb(ple4_ssb)[,ac(2010)]), flash_ssb)
+#    
     # Longer SSB
     
     m.spwn(ple4_mtf)[,ac(dims(ple4)$maxyear + 1)] <- 0.0

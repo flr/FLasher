@@ -25,20 +25,27 @@ test_that("Single fishery, two biols",{
     data(mixed_fishery_example_om)
     bt <- flfs[["bt"]]
     flfs2 <- FLFisheries(bt=bt)
-    fcb <- matrix(c(1,1,1,2,1,2), nrow=2, ncol=3, dimnames=list(1:2,c("F","C","B")))
+    fcb <- matrix(c(1,1,1,2,1,2), nrow=2, ncol=3,
+      dimnames=list(1:2,c("F","C","B")))
     plaice_catch_target <- 250000
     # Fixed plaice catch
     years <- 2:20
-    flasher_ctrl <- fwdControl(list(year = years, quant = "catch", biol = "ple", value = plaice_catch_target), FCB = fcb)
+    flasher_ctrl <- fwdControl(list(year = years, quant = "catch",
+      biol = "ple", value = plaice_catch_target), FCB = fcb)
+
     test <- fwd(object=biols, fishery=flfs2, control=flasher_ctrl)
+
     expect_equal(rep(plaice_catch_target, length(years)), c(catch(test[["fisheries"]][["bt"]][["pleBT"]])[,ac(years)]))
+
     # With max sole F limit
     sole_f_limit <- 0.2
     flasher_ctrl <- fwdControl(
         list(year = 2:20, quant = "catch", biol = "ple", value = plaice_catch_target),
         list(year = 2:20, quant = "f", biol = "sol", max = sole_f_limit, minAge=2, maxAge=6),
         FCB = fcb)
+
     test <- fwd(object=biols, fishery=flfs2, control=flasher_ctrl)
+    
     # Test max F of sole
     solef <- FLasher:::calc_F(test[["fisheries"]][["bt"]][["solBT"]], test[["biols"]][["sol"]], test[["fisheries"]][["bt"]]@effort)
     solfbar <- c(apply(solef[ac(2:6),ac(years)], 2:6, mean))

@@ -16,7 +16,8 @@ setMethod("show", signature("fwdControl"),
     
     cat("An object of class \"fwdControl\"\n", sep="")
 
-    # SHOW always year, min, value, max, quantity
+    # SHOW always year, min, value, max, quant
+    # TODO ensure quant is in
     nms <- names(object@target)
 
     # FIND relevant cols (!unique)
@@ -333,3 +334,124 @@ setMethod("summary", signature(object="fwdControl"),
     invisible(wtab)
   }
 ) # }}}
+
+# targets {{{
+ssb_end <- function(x) {
+  m.spwn(x) <- 1
+  harvest.spwn(x) <- 1
+  return(ssb(x))
+}
+
+biomass_end <- function(x) {
+  m.spwn(x) <- 1
+  harvest.spwn(x) <- 1
+	return(quantSums(stock.n(x) * exp(-(harvest(x) *
+    harvest.spwn(x) + m(x) * m.spwn(x))) * stock.wt(x)))
+  }
+
+biomass_spawn <- function(x) {
+	return(quantSums(stock.n(x) * exp(-(harvest(x) *
+    harvest.spwn(x) + m(x) * m.spwn(x))) * stock.wt(x)))
+  } # }}}
+
+# compare {{{
+
+#' Compare the result of a `fwd()` run with the defined targets.
+#'
+#' A comparison between the objects or objects returned by `fwd()` and the
+#' targets and limits set in the `fwdControl` object used to run, is returned
+#' by this method. 
+#'
+#' A comparison is carried out for each row in a `fwdControl` object,
+#' that is, for every target or limit.
+#' A `data.frame` is returned with columns 'year', 'quant', 'season' and
+#' 'unit' if relevant, and 'achieved'. The last is of class `logical` and will
+#' have value `TRUE` if the target or limits have been achieved for every
+#' iteration, and `FALSE` otherwise.
+#' Values are compared using \code{\link[base]{all.equal}}.
+#' @param target
+#' @param result
+#'
+#' @return A table of comparisons, of class data.frame.
+#'
+#' @name compare
+#' @rdname compare-methods
+#'
+#' @author Iago Mosqueira (WMR)
+#' @keywords methods
+#' @seealso \code{\link[base]{all.equal}}.
+#' @md
+#' @examples
+#' data(ple4)
+#' control <- fwdControl(
+#'  list(quant="fbar", value=0.5, year=1990),
+#'  list(quant="catch", value=1, year=1991, relYear=1990),
+#'  list(quant="catch", min=10000, year=1993, max=100000))
+#' run <- fwd(ple4, sr=predictModel(model=rec~a*ssb*exp(-b*ssb),
+#'   params=FLPar(a=9.16, b=3.55e-6)), control=control)
+#'
+#' compare(run, control)
+
+setMethod("compare", signature(result="FLStock", target="fwdControl"),
+  function(result, target, simplify=FALSE) {
+
+    out <- target(target)[, c("year", "season", "unit", "quant")]
+
+    # DROP "season" and/or "unit" if unused
+    out <- out[, c(TRUE, unlist(lapply(out[,c("season", "unit")],
+      function(x) length(unique(x)))) > 1, TRUE)]
+
+    # IDENTIFY relative targets
+    rts <- !is.na(target(target)$relYear)
+
+    # EXTRACT quants and years
+    quants <- as.character(target(target)[, c("quant")])
+    years <- target(target)[, c("year")]
+    
+    # GET output values
+    values <- iters(target)[, "value",]
+
+    # DEAL with unmatched targets (f, ssb_end, ...)
+    quants[quants == "f"] <- "fbar"
+    quants[quants == "ssb_spawn"] <- "ssb"
+    quants[quants == "srp"] <- "ssb"
+
+    # CORRECT values for relyears
+    relyears <- target(target)[, c("relYear")]
+    idx <- !is.na(relyears)
+
+    if(any(idx)) {
+      values[idx] <- mapply(function(x, y) do.call(x, list(result))[, ac(y)],
+        quants[idx], relyears[idx])
+    }
+
+    # COMPUTE results by year
+    res <- mapply(function(x, y) do.call(x, list(result))[, ac(y)],
+      quants, years, SIMPLIFY=FALSE)
+      
+    # COMPARE value
+    out[, "achieved"] <- mapply(function(x, y) isTRUE(all.equal(x, y)),
+      unname(split(unname(values), row(as.matrix(values)))), unname(lapply(res, c)))
+
+    # COMPARE limits
+    idx <- is.na(iters(target)[,"value",])
+    if(any(idx)) {
+      mins <- iters(target)[, "min",]
+      maxs <- iters(target)[, "max",]
+
+      # MATCH min/max
+      out[idx, "achieved"] <- res[idx] >= mins[idx] && res[idx] <= maxs[idx]
+    }
+
+    if(simplify)
+      return(out$achieved)
+
+    return(out)
+  }
+)
+
+setMethod("compare", signature(result="fwdControl", target="FLStock"),
+  function(result, target) {
+    compare(target, result)
+  })
+# }}}

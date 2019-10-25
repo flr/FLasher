@@ -7,16 +7,19 @@
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 # .biol_quants - biol-based targets
-.biol_quants <- c('srp', 'ssb_end', 'biomass_end', 'ssb_spawn', 'biomass_spawn', 'ssb_flash', 'biomass_flash') 
+.biol_quants <- c('srp', 'ssb_end', 'biomass_end', 'ssb_spawn', 'biomass_spawn',
+  'ssb_flash', 'biomass_flash') 
 
 # .qlevels - available quants for fwdControl
-.qlevels <-  c('catch', 'landings', 'discards', 'f', 'fbar', 'revenue', 'effort', .biol_quants)
+.qlevels <-  c('catch', 'landings', 'discards', 'f', 'fbar', 'revenue',
+  'effort', .biol_quants)
 
 # .fcb, .vfcb - Possible fishery-catch-biol combinations in @target {{{
 .fcb <- list(
   list(quant=c("effort", "revenue"), fishery=TRUE, catch=FALSE, biol=FALSE),
   list(quant=c("revenue"), fishery=TRUE, catch=TRUE, biol=FALSE),
-  list(quant=c("fbar", "f"), fishery=c(TRUE, FALSE), catch=c(TRUE, FALSE), biol=c(TRUE,TRUE)),
+  list(quant=c("fbar", "f"), fishery=c(TRUE, FALSE), catch=c(TRUE, FALSE),
+    biol=c(TRUE,TRUE)),
   list(quant=c("catch", "landings", "discards"),
     fishery=c(TRUE, FALSE),catch=c(TRUE, FALSE), biol=c(FALSE, TRUE)),
   list(quant=.biol_quants, catch=FALSE, fishery=FALSE, biol=TRUE))
