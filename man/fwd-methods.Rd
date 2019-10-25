@@ -21,7 +21,7 @@
 \S4method{fwd}{FLBiols,FLFishery,fwdControl}(object, fishery, control, ...)
 
 \S4method{fwd}{FLBiol,FLFisheries,fwdControl}(object, fishery, control,
-  ...)
+  deviances = "missing", ...)
 
 \S4method{fwd}{FLBiol,FLFishery,fwdControl}(object, fishery, control,
   deviances = residuals, residuals = FLQuant(1, dimnames =
