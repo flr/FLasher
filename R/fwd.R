@@ -277,16 +277,10 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
     fsh <- fishery[[i]]
     
-<<<<<<< HEAD
-    # UPDATE fishery[idn]
-    fsh@effort[,ac(cyrs),,,,idn] <- effort(out$om$fisheries[[i]])[,ac(cyrs),,,,]
-    # fsh@capacity[,,,,,idn] <- capacity(out$om$fisheries[[i]])
-=======
     # UPDATE effort scaled by capacity
     fsh@effort[,ac(cyrs),,,,idn] <-
       effort(out$om$fisheries[[i]])[, ac(cyrs),,,,idn] /
       fsh@capacity[,ac(cyrs),,,,idn]
->>>>>>> bug/multistockMED
     
     # SET not-run iters, on cyrs, as NA
     if(any(!idn))
