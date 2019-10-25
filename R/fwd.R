@@ -136,6 +136,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(dim(control@FCB)[1] == 1 & all(is.na(control@FCB)))
     control@FCB <- fcb2int(guessfcb(object, fishery), object, fishery)
 
+  # TODO CHECK FCB exists, else stop()
+
   # PARSE control
   trg <- target(control)
 
