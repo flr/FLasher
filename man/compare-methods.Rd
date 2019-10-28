@@ -8,10 +8,12 @@
 \S4method{compare}{FLStock,fwdControl}(result, target, simplify = FALSE)
 }
 \arguments{
-\item{result}{}
+\item{result}{Object returned by the call to fwd()}
+
+\item{target}{fwdControl object with required targets}
 }
 \value{
-A table of comparisons, of class data.frame.
+A table of comparisons, one for each target, of class data.frame.
 }
 \description{
 A comparison between the objects or objects returned by \code{fwd()} and the
