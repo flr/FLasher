@@ -38,7 +38,10 @@ control <- fwdControl(
 run <- fwd(ple4, sr=predictModel(model=rec~a*ssb*exp(-b*ssb),
   params=FLPar(a=9.16, b=3.55e-6)), control=control)
 
+# Returns the full comparison table
 compare(run, control)
+# Returns a logical vector
+compare(run, control, simplify=TRUE)
 }
 \seealso{
 \code{\link[base]{all.equal}}.
