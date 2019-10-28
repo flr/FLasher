@@ -20,7 +20,7 @@
 #' @param ... Any other argument to be passed to [ggplotFL::plot]
 #' @examples
 #' data(ple4)
-#' control <- fwdControl(year=2000:2008, quant="f", value=0.3)
+#' control <- fwdControl(year=2008:2017, quant="f", value=0.3)
 #' # No fwd projection took place, simply passing year range
 #' plot(ple4, control)
 
