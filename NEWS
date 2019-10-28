@@ -1,3 +1,20 @@
+ FLasher 0.6.0
+
+ NEW FEATURES
+
+- compare() method draws a comparison between targets in a fwdControl
+  object and the results returned. Available for FLStock at this moment.
+- maxF argument to fwd(FLStock) is implemented through an additional target
+  per timestep with max(fbar) = maxF, rather than by an indirect limit of
+  the effort calculation. It bis not applied for steps with an f/fbar
+  target.
+- Functions are now available for the corresponding ssb and biomass targets
+  used by fwdControl: ssb_end, biomass_end and biomass_spawn
+
+ BUG FIXES
+
+- Calculation of survivors for stocks/biols with age=0 was not correct.
+
  FLasher 0.5.0
 
  NEW FEATURES
