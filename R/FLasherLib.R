@@ -3,6 +3,6 @@
 # Just need to include in Makevars:
 #PKG_LIBS = `$(R_HOME)/bin/Rscript -e "FLasher:::FLasherLib()"` 
 FLasherLib <- function(){
-    location <- paste0(find.package('FLasher'), "/libs/", .Platform$r_arch,"/FLasher", .Platform$dynlib.ext)
+    location <- file.path(find.package('FLasher'), "libs", paste0("FLasher", .Platform$dynlib.ext))
    cat(location) 
 }
