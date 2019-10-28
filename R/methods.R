@@ -369,10 +369,10 @@ biomass_spawn <- function(x) {
 #' have value `TRUE` if the target or limits have been achieved for every
 #' iteration, and `FALSE` otherwise.
 #' Values are compared using \code{\link[base]{all.equal}}.
-#' @param target
-#' @param result
+#' @param result Object returned by the call to fwd()
+#' @param target fwdControl object with required targets
 #'
-#' @return A table of comparisons, of class data.frame.
+#' @return A table of comparisons, one for each target, of class data.frame.
 #'
 #' @name compare
 #' @rdname compare-methods
