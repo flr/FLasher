@@ -141,6 +141,10 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # PARSE control
   trg <- target(control)
 
+  # CHECK F targets have min/maxAge
+  if(any(is.na(trg[trg$quant %in% c("f", "fbar"), c("minAge", "maxAge")])))
+    stop("MinAge and maxAge are needed in control for an 'f' or 'fbar' target.")
+
   # CONVERT to numeric 'season', 'area', 'unit'
   if (!is.numeric(trg$season))
     trg[,"season"] <- as.integer(match(trg[,"season"], dnb[["season"]]))
