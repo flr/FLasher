@@ -50,7 +50,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     function(object, fishery, control, effort_max=rep(100, length(fishery)),
       deviances=residuals, residuals=lapply(lapply(object, spwn),
       "[<-", value=1)) {
-
+  
   # CHECK valid fwdControl
   if(!validObject(control))
     stop("control object is not valid, please check")
@@ -342,7 +342,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFisheries",
     # FIND biol name
     fcb <- FCB(control)
     if(!all(is.na(fcb)))
-      idx <- fcb$C[fcb$B == 1][1]
+      idx <- fcb[,"C"][fcb[, "B"] == 1][1]
     else
       idx <- 1
     nms <- names(fishery[[1]])[idx]
