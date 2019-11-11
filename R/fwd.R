@@ -361,9 +361,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFisheries",
       res <- fwd(object=object, fishery=fishery, control=control, ...)
     }
 
-    res$biols <- res$biols[[1]]
-
-    return(res)
+    return(list(biol=res$biols[[1]], fisheries=res$fisheries))
   }
 ) # }}}
 
@@ -397,7 +395,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
     Fc <- out$fisheries[[1]]
     Bo <- out$biols[[1]]
 
-    return(list(biols=Bo, fisheries=Fc))
+    return(list(biol=Bo, fishery=Fc))
   }
 ) # }}}
 
