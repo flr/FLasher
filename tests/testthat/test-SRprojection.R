@@ -155,14 +155,14 @@ test_that("SR models with FLBiol and FLFishery",{
     # Setting SR as predict model
     biol@rec <- bh
     test <- fwd(biol, fishery=fishery, control=control)
-    expect_equal(c(n(test[["biols"]])[1,ac(years)]), c(predict(bh, ssb=ssb(test[["biols"]])[,ac(years-1)])))
+    expect_equal(c(n(test[["biol"]])[1,ac(years)]), c(predict(bh, ssb=ssb(test[["biol"]])[,ac(years-1)])))
     # Time varying parameters
     decrec <- seq(900, 500, length=10)
     decpar <- FLPar(decrec, dimnames=list(params="a", year=control$year, iter=1))
     biol@rec@model <- geomean()[["model"]]
     biol@rec@params <- decpar
     test <- fwd(biol, fishery=fishery, control=control)
-    expect_equal(c(n(test[["biols"]])[1,ac(years)]), decrec)
+    expect_equal(c(n(test[["biol"]])[1,ac(years)]), decrec)
     # Stochastic projections
     niters <- 100
     biolp <- biol
@@ -175,7 +175,7 @@ test_that("SR models with FLBiol and FLFishery",{
     res <- FLQuant(NA, dimnames=list(year=years, iter=1:niters))
     res[] <- sample(c(exp(residuals(ple4_srr))), prod(dim(res)), replace=TRUE)
     test <- fwd(biolp, fishery=fisheryp, control=control, deviances=res)
-    expect_equal(c(n(test[["biols"]])[1,ac(years)]), c(predict(bh, ssb=ssb(test[["biols"]])[,ac(years-1)]) %*% res))
+    expect_equal(c(n(test[["biol"]])[1,ac(years)]), c(predict(bh, ssb=ssb(test[["biol"]])[,ac(years-1)]) %*% res))
     # Iterations in SR pars
     vc <- vcov(ple4_srr)[,,1]
     invsd <- solve(sqrt(diag(diag(vc))))
@@ -190,8 +190,8 @@ test_that("SR models with FLBiol and FLFishery",{
     iterbh <- predictModel(model=model(ple4_srr), params=iter_params)
     biolp@rec@params <- iter_params
     test <- fwd(biolp, fishery=fisheryp, control=control)
-    expect_equal(c(n(test[["biols"]])[1,ac(years)]), c(predict(iterbh, ssb=ssb(test[["biols"]])[,ac(years-1)])))
+    expect_equal(c(n(test[["biol"]])[1,ac(years)]), c(predict(iterbh, ssb=ssb(test[["biol"]])[,ac(years-1)])))
     # deviances and iterations in SR pars
     test <- fwd(biolp, fishery=fisheryp, control=control, deviances=res)
-    expect_equal(c(n(test[["biols"]])[1,ac(years)]), c(predict(iterbh, ssb=ssb(test[["biols"]])[,ac(years-1)]) %*% res))
+    expect_equal(c(n(test[["biol"]])[1,ac(years)]), c(predict(iterbh, ssb=ssb(test[["biol"]])[,ac(years-1)]) %*% res))
 })
