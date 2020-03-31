@@ -247,7 +247,7 @@ setMethod('fwdControl', signature(target='list', iters='list'),
 ) # }}}
 
 # fwdControl(target='missing', iters='missing') {{{
-#' fwdControl constructor for mising and missing
+#' fwdControl constructor for missing and missing
 #' @rdname fwdControl
 setMethod('fwdControl', signature(target='missing', iters='missing'),
   function(...) {
@@ -264,98 +264,23 @@ setMethod('fwdControl', signature(target='missing', iters='missing'),
 
 # }}}
 
-# parsefwdList {{{
+# fwdControl(target='FLQuant', iters='missing') {{{
 
-#' Parse the list argument to fwd to make a fwdControl object
-#'
-#' Internal function
-#' @param ... Things
+setMethod('fwdControl', signature(target='FLQuant', iters='missing'),
+  function(target, quant, ...) {
 
-parsefwdList <- function(...) {
-  
-  args <- list(...)
+    # COERCE to named FLQuants
+    target <- list(target)
+    names(target) <- quant
+    target <- as(FLQuants(target), "fwdControl")
+    
+    # PARSE extra arguments
+    args <- list(...)
+    target(target)[, names(args)] <- args
 
-  # Identify which of biol, relBiol, fishery, catch, relFishery, relCatch are lists
-  fcbcols <- c("biol", "fishery", "catch", "relBiol", "relFishery", "relCatch")
-  fcbcols_list <- unlist(lapply(args[fcbcols],
-    function(x) return(is(x, "list") | is(x, "AsIs"))))
-  listcols <- fcbcols[fcbcols_list]
-  
-  # Make a data.frame dropping those columns 
-  dropcols <- c('value', 'min', 'max', listcols)
-  df <- as.data.frame(args[!names(args) %in% dropcols], stringsAsFactors = FALSE)
-  
-  # if any (list | asis) are true, make a df without those cols, then add list
-  for (i in listcols){
-    df <- do.call("$<-", list(df, i, I(args[[i]])))
+    return(target)
   }
-
-  #  ... array components
-  val <- lapply(args[names(args) %in% c('value', 'min', 'max')], c)
-
-  # TURN val into matrix
-  if(is(val, 'list')) {
-    mat <- do.call(rbind, val)
-  } else {
-    mat <- t(matrix(val))
-  }
-
-  # NEW target
-  trg <- new('fwdControl')@target[rep(1, nrow(df)),]
-  trg[names(df)] <- df
-  
-  # COMPUTE No. iters
-  dite <- max(1, ncol(mat) / nrow(trg))
-
-  # BUT consider FLPar
-  if(is(args$value, "FLPar"))
-    dite <- max(unlist(lapply(val, length)))
-
-  # CHECK match with length(values)
-  if(dite != floor(dite))
-    stop("Number of target values is not a multiple of number of targets")
-
-  # NEW iters
-  ite <- array(NA, dim=c(nrow(trg), 3, dite),
-    dimnames=list(row=seq(nrow(trg)), val=c('min', 'value', 'max'),
-    iter=seq(dite)))
-  
-  if(is(args$value, "FLPar")) {
-    ite <- aperm(ite, c(2,3,1))
-    ite[match(rownames(mat), dimnames(ite)$val),,] <- c(mat)
-    ite <- aperm(ite, c(3,1,2))
-  } else {
-    ite <- aperm(ite, c(2,1,3))
-    ite[match(rownames(mat), dimnames(ite)$val),,] <- c(mat)
-    ite <- aperm(ite, c(2,1,3))
-  }
-  
-  # RETURNS permutated array!
-  return(list(target=trg, iters=ite))
-} # }}}
-
-# targetOrder {{{
-
-#' Get the order of targets in a fwdControl
-#'
-#' Targets must be processed by FLasher in the correct order.
-#' Internal function. Ignore.
-#' @param target The target.
-#' @param iters The iters.
-targetOrder <- function(target, iters) {
-
-  # ORDER by timestep and value/minmax
-  tim <- suppressWarnings(as.integer(target$season))
-  
-  if(all(is.na(tim)))
-    tim[] <- 1
-  else if(sum(!is.na(tim)) != length(tim))
-    stop("Season names cannot be ordered")
-
-  idx <- order(target$year, tim)
-
-  return(idx)
-}
+)
 # }}}
 
 # FCB {{{
@@ -404,54 +329,3 @@ setMethod("FCB", signature(object="missing"),
     return(FCB(object))
   }
 )  # }}}
-
-# guessfcb {{{
-
-#' Generate an FCB matrix from FLBiols and FLFisheries
-#'
-#' Tries to generate FCB matrix based on names.
-#' Internal function. Ignore.
-#' @param biols The FLBiols.
-#' @param fisheries The FLFisheries.
-
-guessfcb <- function(biols, fisheries) {
-
-  # GET names
-  nmf <- names(fisheries)
-  nmc <- lapply(fisheries, names)
-  nmb <- names(biols)
-
-  fc <- do.call(rbind, lapply(names(nmc), function(x) unlist(cbind(x, nmc[[x]]))))
-  b <- nmb[match(fc[,2], nmb)]
-
-  fcb <- cbind(fc[!is.na(b),, drop=FALSE], b[!is.na(b)])
-  colnames(fcb) <- c("f", "c", "b")
-  rownames(fcb) <- seq(nrow(fcb))
-
-  return(fcb)
-}
-
-# fcb2int(fcb, biols, fisheries)
-#' fcb2int function
-#'
-#' Internal function not for public consumption
-#' @param fcb The FCB matrix
-#' @param biols The biols
-#' @param fisheries The fisheries
-fcb2int <- function(fcb, biols, fisheries) {
-  
-  # GET names
-  nmf <- names(fisheries)
-  nmc <- lapply(fisheries, names)
-  nmb <- names(biols)
-
-  fcbint <- array(NA, dim=dim(fcb), dimnames=dimnames(fcb))
-
-  fcbint[,"f"] <- as.integer(match(fcb[,"f"], nmf))
-  fcbint[,"b"] <- as.integer(match(fcb[,"b"], nmb))
-
-  for(i in names(nmc))
-    fcbint[fcb[,"f"] == i, "c"] <- match(fcb[fcb[,"f"] == i, "c"], nmc[[i]])
-
-  return(fcbint)
-} # }}}
