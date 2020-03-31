@@ -1,8 +1,8 @@
 # FLasher
-- Version: 0.6.0
-- Date: 2019-10-25
-- Author: Finlay Scott and Iago Mosqueira, EC JRC.
-- Maintainer: Finaly Scott <finlay.scott@ec.europa.eu>
+- Version: 0.6.0.9002
+- Date: 2020-03-31
+- Author: Finlay Scott and Iago Mosqueira.
+- Maintainer: Iago Mosqueira <iago.mosqueira@wur.nl>
 - Repository: <https://github.com/flr/FLasher/>
 - Bug reports: <https://github.com/flr/FLasher/issues>
 
@@ -14,13 +14,11 @@ To install this package, start R and enter:
 
 	install.packages("FLasher", repos="http://flr-project.org/R")
 
-or download from the [FLR releases page](https://github.com/flr/FLR/releases/latest)
-
 To install the development version, you can use:
 
   devtools::install_github("flr/FLasher", INSTALL_opts=c("--no-multiarch"))
 
-**WARNING**: FLasher requires a 64 bit installation of R. Installation fropm source in R for Windows should be carried out using `--no-multiarch` for a 64bit-only installation.
+**WARNING**: FLasher requires a 64 bit installation of R. Installation from source in R for Windows should be carried out using `--no-multiarch` for a 64 bit-only installation.
 
 ## Documentation
 - [Help pages](http://flr-project.org/FLasher)
@@ -33,11 +31,11 @@ To install the development version, you can use:
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/FLasher)](https://cran.r-project.org/package=FLasher)
 
 ## License
-Copyright (c) 2016-17 European Union. Released under the [EUPL v1.2](https://eupl.eu/1.2/en/).
+Copyright (c) 2016-19 European Union. Released under the [EUPL v1.2](https://eupl.eu/1.2/en/).
 
 ## Contact
 You are welcome to:
 
 - Submit suggestions and bug-reports at: <https://github.com/flr/FLasher/issues>
 - Send a pull request on: <https://github.com/flr/FLasher/>
-- Compose a friendly e-mail to: <finlay.scott@ec.europa.eu>
+- Compose a friendly e-mail to: <iago.mosqueira@wur.nl>

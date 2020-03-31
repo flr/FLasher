@@ -1,3 +1,8 @@
+# FLasher 0.6.1
+
+## NEW FEATURES
+
+- fwdControl(FLQuant) also accepts extra target arguments (e.g. relYear).
 # FLasher 0.6.0
 
 ## NEW FEATURES

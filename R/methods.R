@@ -457,4 +457,74 @@ setMethod("compare", signature(result="fwdControl", target="FLStock"),
   function(result, target) {
     compare(target, result)
   })
+
+setMethod("compare", signature(result="FLBiol", target="fwdControl"),
+  function(result, target, fishery, simplify=FALSE) {
+
+    out <- target(target)[, c("year", "season", "unit", "quant", "fishery",
+      "catch", "biol")]
+
+    # DROP "season" and/or "unit" if unused
+    out <- out[, c(TRUE, unlist(lapply(out[,c("season", "unit")],
+      function(x) length(unique(x)))) > 1, rep(TRUE, 4))]
+
+    # IDENTIFY relative targets
+    rts <- !is.na(target(target)$relYear)
+
+    # EXTRACT quants and years
+    quants <- as.character(target(target)[, c("quant")])
+    years <- target(target)[, c("year")]
+    
+    # GET output values
+    values <- iters(target)[, "value",]
+
+    # DEAL with unmatched targets (f, ssb_end, ...)
+    quants[quants == "f"] <- "fbar"
+    quants[quants == "ssb_spawn"] <- "ssb"
+    quants[quants == "srp"] <- "ssb"
+
+    # CORRECT values for relyears
+    relyears <- target(target)[, c("relYear")]
+    idx <- !is.na(relyears)
+
+    if(any(idx)) {
+      values[idx] <- mapply(function(x, y) do.call(x, list(result))[, ac(y)],
+        quants[idx], relyears[idx])
+    }
+
+    # TODO COMPUTE results by year
+
+    # FOR FLBiol only:
+    res <- mapply(function(x, y) do.call(x, list(result))[, ac(y)],
+      quants, years, SIMPLIFY=FALSE)
+    
+    # PER FLFishery
+
+    # COMBINED  
+
+    # COMPARE value
+    out[, "achieved"] <- mapply(function(x, y) isTRUE(all.equal(x, y)),
+      unname(split(unname(values), row(as.matrix(values)))), unname(lapply(res, c)))
+
+    # COMPARE limits
+    idx <- is.na(iters(target)[,"value",])
+    if(any(idx)) {
+      mins <- iters(target)[, "min",]
+      maxs <- iters(target)[, "max",]
+
+      # MATCH min/max
+      out[idx, "achieved"] <- res[idx] >= mins[idx] && res[idx] <= maxs[idx]
+    }
+
+    if(simplify)
+      return(out$achieved)
+
+    return(out)
+  }
+)
+
+setMethod("compare", signature(result="fwdControl", target="FLStock"),
+  function(result, target) {
+    compare(target, result)
+  })
 # }}}

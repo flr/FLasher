@@ -294,6 +294,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     
     for(j in names(fsh)) {
       # UPDATE catches
+
       fsh[[j]][,ac(cyrs),,,,idn] <- out$om$fisheries[[i]][[j]][,ac(cyrs),,,,]
       
       # SET landings.n and discards.n of not-run iters, on cyrs, as NA
@@ -309,7 +310,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     flag=out$solver_codes)
 
   # WARNING for effort_max
-  if(any(unlist(lapply(fishery, function(x) max(x@effort, na.rm=TRUE))) == effort_max))
+  if(any(unlist(lapply(fishery,
+    function(x) max(x@effort, na.rm=TRUE))) == effort_max))
     warning("Maximum effort limit reached in one or more fisheries")
 
   return(out)
@@ -624,7 +626,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
   function(object, fishery=missing, sr, maxF=4, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
-    
+   
     # PARSE ...
     args <- list(...)
 
