@@ -59,10 +59,22 @@ setAs("FLQuants", "fwdControl",
     
     # GET 'quant'
     qua <- quant(from[[1]])
+    qdnms <- dimnames(from[[1]])[qua]
+
+    # CONVERT to same quant
+    from <- lapply(from, function(x) {
+      dimnames(x) <- qdnms
+      return(x)
+    })
 
 		# CONVERT
-    df <- as.data.frame(from)[,c(qua, "year", "iter",
-      "data", "qname", "season")]
+    df <- do.call("rbind", c(lapply(from, as.data.frame),
+      make.row.names = FALSE))[,c(qua, "year", "iter", "data", "season")]
+    df$qname <- names(from)
+ 
+    # DEBUG as.data.frame(FLQuants) should accept qnames being equal if dims differ   
+    # df <- as.data.frame(from)[,c(qua, "year", "iter",
+    #   "data", "qname", "season")]
     
     # RESHAPE if min/max in quant
     if(any(df[,qua] %in% c("min", "max", "value"))) {
