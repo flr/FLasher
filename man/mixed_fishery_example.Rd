@@ -5,7 +5,11 @@
 \alias{biols}
 \alias{flfs}
 \title{An FLBiols object used in mixed fishery vignette}
-\format{An FLBiols object with two FLBiol objects.}
+\format{
+An FLBiols object with two FLBiol objects.
+
+An FLFisheries object with two FLFishery objects.
+}
 \usage{
 biols
 

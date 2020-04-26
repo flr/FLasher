@@ -232,7 +232,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # CHANGE zero effort to small value
   rfishery <- lapply(rfishery, function(x){
-    x@effort[x@effort == 0] <- 1e-6
+    x@effort[x@effort == 0] <- sqrt(.Machine$double.eps)
     # SET effort to solve as total effort
     x@effort  <- x@effort * x@capacity
     x@capacity[]  <- 1
@@ -249,7 +249,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # CALL operatingModelRun
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max=effort_max * effscale, effort_mult_initial = 1.0,
-    indep_min = 1e-6, indep_max = 1e12, nr_iters = 50)
+    indep_min = sqrt(.Machine$double.eps), indep_max = 1e12, nr_iters = 50)
  
   # STRUCTURE of out
   #
@@ -452,6 +452,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     if(!all(snas))
       stop(paste("NAs present in the 'm', 'stock.n' or 'stock.wt' slots,
         year:", an(control$year[1]) - 1))
+
+    # TODO CHECK and CORRECT for missing discards ratio info
 
     # DEAL with iters
     its <- max(dims(object)$iter, dim(iters(control))[3])

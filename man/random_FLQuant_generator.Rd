@@ -4,9 +4,13 @@
 \alias{random_FLQuant_generator}
 \title{Generate randomly sized and filled FLQuant objects}
 \usage{
-random_FLQuant_generator(fixed_dims = rep(NA, 6), min_dims = rep(1, 6),
-  max_dims = pmax(min_dims, c(5, 10, 5, 4, 4, 5)), min_age_name = 1,
-  sd = 100)
+random_FLQuant_generator(
+  fixed_dims = rep(NA, 6),
+  min_dims = rep(1, 6),
+  max_dims = pmax(min_dims, c(5, 10, 5, 4, 4, 5)),
+  min_age_name = 1,
+  sd = 100
+)
 }
 \arguments{
 \item{fixed_dims}{A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. Default value is rep(NA,6).}

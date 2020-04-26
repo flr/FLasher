@@ -11,8 +11,7 @@
 \usage{
 FCBDrawing(FCB, ...)
 
-\S4method{FCBDrawing}{matrix}(FCB, fisheryNames = NULL,
-  catchNames = NULL, biolNames = NULL)
+\S4method{FCBDrawing}{matrix}(FCB, fisheryNames = NULL, catchNames = NULL, biolNames = NULL)
 }
 \arguments{
 \item{FCB}{The (FCB \link{matrix})}

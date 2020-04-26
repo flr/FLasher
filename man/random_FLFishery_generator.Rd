@@ -4,8 +4,7 @@
 \alias{random_FLFishery_generator}
 \title{Generate a randomly filled and sized FLFishery object}
 \usage{
-random_FLFishery_generator(min_catches = 2, max_catches = 5, sd = 1,
-  ...)
+random_FLFishery_generator(min_catches = 2, max_catches = 5, sd = 1, ...)
 }
 \arguments{
 \item{min_catches}{The minimum number of catches. Default is 2.}

@@ -63,14 +63,15 @@ setAs("FLQuants", "fwdControl",
 
     # CONVERT to same quant
     from <- lapply(from, function(x) {
-      dimnames(x) <- qdnms
+      if(dim(x)[1] == 1)
+        dimnames(x) <- qdnms
       return(x)
     })
 
 		# CONVERT
     df <- do.call("rbind", c(lapply(from, as.data.frame),
       make.row.names = FALSE))[,c(qua, "year", "iter", "data", "season")]
-    df$qname <- names(from)
+    df$qname <- rep(names(from), times=unlist(lapply(from, function(x) dim(x)[1])))
  
     # DEBUG as.data.frame(FLQuants) should accept qnames being equal if dims differ   
     # df <- as.data.frame(from)[,c(qua, "year", "iter",
@@ -111,7 +112,8 @@ setAs("FLQuants", "fwdControl",
 			target <- cbind(df[df$iter == df$iter[1],][,c('year', 'quant')])
 
 			iters <- array(NA, dim=c(dim(target)[1], 3, its),
-        dimnames=list(seq(dim(target)[1]), c("min", "value", "max"), iter=dimnames(from[[1]])$iter))
+        dimnames=list(seq(dim(target)[1]), c("min", "value", "max"), 
+        iter=dimnames(from[[1]])$iter))
                    
 			iters[,"value",] <- c(from[[1]])
       

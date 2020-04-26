@@ -4,9 +4,12 @@
 \alias{random_fwdControl_generator}
 \title{Random fwdControl object creator}
 \usage{
-random_fwdControl_generator(years = 1:round(runif(1, min = 2, max = 3)),
-  nseasons = 2, max_nsim_target = 3, niters = round(runif(1, min = 5,
-  max = 10)))
+random_fwdControl_generator(
+  years = 1:round(runif(1, min = 2, max = 3)),
+  nseasons = 2,
+  max_nsim_target = 3,
+  niters = round(runif(1, min = 5, max = 10))
+)
 }
 \arguments{
 \item{years}{numeric vector of years in the control object. Default value is 1:random interger (max = 10).}
