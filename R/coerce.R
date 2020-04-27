@@ -54,12 +54,15 @@ NULL
 #' # *f* target and *catch* minimum
 #' as(FLQuants(f=FLQuant(0.5, dimnames=list(year=2000)),
 #'   catch=FLQuant(c(100), dimnames=list(quant=c("min"), year=2000))), 'fwdControl')
+
 setAs("FLQuants", "fwdControl",
   function(from) {
     
     # GET 'quant'
     qua <- quant(from[[1]])
     qdnms <- dimnames(from[[1]])[qua]
+    itsq <- lapply(from, function(x) prod(dim(x)[c(1,6)]))
+    its <- max(unlist(itsq))
 
     # CONVERT to same quant
     from <- lapply(from, function(x) {
@@ -67,11 +70,11 @@ setAs("FLQuants", "fwdControl",
         dimnames(x) <- qdnms
       return(x)
     })
-
-		# CONVERT
+		
+    # CONVERT
     df <- do.call("rbind", c(lapply(from, as.data.frame),
       make.row.names = FALSE))[,c(qua, "year", "iter", "data", "season")]
-    df$qname <- rep(names(from), times=unlist(lapply(from, function(x) dim(x)[1])))
+    df$qname <- rep(names(from), times=itsq)
  
     # DEBUG as.data.frame(FLQuants) should accept qnames being equal if dims differ   
     # df <- as.data.frame(from)[,c(qua, "year", "iter",
@@ -96,8 +99,6 @@ setAs("FLQuants", "fwdControl",
     if(length(unique(df$season)) == 1)
       df$season <- NULL
 
-    its <- dim(from[[1]])[6]
-
 		# NO ITERS
 		if(its == 1) {
 
@@ -110,13 +111,14 @@ setAs("FLQuants", "fwdControl",
 		} else {
 
 			target <- cbind(df[df$iter == df$iter[1],][,c('year', 'quant')])
-
-			iters <- array(NA, dim=c(dim(target)[1], 3, its),
+			
+      iters <- array(NA, dim=c(dim(target)[1], 3, its),
         dimnames=list(seq(dim(target)[1]), c("min", "value", "max"), 
-        iter=dimnames(from[[1]])$iter))
-                   
-			iters[,"value",] <- c(from[[1]])
-      
+        iter=seq(its)))
+ 
+      for(i in seq(length(from)))
+        iters[i, "value", ] <- from[[i]]
+
       target <- cbind(target, fishery=as.numeric(NA), catch=as.numeric(NA),
         biol=1)
 			
