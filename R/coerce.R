@@ -54,6 +54,7 @@ NULL
 #' # *f* target and *catch* minimum
 #' as(FLQuants(f=FLQuant(0.5, dimnames=list(year=2000)),
 #'   catch=FLQuant(c(100), dimnames=list(quant=c("min"), year=2000))), 'fwdControl')
+#' # targets with different iters
 
 setAs("FLQuants", "fwdControl",
   function(from) {
@@ -117,7 +118,7 @@ setAs("FLQuants", "fwdControl",
         iter=seq(its)))
  
       for(i in seq(length(from)))
-        iters[i, "value", ] <- from[[i]]
+        iters[, "value", ] <- from[[i]]
 
       target <- cbind(target, fishery=as.numeric(NA), catch=as.numeric(NA),
         biol=1)

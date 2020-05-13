@@ -16,9 +16,9 @@
 #' proj <- stf(ple4, 3)
 
 setMethod('stf', signature(object='FLStock'),
-  function(object, nyears=3, wts.nyears=3, fbar.nyears=wts.nyears, f.rescale=FALSE,
-    arith.mean=TRUE, na.rm=TRUE, end=dims(object)$maxyear + nyears, disc.nyears=wts.nyears)
-  {
+  function(object, nyears=3, wts.nyears=3, fbar.nyears=wts.nyears,
+    f.rescale=FALSE, arith.mean=TRUE, na.rm=TRUE,
+    end=dims(object)$maxyear + nyears, disc.nyears=wts.nyears) {
     dims <- dims(object)
 
     # check nyears and end match
@@ -65,7 +65,7 @@ setMethod('stf', signature(object='FLStock'),
        slot(res, 'harvest')[,i] <- f
 
     # f.rescale
-    if(f.rescale == TRUE)
+    if(f.rescale)
     {
       # mean f over fbar ages and years
       fbar <- mean(apply(slot(res, 'harvest')[fbar.ages, fbar.years], c(2:6), mean,
