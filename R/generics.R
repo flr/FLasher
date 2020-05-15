@@ -82,7 +82,9 @@ setGeneric("stf", function(object,...) standardGeneric("stf"))
 #' The FCB slot in fwdControl specifies the relationships between the catches
 #' ('C') taken by each fishery ('F') from different biological units ('B').
 #'
-#' This slot is of class *matrix* and has 
+#' This slot is of class *matrix* and has thre columns, named 'F', 'C' and 'B',
+#' and as many rows as relationships between the FLBiol(s) and FLFishery(ies)
+#' objects the fwdControl refers to.
 #'
 #' @name FCB
 #' @param object Input object to construct or extract from.
@@ -92,4 +94,5 @@ setGeneric("stf", function(object,...) standardGeneric("stf"))
 setGeneric("FCB", function(object, ...) standardGeneric("FCB"))
 
 #' @rdname FCB
+
 setGeneric("FCB<-", function(object, ..., value) standardGeneric("FCB<-"))

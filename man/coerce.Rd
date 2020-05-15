@@ -41,6 +41,7 @@ as(FLQuants(f=FLQuant(0.5, dimnames=list(year=2000)),
 # *f* target and *catch* minimum
 as(FLQuants(f=FLQuant(0.5, dimnames=list(year=2000)),
   catch=FLQuant(c(100), dimnames=list(quant=c("min"), year=2000))), 'fwdControl')
+# targets with different iters
 }
 \seealso{
 \link{coerce}

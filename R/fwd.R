@@ -628,7 +628,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
   function(object, fishery=missing, sr, maxF=4, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
-   
+    
     # PARSE ...
     args <- list(...)
 

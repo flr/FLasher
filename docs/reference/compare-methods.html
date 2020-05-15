@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>plot method for FLStock, fwdControl — plot • FLasher</title>
+<title>Compare the result of a <code>fwd()</code> run with the defined targets. — compare,FLStock,fwdControl-method • FLasher</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,10 @@
 
 
 
-<meta property="og:title" content="plot method for FLStock, fwdControl — plot" />
-<meta property="og:description" content="plot method for FLStock, fwdControl" />
+<meta property="og:title" content="Compare the result of a <code>fwd()</code> run with the defined targets. — compare,FLStock,fwdControl-method" />
+<meta property="og:description" content="A comparison between the objects or objects returned by fwd() and the
+targets and limits set in the fwdControl object used to run, is returned
+by this method." />
 
 
 
@@ -126,50 +128,78 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>plot method for FLStock, fwdControl</h1>
-    <small class="dont-index">Source: <a href='https://github.com/flr/FLasher/blob/master/R/plot.R'><code>R/plot.R</code></a></small>
-    <div class="hidden name"><code>plot.Rd</code></div>
+    <h1>Compare the result of a <code>fwd()</code> run with the defined targets.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/flr/FLasher/blob/master/R/methods.R'><code>R/methods.R</code></a></small>
+    <div class="hidden name"><code>compare-methods.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>plot method for FLStock, fwdControl</p>
+    <p>A comparison between the objects or objects returned by <code><a href='fwd-methods.html'>fwd()</a></code> and the
+targets and limits set in the <code>fwdControl</code> object used to run, is returned
+by this method.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for FLStock,fwdControl</span>
-<span class='fu'>plot</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>fill</span> <span class='kw'>=</span> <span class='st'>"#E69F00"</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>compare</span>(<span class='no'>result</span>, <span class='no'>target</span>, <span class='kw'>simplify</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+
+<span class='co'># S4 method for fwdControl,FLStock</span>
+<span class='fu'>compare</span>(<span class='no'>result</span>, <span class='no'>target</span>)
+
+<span class='co'># S4 method for FLBiol,fwdControl</span>
+<span class='fu'>compare</span>(<span class='no'>result</span>, <span class='no'>target</span>, <span class='no'>fishery</span>, <span class='kw'>simplify</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>FlStock object to plot</p></td>
+      <th>result</th>
+      <td><p>Object returned by the call to fwd()</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>fwdControl from which to extract year ranges</p></td>
+      <th>target</th>
+      <td><p>fwdControl object with required targets</p></td>
     </tr>
     <tr>
-      <th>fill</th>
-      <td><p>Colour to fill projection years background</p></td>
+      <th>simplify</th>
+      <td><p>Return whole table or logical vector only, logical</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Any other argument to be passed to [ggplotFL::plot]</p></td>
+      <th>fishery</th>
+      <td><p>FLFishery oir FKFisheries object</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="generic-function"><a class="anchor" href="#generic-function"></a>Generic function</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>plot(x, y)</p>
+    <p>A table of comparisons, one for each target, of class data.frame.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>A comparison is carried out for each row in a <code>fwdControl</code> object,
+that is, for every target or limit.
+A <code>data.frame</code> is returned with columns 'year', 'quant', 'season' and
+'unit' if relevant, and 'achieved'. The last is of class <code>logical</code> and will
+have value <code>TRUE</code> if the target or limits have been achieved for every
+iteration, and <code>FALSE</code> otherwise.
+Values are compared using <code><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></code>.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></code>.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ple4</span>)
-<span class='no'>control</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='fwdControl.html'>fwdControl</a></span>(<span class='kw'>year</span><span class='kw'>=</span><span class='fl'>2008</span>:<span class='fl'>2017</span>, <span class='kw'>quant</span><span class='kw'>=</span><span class='st'>"f"</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='fl'>0.3</span>)
-<span class='co'># No fwd projection took place, simply passing year range</span>
-<span class='fu'>plot</span>(<span class='no'>ple4</span>, <span class='no'>control</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Using `as.character()` on a quosure is deprecated as of rlang 0.3.0.</span>
-#&gt; <span class='warning'>Please use `as_label()` or `as_name()` instead.</span>
-#&gt; <span class='warning'><span style='color: #555555;'>This warning is displayed once per session.</span><span></span></div><div class='output co'>#&gt; <span class='warning'>Warning: the condition has length &gt; 1 and only the first element will be used</span></div><div class='img'><img src='plot-1.png' alt='' width='700' height='433' /></div></span></pre>
+<span class='no'>control</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='fwdControl.html'>fwdControl</a></span>(
+ <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>quant</span><span class='kw'>=</span><span class='st'>"fbar"</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='fl'>0.5</span>, <span class='kw'>year</span><span class='kw'>=</span><span class='fl'>1990</span>),
+ <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>quant</span><span class='kw'>=</span><span class='st'>"catch"</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>year</span><span class='kw'>=</span><span class='fl'>1991</span>, <span class='kw'>relYear</span><span class='kw'>=</span><span class='fl'>1990</span>),
+ <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>quant</span><span class='kw'>=</span><span class='st'>"catch"</span>, <span class='kw'>min</span><span class='kw'>=</span><span class='fl'>10000</span>, <span class='kw'>year</span><span class='kw'>=</span><span class='fl'>1993</span>, <span class='kw'>max</span><span class='kw'>=</span><span class='fl'>100000</span>))
+<span class='no'>run</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='fwd-methods.html'>fwd</a></span>(<span class='no'>ple4</span>, <span class='kw'>sr</span><span class='kw'>=</span><span class='fu'>predictModel</span>(<span class='kw'>model</span><span class='kw'>=</span><span class='no'>rec</span>~<span class='no'>a</span>*<span class='no'>ssb</span>*<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(-<span class='no'>b</span>*<span class='no'>ssb</span>),
+  <span class='kw'>params</span><span class='kw'>=</span><span class='fu'>FLPar</span>(<span class='kw'>a</span><span class='kw'>=</span><span class='fl'>9.16</span>, <span class='kw'>b</span><span class='kw'>=</span><span class='fl'>3.55e-6</span>)), <span class='kw'>control</span><span class='kw'>=</span><span class='no'>control</span>)
+
+<span class='co'># Returns the full comparison table</span>
+<span class='fu'>compare</span>(<span class='no'>run</span>, <span class='no'>control</span>)</div><div class='output co'>#&gt;   year quant achieved
+#&gt; 1 1990  fbar     TRUE
+#&gt; 2 1991 catch     TRUE
+#&gt; 3 1993 catch     TRUE</div><div class='input'><span class='co'># Returns a logical vector</span>
+<span class='fu'>compare</span>(<span class='no'>run</span>, <span class='no'>control</span>, <span class='kw'>simplify</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; [1] TRUE TRUE TRUE</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

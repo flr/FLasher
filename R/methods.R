@@ -371,10 +371,10 @@ biomass_spawn <- function(x) {
 #' Values are compared using \code{\link[base]{all.equal}}.
 #' @param result Object returned by the call to fwd()
 #' @param target fwdControl object with required targets
+#' @param simplify Return whole table or logical vector only, logical
 #'
 #' @return A table of comparisons, one for each target, of class data.frame.
 #'
-#' @name compare
 #' @rdname compare-methods
 #'
 #' @author Iago Mosqueira (WMR)
@@ -453,10 +453,15 @@ setMethod("compare", signature(result="FLStock", target="fwdControl"),
   }
 )
 
+#' @rdname compare-methods
+
 setMethod("compare", signature(result="fwdControl", target="FLStock"),
   function(result, target) {
     compare(target, result)
   })
+
+#' @rdname compare-methods
+#' @param fishery FLFishery oir FKFisheries object
 
 setMethod("compare", signature(result="FLBiol", target="fwdControl"),
   function(result, target, fishery, simplify=FALSE) {
@@ -523,8 +528,4 @@ setMethod("compare", signature(result="FLBiol", target="fwdControl"),
   }
 )
 
-setMethod("compare", signature(result="fwdControl", target="FLStock"),
-  function(result, target) {
-    compare(target, result)
-  })
 # }}}

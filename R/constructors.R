@@ -247,8 +247,9 @@ setMethod('fwdControl', signature(target='list', iters='list'),
 ) # }}}
 
 # fwdControl(target='missing', iters='missing') {{{
-#' fwdControl constructor for missing and missing
+
 #' @rdname fwdControl
+
 setMethod('fwdControl', signature(target='missing', iters='missing'),
   function(...) {
 
@@ -265,6 +266,12 @@ setMethod('fwdControl', signature(target='missing', iters='missing'),
 # }}}
 
 # fwdControl(target='FLQuant', iters='missing') {{{
+
+#' @rdname fwdControl
+#' @param quant name of target to assign 'FLQuant' to, 'character'
+#' @examples
+#' # FLQuant, needs 'qwuant' name
+#' fwdControl(FLQuant(0.2, dimnames=list(year=2000)), quant="fbar")
 
 setMethod('fwdControl', signature(target='FLQuant', iters='missing'),
   function(target, quant, ...) {
@@ -322,6 +329,7 @@ setMethod("FCB", signature(object="ANY"),
   }
 ) 
 
+#' @rdname FCB
 
 setMethod("FCB", signature(object="missing"),
   function(...) {

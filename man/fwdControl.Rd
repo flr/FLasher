@@ -13,6 +13,7 @@
 \alias{fwdControl,list,missing-method}
 \alias{fwdControl,list,list-method}
 \alias{fwdControl,missing,missing-method}
+\alias{fwdControl,FLQuant,missing-method}
 \title{A class for the targets and limits of a fishery and stock projection.}
 \usage{
 fwdControl(target, iters, ...)
@@ -30,6 +31,8 @@ G(...)
 \S4method{fwdControl}{list,list}(target, iters, ...)
 
 \S4method{fwdControl}{missing,missing}(target, iters, ...)
+
+\S4method{fwdControl}{FLQuant,missing}(target, quant, ...)
 }
 \arguments{
 \item{target}{The target. Can be a data.frame, a list or missing.}
@@ -37,6 +40,8 @@ G(...)
 \item{iters}{target The iters. Can be an array, a numeric or missing.}
 
 \item{...}{Something}
+
+\item{quant}{name of target to assign 'FLQuant' to, 'character'}
 }
 \description{
 The desired targets, limits and time steps used in fishery projections can be
@@ -115,6 +120,8 @@ fwdControl(list(year=2010:2014, quant='catch', value=seq(2900, 3500, length=5)))
 # With 40 values (iters) in each target
 fwdControl(list(year=2010:2014, quant='catch',
   value=rnorm(200, seq(2900, 3500, length=5))))  
+# FLQuant, needs 'qwuant' name
+fwdControl(FLQuant(0.2, dimnames=list(year=2000)), quant="fbar")
 }
 \seealso{
 \link{data.frame}
