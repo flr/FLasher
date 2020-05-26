@@ -22,9 +22,6 @@ importFrom(graphics,
   "points",
   "rect",
   "text")
-importFrom(ggplot2,
-  "geom_vline",
-  "annotate")
 importFrom(stats,
   "mad")
 exportClasses(

@@ -13,6 +13,20 @@ Authors@R: c(
   person(given = 'Finlay', family = 'Scott', role = c('aut'),
     email = 'finlay.scott@ec.europa.eu'))
 Copyright: European Union
+Depends:
+  R(>= 3.5.0),
+  FLCore(> 2.6.5),
+  FLFishery(>= 0.1),
+  ggplotFL
+Imports:
+  methods,
+  Rcpp (>= 0.12.0)
+LinkingTo: Rcpp
+SystemRequirements: C++11
+Additional_repositories: http://flr-project.org/R
+Suggests:
+  testthat,
+  knitr
 Collate:
   classes.R
   generics.R
@@ -30,21 +44,6 @@ Collate:
   fcb_draw.R
   FLasherLib.R
   plot.R
-Depends:
-  R(>= 3.5),
-  FLCore(> 2.6.5),
-  FLFishery(>= 0.1)
-Imports:
-  methods,
-  Rcpp (>= 0.12.0),
-  ggplot2,
-  ggplotFL
-LinkingTo: Rcpp
-SystemRequirements: C++11
-Additional_repositories: http://flr-project.org/R
-Suggests:
-  testthat,
-  knitr
 License: EUPL
 VignetteBuilder: knitr
 LazyLoad: Yes
