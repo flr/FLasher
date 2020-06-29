@@ -250,7 +250,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max=effort_max * effscale, effort_mult_initial = 1.0,
     indep_min = sqrt(.Machine$double.eps), indep_max = 1e12, nr_iters = 50)
- 
+
   # STRUCTURE of out
   #
   # out
@@ -444,7 +444,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
   
   function(object, control, sr, maxF=4, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
-    
+
     # CHECK for NAs in stock: m, stock.n, stock.wt in control$year[1] - 1
     snas <- verify(object[,ac(an(control$year[1]) - 1)],
       rules=NULL, m=~!is.na(m), stock.n=~!is.na(stock.n),
@@ -617,11 +617,17 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     object@stock.n[,pyrs] <- Bo@n[,pyrs]
     # stock
     object@stock <- quantSums(object@stock.n * object@stock.wt)
+
+    # WARN if any solver_codes is not 1
+    if(any(c(out$flag) != 1)) {
+      warning("Solver returned some unsolved targets.")
+    }
+
     return(object)
   }
 ) # }}}
 
-# fwd(FLStock, missing, missing, ...) {{{
+# fwd(FLStock, ANY, missing, ...) {{{
 
 #' @rdname fwd-methods
 #' @aliases fwd,FLStock,missing,missing-method
@@ -642,9 +648,38 @@ setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
       if(!is(fishery, "FLQuant"))
         stop("targets can only be of class FLQuant if no fwdControl is provided")
       narg <- names(sys.calls()[[length(sys.calls())-1]])
-      narg <- narg[!narg %in% c("", "object", "sr",
+      narg <- narg[!narg %in% c("", "object", "sr", "deviances",
         grep("^[f].*", .qlevels, value=TRUE, invert=TRUE))]
       args[[narg]] <- fishery
+    }
+
+    if (length(args) == 0) {
+      
+      dms <- dims(object)
+      res <- window(object, start=dms$minyear + 1, end=dms$maxyear + 1)
+    
+      # ADD plusgroup
+      stock.n(res)[ac(dms$max),] <-
+        quantSums(stock.n(object)[ac(seq(dms$max - 1, dms$max)),] *
+          exp(-z(object)[ac(seq(dms$max - 1, dms$max)),]))
+    
+      # MOVE other ages
+      stock.n(res)[ac(seq(dms$min + 1, dms$max - 1)), ] <-
+        stock.n(object)[ac(seq(dms$min, dms$max - 2)), ] *
+          exp(-z(object)[ac(seq(dms$min, dms$max - 2)), ])
+
+      # GET rec
+      if(any(is(sr) %in% c("numeric", "FLPar", "FLQuant"))) {
+        stock.n(res)[1, ] <- c(sr)[1]
+      } else {
+        fvars <- all.vars(model(sr)[[length(model(sr))]])
+        funs <- fvars[!fvars %in% dimnames(params(sr))$params]
+        pargs <- lapply(setNames(nm=funs), do.call, args=list(object))
+      
+        stock.n(res)[1, ] <- do.call("predict",
+          c(list(object=as(sr, "predictModel")), pargs))
+      }
+      return(res)
     }
     
     # Does ... exist?

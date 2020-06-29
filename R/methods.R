@@ -342,6 +342,12 @@ ssb_end <- function(x) {
   return(ssb(x))
 }
 
+ssb_start <- function(x) {
+  m.spwn(x) <- 0
+  harvest.spwn(x) <- 0
+  return(ssb(x))
+}
+
 biomass_end <- function(x) {
   m.spwn(x) <- 1
   harvest.spwn(x) <- 1
@@ -404,9 +410,6 @@ setMethod("compare", signature(result="FLStock", target="fwdControl"),
     out <- out[, c(TRUE, unlist(lapply(out[,c("season", "unit")],
       function(x) length(unique(x)))) > 1, TRUE)]
 
-    # IDENTIFY relative targets
-    rts <- !is.na(target(target)$relYear)
-
     # EXTRACT quants and years
     quants <- as.character(target(target)[, c("quant")])
     years <- target(target)[, c("year")]
@@ -421,11 +424,13 @@ setMethod("compare", signature(result="FLStock", target="fwdControl"),
 
     # CORRECT values for relyears
     relyears <- target(target)[, c("relYear")]
+    
+    # IDENTIFY relative targets
     idx <- !is.na(relyears)
 
     if(any(idx)) {
       values[idx] <- mapply(function(x, y) do.call(x, list(result))[, ac(y)],
-        quants[idx], relyears[idx])
+        quants[idx], relyears[idx], SIMPLIFY=FALSE)
     }
 
     # COMPUTE results by year
