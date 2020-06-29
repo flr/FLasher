@@ -58,7 +58,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # CHECK length and names of biols and deviances
   if(!all.equal(names(object), names(deviances)))
     stop("Names of biols and deviances must match exactly")
-
+  
   # TODO years
   # CHECK for NAs in biol: m, n, wt
   # bnas <- unlist(lapply(object, verify,
@@ -340,7 +340,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFisheries",
   control="fwdControl"),
   
   function(object, fishery, control, deviances="missing", ...) {
-  
+    
     # FIND biol name
     fcb <- FCB(control)
     if(!all(is.na(fcb)))
