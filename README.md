@@ -30,6 +30,10 @@ To install the development version, you can use:
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/flr/FLasher?branch=master&svg=true)](https://ci.appveyor.com/project/flr/FLasher)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/FLasher)](https://cran.r-project.org/package=FLasher)
 
+## Code coverage
+
+[![Codecov test coverage](https://codecov.io/gh/flr/FLasher/branch/master/graph/badge.svg)](https://codecov.io/gh/flr/FLasher?branch=master)
+
 ## License
 Copyright (c) 2016-19 European Union. Released under the [EUPL v1.2](https://eupl.eu/1.2/en/).
 

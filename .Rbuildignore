@@ -8,3 +8,4 @@ src/Doxyfile
 Makefile
 .git/
 .editorconfig
+^codecov\.yml$
