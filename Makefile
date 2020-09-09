@@ -60,6 +60,9 @@ check: ../$(PKGNAME)_$(PKGVERS).tar.gz
 	cd ..;\
 	R --vanilla CMD check $(PKGNAME)_$(PKGVERS).tar.gz
 
+codecov:
+	R -e "covr::codecov('.')"
+
 clean:
 	cd ..;\
 	rm -rf $(PKGNAME).Rcheck $(PKGNAME)_$(PKGVERS).tar.gz
