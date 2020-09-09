@@ -445,13 +445,14 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
   function(object, control, sr, maxF=4, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
 
-    # CHECK for NAs in stock: m, stock.n, stock.wt in control$year[1] - 1
-    snas <- verify(object[,ac(an(control$year[1]) - 1)],
-      rules=NULL, m=~!is.na(m), stock.n=~!is.na(stock.n),
-      stock.wt=~!is.na(stock.wt), report=FALSE)
-    if(!all(snas))
-      stop(paste("NAs present in the 'm', 'stock.n' or 'stock.wt' slots,
-        year:", an(control$year[1]) - 1))
+    # CHECK for NAs in stock: m, stock.n, stock.wt in timestep[1] - 1
+    # DEBUG WORK with seasons
+#    snas <- verify(object[,ac(an(control$year[1]) - 1)],
+#      rules=NULL, m=~!is.na(m), stock.n=~!is.na(stock.n),
+#      stock.wt=~!is.na(stock.wt), report=FALSE)
+#    if(!all(snas))
+#      stop(paste("NAs present in the 'm', 'stock.n' or 'stock.wt' slots,
+#        year:", an(control$year[1]) - 1))
 
     # TODO CHECK and CORRECT for missing discards ratio info
 
