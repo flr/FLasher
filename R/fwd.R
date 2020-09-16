@@ -241,15 +241,21 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # STOP if all iters have NAs in target
   if(all(!idn))
-    stop("objects have a single iter and target contains NA.")
-  
+    stop("objects have a single iter and target contains only NA.")
+
   # CALCULATE max(effort) per fishery
   effscale <- unlist(lapply(rfishery, function(x) max(x@effort)))
-  
+
   # CALL operatingModelRun
   out <- operatingModelRun(rfishery, biolscpp, control,
-    effort_max=effort_max * effscale, effort_mult_initial = 1.0,
+    effort_max = effort_max * effscale, effort_mult_initial = 1.0,
     indep_min = sqrt(.Machine$double.eps), indep_max = 1e12, nr_iters = 50)
+
+  # WARN of unsolved targets
+  if(any(out$solver_codes != 1)) {
+    warning(paste("Unsolved targets at control rows: ",
+      paste(which(out$solver_codes != 1), collapse=", ")))
+  }
 
   # STRUCTURE of out
   #
@@ -445,14 +451,25 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
   function(object, control, sr, maxF=4, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
 
-    # CHECK for NAs in stock: m, stock.n, stock.wt in timestep[1] - 1
-    # DEBUG WORK with seasons
-#    snas <- verify(object[,ac(an(control$year[1]) - 1)],
-#      rules=NULL, m=~!is.na(m), stock.n=~!is.na(stock.n),
-#      stock.wt=~!is.na(stock.wt), report=FALSE)
-#    if(!all(snas))
-#      stop(paste("NAs present in the 'm', 'stock.n' or 'stock.wt' slots,
-#        year:", an(control$year[1]) - 1))
+    # COMPUTE first year and season in control
+    fy <- which(ac(control$year[1]) == dimnames(m(object))$year)
+    fs <- which(ac(control$season[1]) == dimnames(m(object))$season)
+
+    # FIND OUT starting time step
+    if(fs == 1) {
+      fy <- fy - 1
+    } else {
+      fs <- fs - 1
+    }
+
+    # CHECK for NAs in stock: m, stock.n, stock.wt in first year and season
+    snas <- verify(object[,fy,,fs],
+      rules=NULL, m=~!is.na(m), stock.n=~!is.na(stock.n),
+      stock.wt=~!is.na(stock.wt), report=FALSE)
+
+    if(!all(snas))
+      stop(paste("NAs present in the 'm', 'stock.n' or 'stock.wt' slots,
+        year:", fy, ", season:", fs))
 
     # TODO CHECK and CORRECT for missing discards ratio info
 
