@@ -400,14 +400,6 @@ FLQuant_base<T> FLQuant_base<T>::operator () (const unsigned int quant_min, cons
         Rcpp::stop("In FLQuant subsetter: min dim > max\n");
     }
 
-    // DEBUG
-    Rprintf("Dim %i %i %i %i %i\n", get_nquant(), get_nyear(), get_nunit(), get_nseason(), get_narea());
-    Rprintf("Sub %i %i %i %i %i\n", quant_max, year_max, unit_max, season_max, area_max);
-    Rprintf("Year %i\n", year_max);
-
-  unsigned int dat = get_data_element(1,1,1,1,1,1);
-  Rprintf("data %f\n --- \n", data[dat]);
-
     // Check asked for indices are not greater than allowed - iter is a special case
     if ((quant_max > get_nquant()) || (year_max > get_nyear()) || (unit_max > get_nunit()) || (season_max > get_nseason()) || (area_max > get_narea())){
         Rcpp::stop("In FLQuant subsetter: requested subset dimensions are outside of FLQuant bounds.\n");
