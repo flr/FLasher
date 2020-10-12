@@ -26,17 +26,17 @@
 
 setMethod("plot", signature(x="FLStock", y="fwdControl"),
   function(x, y, fill="#E69F00", ...) {
-    
+
     yrs <- range(y$year)
-    
+
     # CREATE standard plot
     p <- plot(x, ...)
 
     # GET x variable
-    if(as.character(p$mapping$x) == "date") {
+    if(as_name(p$mapping$x) == "date") {
       yrs <- range(p$data[with(p$data, year %in% yrs), "date"])
     }
-    
+
     p + geom_vline(xintercept=yrs[1], alpha=0.4) +
       geom_vline(xintercept=yrs[2], alpha=0.2) +
       annotate("rect", xmin = yrs[1], xmax = yrs[2], ymin = -Inf, ymax = Inf,
