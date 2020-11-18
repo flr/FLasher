@@ -143,7 +143,11 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # CHECK F targets have min/maxAge
   if(any(is.na(trg[trg$quant %in% c("f", "fbar"), c("minAge", "maxAge")])))
-    stop("MinAge and maxAge are needed in control for an 'f' or 'fbar' target.")
+    stop("minAge and maxAge are needed in control for an 'f' or 'fbar' target.")
+
+  # CONVERT F=0 targets to sqrt(.Machine$double.eps) ~ 1.5e-08
+  f0s <- iters(control)[trg$quant %in% c("f","fbar","hr"),,] < sqrt(.Machine$double.eps)
+  iters(control)[f0s] <- sqrt(.Machine$double.eps)
 
   # CONVERT to numeric 'season', 'area', 'unit'
   if (!is.numeric(trg$season))
@@ -245,7 +249,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # CALCULATE max(effort) per fishery
   effscale <- unlist(lapply(rfishery, function(x) max(x@effort)))
-
+  
   # CALL operatingModelRun
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max = effort_max * effscale, effort_mult_initial = 1.0,
