@@ -213,7 +213,7 @@ setMethod('fwdControl', signature(target='list', iters='missing'),
       return(fwdControl(target=trg, iters=ite, ...))
 
     } else {
-      
+ 
       inp <- do.call('parsefwdList', target)
  
     return(do.call('fwdControl', c(inp, list(...))))
@@ -222,6 +222,7 @@ setMethod('fwdControl', signature(target='list', iters='missing'),
 ) # }}}
 
 # fwdControl(target='list', iters='list') {{{
+
 #' fwdControl constructor for a series of lists
 #' @rdname fwdControl
 setMethod('fwdControl', signature(target='list', iters='list'),

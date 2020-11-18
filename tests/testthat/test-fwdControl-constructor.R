@@ -349,3 +349,20 @@ test_that("FLPar is handled specially",{
   expect_equal(c(iters(ctrl)[1,'value',1]), c(value[,1]))
 })
 
+
+# MULTIPLE biols and fisheries
+
+fwdControl(
+list(year=2012, quant="catch", fishery=c(1,2), value=c(1,5)),
+list(year=2012, quant="catch", fishery=c(3), value=c(2))
+)
+
+fwdControl(
+list(year=2012, quant="catch", fishery=1, value=runif(5)),
+list(year=2012, quant="catch", fishery=2, value=runif(5))
+)
+
+fwdControl(
+data.frame(year=2012, quant="catch", fishery=1:2, value=runif(2))
+)
+

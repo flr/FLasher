@@ -1,6 +1,6 @@
 # FLasher
-- Version: 0.6.5
-- Date: 2020-09-16
+- Version: 0.6.5.9002
+- Date: 2020-11-18
 - Author: Finlay Scott and Iago Mosqueira.
 - Maintainer: Iago Mosqueira <iago.mosqueira@wur.nl>
 - Repository: <https://github.com/flr/FLasher/>
