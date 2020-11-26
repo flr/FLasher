@@ -3,7 +3,6 @@
 
 context("Projections with FLStock")
 # If these don't work we are in trouble!
-source("expect_funs.R")
 
 
 test_that("Catch target, single iter",{

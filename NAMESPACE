@@ -2,6 +2,8 @@ useDynLib(FLasher)
 import(FLCore)
 import(ggplotFL)
 import(FLFishery)
+importFrom(rlang,
+  "as_name")
 importFrom(Rcpp,
   "evalCpp")
 importFrom(stats,

@@ -6,7 +6,7 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
-## stf(FLStock) {{{
+# stf(FLStock) {{{
 
 #' stf for FLStock
 #' @rdname stf
@@ -82,7 +82,8 @@ setMethod('stf', signature(object='FLStock'),
   }
 ) # }}}
 
-## stf(FLBiol) {{{
+# stf(FLBiol) {{{
+
 #' stf for FLBiol
 #' @rdname stf
 setMethod('stf', signature(object='FLBiol'),
@@ -119,3 +120,10 @@ setMethod('stf', signature(object='FLBiol'),
   }
 ) # }}}
 
+# stf(FLStocks) {{{
+
+setMethod('stf', signature(object='FLStocks'),
+  function(object, ...) {
+    lapply(object, function(x) stf(x, ...))
+  }
+)# }}}

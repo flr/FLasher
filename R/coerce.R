@@ -136,3 +136,41 @@ setAs("FLBiol", "list",
       srr_deviances = FLQuant(),
       srr_deviances_mult = TRUE)
   }) # }}}
+
+# fwdControl -> data.frame {{{
+
+setAs('fwdControl', 'data.frame',
+  function(from) {
+
+    # DECIDE columns to add
+    nms <- c("season", "unit", "relYear", "relSeason", "relFishery",
+      "relCatch", "relBiol", "relMinAge", "relMaxAge", "minAge", "maxAge")
+    idx <- apply(target(from)[, nms], 2, function(x) length(unique(x)))
+
+
+    # EXTRACT target and iters
+    targ <- target(from)[,c("year", "quant", "fishery", "catch", "biol",
+      nms[idx > 1])]
+    ites <- iters(from)
+    dites <- dim(ites)
+    
+    # EXTEND target df to iters
+    targ <- targ[rep(seq_len(nrow(targ)), dites[3]), ]
+
+    # CONVERT iters to data.frame
+    ites <- data.frame(
+      min=c(ites[,"min",]),
+      value=c(ites[,"value",]),
+      max=c(ites[,"max",]),
+      iter=rep(dimnames(ites)$iter, each=dites[1])
+    )
+
+    # BIND data.frame
+    df <- cbind(targ, ites)
+
+    # RENAME rows as step.iter
+    rownames(df) <- paste(seq(dites[1]), rep(seq(dites[3]), each=dites[1]), sep=".")
+
+    return(df)
+  }
+) # }}}
