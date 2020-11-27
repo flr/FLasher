@@ -5,6 +5,17 @@
 - Minimum value for 'f' or 'fbar' targets has been set at
   sqrt(.Machine$double.eps) ~ 1.5e-08.
 
+## BUG FIXES
+
+- Separation of large Jacobian matrix in solver.cpp was operating as in iters
+  were organized target first, but they are iter first.
+
+## NEW FEATURES
+
+- FCB(FLBiols, FLFisheries) method class guessfcb and fcb2nit to return a guess
+  for FCB.
+- stf(FLStocks) simply calls lapply, uses same settings on all elements.
+
 # FLasher 0.6.1
 
 ## NEW FEATURES
