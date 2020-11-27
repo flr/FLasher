@@ -337,14 +337,14 @@ test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
 test_that("Catch target, maxf limiting",{
     data(ple4)
 
-    control=fwdControl(year=1990, quant="catch", value=1500000)
+    control=fwdControl(year=1990, quant="catch", value=150000)
     
     res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
-      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
+      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))), maxF=0.1)
     
     f_out <- c(fbar(res)[,"1990"])
     
-    expect_equal(f_out, 4)
+    expect_equal(f_out, 0.1)
 })
 
 test_that("control as FLQuants works", {
