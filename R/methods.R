@@ -534,3 +534,30 @@ setMethod("compare", signature(result="FLBiol", target="fwdControl"),
 )
 
 # }}}
+
+# partialF {{{
+
+setMethod("partialF", signature(biols="FLBiols", fisheries="FLFisheries"),
+  function(biols, fisheries, biol=seq(length(biols)), fcb="missing") {
+
+    # GUESS FCB if missing
+    if(missing(fcb))
+      fcb <- FCB(biols, fisheries)
+
+    # APPLY over biols
+    res <- lapply(setNames(biol, nm=names(biols)[biol]), function(b) {
+      # SUBSET fcb for biol
+      idx <- fcb[fcb[, "B"] == b,, drop=FALSE]
+      # GET FLCatches for biol
+      cas <- mapply(function(x, y) x[[y]], x=fisheries[idx[, "F"]], y=idx[,"C"])
+      # calc_F
+      FLQuants(mapply(calc_F, catch=cas, biol=biols(om)[idx[, "B"]],
+        effort=lapply(fisheries[idx[, "F"]], effort), SIMPLIFY=FALSE))
+      })
+
+    if(length(unique(fcb[,"B"])) == 1)
+      res <- res[[1]]
+
+    return(res)
+  })
+# }}}
