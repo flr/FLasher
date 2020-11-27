@@ -57,6 +57,7 @@ exportMethods(
   "fwdControl",
   "iters",
   "iters<-",
+  "partialF",
   "plot",
   "propagate",
   "show",

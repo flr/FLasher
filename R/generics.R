@@ -96,3 +96,7 @@ setGeneric("FCB", function(object, ...) standardGeneric("FCB"))
 #' @rdname FCB
 
 setGeneric("FCB<-", function(object, ..., value) standardGeneric("FCB<-"))
+
+
+setGeneric("partialF", function(biols, fisheries, ...) standardGeneric("partialF"))
+
