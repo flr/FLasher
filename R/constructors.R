@@ -337,4 +337,17 @@ setMethod("FCB", signature(object="missing"),
     object <- list(...)
     return(FCB(object))
   }
-)  # }}}
+) 
+
+setMethod("FCB", signature(object="FLBiols"),
+  function(object, fisheries) {
+    return(FCB(fcb2int(guessfcb(object, fisheries), object, fisheries)))
+  }
+)
+
+setMethod("FCB", signature(object="FLFisheries"),
+  function(object, biols) {
+    return(FCB(fcb2int(guessfcb(biols, object), biols, object)))
+  }
+)
+# }}}
