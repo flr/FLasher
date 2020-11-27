@@ -15,6 +15,7 @@
 - FCB(FLBiols, FLFisheries) method class guessfcb and fcb2nit to return a guess
   for FCB.
 - stf(FLStocks) simply calls lapply, uses same settings on all elements.
+- partialF method returns the partial Fs by fleet for each FLBiol. 
 
 # FLasher 0.6.1
 
