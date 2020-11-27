@@ -48,8 +48,10 @@ double euclid_norm(std::vector<double> x){
  */
 std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>& fun, const unsigned int niter, const unsigned int nsim_targets, const double indep_min, const double indep_max, const unsigned int max_iters, const double tolerance){
     bool verbose = false;
-   // Rprintf("indep.size(): %i niter: %i, nsim_targets: %i\n",indep.size(), niter, nsim_targets);
-    if(verbose){Rprintf("\nIn Newton Raphson\n");}
+    if(verbose){
+    Rprintf("indep.size(): %i niter: %i, nsim_targets: %i\n",indep.size(), niter, nsim_targets);
+      Rprintf("\nIn Newton Raphson\n");
+    }
     // Check that product of niter and nsim_targets = length of indep (Jacobian must be square - otherwise cannot do LU Solve)
     if (indep.size() != (niter * nsim_targets)){
         Rcpp::stop("In newton_raphson: length of indep does not equal product of niter and nsim_targets\n");
@@ -72,14 +74,26 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
     unsigned int start_accum = 0;
     // Keep looping until all sim_targets have been solved, or number of iterations (NR iterations, not FLR iterations) has been hit
     while((std::accumulate(iter_solved.begin(), iter_solved.end(), start_accum) < niter) & (nr_count < max_iters)){ 
+    //while((std::accumulate(iter_solved.begin(), iter_solved.end(), start_accum) < niter) & (nr_count < 2)){ 
         ++nr_count;
-        if(verbose){Rprintf("\nnr_count: %i\n", nr_count);}
+        //if(verbose){Rprintf("\nnr_count: %i\n", nr_count);}
         // Get y = f(x0)
-        if(verbose){Rprintf("Forward\n");}
+        //if(verbose){Rprintf("Forward\n");}
         y = fun.Forward(0, indep); 
         // Get f'(x0) -  gets Jacobian for all simultaneous targets
         //if(verbose){Rprintf("Getting SparseJacobian\n");}
         jac = fun.SparseJacobian(indep);
+
+        //if(nr_count == 1){
+        //  Rprintf("Initial Jacobian\n");
+        //  for (unsigned int jaclooper = 0; jaclooper < (niter * niter * nsim_targets * nsim_targets); ++jaclooper){
+        //    Rprintf("%f\t", jac[jaclooper]);
+        //  }
+        //  Rprintf("\n");
+        //}
+
+
+
         //jac = fun.Jacobian(indep);
         // Alt - does the same 
         //std::vector<double> weight(1);
@@ -90,49 +104,84 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
         for (unsigned int iter_count = 0; iter_count < niter; ++iter_count){
             // Only solve if that iter has not been solved
             if(iter_solved[iter_count] == 0){
-            if(verbose){Rprintf("iter_count: %i\n", iter_count);}
+            //if(verbose){Rprintf("iter_count: %i\n", iter_count);}
                 // Subsetting y and Jacobian for that iter only
+                
+                //// This is wrong because the Jacobian is not spread out like this
+                //for(unsigned int jac_count_row = 0; jac_count_row < nsim_targets; ++jac_count_row){
+                //    // Pulling out wrong value from y
+                //    iter_y[jac_count_row] = y[iter_count * nsim_targets + jac_count_row];
+                //    // Fill up mini Jacobian for that iteration 
+                //    for(unsigned int jac_count_col = 0; jac_count_col < nsim_targets; ++jac_count_col){
+                //        // This line is wrong - pulling out wrong element from Jacobian
+                //        jac_element = (iter_count * niter * nsim_targets * nsim_targets) + (iter_count * nsim_targets) + jac_count_row + (jac_count_col * niter * nsim_targets);
+                //        iter_jac[jac_count_row + (jac_count_col * nsim_targets)] = jac[jac_element];
+                //        //Rprintf("jac_count_row: %i jac_count_col: %i jac_element: %i\n", jac_count_row, jac_count_col, jac_element);
+                //    }
+                //}
+                // This is correct
                 for(unsigned int jac_count_row = 0; jac_count_row < nsim_targets; ++jac_count_row){
-                    iter_y[jac_count_row] = y[iter_count * nsim_targets + jac_count_row];
-                    // Fill up mini Jacobian for that iteration 
-                    for(unsigned int jac_count_col = 0; jac_count_col < nsim_targets; ++jac_count_col){
-                        jac_element = (iter_count * niter * nsim_targets * nsim_targets) + (iter_count * nsim_targets) + jac_count_row + (jac_count_col * niter * nsim_targets);
-                        iter_jac[jac_count_row + (jac_count_col * nsim_targets)] = jac[jac_element];
-                    }
+                  unsigned int rowno = (jac_count_row * niter) + iter_count;
+                  iter_y[jac_count_row] = y[jac_count_row * niter + iter_count];
+                  for(unsigned int jac_count_col = 0; jac_count_col < nsim_targets; ++jac_count_col){
+                    unsigned int colno = (jac_count_col * niter) + iter_count;
+                    jac_element = colno * (nsim_targets * niter) + rowno;
+                    iter_jac[jac_count_row + (jac_count_col * nsim_targets)] = jac[jac_element];
+                    //if (nr_count == 1){
+                    //  Rprintf("jac_count_row: %i jac_count_col: %i rowno: %i colno: %i jac_element: %i jacval: %f\n", jac_count_row, jac_count_col, rowno, colno, jac_element, jac[jac_element]);
+                    //}
+                    
+                  }
                 }
-                if(verbose){
-                    Rprintf("Current X:\n");
-                    for(auto x_count = 0; x_count<nsim_targets; ++x_count){
-                        Rprintf("%f\t", indep[x_count + (iter_count * nsim_targets)]);
-                    }
-                    Rprintf("\nCurrent Y:\n");
-                    for(auto y_count = 0; y_count<nsim_targets; ++y_count){
-                        Rprintf("%f\t", iter_y[y_count]);
-                    }
-                    Rprintf("\nJacobian of iter %i:\n", iter_count);
-                    for (auto print_jac_row=0; print_jac_row < nsim_targets; ++print_jac_row){
-                        for (auto print_jac_col=0; print_jac_col < nsim_targets; ++print_jac_col){
-                            Rprintf("%f\t", iter_jac[print_jac_row * nsim_targets + print_jac_col]);
-                        }
-                        Rprintf("\n");
-                    }
+
+                if(verbose) {
+                if(nr_count == 1){
+                  Rprintf("Initial y\n");
+                  for (unsigned int jaclooper = 0; jaclooper < (nsim_targets); ++jaclooper){
+                    Rprintf("%f\t", iter_y[jaclooper]);
+                  }
+                  Rprintf("\nSub Jacobian - initial\n");
+                  for (unsigned int jaclooper = 0; jaclooper < (nsim_targets * nsim_targets); ++jaclooper){
+                    Rprintf("%f\t", iter_jac[jaclooper]);
+                  }
+                  Rprintf("\n");
+                }}
+
+
+
+                if(verbose && iter_count == 0){
+                    //Rprintf("\nCurrent X:\n");
+                    //for(auto x_count = 0; x_count<nsim_targets; ++x_count){
+                    //    Rprintf("%f\t", indep[x_count + (iter_count * nsim_targets)]);
+                    //}
+                    //Rprintf("\nCurrent Y:\n");
+                    //for(auto y_count = 0; y_count<nsim_targets; ++y_count){
+                    //    Rprintf("%f\t", iter_y[y_count]);
+                    //}
+                    //Rprintf("\nJacobian of iter %i:\n", iter_count);
+                    //for (auto print_jac_row=0; print_jac_row < nsim_targets; ++print_jac_row){
+                    //    for (auto print_jac_col=0; print_jac_col < nsim_targets; ++print_jac_col){
+                    //        Rprintf("%f\t", iter_jac[print_jac_row * nsim_targets + print_jac_col]);
+                    //    }
+                    //    Rprintf("\n");
+                    //}
                 }
                 // Solve to get w = f(x0) / f'(x0)
                 // Puts resulting w (delta_indep) into iter_y
-                if(verbose){Rprintf("LU Sove\n");}
+                //if(verbose){Rprintf("LU Sove\n");}
                 // Solve A. X = B for X given B and A
                 // A is n x n, X is n x m, B is n x m
                 // n, m, A, B, X, logdet - result placed in X
                 // Jacobian must be square - i.e no of indeps must equal no. deps
                 CppAD::LuSolve(nsim_targets, nsim_targets, iter_jac, iter_y, iter_y, logdet); 
-                if(verbose){Rprintf("Done LU Solving\n");}
-                if(verbose){
-                    Rprintf("Delta x:\n");
-                    for(auto dx_count = 0; dx_count<nsim_targets; ++dx_count){
-                        Rprintf("%f\t", iter_y[dx_count]);
-                    }
-                    Rprintf("\n");
-                }
+                //if(verbose){Rprintf("Done LU Solving\n");}
+                //if(verbose){
+                //    Rprintf("Delta x:\n");
+                //    for(auto dx_count = 0; dx_count<nsim_targets; ++dx_count){
+                //        Rprintf("%f\t", iter_y[dx_count]);
+                //    }
+                //    Rprintf("\n");
+                //}
                 // Has iter now been solved? If so, set the flag to 1
                 if (euclid_norm(iter_y) < tolerance){
                     //Rprintf("Solved iter\n");
@@ -142,8 +191,10 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
                     fill(iter_y.begin(), iter_y.end(), 0.0);
                 }
                 // put iter_y into delta_indep - needs for loop
+                // This was also wrong - going into wrong place!!!
                 for(unsigned int jac_count = 0; jac_count < nsim_targets; ++jac_count){
-                    delta_indep[iter_count * nsim_targets + jac_count] = iter_y[jac_count];
+                      delta_indep[(jac_count * niter) + iter_count] = iter_y[jac_count];
+                    //delta_indep[iter_count * nsim_targets + jac_count] = iter_y[jac_count];
                 }
             }
         }
@@ -168,7 +219,7 @@ std::vector<int> newton_raphson(std::vector<double>& indep, CppAD::ADFun<double>
             }
         } 
     }
-    if(verbose){Rprintf("Leaving solver after %i iterations.\n\n", nr_count);}
+    if(verbose){Rprintf("\nLeaving solver after %i iterations.\n\n", nr_count);}
     return success_code;
 }
 
