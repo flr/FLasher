@@ -146,8 +146,10 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     stop("minAge and maxAge are needed in control for an 'f' or 'fbar' target.")
 
   # CONVERT F=0 targets to sqrt(.Machine$double.eps) ~ 1.5e-08
-  f0s <- iters(control)[trg$quant %in% c("f","fbar","hr"),,] < sqrt(.Machine$double.eps)
-  iters(control)[f0s] <- sqrt(.Machine$double.eps)
+  ftrs <- trg$quant %in% c("f","fbar","hr")
+  f0s <- !is.na(iters(control)[, "value",]) &
+    iters(control)[, "value",] < sqrt(.Machine$double.eps) * 0.99
+  iters(control)[,"value",][f0s] <- sqrt(.Machine$double.eps) * 0.99
 
   # CONVERT to numeric 'season', 'area', 'unit'
   if (!is.numeric(trg$season))
