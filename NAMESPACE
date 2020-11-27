@@ -4,6 +4,8 @@ import(ggplotFL)
 import(FLFishery)
 importFrom(Rcpp,
   "evalCpp")
+importFrom(rlang,
+  "as_name")
 importFrom(stats,
   "runif",
   "reshape")

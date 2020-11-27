@@ -20,7 +20,8 @@ Depends:
   ggplotFL
 Imports:
   methods,
-  Rcpp (>= 0.12.0)
+  Rcpp (>= 0.12.0),
+  rlang
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Additional_repositories: http://flr-project.org/R
