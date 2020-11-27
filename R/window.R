@@ -6,13 +6,12 @@
 #
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
-## stf(FLStock) {{{
+# stf(FLStock) {{{
 
 #' stf for FLStock
 #' @rdname stf
 #' @examples
 #' data(ple4)
-#'
 #' proj <- stf(ple4, 3)
 
 setMethod('stf', signature(object='FLStock'),
@@ -82,8 +81,8 @@ setMethod('stf', signature(object='FLStock'),
   }
 ) # }}}
 
-## stf(FLBiol) {{{
-#' stf for FLBiol
+# stf(FLBiol) {{{
+
 #' @rdname stf
 setMethod('stf', signature(object='FLBiol'),
   function(object, nyears=3, wts.nyears=3, arith.mean=TRUE, na.rm=TRUE,
@@ -119,3 +118,11 @@ setMethod('stf', signature(object='FLBiol'),
   }
 ) # }}}
 
+# stf(FLStocks) {{{
+
+setMethod("stf", signature(object="FLStocks"),
+  function(object, ... ) {
+    lapply(object, stf, ...)
+  }
+)
+# }}}
