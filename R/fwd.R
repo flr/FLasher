@@ -1,4 +1,4 @@
-# fwd.R - DESC
+# fwd.R - Forecasting the future
 # FLasher/R/fwd.R
 
 # Copyright European Union, 2016
@@ -292,7 +292,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   
   # UPDATE fisheries
   for(i in names(fishery)) {
-
+    
     fsh <- fishery[[i]]
 
     # PROPAGATE effort

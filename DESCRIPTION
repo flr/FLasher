@@ -5,8 +5,8 @@ Description: Projection of future population and fishery dynamics is carried
   using Automatic Differentation (AD), for the levels of effort by fishery
   (fleet) that will result in the required abundances, catches or fishing
   mortalities.
-Version: 0.6.5.9003
-Date: 2020-11-27
+Version: 0.6.5.9004
+Date: 2020-12-02
 Authors@R: c(
 	person(given = 'Iago', family = 'Mosqueira', role = c('aut', 'cre'),
     email = 'iago.mosqueira@wur.nl'),
@@ -51,5 +51,5 @@ VignetteBuilder: knitr
 LazyLoad: Yes
 LazyData: No
 BugReports: https://github.com/flr/FLasher/issues
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Encoding: UTF-8

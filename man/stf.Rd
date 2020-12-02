@@ -56,6 +56,5 @@ Extends the object by a number of years and fill in the life history characteris
 }
 \examples{
 data(ple4)
-
 proj <- stf(ple4, 3)
 }
