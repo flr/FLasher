@@ -50,7 +50,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     function(object, fishery, control, effort_max=rep(100, length(fishery)),
       deviances=residuals, residuals=lapply(lapply(object, spwn),
       "[<-", value=1)) {
-  
+
   # CHECK valid fwdControl
   if(!validObject(control))
     stop("control object is not valid, please check")
@@ -294,25 +294,31 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   for(i in names(fishery)) {
 
     fsh <- fishery[[i]]
+
+    # PROPAGATE effort
+    if(dim(fsh@effort)[6] != length(idn))
+      fsh@effort <- propagate(fsh@effort, length(idn))
     
     # UPDATE effort scaled by capacity
     fsh@effort[,ac(cyrs),,,,idn] <-
       effort(out$om$fisheries[[i]])[, ac(cyrs),,,,idn] /
-      fsh@capacity[,ac(cyrs),,,,idn]
+      iter(fsh@capacity[,ac(cyrs),,,,], idn)
     
     # SET not-run iters, on cyrs, as NA
     if(any(!idn))
       fsh@effort[,ac(cyrs),,,,!idn] <- NA
     
     for(j in names(fsh)) {
-      # UPDATE catches
-
-      fsh[[j]][,ac(cyrs),,,,idn] <- out$om$fisheries[[i]][[j]][,ac(cyrs),,,,]
       
+      # UPDATE catches
+      for(sl in c("landings.n", "discards.n")) {
+        slot(fsh[[j]], sl) <- propagate(slot(fsh[[j]], sl), length(idn))
+        slot(fsh[[j]], sl)[,ac(cyrs),,,,] <-
+          slot(out$om$fisheries[[i]][[j]], sl)[,ac(cyrs),,,,]
       # SET landings.n and discards.n of not-run iters, on cyrs, as NA
-      for(sl in c("landings.n", "discards.n"))
         if(any(!idn))
           slot(fsh[[j]], sl)[,ac(cyrs),,,,!idn] <- NA
+      }
     }
     fishery[[i]] <- fsh
   }
