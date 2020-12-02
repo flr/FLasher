@@ -296,7 +296,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     fsh <- fishery[[i]]
 
     # PROPAGATE effort
-    if(dim(fsh@effort)[6] != length(idn))
+    if(dim(fsh@effort)[6] != dim(effort(out$om$fisheries[[i]]))[6])
       fsh@effort <- propagate(fsh@effort, length(idn))
     
     # UPDATE effort scaled by capacity
@@ -312,6 +312,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
       
       # UPDATE catches
       for(sl in c("landings.n", "discards.n")) {
+        if(dim(slot(fsh[[j]], sl))[6] != dim(slot(out$om$fisheries[[i]][[j]], sl))[6])
         slot(fsh[[j]], sl) <- propagate(slot(fsh[[j]], sl), length(idn))
         slot(fsh[[j]], sl)[,ac(cyrs),,,,] <-
           slot(out$om$fisheries[[i]][[j]], sl)[,ac(cyrs),,,,]
