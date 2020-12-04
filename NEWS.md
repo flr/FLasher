@@ -9,6 +9,9 @@
 
 - Separation of large Jacobian matrix in solver.cpp was operating as in iters
   were organized target first, but they are iter first.
+- Ensure subset of deviances returns an FLQuants.
+- solver.cpp update to work properly with biols and fisheries with multiple
+  iterations.
 
 ## NEW FEATURES
 
