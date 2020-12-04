@@ -117,8 +117,10 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   
   # CONVERT biols to list(list(object, name, params, deviances, mult))
   biolscpp <- lapply(object, function(x) as(iter(x, idn), "list"))
+  
   # SUBSET idn
-  deviances <- iter(deviances, idn)
+  deviances <- iter(FLQuants(deviances), idn)
+  
   # deviances must be same dim 2-5 as the biol
   # ADD deviances
   for(i in names(biolscpp)) {
