@@ -537,27 +537,34 @@ setMethod("compare", signature(result="FLBiol", target="fwdControl"),
 
 # partialF {{{
 
-setMethod("partialF", signature(biols="FLBiols", fisheries="FLFisheries"),
-  function(biols, fisheries, biol=seq(length(biols)), fcb="missing") {
+setMethod("partialF", signature(object="FLBiols", fisheries="FLFisheries"),
+  function(object, fisheries, biol=seq(length(object)), fcb="missing") {
 
     # GUESS FCB if missing
     if(missing(fcb))
-      fcb <- FCB(biols, fisheries)
-
-    # APPLY over biols
-    res <- lapply(setNames(biol, nm=names(biols)[biol]), function(b) {
+      fcb <- FCB(object, fisheries)
+ 
+    # APPLY over object
+    res <- lapply(setNames(biol, nm=names(object)[biol]), function(b) {
       # SUBSET fcb for biol
       idx <- fcb[fcb[, "B"] == b,, drop=FALSE]
       # GET FLCatches for biol
       cas <- mapply(function(x, y) x[[y]], x=fisheries[idx[, "F"]], y=idx[,"C"])
       # calc_F
-      FLQuants(mapply(calc_F, catch=cas, biol=biols(om)[idx[, "B"]],
+      out <- FLQuants(mapply(calc_F, catch=cas, biol=object[idx[, "B"]],
         effort=lapply(fisheries[idx[, "F"]], effort), SIMPLIFY=FALSE))
+      out <- lapply(out, function(x) {
+        units(x) <- "f"
+        return(x)
+        })
       })
 
-    if(length(unique(fcb[,"B"])) == 1)
-      res <- res[[1]]
-
     return(res)
-  })
-# }}}
+  }
+)
+
+setMethod("partialF", signature(object="FLBiol", fisheries="FLFisheries"),
+  function(object, fisheries, ...) {
+    partialF(FLBiols(object), fisheries, ...)[[1]]
+  }
+) # }}}
