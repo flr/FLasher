@@ -771,7 +771,7 @@ void operatingModel::project_biols(const int timestep){
     if(verbose){Rprintf("Getting survivors from previous timestep\n");}
     FLQuantAD surv = survivors(biol_counter, prev_indices_min, prev_indices_max);
     FLQuantAD new_abundance = surv;
-    if(verbose){Rprintf("Age 0 survivors surv 1: %f surv 2: %f\n", Value(surv(1,1,1,1,1,1)), Value(surv(1,1,2,1,1,1)));}
+    // Rprintf("Age 0 survivors surv 1: %f surv 2: %f\n", Value(surv(1,1,1,1,1,1)), Value(surv(1,1,1,1,1,1)));
     if(verbose){Rprintf("Starting to loop over units\n");}
     for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
       if(verbose){Rprintf("Processing survivors in unit: %i\n", ucount);}

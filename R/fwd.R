@@ -50,7 +50,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     function(object, fishery, control, effort_max=rep(100, length(fishery)),
       deviances=residuals, residuals=lapply(lapply(object, spwn),
       "[<-", value=1)) {
-
+  
   # CHECK valid fwdControl
   if(!validObject(control))
     stop("control object is not valid, please check")
@@ -58,6 +58,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # CHECK length and names of biols and deviances
   if(!all.equal(names(object), names(deviances)))
     stop("Names of biols and deviances must match exactly")
+
+  # TODO CHECK iters biols, fisheries, control
   
   # TODO years
   # CHECK for NAs in biol: m, n, wt
@@ -465,7 +467,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
   
   function(object, control, sr, maxF=4, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
-
+    
     # COMPUTE first year and season in control
     fy <- which(ac(control$year[1]) == dimnames(m(object))$year)
     fs <- which(ac(control$season[1]) == dimnames(m(object))$season)
