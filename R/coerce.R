@@ -118,7 +118,7 @@ setAs("FLQuants", "fwdControl",
         iter=seq(its)))
  
       for(i in seq(length(from)))
-        iters[, "value", ] <- from[[i]]
+        iters[i, "value", ] <- from[[i]]
 
       target <- cbind(target, fishery=as.numeric(NA), catch=as.numeric(NA),
         biol=1)
