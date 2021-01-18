@@ -43,3 +43,55 @@ setMethod("plot", signature(x="FLStock", y="fwdControl"),
         fill = fill, alpha=0.1)
   }
 ) # }}}
+
+# plot(FLQuant, fwdControl) {{{
+
+#' @name plot
+#' @examples
+#' plot(ssb(ple4), control)
+
+setMethod("plot", signature(x="FLQuant", y="fwdControl"),
+  function(x, y, fill="#E69F00", ...) {
+
+    yrs <- range(y$year)
+
+    # CREATE standard plot
+    p <- plot(x, ...)
+
+    # GET x variable
+    if(rlang::as_name(p$mapping$x) == "date") {
+      yrs <- range(p$data[with(p$data, year %in% yrs), "date"])
+    }
+
+    p + geom_vline(xintercept=yrs[1], alpha=0.4) +
+      geom_vline(xintercept=yrs[2], alpha=0.2) +
+      annotate("rect", xmin = yrs[1], xmax = yrs[2], ymin = -Inf, ymax = Inf,
+        fill = fill, alpha = 0.1)
+  }
+) # }}}
+
+# plot(FLQuants, fwdControl) {{{
+
+#' @name plot
+#' @examples
+#' plot(FLQuants(SSB=ssb(ple4), F=fbar(ple4)), control)
+
+setMethod("plot", signature(x="FLQuants", y="fwdControl"),
+  function(x, y, fill="#E69F00", ...) {
+
+    yrs <- range(y$year)
+
+    # CREATE standard plot
+    p <- plot(x, ...)
+
+    # GET x variable
+    if(rlang::as_name(p$mapping$x) == "date") {
+      yrs <- range(p$data[with(p$data, year %in% yrs), "date"])
+    }
+
+    p + geom_vline(xintercept=yrs[1], alpha=0.4) +
+      geom_vline(xintercept=yrs[2], alpha=0.2) +
+      annotate("rect", xmin = yrs[1], xmax = yrs[2], ymin = -Inf, ymax = Inf,
+        fill = fill, alpha = 0.1)
+  }
+) # }}}
