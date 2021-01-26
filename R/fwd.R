@@ -557,8 +557,9 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
       control@target$year, function(x) any(c("f", "fbar") %in% x$quant))
 
     yrs <- names(idx)[!idx]
+    iseas <- length(unique(control$season)) > 1
     
-    if(length(yrs) > 0 & !is.null(maxF)) {
+    if(length(yrs) > 0 & !is.null(maxF) & !iseas) {
 
       # MERGE controls
       maxFc <- fwdControl(year=yrs, quant="fbar", min=0, max=maxF, biol=1)
