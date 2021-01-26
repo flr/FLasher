@@ -413,6 +413,7 @@ setMethod("compare", signature(result="FLStock", target="fwdControl"),
     # EXTRACT quants and years
     quants <- as.character(target(target)[, c("quant")])
     years <- target(target)[, c("year")]
+    seasons <- target(target)[, c("season")]
     
     # GET output values
     values <- iters(target)[, "value",]
@@ -434,15 +435,15 @@ setMethod("compare", signature(result="FLStock", target="fwdControl"),
     }
 
     # COMPUTE results by year
-    res <- mapply(function(x, y) do.call(x, list(result))[, ac(y)],
-      quants, years, SIMPLIFY=FALSE)
+    res <- mapply(function(x, y, z) do.call(x, list(result))[, ac(y), , ac(z)],
+      quants, years, seasons, SIMPLIFY=FALSE)
       
     # COMPARE value
     out[, "achieved"] <- mapply(function(x, y) isTRUE(all.equal(x, y)),
       unname(split(unname(values), row(as.matrix(values)))), unname(lapply(res, c)))
 
     # COMPARE limits
-    idx <- is.na(iters(target)[,"value",])
+    idx <- is.na(iters(target)[, "value",])
     if(any(idx)) {
       mins <- iters(target)[, "min",]
       maxs <- iters(target)[, "max",]
