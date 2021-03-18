@@ -429,8 +429,10 @@ setMethod("compare", signature(result="FLStock", target="fwdControl"),
     # IDENTIFY relative targets
     idx <- !is.na(relyears)
 
+    # DEBUG relYear with min/max fails
     if(any(idx)) {
-      values[idx] <- mapply(function(x, y) do.call(x, list(result))[, ac(y)],
+      values[idx] <- mapply(function(x, y)
+        do.call(x, list(result))[, ac(y)],
         quants[idx], relyears[idx], SIMPLIFY=FALSE)
     }
 
