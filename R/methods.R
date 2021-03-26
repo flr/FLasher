@@ -515,6 +515,10 @@ setMethod("compare", signature(result="FLBiol", target="fwdControl"),
 
 # partialF {{{
 
+#' @rdname partialF
+#' @param biol Position of the biols or biols to do the calculation for.
+#' @param fcb FCB matrix of the fishery-catch-biol relationships.
+
 setMethod("partialF", signature(object="FLBiols", fisheries="FLFisheries"),
   function(object, fisheries, biol=seq(length(object)), fcb="missing") {
 
@@ -541,8 +545,10 @@ setMethod("partialF", signature(object="FLBiols", fisheries="FLFisheries"),
   }
 )
 
+#' @rdname partialF
+
 setMethod("partialF", signature(object="FLBiol", fisheries="FLFisheries"),
-  function(object, fisheries, ...) {
-    partialF(FLBiols(object), fisheries, ...)[[1]]
+  function(object, fisheries, fcb="missing") {
+    partialF(FLBiols(object), fisheries, fcb=fcb)[[1]]
   }
 ) # }}}

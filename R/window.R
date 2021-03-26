@@ -84,6 +84,7 @@ setMethod('stf', signature(object='FLStock'),
 # stf(FLBiol) {{{
 
 #' @rdname stf
+
 setMethod('stf', signature(object='FLBiol'),
   function(object, nyears=3, wts.nyears=3, arith.mean=TRUE, na.rm=TRUE,
     end=dims(object)$maxyear + nyears)
@@ -119,6 +120,8 @@ setMethod('stf', signature(object='FLBiol'),
 ) # }}}
 
 # stf(FLStocks) {{{
+
+#' @rdname stf
 
 setMethod("stf", signature(object="FLStocks"),
   function(object, ... ) {

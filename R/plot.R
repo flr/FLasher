@@ -8,9 +8,9 @@
 
 # plot(FLStock, fwdControl) {{{
 
-#' plot method for FLStock, fwdControl
+#' plot methods that highlight years in fwdControl
 #'
-#' @name plot
+#' @rdname plot
 #' @aliases plot,FLStock,fwdControl-method
 #' @docType methods
 #' @section Generic function: plot(x, y)
@@ -46,7 +46,7 @@ setMethod("plot", signature(x="FLStock", y="fwdControl"),
 
 # plot(FLQuant, fwdControl) {{{
 
-#' @name plot
+#' @rdname plot
 #' @examples
 #' plot(ssb(ple4), control)
 
@@ -72,7 +72,7 @@ setMethod("plot", signature(x="FLQuant", y="fwdControl"),
 
 # plot(FLQuants, fwdControl) {{{
 
-#' @name plot
+#' @rdname plot
 #' @examples
 #' plot(FLQuants(SSB=ssb(ple4), F=fbar(ple4)), control)
 
@@ -100,14 +100,7 @@ setMethod("plot", signature(x="FLQuants", y="fwdControl"),
 
 #' plot method for FLStocks, fwdControl
 #'
-#' @name plot
-#' @aliases plot,FLStocks,fwdControl-method
-#' @docType methods
-#' @section Generic function: plot(x, y)
-#' @param x FlStocks object to plot
-#' @param y fwdControl from which to extract year ranges
-#' @param fill Colour to fill projection years background
-#' @param ... Any other argument to be passed to [ggplotFL::plot]
+#' @rdname plot
 #' @examples
 #' data(ple4)
 #' control <- fwdControl(year=2008:2017, quant="f", value=0.3)

@@ -97,4 +97,13 @@ setGeneric("FCB", function(object, ...) standardGeneric("FCB"))
 
 setGeneric("FCB<-", function(object, ..., value) standardGeneric("FCB<-"))
 
+#' Calculation of fisheries partial fishing mortalities
+#'
+#' Fishing mortalities at age for one of both stock (`FLBiol`) are partitioned
+#' along the fisheries (`FLFisheries`) exploiting them.
+#' @param object The exploited population or populations, `FLBiol` or `FLBiols`.
+#' @param fisheries The fisheries exploiting the resource, `FLFisheries`.
+#' @param ... Any extra argument.
+#' @rdname partialF
+
 setGeneric("partialF", function(object, fisheries, ...) standardGeneric("partialF"))

@@ -293,6 +293,19 @@ setMethod('fwdControl', signature(target='FLQuant', iters='missing'),
 
 # FCB {{{
 
+#' Matrix of Fishery - Catch - Biol relationships
+#'
+#' The relationships between a fishery, its catch elements and the biological
+#' populations that catch is taken from, is part of the `fwdControl` class. When
+#' a single `FLBiol` and `FLFishery`, or just an `FLStock`, are projected
+#' forward, this structure is constructed on the fly. Even when multiple biols
+#' and fisheries are used, a guess is made based on name matching.
+#'
+#' But when a more complex structure is employed, the `FCB` matrix can be given
+#' to the `fwdControl()` constructor method. Elements in this matrix can be
+#' names or numbers.
+#' @param object A list or vector containing a row for the matrix.
+#' @param ... Further vectors to be merged into the matrix.
 #' @rdname FCB
 #' @examples
 #' # 1 fishery with catches from 2 biols
@@ -339,11 +352,19 @@ setMethod("FCB", signature(object="missing"),
   }
 ) 
 
+#' @rdname FCB
+#' @details If `FLBiols` and `FLFisheries` objects are passed to `FCB`, a guess is made
+#' at constructing the matrix based on the names of the various list elements.
+#' @param fisheries An `FLFisheries` object to extract fishery and catch names from.
+
 setMethod("FCB", signature(object="FLBiols"),
   function(object, fisheries) {
     return(FCB(fcb2int(guessfcb(object, fisheries), object, fisheries)))
   }
 )
+
+#' @rdname FCB
+#' @param biols An `FLBiols` object to match with `FLCatch` elements in `object`.
 
 setMethod("FCB", signature(object="FLFisheries"),
   function(object, biols) {
