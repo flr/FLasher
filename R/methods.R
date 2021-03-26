@@ -335,31 +335,6 @@ setMethod("summary", signature(object="fwdControl"),
   }
 ) # }}}
 
-# targets {{{
-ssb_end <- function(x) {
-  m.spwn(x) <- 1
-  harvest.spwn(x) <- 1
-  return(ssb(x))
-}
-
-ssb_start <- function(x) {
-  m.spwn(x) <- 0
-  harvest.spwn(x) <- 0
-  return(ssb(x))
-}
-
-biomass_end <- function(x) {
-  m.spwn(x) <- 1
-  harvest.spwn(x) <- 1
-	return(quantSums(stock.n(x) * exp(-(harvest(x) *
-    harvest.spwn(x) + m(x) * m.spwn(x))) * stock.wt(x)))
-  }
-
-biomass_spawn <- function(x) {
-	return(quantSums(stock.n(x) * exp(-(harvest(x) *
-    harvest.spwn(x) + m(x) * m.spwn(x))) * stock.wt(x)))
-  } # }}}
-
 # compare {{{
 
 #' Compare the result of a `fwd()` run with the defined targets.
