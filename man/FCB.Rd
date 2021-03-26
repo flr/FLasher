@@ -7,6 +7,8 @@
 \alias{FCB<-,fwdControl,matrix-method}
 \alias{FCB,ANY-method}
 \alias{FCB,missing-method}
+\alias{FCB,FLBiols-method}
+\alias{FCB,FLFisheries-method}
 \title{Create and extract the FCB slot in fwdControl}
 \usage{
 FCB(object, ...)
@@ -20,22 +22,43 @@ FCB(object, ...) <- value
 \S4method{FCB}{ANY}(object, ...)
 
 \S4method{FCB}{missing}(object, ...)
+
+\S4method{FCB}{FLBiols}(object, fisheries)
+
+\S4method{FCB}{FLFisheries}(object, biols)
 }
 \arguments{
-\item{object}{Input object to construct or extract from.}
+\item{object}{A list or vector containing a row for the matrix.}
 
-\item{...}{Extract input arguments}
+\item{...}{Further vectors to be merged into the matrix.}
 
 \item{value}{Input matrix}
+
+\item{fisheries}{An `FLFisheries` object to extract fishery and catch names from.}
+
+\item{biols}{An `FLBiols` object to match with `FLCatch` elements in `object`.}
 }
 \description{
 The FCB slot in fwdControl specifies the relationships between the catches
 ('C') taken by each fishery ('F') from different biological units ('B').
+
+The relationships between a fishery, its catch elements and the biological
+populations that catch is taken from, is part of the `fwdControl` class. When
+a single `FLBiol` and `FLFishery`, or just an `FLStock`, are projected
+forward, this structure is constructed on the fly. Even when multiple biols
+and fisheries are used, a guess is made based on name matching.
 }
 \details{
 This slot is of class *matrix* and has thre columns, named 'F', 'C' and 'B',
 and as many rows as relationships between the FLBiol(s) and FLFishery(ies)
 objects the fwdControl refers to.
+
+But when a more complex structure is employed, the `FCB` matrix can be given
+to the `fwdControl()` constructor method. Elements in this matrix can be
+names or numbers.
+
+If `FLBiols` and `FLFisheries` objects are passed to `FCB`, a guess is made
+at constructing the matrix based on the names of the various list elements.
 }
 \examples{
 control <- fwdControl()

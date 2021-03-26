@@ -4,6 +4,7 @@
 \alias{stf}
 \alias{stf,FLStock-method}
 \alias{stf,FLBiol-method}
+\alias{stf,FLStocks-method}
 \title{Prepare object for future projection}
 \usage{
 stf(object, ...)
@@ -28,6 +29,8 @@ stf(object, ...)
   na.rm = TRUE,
   end = dims(object)$maxyear + nyears
 )
+
+\S4method{stf}{FLStocks}(object, ...)
 }
 \arguments{
 \item{object}{The object (FLStock or FLBiol)}
