@@ -1,6 +1,9 @@
 useDynLib(FLasher)
 import(FLCore)
 import(ggplotFL)
+importFrom(ggplot2,
+  "geom_vline",
+  "annotate")
 import(FLFishery)
 importFrom(Rcpp,
   "evalCpp")
@@ -8,7 +11,8 @@ importFrom(rlang,
   "as_name")
 importFrom(stats,
   "runif",
-  "reshape")
+  "reshape",
+  "setNames")
 importFrom(utils,
   "data")
 importFrom(methods,
@@ -26,8 +30,10 @@ importFrom(graphics,
   "text")
 importFrom(stats,
   "mad")
+
 exportClasses(
 	"fwdControl")
+
 export(
   "G",
   "get_FLQuant_element",
@@ -44,6 +50,7 @@ export(
   "random_fwdBiols_list_generator",
   "random_fwdControl_generator"
 )
+
 exportMethods(
   "[",
   "[<-",

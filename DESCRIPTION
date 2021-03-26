@@ -21,7 +21,8 @@ Depends:
 Imports:
   methods,
   Rcpp (>= 0.12.0),
-  rlang
+  rlang,
+  ggplot2
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Additional_repositories: http://flr-project.org/R
