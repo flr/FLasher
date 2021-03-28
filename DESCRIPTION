@@ -49,8 +49,9 @@ Collate:
   plot.R
 License: EUPL
 VignetteBuilder: knitr
-LazyLoad: Yes
 LazyData: No
+NeedsCompilation: Yes
+Biarch: FALSE  
 BugReports: https://github.com/flr/FLasher/issues
 RoxygenNote: 7.1.1
 Encoding: UTF-8
