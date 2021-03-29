@@ -58,7 +58,7 @@ NULL
 
 setAs("FLQuants", "fwdControl",
   function(from) {
-    
+
     # GET 'quant'
     qua <- quant(from[[1]])
     qdnms <- dimnames(from[[1]])[qua]
@@ -116,10 +116,17 @@ setAs("FLQuants", "fwdControl",
       iters <- array(NA, dim=c(dim(target)[1], 3, its),
         dimnames=list(seq(dim(target)[1]), c("min", "value", "max"), 
         iter=seq(its)))
- 
-      for(i in seq(length(from)))
-        iters[i, "value", ] <- from[[i]]
 
+      # RESHAPE to assign from df
+      iters <- aperm(iters, c(3,1,2))
+      iters[, , "value"] <- df$value
+      if("min" %in% colnames(df))
+        iters[, , "min"] <- df$min
+      if("max" %in% colnames(df))
+        iters[, , "max"] <- df$max
+      iters <- aperm(iters, c(2,3,1))
+
+      # ADD fishery, catch and biol indices
       target <- cbind(target, fishery=as.numeric(NA), catch=as.numeric(NA),
         biol=1)
 			
