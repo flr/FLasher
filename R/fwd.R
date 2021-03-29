@@ -480,15 +480,12 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     }
 
     # CHECK for NAs in stock: m, stock.n, stock.wt in first year and season
-    snas <- verify(object[,fy,,fs],
-      rules=NULL, m=~!is.na(m), stock.n=~!is.na(stock.n),
-      stock.wt=~!is.na(stock.wt), report=FALSE)
+    snas <- verify(object[,fy,,fs], rules=NULL, report=FALSE,
+      m=~!is.na(m), stock.n=~!is.na(stock.n), stock.wt=~!is.na(stock.wt))
 
     if(!all(snas))
       stop(paste("NAs present in the 'm', 'stock.n' or 'stock.wt' slots,
         year:", fy, ", season:", fs))
-
-    # TODO CHECK and CORRECT for missing discards ratio info
 
     # DEAL with iters
     its <- max(dims(object)$iter, dim(iters(control))[3])
@@ -501,6 +498,14 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     miny <- min(control@target$year)
     maxy <- max(control@target$year)
     pyrs <- as.character(seq(miny, maxy))
+
+    # CHECK for missing discards ratio info
+    dnas <- verify(object[,pyrs,,], report=FALSE,
+      rules=list(discards.n=~!is.na(discards.n), discards.wt=~!is.na(discards.wt)))
+
+    if(!all(dnas))
+      stop(paste("NAs present in the 'discards.n' or 'discards.wt' slots in
+        projection years. Cannot compute discards ratio. Set to 0 if none exist."))
 
     # COERCE to FLBiols
     B <- as(object, "FLBiol")
