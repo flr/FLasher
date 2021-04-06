@@ -788,7 +788,7 @@ void operatingModel::project_biols(const int timestep){
         }
       }
       // Update biol with survivors
-      if(verbose){Rprintf("Update abdundance with new abundance\n");}
+      if(verbose){Rprintf("Update abundance with new abundance\n");}
       for (unsigned int icount = 1; icount <= niter; ++icount){
         for (unsigned int qcount = 1; qcount <= biol_dim[0]; ++qcount){
           biols(biol_counter).n(qcount, year, ucount, season, area, icount) = new_abundance(qcount, 1, ucount, 1, 1, icount);
