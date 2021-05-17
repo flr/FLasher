@@ -117,19 +117,20 @@ setAs("FLQuants", "fwdControl",
 		} else {
 
 			target <- cbind(df[df$iter == df$iter[1],][,c('year', 'quant')])
-			
+	
+      # ARRAY iters [targets, 3, iters]    
       iters <- array(NA, dim=c(dim(target)[1], 3, its),
         dimnames=list(seq(dim(target)[1]), c("min", "value", "max"), 
         iter=seq(its)))
       
       # RESHAPE to assign from df
-      iters <- aperm(iters, c(1,3,2))
+      iters <- aperm(iters, c(3,1,2))
       iters[, , "value"] <- df$value
       if("min" %in% colnames(df))
         iters[, , "min"] <- df$min
       if("max" %in% colnames(df))
         iters[, , "max"] <- df$max
-      iters <- aperm(iters, c(1,3,2))
+      iters <- aperm(iters, c(2,3,1))
 
       # ADD fishery, catch and biol indices
       target <- cbind(target, fishery=as.numeric(NA), catch=as.numeric(NA),

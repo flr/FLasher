@@ -87,8 +87,8 @@ setMethod('stf', signature(object='FLStock'),
 
 setMethod('stf', signature(object='FLBiol'),
   function(object, nyears=3, wts.nyears=3, arith.mean=TRUE, na.rm=TRUE,
-    end=dims(object)$maxyear + nyears)
-  {
+    end=dims(object)$maxyear + nyears) {
+
     dims <- dims(object)
     
     # check nyears and end match
@@ -112,7 +112,7 @@ setMethod('stf', signature(object='FLBiol'),
 
     # average slots
     # *.wt, mat, m and *.spwn as average over wts.years
-    for (i in c('wt', 'fec', 'm', 'spwn'))
+    for (i in c('wt', 'm', 'spwn'))
       slot(res, i)[,years] <- apply(slot(res, i)[,wts.years], c(1,3:6), fmean, na.rm=TRUE)
     
     return(res)

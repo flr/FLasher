@@ -48,7 +48,8 @@ export(
   "random_FLFishery_generator",
   "random_FLFisheries_generator",
   "random_fwdBiols_list_generator",
-  "random_fwdControl_generator"
+  "random_fwdControl_generator",
+  "ssb_flash"
 )
 
 exportMethods(

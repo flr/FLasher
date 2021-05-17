@@ -466,7 +466,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
   function(object, control, sr, maxF=4, deviances=residuals,
-    residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
+    residuals=FLQuant(1, dimnames=dimnames(rec(object))), quiet=FALSE, ...) {  
     
     # COMPUTE first year and season in control
     fy <- which(ac(control$year[1]) == dimnames(m(object))$year)
@@ -593,6 +593,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     control@target[,"minAge"] <- ifelse(
       is.na(control@target[,"minAge"]) & (control@target[,"quant"] %in% age_range_targets),
         range(object, "minfbar"), control@target[,"minAge"])
+
     control@target[,"maxAge"] <- ifelse(
       is.na(control@target[,"maxAge"]) & (control@target[,"quant"] %in% age_range_targets),
         range(object, "maxfbar"), control@target[,"maxAge"])
@@ -660,7 +661,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     object@stock <- quantSums(object@stock.n * object@stock.wt)
 
     # WARN if any solver_codes is not 1
-    if(any(c(out$flag) != 1)) {
+    if(!quiet & any(c(out$flag) != 1)) {
       warning("Solver returned some unsolved targets.")
     }
 

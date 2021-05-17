@@ -151,8 +151,10 @@ setMethod("[<-", signature(x="fwdControl", value="ANY"),
 setMethod("$", signature(x="fwdControl"),
   function(x, name) {
 
-    if(name %in% c("min", "value", "max"))
-      return(x@iters[,name,])
+    if(name %in% c("min", "value", "max")) {
+      res <- x@iters[, name, ]
+      return(c(res[!is.na(c(res))]))
+    }
     else
       return(x@target[,name])
   }
@@ -410,10 +412,10 @@ setMethod("compare", signature(result="FLStock", target="fwdControl"),
         do.call(x, list(result))[, ac(y)],
         quants[idx], relyears[idx], SIMPLIFY=FALSE)
     }
-
+    
     # COMPUTE results by year
-    res <- mapply(function(x, y, z) do.call(x, list(result))[, ac(y), , ac(z)],
-      quants, years, seasons, SIMPLIFY=FALSE)
+    res <- Map(function(x, y, z) do.call(x, list(result))[, ac(y), , ac(z)],
+      quants, years, seasons)
       
     # COMPARE value
     out[, "achieved"] <- mapply(function(x, y) isTRUE(all.equal(x, y)),
@@ -552,3 +554,10 @@ setMethod("partialF", signature(object="FLBiol", fisheries="FLFisheries"),
     partialF(FLBiols(object), fisheries, fcb=fcb)[[1]]
   }
 ) # }}}
+
+# ssb_flash {{{
+ssb_flash <- function(x) {
+  # Works only if mat[1] = 0
+  stock.n(x)[] <- survivors(x)
+  ssb(x)
+} # }}}
