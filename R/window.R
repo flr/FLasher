@@ -54,7 +54,7 @@ setMethod('stf', signature(object='FLStock'),
     # landings.n and discards.n as proportions of wts.years
     for (i in years) {
       slot(res, 'discards.n')[,i] <- apply(slot(res, 'discards.n')[, disc.years] /
-        slot(res, 'catch.n')[, disc.years], c(1,3:6), mean)
+        slot(res, 'catch.n')[, disc.years], c(1,3:6), mean, na.rm=na.rm)
     }
     slot(res, 'landings.n')[,years] <- 1 - slot(res, 'discards.n')[,years]
 
