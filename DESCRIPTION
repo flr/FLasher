@@ -27,9 +27,10 @@ LinkingTo: Rcpp
 SystemRequirements: C++11
 Additional_repositories: http://flr-project.org/R
 Suggests:
-    testthat,
-    knitr,
-    covr
+  testthat,
+  knitr,
+  rmarkdown,
+  covr
 Collate:
   classes.R
   generics.R

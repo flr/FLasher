@@ -51,6 +51,7 @@
   maxF = 4,
   deviances = residuals,
   residuals = FLQuant(1, dimnames = dimnames(rec(object))),
+  quiet = FALSE,
   ...
 )
 
