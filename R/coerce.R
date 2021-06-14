@@ -64,7 +64,8 @@ NULL
 setAs("FLQuants", "fwdControl",
   function(from) {
     
-    # GET 'quant'
+    # GET 'quant' and dims
+
     qua <- quant(from[[1]])
     qdnms <- dimnames(from[[1]])[qua]
     itsq <- lapply(from, function(x) prod(dim(x[1,])[c(1,6)]))
@@ -124,13 +125,13 @@ setAs("FLQuants", "fwdControl",
         iter=seq(its)))
       
       # RESHAPE to assign from df
-      iters <- aperm(iters, c(3,1,2))
-      iters[, , "value"] <- df$value
+      # iters <- aperm(iters, c(3,1,2))
+      iters[, "value", ] <- df$value
       if("min" %in% colnames(df))
-        iters[, , "min"] <- df$min
+        iters[, "min", ] <- df$min
       if("max" %in% colnames(df))
-        iters[, , "max"] <- df$max
-      iters <- aperm(iters, c(2,3,1))
+        iters[, "max", ] <- df$max
+      # iters <- aperm(iters, c(2,3,1))
 
       # ADD fishery, catch and biol indices
       target <- cbind(target, fishery=as.numeric(NA), catch=as.numeric(NA),
@@ -149,3 +150,18 @@ setAs("FLBiol", "list",
       srr_deviances = FLQuant(),
       srr_deviances_mult = TRUE)
   }) # }}}
+
+# fwdControl -> FLQuant {{{
+
+setAs("fwdControl", "FLQuant",
+  function(from) {
+
+    # GET dimnames
+    dmns <- list(quant=ac(from$quant), year=from$year, season=from$season,
+    unit=from$unit, area=ifelse(is.na(from$fishery), "unique", from$fishery),
+    iter=seq(dim(iters(from))[3]))
+
+    return(FLQuant(from$value, dimnames=dmns))
+  }
+)
+# }}}
