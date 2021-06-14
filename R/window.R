@@ -52,10 +52,12 @@ setMethod('stf', signature(object='FLStock'),
       }
 
     # landings.n and discards.n as proportions of wts.years
-    for (i in years) {
-      slot(res, 'discards.n')[,i] <- apply(slot(res, 'discards.n')[, disc.years] /
-        slot(res, 'catch.n')[, disc.years], c(1,3:6), mean, na.rm=na.rm)
-    }
+
+    discards.n(res)[, years] <- apply(discards.n(res)[, disc.years] /
+      catch.n(res)[, disc.years], c(1,3:6), mean, na.rm=na.rm)
+    
+    discards.n(res)[, years][is.na(discards.n(res)[, years])] <- 0
+
     slot(res, 'landings.n')[,years] <- 1 - slot(res, 'discards.n')[,years]
 
     # harvest as mean over fbar.nyears
