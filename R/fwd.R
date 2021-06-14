@@ -31,7 +31,7 @@
 #' @param maxF Maximum yearly fishing mortality, when called on an FLStock object.
 #' @param deviances An FLQuant of deviances for the stock recruitment relationship (if object is an FLStock).
 #' @param residuals Old argument name for deviances, to be deleted
-#' @param sr a predictModel, FLSr or list that describes the stock recruitment relationship (if object is an FLStock).
+#' @param sr a predictModel, FLSR or list that describes the stock recruitment relationship (if object is an FLStock). Also an FLQuant with actual recruitment values.
 #' @param ... Stormbending.
 #'
 #' @return Either an FLStock, or a list of FLFishery and FLBiol objects.
@@ -462,6 +462,12 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 
 #' @rdname fwd-methods
 #' @aliases fwd,FLStock,missing,fwdControl-method
+#' @examples
+#' data(ple4)
+#' hind <- fwd(ple4, sr=rec(ple4)[, ac(1980:2017)],
+#'   control=fwdControl(year=1980:2017, value=fbar(ple4)[, ac(1980:2017)],
+#'   quant="fbar"))
+
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
@@ -514,6 +520,10 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # predictModel
     if(is(sr, "predictModel")) {
       rec(B) <- sr
+    # FLQuant
+    } else if(is(sr, "FLQuant")){
+      rec(B) <- predictModel(model=rec~a, params=FLPar(c(sr),
+        dimnames=list(params="a", year=dimnames(sr)$year, iter=dimnames(sr)$iter)))
     # FLSR
     } else if(is(sr, "FLSR")){
       rec(B) <- predictModel(model=model(sr), params=params(sr))
