@@ -5,6 +5,9 @@
 - Minimum value for 'f' or 'fbar' targets has been set at
   sqrt(.Machine$double.eps) ~ 1.5e-08.
 
+- Added sr as FLQuant argument to fwd(FLStock). The vector by year is converted
+  into a predictModel with rec~a and a yearly value for a.
+
 ## BUG FIXES
 
 - Separation of large Jacobian matrix in solver.cpp was operating as in iters
@@ -12,6 +15,8 @@
 - Ensure subset of deviances returns an FLQuants.
 - solver.cpp update to work properly with biols and fisheries with multiple
   iterations.
+- Bug in coertion of FLQuants with iters to fwdControl.
+
 
 ## NEW FEATURES
 

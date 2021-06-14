@@ -80,7 +80,7 @@
 
 \item{...}{Stormbending.}
 
-\item{sr}{a predictModel, FLSr or list that describes the stock recruitment relationship (if object is an FLStock).}
+\item{sr}{a predictModel, FLSR or list that describes the stock recruitment relationship (if object is an FLStock). Also an FLQuant with actual recruitment values.}
 
 \item{maxF}{Maximum yearly fishing mortality, when called on an FLStock object.}
 }
@@ -104,6 +104,16 @@ targets specified in the fwdControl object are hit.
 
 For more details and examples, see the vignettes in the package and also the
 tutorial at: http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html
+}
+\examples{
+data(ple4)
+# Hindcast with past rec and catch
+hind <- fwd(ple4, sr=rec(ple4)[, ac(1980:2017)],
+  control=fwdControl(year=1980:2017, value=fbar(ple4)[, ac(1980:2017)],
+  quant="fbar"))
+#' Hindcast with past rec and catch
+hind <- fwd(ple4, sr=rec(ple4)[, ac(1980:2017)],
+  catch=catch(ple4)[, ac(1980:2017)])
 }
 \seealso{
 \link{FLComp}

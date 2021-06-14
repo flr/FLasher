@@ -464,6 +464,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 #' @aliases fwd,FLStock,missing,fwdControl-method
 #' @examples
 #' data(ple4)
+#' # Hindcast with past rec and catch
 #' hind <- fwd(ple4, sr=rec(ple4)[, ac(1980:2017)],
 #'   control=fwdControl(year=1980:2017, value=fbar(ple4)[, ac(1980:2017)],
 #'   quant="fbar"))
@@ -683,6 +684,11 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 
 #' @rdname fwd-methods
 #' @aliases fwd,FLStock,missing,missing-method
+#' @examples
+#' #' Hindcast with past rec and catch
+#' hind <- fwd(ple4, sr=rec(ple4)[, ac(1980:2017)],
+#'   catch=catch(ple4)[, ac(1980:2017)])
+
 setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
   function(object, fishery=missing, sr, maxF=4, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
