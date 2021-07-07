@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.6</span>
       </span>
     </div>
 
@@ -79,7 +79,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -108,7 +108,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/flr/FLasher/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -129,12 +129,43 @@
       <small>Source: <a href='https://github.com/flr/FLasher/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="flasher-061" class="section level1">
-<h1 class="page-header" data-toc-text="0.6.1">
-<a href="#flasher-061" class="anchor"></a>FLasher 0.6.1</h1>
+    <div id="flasher-066" class="section level1">
+<h1 class="page-header" data-toc-text="0.6.6">
+<a href="#flasher-066" class="anchor"></a>FLasher 0.6.6</h1>
+<div id="user-visible-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#user-visible-changes" class="anchor"></a>USER-VISIBLE CHANGES</h2>
+<ul>
+<li><p>Minimum value for ‘f’ or ‘fbar’ targets has been set at sqrt(.Machine$double.eps) ~ 1.5e-08.</p></li>
+<li><p>Added sr as FLQuant argument to fwd(FLStock). The vector by year is converted into a predictModel with rec~a and a yearly value for a.</p></li>
+</ul>
+</div>
+<div id="bug-fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes" class="anchor"></a>BUG FIXES</h2>
+<ul>
+<li>Separation of large Jacobian matrix in solver.cpp was operating as in iters were organized target first, but they are iter first.</li>
+<li>Ensure subset of deviances returns an FLQuants.</li>
+<li>solver.cpp update to work properly with biols and fisheries with multiple iterations.</li>
+<li>Bug in coertion of FLQuants with iters to fwdControl.</li>
+</ul>
+</div>
 <div id="new-features" class="section level2">
 <h2 class="hasAnchor">
 <a href="#new-features" class="anchor"></a>NEW FEATURES</h2>
+<ul>
+<li>FCB(FLBiols, FLFisheries) method class guessfcb and fcb2nit to return a guess for FCB.</li>
+<li>stf(FLStocks) simply calls lapply, uses same settings on all elements.</li>
+<li>partialF method returns the partial Fs by fleet for each FLBiol.</li>
+</ul>
+</div>
+</div>
+    <div id="flasher-061" class="section level1">
+<h1 class="page-header" data-toc-text="0.6.1">
+<a href="#flasher-061" class="anchor"></a>FLasher 0.6.1</h1>
+<div id="new-features-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#new-features-1" class="anchor"></a>NEW FEATURES</h2>
 <ul>
 <li>
 <p>fwdControl(FLQuant) also accepts extra target arguments (e.g. relYear).</p>
@@ -142,18 +173,18 @@
 </li>
 </ul>
 </div>
-<div id="new-features-1" class="section level2">
+<div id="new-features-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-features-1" class="anchor"></a>NEW FEATURES</h2>
+<a href="#new-features-2" class="anchor"></a>NEW FEATURES</h2>
 <ul>
 <li>compare() method draws a comparison between targets in a fwdControl object and the results returned. Available for FLStock at this moment.</li>
 <li>maxF argument to fwd(FLStock) is implemented through an additional target per timestep with max(fbar) = maxF, rather than by an indirect limit of the effort calculation. It bis not applied for steps with an f/fbar target.</li>
 <li>Functions are now available for the corresponding ssb and biomass targets used by fwdControl: ssb_end, biomass_end and biomass_spawn</li>
 </ul>
 </div>
-<div id="bug-fixes" class="section level2">
+<div id="bug-fixes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes" class="anchor"></a>BUG FIXES</h2>
+<a href="#bug-fixes-1" class="anchor"></a>BUG FIXES</h2>
 <ul>
 <li>Calculation of survivors for stocks/biols with age=0 was not correct.</li>
 </ul>
@@ -162,9 +193,9 @@
     <div id="flasher-050" class="section level1">
 <h1 class="page-header" data-toc-text="0.5.0">
 <a href="#flasher-050" class="anchor"></a>FLasher 0.5.0</h1>
-<div id="new-features-2" class="section level2">
+<div id="new-features-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-features-2" class="anchor"></a>NEW FEATURES</h2>
+<a href="#new-features-3" class="anchor"></a>NEW FEATURES</h2>
 <ul>
 <li>effort_max argument to fwd() set a maximum valuw for effort. Similar to FLash::maxF, as scale of effort values in fwd(FLStock) is set by fbar.</li>
 <li>Certain slots in FLStock are checked for NAs in year before projection to avoid R crashing.</li>
@@ -172,16 +203,16 @@
 <li>Projections are now correct for multiple units, either sex or birth seasons.</li>
 </ul>
 </div>
-<div id="user-visible-changes" class="section level2">
+<div id="user-visible-changes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#user-visible-changes" class="anchor"></a>USER-VISIBLE CHANGES</h2>
+<a href="#user-visible-changes-1" class="anchor"></a>USER-VISIBLE CHANGES</h2>
 <ul>
 <li>The residuals argument to fwd() is now called ‘deviances’, and this name is used in all R and C++ code. ‘residuals’ is still accepted, but will be deprecated in the next minor version.</li>
 </ul>
 </div>
-<div id="bug-fixes-1" class="section level2">
+<div id="bug-fixes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-1" class="anchor"></a>BUG FIXES</h2>
+<a href="#bug-fixes-2" class="anchor"></a>BUG FIXES</h2>
 <ul>
 <li>SRR predictions now work correctly for 2-sex OMs (FLStock or FLBiol).</li>
 <li>Check for fwdControl rows not being all NA.</li>
@@ -191,23 +222,23 @@
     <div id="flasher-004" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.4">
 <a href="#flasher-004" class="anchor"></a>FLasher 0.0.4</h1>
-<div id="new-features-3" class="section level2">
+<div id="new-features-4" class="section level2">
 <h2 class="hasAnchor">
-<a href="#new-features-3" class="anchor"></a>NEW FEATURES</h2>
+<a href="#new-features-4" class="anchor"></a>NEW FEATURES</h2>
 <ul>
 <li>plot(FLStock, fwdControl) will add to the ggplotFL plot of an FLStock a coloured area of the years being projected.</li>
 </ul>
 </div>
-<div id="bug-fixes-2" class="section level2">
+<div id="bug-fixes-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-2" class="anchor"></a>BUG FIXES</h2>
+<a href="#bug-fixes-3" class="anchor"></a>BUG FIXES</h2>
 <ul>
 <li>fwd(FLStock) now returns one more year if quant=‘ssb_flash’ and object has space for it.</li>
 </ul>
 </div>
-<div id="user-visible-changes-1" class="section level2">
+<div id="user-visible-changes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#user-visible-changes-1" class="anchor"></a>USER-VISIBLE CHANGES</h2>
+<a href="#user-visible-changes-2" class="anchor"></a>USER-VISIBLE CHANGES</h2>
 <ul>
 <li>Added disc.nyears arg to stf() to select years to use for discards ratio calculations.</li>
 <li>If min and max for the very same target are set in separate rows, they are merged.</li>
@@ -217,9 +248,9 @@
     <div id="flasher-003" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.3">
 <a href="#flasher-003" class="anchor"></a>FLasher 0.0.3</h1>
-<div id="bug-fixes-3" class="section level2">
+<div id="bug-fixes-4" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-3" class="anchor"></a>BUG FIXES</h2>
+<a href="#bug-fixes-4" class="anchor"></a>BUG FIXES</h2>
 <ul>
 <li>Fixed stupid intermittant bug in projection test</li>
 <li>Added stf to Namespace</li>
@@ -252,7 +283,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

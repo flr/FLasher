@@ -41,7 +41,12 @@
 
 <meta property="og:title" content="Create and extract the FCB slot in fwdControl — FCB" />
 <meta property="og:description" content="The FCB slot in fwdControl specifies the relationships between the catches
-('C') taken by each fishery ('F') from different biological units ('B')." />
+('C') taken by each fishery ('F') from different biological units ('B').
+The relationships between a fishery, its catch elements and the biological
+populations that catch is taken from, is part of the `fwdControl` class. When
+a single `FLBiol` and `FLFishery`, or just an `FLStock`, are projected
+forward, this structure is constructed on the fly. Even when multiple biols
+and fisheries are used, a guess is made based on name matching." />
 
 
 
@@ -73,7 +78,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.6</span>
       </span>
     </div>
 
@@ -81,7 +86,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -110,7 +115,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/flr/FLasher/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -135,38 +140,57 @@
     <div class="ref-description">
     <p>The FCB slot in fwdControl specifies the relationships between the catches
 ('C') taken by each fishery ('F') from different biological units ('B').</p>
+<p>The relationships between a fishery, its catch elements and the biological
+populations that catch is taken from, is part of the `fwdControl` class. When
+a single `FLBiol` and `FLFishery`, or just an `FLStock`, are projected
+forward, this structure is constructed on the fly. Even when multiple biols
+and fisheries are used, a guess is made based on name matching.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>FCB</span>(<span class='no'>object</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>FCB</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span>
 
-<span class='fu'>FCB</span>(<span class='no'>object</span>, <span class='no'>...</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span>
+<span class='fu'>FCB</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span>
 
 <span class='co'># S4 method for fwdControl</span>
-<span class='fu'>FCB</span>(<span class='no'>object</span>)
+<span class='fu'>FCB</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span>
 
 <span class='co'># S4 method for fwdControl,matrix</span>
-<span class='fu'>FCB</span>(<span class='no'>object</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span>
+<span class='fu'>FCB</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>value</span>
 
 <span class='co'># S4 method for ANY</span>
-<span class='fu'>FCB</span>(<span class='no'>object</span>, <span class='no'>...</span>)
+<span class='fu'>FCB</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S4 method for missing</span>
-<span class='fu'>FCB</span>(<span class='no'>object</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>FCB</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span>
+
+<span class='co'># S4 method for FLBiols</span>
+<span class='fu'>FCB</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>fisheries</span><span class='op'>)</span>
+
+<span class='co'># S4 method for FLFisheries</span>
+<span class='fu'>FCB</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>biols</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p>Input object to construct or extract from.</p></td>
+      <td><p>A list or vector containing a row for the matrix.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Extract input arguments</p></td>
+      <td><p>Further vectors to be merged into the matrix.</p></td>
     </tr>
     <tr>
       <th>value</th>
       <td><p>Input matrix</p></td>
+    </tr>
+    <tr>
+      <th>fisheries</th>
+      <td><p>An `FLFisheries` object to extract fishery and catch names from.</p></td>
+    </tr>
+    <tr>
+      <th>biols</th>
+      <td><p>An `FLBiols` object to match with `FLCatch` elements in `object`.</p></td>
     </tr>
     </table>
 
@@ -175,20 +199,28 @@
     <p>This slot is of class *matrix* and has thre columns, named 'F', 'C' and 'B',
 and as many rows as relationships between the FLBiol(s) and FLFishery(ies)
 objects the fwdControl refers to.</p>
+<p>But when a more complex structure is employed, the `FCB` matrix can be given
+to the `fwdControl()` constructor method. Elements in this matrix can be
+names or numbers.</p>
+<p>If `FLBiols` and `FLFisheries` objects are passed to `FCB`, a guess is made
+at constructing the matrix based on the names of the various list elements.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>control</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='fwdControl.html'>fwdControl</a></span>()
+    <pre class="examples"><div class='input'><span class='va'>control</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fwdControl.html'>fwdControl</a></span><span class='op'>(</span><span class='op'>)</span>
 <span class='co'># Access FCB slot</span>
-<span class='fu'>FCB</span>(<span class='no'>control</span>)</div><div class='output co'>#&gt;    F  C  B
+<span class='fu'>FCB</span><span class='op'>(</span><span class='va'>control</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;    F  C  B
 #&gt; 1 NA NA NA</div><div class='input'><span class='co'># Assign to existing fwdControl</span>
-<span class='fu'>FCB</span>(<span class='no'>control</span>) <span class='kw'>&lt;-</span> <span class='fu'>FCB</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>f</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>c</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>b</span><span class='kw'>=</span><span class='fl'>2</span>), <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>f</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>c</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>b</span><span class='kw'>=</span><span class='fl'>2</span>))
+<span class='fu'>FCB</span><span class='op'>(</span><span class='va'>control</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='fu'>FCB</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>f<span class='op'>=</span><span class='fl'>1</span>, c<span class='op'>=</span><span class='fl'>1</span>, b<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>f<span class='op'>=</span><span class='fl'>1</span>, c<span class='op'>=</span><span class='fl'>2</span>, b<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
 <span class='co'># 1 fishery with catches from 2 biols</span>
-<span class='fu'>FCB</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>f</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>c</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>b</span><span class='kw'>=</span><span class='fl'>2</span>), <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>f</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>c</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>b</span><span class='kw'>=</span><span class='fl'>2</span>))</div><div class='output co'>#&gt;   F C B
+<span class='fu'>FCB</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>f<span class='op'>=</span><span class='fl'>1</span>, c<span class='op'>=</span><span class='fl'>1</span>, b<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>f<span class='op'>=</span><span class='fl'>1</span>, c<span class='op'>=</span><span class='fl'>2</span>, b<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   F C B
 #&gt; 1 1 1 2
 #&gt; 2 1 2 2</div><div class='input'><span class='co'># 2 fisheries with caches from 3 biols</span>
-<span class='fu'>FCB</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>f</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>c</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>b</span><span class='kw'>=</span><span class='fl'>1</span>), <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>f</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>c</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>b</span><span class='kw'>=</span><span class='fl'>2</span>),
-  <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>f</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>c</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>b</span><span class='kw'>=</span><span class='fl'>2</span>), <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>f</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>c</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>b</span><span class='kw'>=</span><span class='fl'>2</span>),
-  <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='kw'>f</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>c</span><span class='kw'>=</span><span class='fl'>3</span>, <span class='kw'>b</span><span class='kw'>=</span><span class='fl'>3</span>))</div><div class='output co'>#&gt;   F C B
+<span class='fu'>FCB</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>f<span class='op'>=</span><span class='fl'>1</span>, c<span class='op'>=</span><span class='fl'>1</span>, b<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>f<span class='op'>=</span><span class='fl'>1</span>, c<span class='op'>=</span><span class='fl'>2</span>, b<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>,
+  <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>f<span class='op'>=</span><span class='fl'>2</span>, c<span class='op'>=</span><span class='fl'>1</span>, b<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>f<span class='op'>=</span><span class='fl'>2</span>, c<span class='op'>=</span><span class='fl'>2</span>, b<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>,
+  <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>f<span class='op'>=</span><span class='fl'>2</span>, c<span class='op'>=</span><span class='fl'>3</span>, b<span class='op'>=</span><span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   F C B
 #&gt; 1 1 1 1
 #&gt; 2 1 2 2
 #&gt; 3 2 1 2
@@ -209,7 +241,7 @@ objects the fwdControl refers to.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.6</span>
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -68,7 +68,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/flr/FLasher/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -82,13 +82,13 @@
 
       
 
-      </header><div class="row">
+      </header><script src="FLasher_intro_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Introduction to FLasher</h1>
                         <h4 class="author">Finlay Scott, Iago Mosqueira - European Commission Joint Research Center</h4>
             
-            <h4 class="date">26 May, 2020</h4>
+            <h4 class="date">07 July, 2021</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/flr/FLasher/blob/master/vignettes/FLasher_intro.Rmd"><code>vignettes/FLasher_intro.Rmd</code></a></small>
       <div class="hidden name"><code>FLasher_intro.Rmd</code></div>
@@ -123,10 +123,11 @@
 </h1>
 <p>If you are moving from using <strong>FLash</strong> to <strong>FLasher</strong> there are a few basic things to note.</p>
 <p>The first thing to note is argument names to the <em>fwd()</em> function. The projection is still run using the <em>fwd()</em> function. The <strong>FLStock</strong> argument can still be unnamed if it is passed in as the first argument. However, the <strong>fwdControl</strong> argument must now be named as <em>control</em>. Additionally, the name of the <em>sr.residuals</em> argument is now <em>deviances</em></p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="co"># Will not work</span>
-<span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/fwd-methods.html">fwd</a></span>(<span class="no">stock</span>, <span class="no">control</span>, <span class="kw">sr</span> <span class="kw">=</span> <span class="no">srrbits</span>, <span class="kw">sr.residuals</span> <span class="kw">=</span> <span class="no">residuals</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Will not work</span>
+<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fwd.html">fwd</a></span><span class="op">(</span><span class="va">stock</span>, <span class="va">control</span>, sr <span class="op">=</span> <span class="va">srrbits</span>, sr.residuals <span class="op">=</span> <span class="va">residuals</span><span class="op">)</span>
 <span class="co"># Will work</span>
-<span class="no">out</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/fwd-methods.html">fwd</a></span>(<span class="no">stock</span>, <span class="kw">control</span> <span class="kw">=</span> <span class="no">control</span>, <span class="kw">sr</span> <span class="kw">=</span> <span class="no">srrbits</span>, <span class="kw">deviances</span> <span class="kw">=</span> <span class="no">deviances</span>)</pre></body></html></div>
+<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fwd.html">fwd</a></span><span class="op">(</span><span class="va">stock</span>, control <span class="op">=</span> <span class="va">control</span>, sr <span class="op">=</span> <span class="va">srrbits</span>, deviances <span class="op">=</span> <span class="va">deviances</span><span class="op">)</span></code></pre></div>
 <p>The second thing is that when making the <strong>fwdControl</strong> object the names of the some of the columns has changed. The <em>quantity</em> column is now called <em>quant</em>. The <em>val</em> column is now called <em>value</em>.</p>
 <p>Other differences relate to the way some calculations are carried out and will be presented below.</p>
 </div>
@@ -159,7 +160,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

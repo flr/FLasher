@@ -75,7 +75,7 @@ Bare bones man pages. Better to look at the vignettes and tutorials." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.6</span>
       </span>
     </div>
 
@@ -83,7 +83,7 @@ Bare bones man pages. Better to look at the vignettes and tutorials." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -112,7 +112,7 @@ Bare bones man pages. Better to look at the vignettes and tutorials." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/flr/FLasher/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -141,30 +141,30 @@ specified by creating an object of class <code>fwdControl</code>.</p>
 Bare bones man pages. Better to look at the vignettes and tutorials.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fwdControl</span>(<span class='no'>target</span>, <span class='no'>iters</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>fwdControl</span><span class='op'>(</span><span class='va'>target</span>, <span class='va'>iters</span>, <span class='va'>...</span><span class='op'>)</span>
 
-<span class='fu'>G</span>(<span class='no'>...</span>)
+<span class='fu'>G</span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S4 method for data.frame,array</span>
-<span class='fu'>fwdControl</span>(<span class='no'>target</span>, <span class='no'>iters</span>, <span class='no'>...</span>)
+<span class='fu'>fwdControl</span><span class='op'>(</span><span class='va'>target</span>, <span class='va'>iters</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S4 method for data.frame,numeric</span>
-<span class='fu'>fwdControl</span>(<span class='no'>target</span>, <span class='no'>iters</span>, <span class='no'>...</span>)
+<span class='fu'>fwdControl</span><span class='op'>(</span><span class='va'>target</span>, <span class='va'>iters</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S4 method for data.frame,missing</span>
-<span class='fu'>fwdControl</span>(<span class='no'>target</span>, <span class='no'>iters</span>, <span class='no'>...</span>)
+<span class='fu'>fwdControl</span><span class='op'>(</span><span class='va'>target</span>, <span class='va'>iters</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S4 method for list,missing</span>
-<span class='fu'>fwdControl</span>(<span class='no'>target</span>, <span class='no'>iters</span>, <span class='no'>...</span>)
+<span class='fu'>fwdControl</span><span class='op'>(</span><span class='va'>target</span>, <span class='va'>iters</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S4 method for list,list</span>
-<span class='fu'>fwdControl</span>(<span class='no'>target</span>, <span class='no'>iters</span>, <span class='no'>...</span>)
+<span class='fu'>fwdControl</span><span class='op'>(</span><span class='va'>target</span>, <span class='va'>iters</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S4 method for missing,missing</span>
-<span class='fu'>fwdControl</span>(<span class='no'>target</span>, <span class='no'>iters</span>, <span class='no'>...</span>)
+<span class='fu'>fwdControl</span><span class='op'>(</span><span class='va'>target</span>, <span class='va'>iters</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S4 method for FLQuant,missing</span>
-<span class='fu'>fwdControl</span>(<span class='no'>target</span>, <span class='no'>quant</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>fwdControl</span><span class='op'>(</span><span class='va'>target</span>, <span class='va'>quant</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -194,7 +194,7 @@ Bare bones man pages. Better to look at the vignettes and tutorials.</p>
 
     
 
-<dl'>
+<dl>
 <dt><code>target</code></dt><dd><p>The table of quantities and time steps used as target, <em>data.frame</em>.</p></dd>
 
 <dt><code>iters</code></dt><dd><p>The values and limits for each target quantity and time step, <em>array</em>.</p></dd>
@@ -204,7 +204,7 @@ Bare bones man pages. Better to look at the vignettes and tutorials.</p>
 </dl>
     <h2 class="hasAnchor" id="validity"><a class="anchor" href="#validity"></a>Validity</h2>
 
-    <p></p><dl'>
+    <p></p><dl>
 <dt>VALIDITY</dt><dd><p>Neque porro quisquam est qui dolorem ipsum.</p></dd>
 
 </dl>
@@ -231,18 +231,22 @@ for sizing but not stored in any slot.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Iago Mosqueira, Finlay Scott - EC JRC.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='co'># CREATE targets on fishing mortality ('f') by year</span>
 
-<span class='no'>target</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>year</span><span class='kw'>=</span><span class='fl'>2000</span>:<span class='fl'>2010</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Lognormal.html'>rlnorm</a></span>(<span class='fl'>11</span>), <span class='kw'>quant</span><span class='kw'>=</span><span class='st'>'f'</span>)
+<span class='va'>target</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2000</span><span class='op'>:</span><span class='fl'>2010</span>, value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Lognormal.html'>rlnorm</a></span><span class='op'>(</span><span class='fl'>11</span><span class='op'>)</span>, quant<span class='op'>=</span><span class='st'>'f'</span><span class='op'>)</span>
 
-<span class='no'>fwc</span> <span class='kw'>&lt;-</span> <span class='fu'>fwdControl</span>(<span class='kw'>target</span><span class='kw'>=</span><span class='no'>target</span>)
+<span class='va'>fwc</span> <span class='op'>&lt;-</span> <span class='fu'>fwdControl</span><span class='op'>(</span>target<span class='op'>=</span><span class='va'>target</span><span class='op'>)</span>
 
 <span class='co'># INSPECT fwdControl object</span>
 
-<span class='fu'>show</span>(<span class='no'>fwc</span>)</div><div class='output co'>#&gt; An object of class "fwdControl"
+<span class='fu'>show</span><span class='op'>(</span><span class='va'>fwc</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; An object of class "fwdControl"
 #&gt;  (step) year quant min value max
 #&gt;       1 2000     f  NA 0.247  NA
 #&gt;       2 2001     f  NA 1.291  NA
@@ -256,16 +260,18 @@ for sizing but not stored in any slot.</p>
 #&gt;      10 2009     f  NA 0.754  NA
 #&gt;      11 2010     f  NA 0.575  NA</div><div class='input'>
 <span class='co'># Construct from data.frame and array</span>
-<span class='no'>fcn</span> <span class='kw'>&lt;-</span> <span class='fu'>fwdControl</span>(<span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>year</span><span class='kw'>=</span><span class='fl'>2000</span>:<span class='fl'>2005</span>, <span class='kw'>quant</span><span class='kw'>=</span><span class='st'>'f'</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='fl'>0.5</span>))
+<span class='va'>fcn</span> <span class='op'>&lt;-</span> <span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2000</span><span class='op'>:</span><span class='fl'>2005</span>, quant<span class='op'>=</span><span class='st'>'f'</span>, value<span class='op'>=</span><span class='fl'>0.5</span><span class='op'>)</span><span class='op'>)</span>
 <span class='co'># Construct a fwdControl with some targets having multiple Biols, specified using the G() function</span>
-<span class='fu'>fwdControl</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>year</span><span class='kw'>=</span><span class='fl'>2000</span>:<span class='fl'>2001</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='fl'>200</span>, <span class='kw'>quant</span><span class='kw'>=</span><span class='st'>"catch"</span>, <span class='kw'>biol</span><span class='kw'>=</span><span class='fu'>G</span>(<span class='fl'>1</span>,<span class='fl'>2</span>)),
-  <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>year</span><span class='kw'>=</span><span class='fl'>2002</span>:<span class='fl'>2003</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='fl'>100</span>, <span class='kw'>quant</span><span class='kw'>=</span><span class='st'>"catch"</span>, <span class='kw'>biol</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>2</span>)))</div><div class='output co'>#&gt; An object of class "fwdControl"
+<span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2000</span><span class='op'>:</span><span class='fl'>2001</span>, value<span class='op'>=</span><span class='fl'>200</span>, quant<span class='op'>=</span><span class='st'>"catch"</span>, biol<span class='op'>=</span><span class='fu'>G</span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>,
+  <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2002</span><span class='op'>:</span><span class='fl'>2003</span>, value<span class='op'>=</span><span class='fl'>100</span>, quant<span class='op'>=</span><span class='st'>"catch"</span>, biol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; An object of class "fwdControl"
 #&gt;  (step) year quant biol min   value max
 #&gt;       1 2000 catch 1, 2  NA 200.000  NA
 #&gt;       2 2001 catch 1, 2  NA 200.000  NA
 #&gt;       3 2002 catch    1  NA 100.000  NA
 #&gt;       4 2003 catch    2  NA 100.000  NA</div><div class='input'><span class='co'># Vector of values by year</span>
-<span class='fu'>fwdControl</span>(<span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>year</span><span class='kw'>=</span><span class='fl'>2010</span>:<span class='fl'>2015</span>, <span class='kw'>quant</span><span class='kw'>=</span><span class='st'>"f"</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>1</span>, <span class='fl'>1.3</span>, <span class='kw'>length</span><span class='kw'>=</span><span class='fl'>6</span>)))</div><div class='output co'>#&gt; An object of class "fwdControl"
+<span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2015</span>, quant<span class='op'>=</span><span class='st'>"f"</span>, value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>1.3</span>, length<span class='op'>=</span><span class='fl'>6</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; An object of class "fwdControl"
 #&gt;  (step) year quant min value max
 #&gt;       1 2010     f  NA 1.000  NA
 #&gt;       2 2011     f  NA 1.060  NA
@@ -273,10 +279,11 @@ for sizing but not stored in any slot.</p>
 #&gt;       4 2013     f  NA 1.180  NA
 #&gt;       5 2014     f  NA 1.240  NA
 #&gt;       6 2015     f  NA 1.300  NA</div><div class='input'><span class='co'># Two targets, with ranges for one</span>
-<span class='fu'>fwdControl</span>(<span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>year</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>2010</span>:<span class='fl'>2015</span>, <span class='kw'>each</span><span class='kw'>=</span><span class='fl'>2</span>),
-  <span class='kw'>quant</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"f"</span>, <span class='st'>"catch"</span>),
-  <span class='kw'>min</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span>(<span class='fl'>NA</span>, <span class='fl'>20000</span>)), <span class='kw'>max</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span>(<span class='fl'>NA</span>, <span class='fl'>30000</span>)),
-  <span class='kw'>value</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>1</span>, <span class='fl'>1.3</span>, <span class='kw'>length</span><span class='kw'>=</span><span class='fl'>6</span>), <span class='fl'>NA</span>))))</div><div class='output co'>#&gt; An object of class "fwdControl"
+<span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2015</span>, each<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>,
+  quant<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"f"</span>, <span class='st'>"catch"</span><span class='op'>)</span>,
+  min<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>20000</span><span class='op'>)</span><span class='op'>)</span>, max<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>30000</span><span class='op'>)</span><span class='op'>)</span>,
+  value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>1.3</span>, length<span class='op'>=</span><span class='fl'>6</span><span class='op'>)</span>, <span class='cn'>NA</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; An object of class "fwdControl"
 #&gt;  (step) year quant       min value       max
 #&gt;       1 2010     f        NA 1.000        NA
 #&gt;       2 2010 catch 20000.000    NA 30000.000
@@ -290,22 +297,25 @@ for sizing but not stored in any slot.</p>
 #&gt;      10 2014 catch 20000.000    NA 30000.000
 #&gt;      11 2015     f        NA 1.300        NA
 #&gt;      12 2015 catch 20000.000    NA 30000.000</div><div class='input'><span class='co'># Single target value</span>
-<span class='fu'>fwdControl</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>year</span><span class='kw'>=</span><span class='fl'>2010</span>:<span class='fl'>2014</span>, <span class='kw'>quant</span><span class='kw'>=</span><span class='st'>'catch'</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='fl'>2900</span>))</div><div class='output co'>#&gt; An object of class "fwdControl"
+<span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2014</span>, quant<span class='op'>=</span><span class='st'>'catch'</span>, value<span class='op'>=</span><span class='fl'>2900</span><span class='op'>)</span><span class='op'>)</span>  
+</div><div class='output co'>#&gt; An object of class "fwdControl"
 #&gt;  (step) year quant min    value max
 #&gt;       1 2010 catch  NA 2900.000  NA
 #&gt;       2 2011 catch  NA 2900.000  NA
 #&gt;       3 2012 catch  NA 2900.000  NA
 #&gt;       4 2013 catch  NA 2900.000  NA
 #&gt;       5 2014 catch  NA 2900.000  NA</div><div class='input'><span class='co'># One value per target (year)</span>
-<span class='fu'>fwdControl</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>year</span><span class='kw'>=</span><span class='fl'>2010</span>:<span class='fl'>2014</span>, <span class='kw'>quant</span><span class='kw'>=</span><span class='st'>'catch'</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>2900</span>, <span class='fl'>3500</span>, <span class='kw'>length</span><span class='kw'>=</span><span class='fl'>5</span>)))</div><div class='output co'>#&gt; An object of class "fwdControl"
+<span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2014</span>, quant<span class='op'>=</span><span class='st'>'catch'</span>, value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>2900</span>, <span class='fl'>3500</span>, length<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>  
+</div><div class='output co'>#&gt; An object of class "fwdControl"
 #&gt;  (step) year quant min    value max
 #&gt;       1 2010 catch  NA 2900.000  NA
 #&gt;       2 2011 catch  NA 3050.000  NA
 #&gt;       3 2012 catch  NA 3200.000  NA
 #&gt;       4 2013 catch  NA 3350.000  NA
 #&gt;       5 2014 catch  NA 3500.000  NA</div><div class='input'><span class='co'># With 40 values (iters) in each target</span>
-<span class='fu'>fwdControl</span>(<span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>year</span><span class='kw'>=</span><span class='fl'>2010</span>:<span class='fl'>2014</span>, <span class='kw'>quant</span><span class='kw'>=</span><span class='st'>'catch'</span>,
-  <span class='kw'>value</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='fl'>200</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span>(<span class='fl'>2900</span>, <span class='fl'>3500</span>, <span class='kw'>length</span><span class='kw'>=</span><span class='fl'>5</span>))))</div><div class='output co'>#&gt; An object of class "fwdControl"
+<span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2014</span>, quant<span class='op'>=</span><span class='st'>'catch'</span>,
+  value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>200</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>2900</span>, <span class='fl'>3500</span>, length<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>  
+</div><div class='output co'>#&gt; An object of class "fwdControl"
 #&gt;  (step) year quant min           value max
 #&gt;       1 2010 catch  NA 2899.701(1.001)  NA
 #&gt;       2 2011 catch  NA 3049.967(0.898)  NA
@@ -314,7 +324,8 @@ for sizing but not stored in any slot.</p>
 #&gt;       5 2014 catch  NA 3500.279(1.086)  NA
 #&gt;    iters:  40 
 #&gt; </div><div class='input'><span class='co'># FLQuant, needs 'qwuant' name</span>
-<span class='fu'>fwdControl</span>(<span class='fu'>FLQuant</span>(<span class='fl'>0.2</span>, <span class='kw'>dimnames</span><span class='kw'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>year</span><span class='kw'>=</span><span class='fl'>2000</span>)), <span class='kw'>quant</span><span class='kw'>=</span><span class='st'>"fbar"</span>)</div><div class='output co'>#&gt; An object of class "fwdControl"
+<span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'>FLQuant</span><span class='op'>(</span><span class='fl'>0.2</span>, dimnames<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2000</span><span class='op'>)</span><span class='op'>)</span>, quant<span class='op'>=</span><span class='st'>"fbar"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; An object of class "fwdControl"
 #&gt;  (step) year quant biol min value max
 #&gt;       1 2000  fbar    1  NA 0.200  NA</div></pre>
   </div>
@@ -332,7 +343,7 @@ for sizing but not stored in any slot.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

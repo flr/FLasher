@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Compare the result of a <code>fwd()</code> run with the defined targets. — compare,FLStock,fwdControl-method • FLasher</title>
+<title>Compare the result of a fwd() run with the defined targets. — compare,FLStock,fwdControl-method • FLasher</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Compare the result of a <code>fwd()</code> run with the defined targets. — compare,FLStock,fwdControl-method" />
+<meta property="og:title" content="Compare the result of a fwd() run with the defined targets. — compare,FLStock,fwdControl-method" />
 <meta property="og:description" content="A comparison between the objects or objects returned by fwd() and the
 targets and limits set in the fwdControl object used to run, is returned
 by this method." />
@@ -74,7 +74,7 @@ by this method." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.6</span>
       </span>
     </div>
 
@@ -82,7 +82,7 @@ by this method." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -111,7 +111,7 @@ by this method." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/flr/FLasher/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -134,19 +134,19 @@ by this method." />
     </div>
 
     <div class="ref-description">
-    <p>A comparison between the objects or objects returned by <code><a href='fwd-methods.html'>fwd()</a></code> and the
+    <p>A comparison between the objects or objects returned by <code><a href='fwd.html'>fwd()</a></code> and the
 targets and limits set in the <code>fwdControl</code> object used to run, is returned
 by this method.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for FLStock,fwdControl</span>
-<span class='fu'>compare</span>(<span class='no'>result</span>, <span class='no'>target</span>, <span class='kw'>simplify</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+<span class='fu'>compare</span><span class='op'>(</span><span class='va'>result</span>, <span class='va'>target</span>, simplify <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 
 <span class='co'># S4 method for fwdControl,FLStock</span>
-<span class='fu'>compare</span>(<span class='no'>result</span>, <span class='no'>target</span>)
+<span class='fu'>compare</span><span class='op'>(</span><span class='va'>result</span>, <span class='va'>target</span><span class='op'>)</span>
 
 <span class='co'># S4 method for FLBiol,fwdControl</span>
-<span class='fu'>compare</span>(<span class='no'>result</span>, <span class='no'>target</span>, <span class='no'>fishery</span>, <span class='kw'>simplify</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+<span class='fu'>compare</span><span class='op'>(</span><span class='va'>result</span>, <span class='va'>target</span>, <span class='va'>fishery</span>, simplify <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -184,22 +184,27 @@ Values are compared using <code><a href='https://rdrr.io/r/base/all.equal.html'>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='https://rdrr.io/r/base/all.equal.html'>all.equal</a></code>.</p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>Iago Mosqueira (WMR)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ple4</span>)
-<span class='no'>control</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='fwdControl.html'>fwdControl</a></span>(
- <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>quant</span><span class='kw'>=</span><span class='st'>"fbar"</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='fl'>0.5</span>, <span class='kw'>year</span><span class='kw'>=</span><span class='fl'>1990</span>),
- <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>quant</span><span class='kw'>=</span><span class='st'>"catch"</span>, <span class='kw'>value</span><span class='kw'>=</span><span class='fl'>1</span>, <span class='kw'>year</span><span class='kw'>=</span><span class='fl'>1991</span>, <span class='kw'>relYear</span><span class='kw'>=</span><span class='fl'>1990</span>),
- <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>quant</span><span class='kw'>=</span><span class='st'>"catch"</span>, <span class='kw'>min</span><span class='kw'>=</span><span class='fl'>10000</span>, <span class='kw'>year</span><span class='kw'>=</span><span class='fl'>1993</span>, <span class='kw'>max</span><span class='kw'>=</span><span class='fl'>100000</span>))
-<span class='no'>run</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='fwd-methods.html'>fwd</a></span>(<span class='no'>ple4</span>, <span class='kw'>sr</span><span class='kw'>=</span><span class='fu'>predictModel</span>(<span class='kw'>model</span><span class='kw'>=</span><span class='no'>rec</span>~<span class='no'>a</span>*<span class='no'>ssb</span>*<span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span>(-<span class='no'>b</span>*<span class='no'>ssb</span>),
-  <span class='kw'>params</span><span class='kw'>=</span><span class='fu'>FLPar</span>(<span class='kw'>a</span><span class='kw'>=</span><span class='fl'>9.16</span>, <span class='kw'>b</span><span class='kw'>=</span><span class='fl'>3.55e-6</span>)), <span class='kw'>control</span><span class='kw'>=</span><span class='no'>control</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ple4</span><span class='op'>)</span>
+<span class='va'>control</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fwdControl.html'>fwdControl</a></span><span class='op'>(</span>
+ <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>quant<span class='op'>=</span><span class='st'>"fbar"</span>, value<span class='op'>=</span><span class='fl'>0.5</span>, year<span class='op'>=</span><span class='fl'>1990</span><span class='op'>)</span>,
+ <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>quant<span class='op'>=</span><span class='st'>"catch"</span>, value<span class='op'>=</span><span class='fl'>1</span>, year<span class='op'>=</span><span class='fl'>1991</span>, relYear<span class='op'>=</span><span class='fl'>1990</span><span class='op'>)</span>,
+ <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>quant<span class='op'>=</span><span class='st'>"catch"</span>, min<span class='op'>=</span><span class='fl'>10000</span>, year<span class='op'>=</span><span class='fl'>1993</span>, max<span class='op'>=</span><span class='fl'>100000</span><span class='op'>)</span><span class='op'>)</span>
+<span class='va'>run</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fwd.html'>fwd</a></span><span class='op'>(</span><span class='va'>ple4</span>, sr<span class='op'>=</span><span class='fu'>predictModel</span><span class='op'>(</span>model<span class='op'>=</span><span class='va'>rec</span><span class='op'>~</span><span class='va'>a</span><span class='op'>*</span><span class='va'>ssb</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='op'>-</span><span class='va'>b</span><span class='op'>*</span><span class='va'>ssb</span><span class='op'>)</span>,
+  params<span class='op'>=</span><span class='fu'>FLPar</span><span class='op'>(</span>a<span class='op'>=</span><span class='fl'>9.16</span>, b<span class='op'>=</span><span class='fl'>3.55e-6</span><span class='op'>)</span><span class='op'>)</span>, control<span class='op'>=</span><span class='va'>control</span><span class='op'>)</span>
 
 <span class='co'># Returns the full comparison table</span>
-<span class='fu'>compare</span>(<span class='no'>run</span>, <span class='no'>control</span>)</div><div class='output co'>#&gt;   year quant achieved
-#&gt; 1 1990  fbar     TRUE
-#&gt; 2 1991 catch     TRUE
+<span class='fu'>compare</span><span class='op'>(</span><span class='va'>run</span>, <span class='va'>control</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;   year quant achieved
+#&gt; 1 1990  fbar    FALSE
+#&gt; 2 1991 catch    FALSE
 #&gt; 3 1993 catch     TRUE</div><div class='input'><span class='co'># Returns a logical vector</span>
-<span class='fu'>compare</span>(<span class='no'>run</span>, <span class='no'>control</span>, <span class='kw'>simplify</span><span class='kw'>=</span><span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; [1] TRUE TRUE TRUE</div></pre>
+<span class='fu'>compare</span><span class='op'>(</span><span class='va'>run</span>, <span class='va'>control</span>, simplify<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] FALSE FALSE  TRUE</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -215,7 +220,7 @@ Values are compared using <code><a href='https://rdrr.io/r/base/all.equal.html'>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

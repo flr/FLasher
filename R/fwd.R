@@ -83,6 +83,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     spdn <- dimnames(rec(x, "params"))$year
     # IF 'year' in dimnames
     if(!is.null(spdn)){
+      
       # CHECK control years are covered 
       # If final projection year is not final year of biol, then fwd projects
       # the biol in the final+1 control year
@@ -91,7 +92,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
           cyrs <- c(cyrs, max(cyrs)+1)
       }
       allyrs <- all(cyrs %in% as.numeric(spdn))
+
       # CHECK all params in the control years are not NA
+      # DEBUG years in params not extending with cyrs
       nayrs <- FALSE
       if(allyrs){
           nayrs <- all(!is.na(rec(x, "params")[,ac(cyrs)]))

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generate randomly sized and filled FLQuant objects — random_FLQuant_generator • FLasher</title>
+<title>Calculation of fisheries partial fishing mortalities — partialF • FLasher</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,9 @@
 
 
 
-<meta property="og:title" content="Generate randomly sized and filled FLQuant objects — random_FLQuant_generator" />
-<meta property="og:description" content="Generate a randomly or fixed sized FLQuant filled with normally distributed random numbers with a mean of 0.
-Used for automatic testing." />
+<meta property="og:title" content="Calculation of fisheries partial fishing mortalities — partialF" />
+<meta property="og:description" content="Fishing mortalities at age for one of both stock (`FLBiol`) are partitioned
+along the fisheries (`FLFisheries`) exploiting them." />
 
 
 
@@ -127,83 +127,50 @@ Used for automatic testing." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Generate randomly sized and filled FLQuant objects</h1>
-    <small class="dont-index">Source: <a href='https://github.com/flr/FLasher/blob/master/R/test_helper_functions.R'><code>R/test_helper_functions.R</code></a></small>
-    <div class="hidden name"><code>random_FLQuant_generator.Rd</code></div>
+    <h1>Calculation of fisheries partial fishing mortalities</h1>
+    <small class="dont-index">Source: <a href='https://github.com/flr/FLasher/blob/master/R/generics.R'><code>R/generics.R</code></a>, <a href='https://github.com/flr/FLasher/blob/master/R/methods.R'><code>R/methods.R</code></a></small>
+    <div class="hidden name"><code>partialF.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Generate a randomly or fixed sized FLQuant filled with normally distributed random numbers with a mean of 0.
-Used for automatic testing.</p>
+    <p>Fishing mortalities at age for one of both stock (`FLBiol`) are partitioned
+along the fisheries (`FLFisheries`) exploiting them.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>random_FLQuant_generator</span><span class='op'>(</span>
-  fixed_dims <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>6</span><span class='op'>)</span>,
-  min_dims <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>6</span><span class='op'>)</span>,
-  max_dims <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/Extremes.html'>pmax</a></span><span class='op'>(</span><span class='va'>min_dims</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>, <span class='fl'>10</span>, <span class='fl'>5</span>, <span class='fl'>4</span>, <span class='fl'>4</span>, <span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span>,
-  min_age_name <span class='op'>=</span> <span class='fl'>1</span>,
-  sd <span class='op'>=</span> <span class='fl'>100</span>
-<span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>partialF</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>fisheries</span>, <span class='va'>...</span><span class='op'>)</span>
+
+<span class='co'># S4 method for FLBiols,FLFisheries</span>
+<span class='fu'>partialF</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>fisheries</span>, biol <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span><span class='op'>)</span>, fcb <span class='op'>=</span> <span class='st'>"missing"</span><span class='op'>)</span>
+
+<span class='co'># S4 method for FLBiol,FLFisheries</span>
+<span class='fu'>partialF</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>fisheries</span>, fcb <span class='op'>=</span> <span class='st'>"missing"</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>fixed_dims</th>
-      <td><p>A vector of length 6 with the fixed length of each of the FLQuant dimensions. If any value is NA it is randomly set using the max_dims argument. Default value is rep(NA,6).</p></td>
+      <th>object</th>
+      <td><p>The exploited population or populations, `FLBiol` or `FLBiols`.</p></td>
     </tr>
     <tr>
-      <th>min_dims</th>
-      <td><p>A vector of length 6 with minimum size of each of the FLQuant dimensions. Default value is c(1,1,1,1,1,1).</p></td>
+      <th>fisheries</th>
+      <td><p>The fisheries exploiting the resource, `FLFisheries`.</p></td>
     </tr>
     <tr>
-      <th>max_dims</th>
-      <td><p>A vector of length 6 with maximum size of each of the FLQuant dimensions. Default value is c(5,10,5,4,4,5).</p></td>
+      <th>...</th>
+      <td><p>Any extra argument.</p></td>
     </tr>
     <tr>
-      <th>min_age_name</th>
-      <td><p>The name of the first age group.</p></td>
+      <th>biol</th>
+      <td><p>Position of the biols or biols to do the calculation for.</p></td>
     </tr>
     <tr>
-      <th>sd</th>
-      <td><p>The standard deviation of the random numbers. Passed to rnorm() Default is 100.</p></td>
+      <th>fcb</th>
+      <td><p>FCB matrix of the fishery-catch-biol relationships.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An FLQuant</p>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>flq</span> <span class='op'>&lt;-</span> <span class='fu'>random_FLQuant_generator</span><span class='op'>(</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>flq</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] 3 5 3 3 2 1</div><div class='input'><span class='fu'><a href='summary.html'>summary</a></span><span class='op'>(</span><span class='va'>flq</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; An object of class "FLQuant" with:
-#&gt; dim  :  3 5 3 3 2 1 
-#&gt; quant:  age 
-#&gt; units:  1.18 
-#&gt; 
-#&gt; Min    :  -256.173 
-#&gt; 1st Qu.:  -61.47061 
-#&gt; Mean   :  -2.781357 
-#&gt; Median :  -5.374132 
-#&gt; 3rd Qu.:  59.66756 
-#&gt; Max    :  379.7615 
-#&gt; NAs    :  0 %</div><div class='input'><span class='va'>flq</span> <span class='op'>&lt;-</span> <span class='fu'>random_FLQuant_generator</span><span class='op'>(</span>fixed_dims <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='cn'>NA</span>,<span class='fl'>10</span>,<span class='fl'>1</span>,<span class='fl'>4</span>,<span class='fl'>1</span>,<span class='cn'>NA</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>flq</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1]  3 10  1  4  1  1</div><div class='input'><span class='fu'><a href='summary.html'>summary</a></span><span class='op'>(</span><span class='va'>flq</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; An object of class "FLQuant" with:
-#&gt; dim  :  3 10 1 4 1 1 
-#&gt; quant:  age 
-#&gt; units:  2.04 
-#&gt; 
-#&gt; Min    :  -236.2909 
-#&gt; 1st Qu.:  -59.97786 
-#&gt; Mean   :  1.378532 
-#&gt; Median :  -12.8695 
-#&gt; 3rd Qu.:  65.30138 
-#&gt; Max    :  277.3016 
-#&gt; NAs    :  0 %</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

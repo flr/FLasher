@@ -73,7 +73,7 @@ targets by finding the appropriate fishing effort." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.6</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@ targets by finding the appropriate fishing effort." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -110,7 +110,7 @@ targets by finding the appropriate fishing effort." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/flr/FLasher/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -138,62 +138,63 @@ targets by finding the appropriate fishing effort.</p>
     </div>
 
     <pre class="usage"><span class='co'># S4 method for FLBiols,FLFisheries,fwdControl</span>
-<span class='fu'>fwd</span>(
-  <span class='no'>object</span>,
-  <span class='no'>fishery</span>,
-  <span class='no'>control</span>,
-  <span class='kw'>effort_max</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>100</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>fishery</span>)),
-  <span class='kw'>deviances</span> <span class='kw'>=</span> <span class='no'>residuals</span>,
-  <span class='kw'>residuals</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='no'>object</span>, <span class='no'>spwn</span>), <span class='st'>"[&lt;-"</span>, <span class='kw'>value</span> <span class='kw'>=</span> <span class='fl'>1</span>)
-)
+<span class='fu'>fwd</span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  <span class='va'>fishery</span>,
+  <span class='va'>control</span>,
+  effort_max <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>100</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>fishery</span><span class='op'>)</span><span class='op'>)</span>,
+  deviances <span class='op'>=</span> <span class='va'>residuals</span>,
+  residuals <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>spwn</span><span class='op'>)</span>, <span class='st'>"[&lt;-"</span>, value <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for FLBiols,FLFishery,fwdControl</span>
-<span class='fu'>fwd</span>(<span class='no'>object</span>, <span class='no'>fishery</span>, <span class='no'>control</span>, <span class='no'>...</span>)
+<span class='fu'>fwd</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>fishery</span>, <span class='va'>control</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S4 method for FLBiol,FLFisheries,fwdControl</span>
-<span class='fu'>fwd</span>(<span class='no'>object</span>, <span class='no'>fishery</span>, <span class='no'>control</span>, <span class='kw'>deviances</span> <span class='kw'>=</span> <span class='st'>"missing"</span>, <span class='no'>...</span>)
+<span class='fu'>fwd</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>fishery</span>, <span class='va'>control</span>, deviances <span class='op'>=</span> <span class='st'>"missing"</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S4 method for FLBiol,FLFishery,fwdControl</span>
-<span class='fu'>fwd</span>(
-  <span class='no'>object</span>,
-  <span class='no'>fishery</span>,
-  <span class='no'>control</span>,
-  <span class='kw'>deviances</span> <span class='kw'>=</span> <span class='no'>residuals</span>,
-  <span class='kw'>residuals</span> <span class='kw'>=</span> <span class='fu'>FLQuant</span>(<span class='fl'>1</span>, <span class='kw'>dimnames</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/dimnames.html'>dimnames</a></span>(<span class='fu'>rec</span>(<span class='no'>object</span>))),
-  <span class='no'>...</span>
-)
+<span class='fu'>fwd</span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  <span class='va'>fishery</span>,
+  <span class='va'>control</span>,
+  deviances <span class='op'>=</span> <span class='va'>residuals</span>,
+  residuals <span class='op'>=</span> <span class='fu'>FLQuant</span><span class='op'>(</span><span class='fl'>1</span>, dimnames <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/dimnames.html'>dimnames</a></span><span class='op'>(</span><span class='fu'>rec</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for FLBiol,FLFishery,missing</span>
-<span class='fu'>fwd</span>(
-  <span class='no'>object</span>,
-  <span class='no'>fishery</span>,
-  <span class='no'>...</span>,
-  <span class='kw'>effort_max</span> <span class='kw'>=</span> <span class='fl'>10</span>,
-  <span class='kw'>deviances</span> <span class='kw'>=</span> <span class='no'>residuals</span>,
-  <span class='kw'>residuals</span> <span class='kw'>=</span> <span class='fu'>FLQuant</span>(<span class='fl'>1</span>, <span class='kw'>dimnames</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/dimnames.html'>dimnames</a></span>(<span class='fu'>m</span>(<span class='no'>object</span>)))
-)
+<span class='fu'>fwd</span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  <span class='va'>fishery</span>,
+  <span class='va'>...</span>,
+  effort_max <span class='op'>=</span> <span class='fl'>10</span>,
+  deviances <span class='op'>=</span> <span class='va'>residuals</span>,
+  residuals <span class='op'>=</span> <span class='fu'>FLQuant</span><span class='op'>(</span><span class='fl'>1</span>, dimnames <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/dimnames.html'>dimnames</a></span><span class='op'>(</span><span class='fu'>m</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for FLStock,missing,fwdControl</span>
-<span class='fu'>fwd</span>(
-  <span class='no'>object</span>,
-  <span class='no'>control</span>,
-  <span class='no'>sr</span>,
-  <span class='kw'>maxF</span> <span class='kw'>=</span> <span class='fl'>4</span>,
-  <span class='kw'>deviances</span> <span class='kw'>=</span> <span class='no'>residuals</span>,
-  <span class='kw'>residuals</span> <span class='kw'>=</span> <span class='fu'>FLQuant</span>(<span class='fl'>1</span>, <span class='kw'>dimnames</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/dimnames.html'>dimnames</a></span>(<span class='fu'>rec</span>(<span class='no'>object</span>))),
-  <span class='no'>...</span>
-)
+<span class='fu'>fwd</span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  <span class='va'>control</span>,
+  <span class='va'>sr</span>,
+  maxF <span class='op'>=</span> <span class='fl'>4</span>,
+  deviances <span class='op'>=</span> <span class='va'>residuals</span>,
+  residuals <span class='op'>=</span> <span class='fu'>FLQuant</span><span class='op'>(</span><span class='fl'>1</span>, dimnames <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/dimnames.html'>dimnames</a></span><span class='op'>(</span><span class='fu'>rec</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>,
+  quiet <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for FLStock,ANY,missing</span>
-<span class='fu'>fwd</span>(
-  <span class='no'>object</span>,
-  <span class='kw'>fishery</span> <span class='kw'>=</span> <span class='no'>missing</span>,
-  <span class='no'>sr</span>,
-  <span class='kw'>maxF</span> <span class='kw'>=</span> <span class='fl'>4</span>,
-  <span class='kw'>deviances</span> <span class='kw'>=</span> <span class='no'>residuals</span>,
-  <span class='kw'>residuals</span> <span class='kw'>=</span> <span class='fu'>FLQuant</span>(<span class='fl'>1</span>, <span class='kw'>dimnames</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/dimnames.html'>dimnames</a></span>(<span class='fu'>rec</span>(<span class='no'>object</span>))),
-  <span class='no'>...</span>
-)</pre>
+<span class='fu'>fwd</span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  fishery <span class='op'>=</span> <span class='va'>missing</span>,
+  <span class='va'>sr</span>,
+  maxF <span class='op'>=</span> <span class='fl'>4</span>,
+  deviances <span class='op'>=</span> <span class='va'>residuals</span>,
+  residuals <span class='op'>=</span> <span class='fu'>FLQuant</span><span class='op'>(</span><span class='fl'>1</span>, dimnames <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/dimnames.html'>dimnames</a></span><span class='op'>(</span><span class='fu'>rec</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -228,7 +229,7 @@ targets by finding the appropriate fishing effort.</p>
     </tr>
     <tr>
       <th>sr</th>
-      <td><p>a predictModel, FLSr or list that describes the stock recruitment relationship (if object is an FLStock).</p></td>
+      <td><p>a predictModel, FLSR or list that describes the stock recruitment relationship (if object is an FLStock). Also an FLQuant with actual recruitment values.</p></td>
     </tr>
     <tr>
       <th>maxF</th>
@@ -254,7 +255,20 @@ tutorial at: http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_a
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>FLComp</p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
+    <p>The FLR Team</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ple4</span><span class='op'>)</span>
+<span class='co'># Hindcast with past rec and catch</span>
+<span class='va'>hind</span> <span class='op'>&lt;-</span> <span class='fu'>fwd</span><span class='op'>(</span><span class='va'>ple4</span>, sr<span class='op'>=</span><span class='fu'>rec</span><span class='op'>(</span><span class='va'>ple4</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'>ac</span><span class='op'>(</span><span class='fl'>1980</span><span class='op'>:</span><span class='fl'>2017</span><span class='op'>)</span><span class='op'>]</span>,
+  control<span class='op'>=</span><span class='fu'><a href='fwdControl.html'>fwdControl</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>1980</span><span class='op'>:</span><span class='fl'>2017</span>, value<span class='op'>=</span><span class='fu'>fbar</span><span class='op'>(</span><span class='va'>ple4</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'>ac</span><span class='op'>(</span><span class='fl'>1980</span><span class='op'>:</span><span class='fl'>2017</span><span class='op'>)</span><span class='op'>]</span>,
+  quant<span class='op'>=</span><span class='st'>"fbar"</span><span class='op'>)</span><span class='op'>)</span>
+<span class='co'>#' Hindcast with past rec and catch</span>
+<span class='va'>hind</span> <span class='op'>&lt;-</span> <span class='fu'>fwd</span><span class='op'>(</span><span class='va'>ple4</span>, sr<span class='op'>=</span><span class='fu'>rec</span><span class='op'>(</span><span class='va'>ple4</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'>ac</span><span class='op'>(</span><span class='fl'>1980</span><span class='op'>:</span><span class='fl'>2017</span><span class='op'>)</span><span class='op'>]</span>,
+  catch<span class='op'>=</span><span class='fu'>catch</span><span class='op'>(</span><span class='va'>ple4</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'>ac</span><span class='op'>(</span><span class='fl'>1980</span><span class='op'>:</span><span class='fl'>2017</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -270,7 +284,7 @@ tutorial at: http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_a
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

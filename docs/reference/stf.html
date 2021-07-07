@@ -73,7 +73,7 @@ Extends the object by a number of years and fill in the life history characteris
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.6</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@ Extends the object by a number of years and fill in the life history characteris
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -110,7 +110,7 @@ Extends the object by a number of years and fill in the life history characteris
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/flr/FLasher/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -137,30 +137,33 @@ Extends the object by a number of years and fill in the life history characteris
 Extends the object by a number of years and fill in the life history characteristics by taking a mean of the last few years.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>stf</span>(<span class='no'>object</span>, <span class='no'>...</span>)
+    <pre class="usage"><span class='fu'>stf</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S4 method for FLStock</span>
-<span class='fu'>stf</span>(
-  <span class='no'>object</span>,
-  <span class='kw'>nyears</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-  <span class='kw'>wts.nyears</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-  <span class='kw'>fbar.nyears</span> <span class='kw'>=</span> <span class='no'>wts.nyears</span>,
-  <span class='kw'>f.rescale</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>arith.mean</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>end</span> <span class='kw'>=</span> <span class='fu'>dims</span>(<span class='no'>object</span>)$<span class='no'>maxyear</span> + <span class='no'>nyears</span>,
-  <span class='kw'>disc.nyears</span> <span class='kw'>=</span> <span class='no'>wts.nyears</span>
-)
+<span class='fu'>stf</span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  nyears <span class='op'>=</span> <span class='fl'>3</span>,
+  wts.nyears <span class='op'>=</span> <span class='fl'>3</span>,
+  fbar.nyears <span class='op'>=</span> <span class='va'>wts.nyears</span>,
+  f.rescale <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  arith.mean <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  na.rm <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  end <span class='op'>=</span> <span class='fu'>dims</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span><span class='op'>$</span><span class='va'>maxyear</span> <span class='op'>+</span> <span class='va'>nyears</span>,
+  disc.nyears <span class='op'>=</span> <span class='va'>wts.nyears</span>
+<span class='op'>)</span>
 
 <span class='co'># S4 method for FLBiol</span>
-<span class='fu'>stf</span>(
-  <span class='no'>object</span>,
-  <span class='kw'>nyears</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-  <span class='kw'>wts.nyears</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-  <span class='kw'>arith.mean</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>end</span> <span class='kw'>=</span> <span class='fu'>dims</span>(<span class='no'>object</span>)$<span class='no'>maxyear</span> + <span class='no'>nyears</span>
-)</pre>
+<span class='fu'>stf</span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  nyears <span class='op'>=</span> <span class='fl'>3</span>,
+  wts.nyears <span class='op'>=</span> <span class='fl'>3</span>,
+  arith.mean <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  na.rm <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  end <span class='op'>=</span> <span class='fu'>dims</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span><span class='op'>$</span><span class='va'>maxyear</span> <span class='op'>+</span> <span class='va'>nyears</span>
+<span class='op'>)</span>
+
+<span class='co'># S4 method for FLStocks</span>
+<span class='fu'>stf</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -209,9 +212,9 @@ Extends the object by a number of years and fill in the life history characteris
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='no'>ple4</span>)
-
-<span class='no'>proj</span> <span class='kw'>&lt;-</span> <span class='fu'>stf</span>(<span class='no'>ple4</span>, <span class='fl'>3</span>)</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ple4</span><span class='op'>)</span>
+<span class='va'>proj</span> <span class='op'>&lt;-</span> <span class='fu'>stf</span><span class='op'>(</span><span class='va'>ple4</span>, <span class='fl'>3</span><span class='op'>)</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -227,7 +230,7 @@ Extends the object by a number of years and fill in the life history characteris
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
