@@ -772,6 +772,7 @@ void operatingModel::project_biols(const int timestep){
     FLQuantAD surv = survivors(biol_counter, prev_indices_min, prev_indices_max);
     FLQuantAD new_abundance = surv;
     // Rprintf("Age 0 survivors surv 1: %f surv 2: %f\n", Value(surv(1,1,1,1,1,1)), Value(surv(1,1,1,1,1,1)));
+
     if(verbose){Rprintf("Starting to loop over units\n");}
     for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
       if(verbose){Rprintf("Processing survivors in unit: %i\n", ucount);}
@@ -793,6 +794,9 @@ void operatingModel::project_biols(const int timestep){
         for (unsigned int qcount = 1; qcount <= biol_dim[0]; ++qcount){
           biols(biol_counter).n(qcount, year, ucount, season, area, icount) = new_abundance(qcount, 1, ucount, 1, 1, icount);
         }
+//       if(season == 1) {
+// DEBUG biols(biol_counter).n(1, year, ucount, season, area, icount) = 0.0;
+//        }
       }
     }
     // Now do Recruitment by unit
@@ -802,7 +806,7 @@ void operatingModel::project_biols(const int timestep){
       if(verbose){Rprintf("Processing recruitment in unit: %i\n", ucount);}
       // Insert recruitment - can only do after abundance has been updated in timestep as SRP might be from this timestep
       // This is a bit dodgy as the abdundance in first age is from the survivors of prev. time step
-      // and will also contribute to recruitment
+    // and will also contribute to recruitment
       bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, year, season);
       if (recruiting_now){
         if(verbose){Rprintf("Recruiting\n");}
@@ -811,7 +815,9 @@ void operatingModel::project_biols(const int timestep){
         if(verbose){Rprintf("Timestep: %i, Unit: %i,  Rec: %f\n", timestep, ucount, Value(rec[0]));}
         for (unsigned int icount = 1; icount <= niter; ++icount){
           if(verbose){Rprintf("Orig. age0 value in timestep: %i, Unit: %i,  BRec: %f\n", timestep, ucount, Value(biols(biol_counter).n(1, year, ucount, season, area, icount)));}
+
           biols(biol_counter).n(1, year, ucount, season, area, icount) = rec[icount-1];
+
           if(verbose){Rprintf("New age0 value in timestep: %i, Unit: %i,  BRec: %f\n", timestep, ucount, Value(biols(biol_counter).n(1, year, ucount, season, area, icount)));}
         }
         if(verbose){Rprintf("Done recruiting\n");}
