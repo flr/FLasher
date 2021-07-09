@@ -471,6 +471,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 #' hind <- fwd(ple4, sr=rec(ple4)[, ac(1980:2017)],
 #'   control=fwdControl(year=1980:2017, value=fbar(ple4)[, ac(1980:2017)],
 #'   quant="fbar"))
+#' plot(FLStocks(PLE=ple4, FWD=hind))
 
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
