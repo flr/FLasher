@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // operatingModelRun
 Rcpp::List operatingModelRun(FLFisheriesAD flfs, fwdBiolsAD biols, const fwdControl ctrl, std::vector<double> effort_max, const double effort_mult_initial, const double indep_min, const double indep_max, const int nr_iters);
 RcppExport SEXP _FLasher_operatingModelRun(SEXP flfsSEXP, SEXP biolsSEXP, SEXP ctrlSEXP, SEXP effort_maxSEXP, SEXP effort_mult_initialSEXP, SEXP indep_minSEXP, SEXP indep_maxSEXP, SEXP nr_itersSEXP) {

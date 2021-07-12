@@ -262,7 +262,7 @@ test_that("list constructor - iters",{
     niters <- round(runif(1,min=5,max=15))
     nvalue <- rnorm(nyears * niters)
     test <- fwdControl(list(year=years, quant=quant1, value=nvalue), # iters
-                       list(year=years, quant=quant2, min=value[1])) # no iters
+      list(year=years, quant=quant2, min=value[1])) # no iters
     expect_equal(nrow(test@target), 2*nyears)
     expect_equal(dim(test@iters)[1], 2*nyears)
     expect_equal(dim(test@iters)[3], niters)

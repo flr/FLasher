@@ -152,11 +152,10 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   if(any(is.na(trg[trg$quant %in% c("f", "fbar"), c("minAge", "maxAge")])))
     stop("minAge and maxAge are needed in control for an 'f' or 'fbar' target.")
 
-  # CONVERT F=0 targets to sqrt(.Machine$double.eps) ~ 1.5e-08
-  ftrs <- trg$quant %in% c("f","fbar","hr")
-  f0s <- !is.na(iters(control)[, "value",]) &
-    iters(control)[, "value",] < sqrt(.Machine$double.eps) * 0.99
-  iters(control)[,"value",][f0s] <- sqrt(.Machine$double.eps) * 0.99
+  # CONVERT NA and 0 (< sqrt(.Machine$double.eps)) targets to 1e-6
+  t0s <- !is.na(iters(control)[, "value",]) &
+    iters(control)[, "value",] < .Machine$double.eps
+  iters(control)[,"value",][t0s] <- 1e-6
 
   # CONVERT to numeric 'season', 'area', 'unit'
   if (!is.numeric(trg$season))
@@ -262,8 +261,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # CALL operatingModelRun
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max = effort_max * effscale, effort_mult_initial = 1.0,
-    indep_min = sqrt(.Machine$double.eps), indep_max = 1e12, nr_iters = 50)
-
+    indep_min = .Machine$double.eps, indep_max = 1e12, nr_iters = 50)
+  
   # WARN of unsolved targets
   if(any(out$solver_codes != 1)) {
     warning(paste("Unsolved targets at control rows: ",
@@ -282,7 +281,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # |  |  |- F: FLFisherycpp
   # |  |  |  |- @effort
   # |  |  |  |- @capacity
-  # |  |  |  \- [[B]]
+  # |  |  |  \- [[C]]
   # |  |  |     |- @landings.n
   # |  |  |     \- @discards.n
   # |  |  \- [...]
@@ -330,7 +329,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     }
     fishery[[i]] <- fsh
   }
-  
+
   # RETURN list(object, fishery, control)
   out <- list(biols=object, fisheries=fishery, control=control,
     flag=out$solver_codes)
@@ -477,7 +476,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
   function(object, control, sr, maxF=4, deviances=residuals,
-    residuals=FLQuant(1, dimnames=dimnames(rec(object))), quiet=FALSE, ...) {  
+    residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
     
     # COMPUTE first year and season in control
     fy <- which(ac(control$year[1]) == dimnames(m(object))$year)
@@ -674,11 +673,6 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     object@stock.n[,pyrs] <- Bo@n[,pyrs]
     # stock
     object@stock <- quantSums(object@stock.n * object@stock.wt)
-
-    # WARN if any solver_codes is not 1
-    if(!quiet & any(c(out$flag) != 1)) {
-      warning("Solver returned some unsolved targets.")
-    }
 
     return(object)
   }
