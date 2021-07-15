@@ -796,7 +796,13 @@ void operatingModel::project_biols(const int timestep){
         }
       }
 
-      // TODO season < spawn.season = 0
+      // IF season < spawn.season (ucount), N0 = 0 TODO separate spawn.seas ~ unit
+      adouble zero_abundance = 0.0;
+      if(season < ucount) {
+        for (unsigned int icount = 1; icount <= niter; ++icount){
+        new_abundance(1, 1, ucount, 1, area, icount) = zero_abundance;
+        }
+      }
 
       // Update biol with survivors
       if(verbose){Rprintf("Update abundance with new abundance\n");}
@@ -828,7 +834,7 @@ void operatingModel::project_biols(const int timestep){
 
           biols(biol_counter).n(1, year, ucount, season, area, icount) = rec[icount-1];
 
-// Rprintf("New age0 value in timestep: %i, Unit: %i,  BRec: %f\n", timestep, ucount, Value(biols(biol_counter).n(1, year, ucount, season, area, icount)));
+Rprintf("New age0 surv value in timestep: %i, Unit: %i,  BRec: %f\n", timestep, ucount, Value(biols(biol_counter).n(1, year, ucount, season, area, icount)));
         }
         if(verbose){Rprintf("Done recruiting\n");}
       }
@@ -837,6 +843,8 @@ void operatingModel::project_biols(const int timestep){
       for (unsigned int icount = 1; icount <= niter; ++icount){
         for (unsigned int qcount = 1; qcount <= biol_dim[0]; ++qcount){
           biols(biol_counter).n(qcount, year, ucount, season, area, icount) = CppAD::CondExpLt(biols(biol_counter).n(qcount, year, ucount, season, area, icount), min_abundance, min_abundance, biols(biol_counter).n(qcount, year, ucount, season, area, icount));
+
+Rprintf("New age0 solve value in timestep: %i, Unit: %i,  BRec: %f\n", timestep, ucount, Value(biols(biol_counter).n(1, year, ucount, season, area, icount)));
         }
       }
     }
