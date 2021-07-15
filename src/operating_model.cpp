@@ -774,7 +774,10 @@ void operatingModel::project_biols(const int timestep){
     if(verbose){Rprintf("Getting survivors from previous timestep\n");}
     FLQuantAD surv = survivors(biol_counter, prev_indices_min, prev_indices_max);
     FLQuantAD new_abundance = surv;
-    // Rprintf("Age 0 survivors surv 1: %f surv 2: %f\n", Value(surv(1,1,1,1,1,1)), Value(surv(1,1,1,1,1,1)));
+
+// Rprintf("Timestep: %i Year: %i Season: %i\t", timestep, year, season);
+
+// Rprintf("Age 0 survivors surv 1: %f surv 2: %f\n", Value(surv(1,1,1,1,1,1)), Value(surv(2,1,1,1,1,1)));
 
     if(verbose){Rprintf("Starting to loop over units\n");}
     for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
@@ -782,7 +785,7 @@ void operatingModel::project_biols(const int timestep){
       bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, year, season);
       // If recruiting shift survivor ages, fix plus group. Recruitment calculated later after updating abundances.
 // TODO
-      if (recruiting_now){
+      if (season == 1){
         if(verbose){Rprintf("We are recruiting so shift survivor abundance ages\n");}
         for (unsigned int icount = 1; icount <= niter; ++icount){
           for (unsigned int qcount = 2; qcount <= biol_dim[0]; ++qcount){
@@ -792,6 +795,9 @@ void operatingModel::project_biols(const int timestep){
           new_abundance(biol_dim[0], 1, ucount, 1, area, icount) = new_abundance(biol_dim[0], 1, ucount, 1, area, icount) + surv(biol_dim[0], 1, ucount, 1, 1, icount);
         }
       }
+
+      // TODO season < spawn.season = 0
+
       // Update biol with survivors
       if(verbose){Rprintf("Update abundance with new abundance\n");}
       for (unsigned int icount = 1; icount <= niter; ++icount){
@@ -800,19 +806,21 @@ void operatingModel::project_biols(const int timestep){
         }
       }
     }
+
     // Now do Recruitment by unit
     // This can only be done after abundances in biol have been updated in case SRP comes from same time step that we
-    // are getting recruitment for (weird case)
+    // are getting recruitment for (age 0)
     for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
       if(verbose){Rprintf("Processing recruitment in unit: %i\n", ucount);}
       // Insert recruitment - can only do after abundance has been updated in timestep as SRP might be from this timestep
       // This is a bit dodgy as the abdundance in first age is from the survivors of prev. time step
-    // and will also contribute to recruitment
+    // and will also contribute to recruitment if mat[age=0] > 0
       bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, year, season);
 // TODO
       if (recruiting_now){
+// Rprintf("Timestep: %i Year: %i Season: %i\n", timestep, year, season);
         if(verbose){Rprintf("Recruiting\n");}
-        //Rprintf("Current age0 - n0 1: %f, n0 2: %f\n", Value(biols(biol_counter).n()(1, year, 1, season, 1, 1)), Value(biols(biol_counter).n()(1, year, 2, season, 1, 1)));
+// Rprintf("Current age0 - n0 1: %f, n0 2: %f\n", Value(biols(biol_counter).n()(1, year, 1, season, 1, 1)), Value(biols(biol_counter).n()(1, year, 2, season, 1, 1)));
         std::vector<adouble> rec = calc_rec(biol_counter, ucount, timestep);
         if(verbose){Rprintf("Timestep: %i, Unit: %i,  Rec: %f\n", timestep, ucount, Value(rec[0]));}
         for (unsigned int icount = 1; icount <= niter; ++icount){
@@ -820,7 +828,7 @@ void operatingModel::project_biols(const int timestep){
 
           biols(biol_counter).n(1, year, ucount, season, area, icount) = rec[icount-1];
 
-          if(verbose){Rprintf("New age0 value in timestep: %i, Unit: %i,  BRec: %f\n", timestep, ucount, Value(biols(biol_counter).n(1, year, ucount, season, area, icount)));}
+// Rprintf("New age0 value in timestep: %i, Unit: %i,  BRec: %f\n", timestep, ucount, Value(biols(biol_counter).n(1, year, ucount, season, area, icount)));
         }
         if(verbose){Rprintf("Done recruiting\n");}
       }
