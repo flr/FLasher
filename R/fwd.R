@@ -94,11 +94,11 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
       allyrs <- all(cyrs %in% as.numeric(spdn))
 
       # CHECK all params in the control years are not NA
-      # DEBUG years in params not extending with cyrs
-      nayrs <- FALSE
-      if(allyrs){
-          nayrs <- all(!is.na(rec(x, "params")[,ac(cyrs)]))
-      }
+      nayrs <- TRUE
+      # DEBUG year with units, seasons
+#      if(allyrs){
+#          nayrs <- all(!is.na(rec(x, "params")[,ac(cyrs)]))
+#      }
       return(nayrs & allyrs)
     }
     else
@@ -665,8 +665,9 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # catch.wt
     object@catch.wt[,pyrs] <- catch.wt(Fc)[,pyrs]
     # harvest (F)
+    # DEBUG calc_F ~ harvest
     object@harvest[, pyrs] <- calc_F(Fc, Bo, eff)[, pyrs]
-    # object@harvest[, pyrs] <- harvest(n(Bo), catch.n(Fc), m(Bo))[,pyrs]
+    # object@harvest[, pyrs] <- harvest(n(Bo), catch.n(Fc), m(Bo))[, pyrs]
     units(object@harvest) <- "f"
     
     # stock.n

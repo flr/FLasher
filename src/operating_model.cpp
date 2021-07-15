@@ -755,18 +755,21 @@ void operatingModel::project_biols(const int timestep){
     unsigned int year = 1;
     unsigned int season = 1;
     timestep_to_year_season(timestep, biol_dim[3], year, season);
+    
     // timestep checks
     if ((year > biol_dim[1]) | (season > biol_dim[3])){
       Rcpp::stop("In operatingModel::project_biols. Timestep outside of range");
     }
     unsigned int niter = get_niter();
     unsigned int area = 1;
+    
     // Make indices for previous timestep
     unsigned int prev_year = 1;
     unsigned int prev_season = 1;
     timestep_to_year_season(timestep-1, biol_dim[3], prev_year, prev_season);
     std::vector<unsigned int> prev_indices_min{1, prev_year, 1, prev_season, area, 1};
     std::vector<unsigned int> prev_indices_max{biol_dim[0], prev_year, biol_dim[2], prev_season, area, niter};
+    
     // Get abundance at end of preceding timestep
     if(verbose){Rprintf("Getting survivors from previous timestep\n");}
     FLQuantAD surv = survivors(biol_counter, prev_indices_min, prev_indices_max);
@@ -778,6 +781,7 @@ void operatingModel::project_biols(const int timestep){
       if(verbose){Rprintf("Processing survivors in unit: %i\n", ucount);}
       bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, year, season);
       // If recruiting shift survivor ages, fix plus group. Recruitment calculated later after updating abundances.
+// TODO
       if (recruiting_now){
         if(verbose){Rprintf("We are recruiting so shift survivor abundance ages\n");}
         for (unsigned int icount = 1; icount <= niter; ++icount){
@@ -794,9 +798,6 @@ void operatingModel::project_biols(const int timestep){
         for (unsigned int qcount = 1; qcount <= biol_dim[0]; ++qcount){
           biols(biol_counter).n(qcount, year, ucount, season, area, icount) = new_abundance(qcount, 1, ucount, 1, 1, icount);
         }
-//       if(season == 1) {
-// DEBUG biols(biol_counter).n(1, year, ucount, season, area, icount) = 0.0;
-//        }
       }
     }
     // Now do Recruitment by unit
@@ -808,6 +809,7 @@ void operatingModel::project_biols(const int timestep){
       // This is a bit dodgy as the abdundance in first age is from the survivors of prev. time step
     // and will also contribute to recruitment
       bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, year, season);
+// TODO
       if (recruiting_now){
         if(verbose){Rprintf("Recruiting\n");}
         //Rprintf("Current age0 - n0 1: %f, n0 2: %f\n", Value(biols(biol_counter).n()(1, year, 1, season, 1, 1)), Value(biols(biol_counter).n()(1, year, 2, season, 1, 1)));

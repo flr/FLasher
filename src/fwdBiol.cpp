@@ -310,7 +310,8 @@ bool fwdBiol_base<T>::does_recruitment_happen(unsigned int unit, unsigned int ye
     auto dim = n_flq.get_dim();
     // If seasonal model
     if(dim[3] > 1){
-        did_spawning_happen = srr.does_recruitment_happen(unit, year, season);
+      did_spawning_happen = srr.does_recruitment_happen(unit, year, season);
+      //did_spawning_happen = season==1; //srr.does_recruitment_happen(unit, year, season);
     }
     return did_spawning_happen;
 }
