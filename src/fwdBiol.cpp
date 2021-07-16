@@ -271,7 +271,7 @@ T& fwdBiol_base<T>::n(const unsigned int quant, const unsigned int year, const u
  *
  * If the first age is 0 and we have a seasonal model, the timelag is 1 season (i.e. the season before).
  * If the first age is 0 and we have an annual model, there is no timelag (it's a strange case).
- * If the first age is >1, the timelag is the number of timesteps to same season at 0 age (so that SRP is calculated in the same season but x years before).
+ * If the first age is >0, the timelag is the number of timesteps to same season at 0 age (so that SRP is calculated in the same season but x years before).
  */
 template <typename T>
 unsigned int fwdBiol_base<T>::srp_timelag() const{
@@ -287,7 +287,8 @@ unsigned int fwdBiol_base<T>::srp_timelag() const{
     }
     // First age is 0 and a seasonal model
     else if ((dim[3] > 1) & (first_age == 0)){
-        timelag = 1;
+      // TODO
+        timelag = 0;
     }
     // First age > 0, return number of timesteps to age 0, same season
     // Bit dodgy? timelag is unsigned, first_age is not. But we check at start of method so should be OK.
