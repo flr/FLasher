@@ -834,7 +834,7 @@ void operatingModel::project_biols(const int timestep){
 
           biols(biol_counter).n(1, year, ucount, season, area, icount) = rec[icount-1];
 
-Rprintf("New age0 surv value in timestep: %i, Unit: %i,  BRec: %f\n", timestep, ucount, Value(biols(biol_counter).n(1, year, ucount, season, area, icount)));
+// Rprintf("New age0 surv value in timestep: %i, Unit: %i,  BRec: %f\n", timestep, ucount, Value(biols(biol_counter).n(1, year, ucount, season, area, icount)));
         }
         if(verbose){Rprintf("Done recruiting\n");}
       }
@@ -844,7 +844,7 @@ Rprintf("New age0 surv value in timestep: %i, Unit: %i,  BRec: %f\n", timestep, 
         for (unsigned int qcount = 1; qcount <= biol_dim[0]; ++qcount){
           biols(biol_counter).n(qcount, year, ucount, season, area, icount) = CppAD::CondExpLt(biols(biol_counter).n(qcount, year, ucount, season, area, icount), min_abundance, min_abundance, biols(biol_counter).n(qcount, year, ucount, season, area, icount));
 
-Rprintf("New age0 solve value in timestep: %i, Unit: %i,  BRec: %f\n", timestep, ucount, Value(biols(biol_counter).n(1, year, ucount, season, area, icount)));
+// Rprintf("New age0 solve value in timestep: %i, Unit: %i,  BRec: %f\n", timestep, ucount, Value(biols(biol_counter).n(1, year, ucount, season, area, icount)));
         }
       }
     }
