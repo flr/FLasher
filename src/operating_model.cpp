@@ -801,7 +801,7 @@ void operatingModel::project_biols(const int timestep){
       // IF season < spawn.season (ucount), N0 = 0 TODO separate spawn.seas ~ unit
 
       adouble zero_abundance = 0.0;
-      if(!recruited) {
+      if(!recruited & recruiting_now) {
         for (unsigned int icount = 1; icount <= niter; ++icount){
         new_abundance(1, 1, ucount, 1, area, icount) = zero_abundance;
         }
