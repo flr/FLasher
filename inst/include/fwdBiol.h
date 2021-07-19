@@ -69,6 +69,7 @@ class fwdBiol_base {
         // SRR accessors
         FLQuant_base<T> predict_recruitment(const FLQuant_base<T> srp, const std::vector<unsigned int> initial_params_indices);
         bool does_recruitment_happen(unsigned int unit, unsigned int year, unsigned int season) const;
+        bool has_recruitment_happened(unsigned int unit, unsigned int year, unsigned int season) const;
 
         // Summary and other methods
         FLQuant_base<T> biomass() const;

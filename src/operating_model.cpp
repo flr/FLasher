@@ -783,6 +783,8 @@ void operatingModel::project_biols(const int timestep){
     for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
       if(verbose){Rprintf("Processing survivors in unit: %i\n", ucount);}
       bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, year, season);
+      bool recruited = biols(biol_counter).has_recruitment_happened(ucount, year, season);
+
       // If recruiting shift survivor ages, fix plus group. Recruitment calculated later after updating abundances.
 // TODO
       if (season == 1){
@@ -797,8 +799,9 @@ void operatingModel::project_biols(const int timestep){
       }
 
       // IF season < spawn.season (ucount), N0 = 0 TODO separate spawn.seas ~ unit
+
       adouble zero_abundance = 0.0;
-      if(season < ucount) {
+      if(!recruited) {
         for (unsigned int icount = 1; icount <= niter; ++icount){
         new_abundance(1, 1, ucount, 1, area, icount) = zero_abundance;
         }
@@ -822,6 +825,7 @@ void operatingModel::project_biols(const int timestep){
       // This is a bit dodgy as the abdundance in first age is from the survivors of prev. time step
     // and will also contribute to recruitment if mat[age=0] > 0
       bool recruiting_now = biols(biol_counter).does_recruitment_happen(ucount, year, season);
+//      bool recruited = biols(biol_counter).has_recruitment_happened(ucount, year, season);
 // TODO
       if (recruiting_now){
 // Rprintf("Timestep: %i Year: %i Season: %i\n", timestep, year, season);

@@ -50,6 +50,7 @@ class fwdSR_base {
         void set_deviances_mult(const bool new_deviances_mult);
 
         bool does_recruitment_happen(unsigned int unit, unsigned int year, unsigned int season) const;
+        bool has_recruitment_happened(unsigned int unit, unsigned int year, unsigned int season) const;
 
     private:
         T (*model) (const T, const std::vector<double>); // Pointer to SRR function
