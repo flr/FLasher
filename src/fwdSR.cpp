@@ -350,25 +350,26 @@ bool fwdSR_base<T>::has_recruitment_happened(unsigned int unit, unsigned int yea
     unsigned int area = 1;
     unsigned int has_spawning_happened = 0;
 
-//Rprintf("Season: %i\t", season);
+Rprintf("Season: %i\t", season);
 
     // GET number of seasons
     unsigned int nseasons = params.get_nseason();
 
     // CREATE vector of length nseasons
     std::vector<int> spawns(nseasons);
-    spawns[0] = 0;
+    std::vector<double> sr_params = get_params(year, unit, 1, area, 1);
+    spawns[0] = 0 + !Rcpp::NumericVector::is_na(sr_params[0]);
 
-    // POPULATE with is.na(sr_params[0])
+    // POPULATE with is.na(sr_params[0]), loop over 2:end
     for (unsigned int ns=1; ns < nseasons; ++ns){
       std::vector<double> sr_params = get_params(year, unit, ns+1, area, 1);
       spawns[ns] = spawns[ns-1] + !Rcpp::NumericVector::is_na(sr_params[0]);
-//Rprintf("%i ", spawns[ns]);
+Rprintf("%i ", spawns[ns]);
     }
     
     has_spawning_happened = spawns[season-1] > 0;
 
-//Rprintf("\t%s\n", has_spawning_happened ? "true" : "false");
+Rprintf("\t%s\n", has_spawning_happened ? "true" : "false");
 
     return has_spawning_happened;
 

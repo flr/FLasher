@@ -801,7 +801,11 @@ void operatingModel::project_biols(const int timestep){
       adouble zero_abundance = 0.0;
       
       // IF
-      if(!recruited & !recruiting_now) {
+//Rprintf("Season: %i\t", season);
+//Rprintf("%s\t", recruited ? "true" : "false");
+//Rprintf("%s\n", recruiting_now ? "true" : "false");
+
+      if(!recruited && !recruiting_now) {
         for (unsigned int icount = 1; icount <= niter; ++icount){
         new_abundance(1, 1, ucount, 1, area, icount) = zero_abundance;
         }
