@@ -51,7 +51,6 @@
   maxF = 4,
   deviances = residuals,
   residuals = FLQuant(1, dimnames = dimnames(rec(object))),
-  quiet = FALSE,
   ...
 )
 
@@ -111,6 +110,7 @@ data(ple4)
 hind <- fwd(ple4, sr=rec(ple4)[, ac(1980:2017)],
   control=fwdControl(year=1980:2017, value=fbar(ple4)[, ac(1980:2017)],
   quant="fbar"))
+plot(FLStocks(PLE=ple4, FWD=hind))
 #' Hindcast with past rec and catch
 hind <- fwd(ple4, sr=rec(ple4)[, ac(1980:2017)],
   catch=catch(ple4)[, ac(1980:2017)])

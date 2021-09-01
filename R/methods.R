@@ -153,7 +153,8 @@ setMethod("$", signature(x="fwdControl"),
 
     if(name %in% c("min", "value", "max")) {
       res <- x@iters[, name, ]
-      return(c(res[!is.na(c(res))]))
+      return(c(res))
+      # return(c(res[!is.na(c(res))]))
     }
     else
       return(x@target[,name])

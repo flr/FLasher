@@ -751,7 +751,7 @@ Table: Target type and Fishery, Catch, Biol requirements in the control object.
 With biologically based targets we have to be careful with the timing: 
 
 * *srp* is the SRP *at the time of spawning*. 
-* *ssb_end* and *biomass_end* is the total SSB or biomass of fish `at the end of the timestep`, i.e. the survivors after all mortality (fishing and natural) has stopped.
+* *ssb_end* and *biomass_end* is the total SSB or biomass of fish `at the end of the timestep`, i.e. the survivors after all mortality (fishing and natural) has taken place.
 * *ssb_spawn* and *biomass_spawn* is the total SSB or biomass of fish *at the time of spawning*.
 * *ssb_flash* and *biomass_flash* tries to replicate the behaviour of the __FLash__ package. If fishing occurs before spawning, the SSN or biomass at the time of spawning is returned. If the fishing occurs after spawning then fishing has no impact on SSB or biomass at the time of spawning and so the SSB or biomass at the time of spawning in the `next` time step is returned. Similarly, if there is no spawning in that time step, the SSB or biomass at the time of spawning in the `next` time step is returned (unless there is also no spawning in the next time step in which case an error occurs'. This behaviour is a bit dangerous because if we are trying to get the SSB or biomass in the next time step and fishing in the next time step happens before spawning, the SSB or biomass will be affected by the fishing effort in the current time step `and` the next time step (which is not solved for). Due to the weird nature of this target type it is better to only use if for annual models.
 
