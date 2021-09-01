@@ -728,6 +728,7 @@ FLQuantAD operatingModel::survivors(const int biol_no, const std::vector<unsigne
     Rcpp::stop("In operatingModel survivors subsetter. Indices not of length 6\n");
   }
   if(verbose){Rprintf("About to get F\n");}
+      
   FLQuantAD z_temp = get_f(biol_no, indices_min, indices_max) + biols(biol_no).m(indices_min, indices_max);
   if(verbose){Rprintf("Got F\n");}
   FLQuantAD survivors = biols(biol_no).n(indices_min, indices_max) * exp(-1.0 * z_temp);

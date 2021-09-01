@@ -147,7 +147,7 @@ std::vector<double> fwdSR_base<T>::get_params(unsigned int year, unsigned int un
     }
     for (int i = 1; i <= nparams; ++i){
         model_params[i-1] = params(i,year,unit,season,area,iter);
-    // Rprintf("Year: %i Unit: %i Season: %i Param %i: %f\n",  year, unit, season, i, model_params[i-1]);
+// Rprintf("Year: %i Unit: %i Season: %i Param %i: %f\n",  year, unit, season, i, model_params[i-1]);
     }
     return model_params;
 }
@@ -426,7 +426,13 @@ T bevholtSS3(const T srp, const std::vector<double> params){
       seasp = params[4];
     }
 
-    rec = (4.0 * s * R0 * srp) / (v * (1.0 - s) + srp * (5 * s - 1.0)) * sratio * seasp;
+    // ssbp is the prop of ssb active in a season, 1 if single rec
+    double ssbp = 1;
+    if (params.size() > 5) {
+      ssbp = params[5];
+    }
+
+    rec = (4.0 * s * R0 * srp) / (v * (1.0 - s) + srp * (5 * s - 1.0)) * sratio;
 
     return rec;
 }
