@@ -482,6 +482,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     fy <- which(ac(control$year[1]) == dimnames(m(object))$year)
     fs <- which(ac(control$season[1]) == dimnames(m(object))$season)
 
+    # TODO CHECK if seasons in object but not in control, stop()
+
     # FIND OUT starting time step
     if(fs == 1) {
       fy <- fy - 1
@@ -665,13 +667,25 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # catch.wt
     object@catch.wt[,pyrs] <- catch.wt(Fc)[,pyrs]
     # harvest (F)
-    # DEBUG calc_F ~ harvest
     object@harvest[, pyrs] <- calc_F(Fc, Bo, eff)[, pyrs]
-    # object@harvest[, pyrs] <- harvest(n(Bo), catch.n(Fc), m(Bo))[, pyrs]
+    # object@harvest[, pyrs] <- harvest(n(Bo)[, pyrs], catch.n(Fc)[, pyrs],
+    #   m(Bo)[, pyrs])
     units(object@harvest) <- "f"
-    
+
     # stock.n
-    object@stock.n[,pyrs] <- Bo@n[,pyrs]
+    if(dim(object)[3] == 1) {
+      object@stock.n[,pyrs] <- Bo@n[,pyrs]
+    # DEBUG Problem for multiple units, get_f ~ getununit_f in survivors?
+    } else {
+      adj <- adjust(window(object, start=miny - 1, end=maxy))[, pyrs]
+      object@stock.n[,pyrs] <- stock.n(adj)
+      object@catch.n[,pyrs] <- catch.n(adj)
+      object@landings.n[,pyrs] <- landings.n(adj)
+      object@discards.n[,pyrs] <- discards.n(adj)
+      object@catch <- quantSums(object@catch.n * object@catch.wt)
+      object@landings <- quantSums(object@landings.n * object@landings.wt)
+      object@discards <- quantSums(object@discards.n * object@discards.wt)
+    }
     # stock
     object@stock <- quantSums(object@stock.n * object@stock.wt)
 
