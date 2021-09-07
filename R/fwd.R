@@ -257,12 +257,12 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # CALCULATE max(effort) per fishery
   effscale <- unlist(lapply(rfishery, function(x) max(x@effort)))
-  
+
   # CALL operatingModelRun
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max = effort_max * effscale, effort_mult_initial = 1.0,
     indep_min = .Machine$double.eps, indep_max = 1e12, nr_iters = 50)
-  
+
   # WARN of unsolved targets
   if(any(out$solver_codes != 1)) {
     warning(paste("Unsolved targets at control rows: ",
@@ -673,19 +673,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     units(object@harvest) <- "f"
 
     # stock.n
-    if(dim(object)[3] == 1) {
-      object@stock.n[,pyrs] <- Bo@n[,pyrs]
-    # DEBUG Problem for multiple units, get_f ~ getununit_f in survivors?
-    } else {
-      adj <- adjust(window(object, start=miny - 1, end=maxy))[, pyrs]
-      object@stock.n[,pyrs] <- stock.n(adj)
-      object@catch.n[,pyrs] <- catch.n(adj)
-      object@landings.n[,pyrs] <- landings.n(adj)
-      object@discards.n[,pyrs] <- discards.n(adj)
-      object@catch <- quantSums(object@catch.n * object@catch.wt)
-      object@landings <- quantSums(object@landings.n * object@landings.wt)
-      object@discards <- quantSums(object@discards.n * object@discards.wt)
-    }
+    object@stock.n[,pyrs] <- Bo@n[,pyrs]
     # stock
     object@stock <- quantSums(object@stock.n * object@stock.wt)
 
