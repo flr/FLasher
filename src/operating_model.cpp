@@ -497,7 +497,7 @@ std::vector<adouble> operatingModel::calc_rec(const unsigned int biol_no, const 
  * This method is the workhorse fishing mortality method that is called by other fishing mortality methods that do make checks.
  * F = effort * selectivity * catchability.
  * F = effort * selectivity * alpha * biomass ^ -beta
- * Selectivity and biomass are disaggragated across all the FLQ dimensions (biomass has length 1 in the quant dimension), i.e. they will have seasons and units.
+ * Selectivity and biomass are disaggregated across all the FLQ dimensions (biomass has length 1 in the quant dimension), i.e. they will have seasons and units.
  * Effort always has length 1 in the unit and quant dimension and is disaggregated across other dimensions.
  * The catchability parameters can be disaggreated across dimensions 2 to 6. If not, they are recycled.
  */
@@ -776,9 +776,9 @@ void operatingModel::project_biols(const int timestep){
     FLQuantAD surv = survivors(biol_counter, prev_indices_min, prev_indices_max);
     FLQuantAD new_abundance = surv;
 
-// Rprintf("Timestep: %i Year: %i Season: %i\t", timestep, year, season);
+//Rprintf("Timestep: %i Year: %i Season: %i\t", timestep, year, season);
 
-// Rprintf("Age 0 survivors surv 1: %f surv 2: %f\n", Value(surv(1,1,1,1,1,1)), Value(surv(2,1,1,1,1,1)));
+//Rprintf("Age 0 survivors surv 1: %f surv 2: %f\n", Value(surv(1,1,1,1,1,1)), Value(surv(2,1,1,1,1,1)));
 
     if(verbose){Rprintf("Starting to loop over units\n");}
     for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
@@ -816,7 +816,7 @@ void operatingModel::project_biols(const int timestep){
       if(verbose){Rprintf("Update abundance with new abundance\n");}
       for (unsigned int icount = 1; icount <= niter; ++icount){
         for (unsigned int qcount = 1; qcount <= biol_dim[0]; ++qcount){
-          biols(biol_counter).n(qcount, year, ucount, season, area, icount) = new_abundance(qcount, 1, ucount, 1, 1, icount);
+          biols(biol_counter).n(qcount, year, ucount, season, area, icount) = new_abundance(qcount, 1, ucount, 1, area, icount);
         }
       }
     }
