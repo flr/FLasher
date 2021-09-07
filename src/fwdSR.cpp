@@ -420,19 +420,19 @@ T bevholtSS3(const T srp, const std::vector<double> params){
     }
     
     // seasp is the prop of rec for the season, 1 if single rec
-    // DEBUG BUT srp needs to come from spwn season
+    // TODO BUT srp needs to come from spwn season
     double seasp = 1;
     if (params.size() > 4) {
       seasp = params[4];
     }
 
-    // ssbp is the prop of ssb active in a season, 1 if single rec
+    // TODO ssbp is the prop of ssb active in a season, 1 if single rec
     double ssbp = 1;
     if (params.size() > 5) {
       ssbp = params[5];
     }
 
-    rec = (4.0 * s * R0 * srp) / (v * (1.0 - s) + srp * (5 * s - 1.0)) * sratio;
+    rec = (4.0 * s * R0 * srp) / (v * (1.0 - s) + srp * (5 * s - 1.0)) * sratio * seasp;
 
     return rec;
 }
