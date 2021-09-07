@@ -46,7 +46,8 @@ test_that("SR models with FLStock",{
     # Fix the parameters
   
     geomeanrec <- exp(mean(log(rec(ple4)[,ac(years[1] - c(1, 2, 3))])))
-    test <- fwd(ple4mtf, control=control, sr=list(model = "geomean", params=FLPar(a=geomeanrec)))
+    test <- fwd(ple4mtf, control=control, sr=list(model = "geomean",
+      params=FLPar(a=geomeanrec)))
     expect_equal(c(rec(test)[,ac(years)]), rep(geomeanrec, nyears))
     
     # Time varying fixed parameters

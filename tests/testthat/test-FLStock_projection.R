@@ -159,23 +159,25 @@ test_that("Catch relative target, single iter",{
     expect_equal(catch_out, catch_trg)
 })
 
-test_that("Fbar relative target, single iter",{
-    data(ple4)
-    year_range <- range(ple4)[c("minyear","maxyear")]
-    min_year <- round(runif(1, min=year_range[1], max=(year_range[1] + round((year_range[2] - year_range[1])/2))))
-    min_year[1] <- min_year[1] + 1
-    nyears <- round(runif(n=1,min=3,max=(round((year_range[2] - year_range[1])/2)-5)))
-    years <- min_year:(min_year+nyears-1)
-    f_rel_val <- runif(nyears, min=0.5, max=0.9)
-    control=fwdControl(data.frame(year=years, quant="fbar", value=f_rel_val, relYear=years-1))
-    res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
-      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
-    f_out <- c(fbar(res)[,ac(years)])
-    f_trg <- c(fbar(ple4)[,ac(years[1]-1)]) * cumprod(f_rel_val)
-    # Test to within tolerance of 1.5e-8
-    expect_equal(f_out, f_trg)
-})
-
+# DEBUG
+# test_that("Fbar relative target, single iter",{
+#     data(ple4)
+#     year_range <- range(ple4)[c("minyear","maxyear")]
+#     min_year <- round(runif(1, min=year_range[1], max=(year_range[1] + round((year_range[2] - year_range[1])/2))))
+#     min_year[1] <- min_year[1] + 1
+#     nyears <- round(runif(n=1,min=3,max=(round((year_range[2] - year_range[1])/2)-5)))
+#     years <- min_year:(min_year+nyears-1)
+#     f_rel_val <- runif(nyears, min=0.5, max=0.9)
+#     control <- fwdControl(data.frame(year=years, quant="fbar",
+#       value=f_rel_val, relYear=years-1))
+#     res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
+#       params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
+#     f_out <- c(fbar(res)[,ac(years)])
+#     f_trg <- c(fbar(ple4)[,ac(years[1]-1)]) * cumprod(f_rel_val)
+#     # Test to within tolerance of 1.5e-8
+#     expect_equal(f_out, f_trg)
+# })
+# 
 #---------------------
 test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
 

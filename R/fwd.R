@@ -257,12 +257,18 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # CALCULATE max(effort) per fishery
   effscale <- unlist(lapply(rfishery, function(x) max(x@effort)))
+  
+# DEBUG effort for relF
+#fages <- do.call(seq,as.list(unname(range(ple4)[c("minfbar",
+#  "maxfbar")])))
+#effort(rfishery[[1]]) <- FLQuant(unitSums(quantMeans((harvest(ple4) %/%
+#  catch.sel(ple4))[ac(fages),])), units="")
 
   # CALL operatingModelRun
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max = effort_max * effscale, effort_mult_initial = 1.0,
     indep_min = .Machine$double.eps, indep_max = 1e12, nr_iters = 50)
-
+  
   # WARN of unsolved targets
   if(any(out$solver_codes != 1)) {
     warning(paste("Unsolved targets at control rows: ",
@@ -563,14 +569,14 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     control@FCB <- matrix(1, ncol=3, nrow=1, dimnames=list(1, c("F", "C", "B")))
 
     # SET @target[fcb] as biol 1
-    brows <- !control@target$quant %in% c("effort", "revenue")
-    control@target[brows, c("fishery", "catch", "biol")] <-
-      rep(c(NA, NA, 1), each=sum(brows))
+    brow <- !control@target$quant %in% c("effort", "revenue")
+    control@target[brow, c("fishery", "catch", "biol")] <-
+      rep(c(NA, NA, 1), each=sum(brow))
     
     # EXCEPT for effort and revenue, fishery 1
-    if(sum(!brows) > 0) {
-      control@target[!brows, c("fishery", "catch", "biol")] <-
-        rep(c(1, NA, NA), each=sum(!brows))
+    if(sum(!brow) > 0) {
+      control@target[!brow, c("fishery", "catch", "biol")] <-
+        rep(c(1, NA, NA), each=sum(!brow))
     }
     
     # ADD maxF to control, only in years with no fbar target
