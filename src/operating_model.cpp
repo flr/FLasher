@@ -1033,7 +1033,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::v
     // This is not part of the operation sequence so is evaluated before we turn on the tape
     if(verbose){Rprintf("Getting desired target values from control object\n");}
     std::vector<double> target_value = get_target_value(target_count); // values of all sim targets for the target
-    // Set up effort multipliers - do all efforts and iters at same time (keep timesteps, areas seperate)
+    // Set up effort multipliers - do all efforts and iters at same time (keep timesteps, areas separate)
     if(verbose){Rprintf("Effort_mult_initial: %f\n", effort_mult_initial);}
     std::vector<adouble> effort_mult_ad(neffort * niter, effort_mult_initial);
     std::fill(effort_mult_ad.begin(), effort_mult_ad.end(), effort_mult_initial); // Do we need this fill?
