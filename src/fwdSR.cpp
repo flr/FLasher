@@ -414,20 +414,20 @@ T bevholtSS3(const T srp, const std::vector<double> params){
     double v = params[2];
     
     // sratio is the recruits sex ratio, 1 if single sex model
-    double sratio = 1;
+    double sratio = 1.0;
     if (params.size() > 3) {
       sratio = params[3];
     }
     
     // seasp is the prop of rec for the season, 1 if single rec
     // TODO BUT srp needs to come from spwn season
-    double seasp = 1;
+    double seasp = 1.0;
     if (params.size() > 4) {
       seasp = params[4];
     }
 
     // TODO ssbp is the prop of ssb active in a season, 1 if single rec
-    double ssbp = 1;
+    double ssbp = 1.0;
     if (params.size() > 5) {
       ssbp = params[5];
     }
