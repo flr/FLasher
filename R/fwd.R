@@ -258,15 +258,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # CALCULATE max(effort) per fishery
   effscale <- unlist(lapply(rfishery, function(x) max(x@effort)))
   
-# DEBUG effort for relF
-#fages <- do.call(seq,as.list(unname(range(ple4)[c("minfbar",
-#  "maxfbar")])))
-#effort(rfishery[[1]]) <- FLQuant(unitSums(quantMeans((harvest(ple4) %/%
-#  catch.sel(ple4))[ac(fages),])), units="")
-
   # CALL operatingModelRun
   out <- operatingModelRun(rfishery, biolscpp, control,
-    effort_max = effort_max * effscale, effort_mult_initial = 1.0,
+    effort_max = c(effort_max * effscale), effort_mult_initial = 1.0,
     indep_min = .Machine$double.eps, indep_max = 1e12, nr_iters = 50)
   
   # WARN of unsolved targets
