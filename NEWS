@@ -1,10 +1,22 @@
+ FLasher 0.6.7
+
+ BUG FIXES
+
+- Ensure max effort input in .Call is numeric.
+- Changed tolerance in solver to match all.equal's default: 1.5e-8.
+- Getting different spawn seasons to work.
+- Setting to zero rec in seasons < spawn.season.
+- Fix to discards ratio when discards.n is zero.
+- Bug in coertion of FLQuants with iters to fwdControl.
+- Add na.rm argument for discard ratio in stf().
+- sratio now properly applied for either 1 or 2 sex models in bevholtss3.
+
  FLasher 0.6.6
 
  USER-VISIBLE CHANGES
 
 - Minimum value for 'f' or 'fbar' targets has been set at
   sqrt(.Machine$double.eps) ~ 1.5e-08.
-
 - Added sr as FLQuant argument to fwd(FLStock). The vector by year is converted
   into a predictModel with rec~a and a yearly value for a.
 
@@ -16,7 +28,6 @@
 - solver.cpp update to work properly with biols and fisheries with multiple
   iterations.
 - Bug in coertion of FLQuants with iters to fwdControl.
-
 
  NEW FEATURES
 

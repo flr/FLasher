@@ -271,7 +271,7 @@ setMethod('fwdControl', signature(target='missing', iters='missing'),
 #' @rdname fwdControl
 #' @param quant name of target to assign 'FLQuant' to, 'character'
 #' @examples
-#' # FLQuant, needs 'qwuant' name
+#' # FLQuant, needs 'quant' name
 #' fwdControl(FLQuant(0.2, dimnames=list(year=2000)), quant="fbar")
 
 setMethod('fwdControl', signature(target='FLQuant', iters='missing'),

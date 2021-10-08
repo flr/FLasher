@@ -265,8 +265,11 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   
   # WARN of unsolved targets
   if(any(out$solver_codes != 1)) {
+ 
+    ids <- which(out$solver_codes != 1, arr.ind=TRUE)
+
     warning(paste("Unsolved targets at control rows: ",
-      paste(which(out$solver_codes != 1), collapse=", ")))
+      paste(unique(ids[,"row"]), collapse=", ")))
   }
 
   # STRUCTURE of out
@@ -581,7 +584,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     iseas <- length(unique(control$season)) > 1
     
     if(length(yrs) > 0 & !is.null(maxF) & !iseas) {
-
+      
       # MERGE controls
       maxFc <- fwdControl(year=yrs, quant="fbar", min=0, max=maxF, biol=1)
      

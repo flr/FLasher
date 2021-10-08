@@ -131,6 +131,10 @@ setClass("fwdControl",
     # TODO: classes of data.frame columns
     # TODO: colnames in target
 
+    # min, value or max not NA TODO NAs in fwdControl@iters by fwdControl()
+    # if(any(apply(object@iters, 3, function(x) sum(is.na(x))) == 3))
+    #  return("Every target and iter must contain either 'min', 'value' or 'max.")
+
     # FCB
     if(!all.equal(dimnames(object@FCB)[[2]], c("F", "C", "B")))
       return("colnames of FCB slot are incorrect, must be 'F', 'C', 'B'")

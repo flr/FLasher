@@ -137,7 +137,8 @@ test_that("Catch target with max limit, single iter",{
     # All years apart from lim_year met catch OK
     catch_out <- catch(res)[,ac(years)]
     non_lim_years <- !(years %in% limit_year)
-    expect_equal(c( catch_out[,ac(years[non_lim_years])]), catch_val[non_lim_years])
+    expect_true(all(c( catch_out[,ac(years[non_lim_years])]) -
+      catch_val[non_lim_years] < 1e-8))
     # lim year has f = flim
     expect_equal(c(fbar(res)[,ac(limit_year)]), flim)
 })
@@ -273,9 +274,9 @@ test_that("Tests from Running Medium Term Forecasts with FLasher tutorial",{
     ple4_min_catch <- fwd(ple4_mtf, control = ctrl_min_catch, sr = ple4_sr)
     ple4c <- catch(ple4_min_catch)[,ac(2009:2018)]
     
-    # Expect a solving tolerance of better than 1e-6
+    # Expect a solving tolerance of better than 1.5e-8
     
-    expect_true(all(ple4c > (min_catch - 1e-6)))
+    expect_true(all((ple4c - min_catch) < 1.5e-8))
 
     # Relative targets and bounds
     
