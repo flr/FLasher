@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.7</span>
       </span>
     </div>
 
@@ -129,6 +129,24 @@
       <small>Source: <a href='https://github.com/flr/FLasher/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="flasher-067" class="section level1">
+<h1 class="page-header" data-toc-text="0.6.7">
+<a href="#flasher-067" class="anchor"></a>FLasher 0.6.7</h1>
+<div id="bug-fixes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bug-fixes" class="anchor"></a>BUG FIXES</h2>
+<ul>
+<li>Ensure max effort input in .Call is numeric.</li>
+<li>Changed tolerance in solver to match all.equal’s default: 1.5e-8.</li>
+<li>Getting different spawn seasons to work.</li>
+<li>Setting to zero rec in seasons &lt; spawn.season.</li>
+<li>Fix to discards ratio when discards.n is zero.</li>
+<li>Bug in coertion of FLQuants with iters to fwdControl.</li>
+<li>Add na.rm argument for discard ratio in stf().</li>
+<li>sratio now properly applied for either 1 or 2 sex models in bevholtss3.</li>
+</ul>
+</div>
+</div>
     <div id="flasher-066" class="section level1">
 <h1 class="page-header" data-toc-text="0.6.6">
 <a href="#flasher-066" class="anchor"></a>FLasher 0.6.6</h1>
@@ -136,13 +154,13 @@
 <h2 class="hasAnchor">
 <a href="#user-visible-changes" class="anchor"></a>USER-VISIBLE CHANGES</h2>
 <ul>
-<li><p>Minimum value for ‘f’ or ‘fbar’ targets has been set at sqrt(.Machine$double.eps) ~ 1.5e-08.</p></li>
-<li><p>Added sr as FLQuant argument to fwd(FLStock). The vector by year is converted into a predictModel with rec~a and a yearly value for a.</p></li>
+<li>Minimum value for ‘f’ or ‘fbar’ targets has been set at sqrt(.Machine$double.eps) ~ 1.5e-08.</li>
+<li>Added sr as FLQuant argument to fwd(FLStock). The vector by year is converted into a predictModel with rec~a and a yearly value for a.</li>
 </ul>
 </div>
-<div id="bug-fixes" class="section level2">
+<div id="bug-fixes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes" class="anchor"></a>BUG FIXES</h2>
+<a href="#bug-fixes-1" class="anchor"></a>BUG FIXES</h2>
 <ul>
 <li>Separation of large Jacobian matrix in solver.cpp was operating as in iters were organized target first, but they are iter first.</li>
 <li>Ensure subset of deviances returns an FLQuants.</li>
@@ -182,9 +200,9 @@
 <li>Functions are now available for the corresponding ssb and biomass targets used by fwdControl: ssb_end, biomass_end and biomass_spawn</li>
 </ul>
 </div>
-<div id="bug-fixes-1" class="section level2">
+<div id="bug-fixes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-1" class="anchor"></a>BUG FIXES</h2>
+<a href="#bug-fixes-2" class="anchor"></a>BUG FIXES</h2>
 <ul>
 <li>Calculation of survivors for stocks/biols with age=0 was not correct.</li>
 </ul>
@@ -210,9 +228,9 @@
 <li>The residuals argument to fwd() is now called ‘deviances’, and this name is used in all R and C++ code. ‘residuals’ is still accepted, but will be deprecated in the next minor version.</li>
 </ul>
 </div>
-<div id="bug-fixes-2" class="section level2">
+<div id="bug-fixes-3" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-2" class="anchor"></a>BUG FIXES</h2>
+<a href="#bug-fixes-3" class="anchor"></a>BUG FIXES</h2>
 <ul>
 <li>SRR predictions now work correctly for 2-sex OMs (FLStock or FLBiol).</li>
 <li>Check for fwdControl rows not being all NA.</li>
@@ -229,9 +247,9 @@
 <li>plot(FLStock, fwdControl) will add to the ggplotFL plot of an FLStock a coloured area of the years being projected.</li>
 </ul>
 </div>
-<div id="bug-fixes-3" class="section level2">
+<div id="bug-fixes-4" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-3" class="anchor"></a>BUG FIXES</h2>
+<a href="#bug-fixes-4" class="anchor"></a>BUG FIXES</h2>
 <ul>
 <li>fwd(FLStock) now returns one more year if quant=‘ssb_flash’ and object has space for it.</li>
 </ul>
@@ -248,9 +266,9 @@
     <div id="flasher-003" class="section level1">
 <h1 class="page-header" data-toc-text="0.0.3">
 <a href="#flasher-003" class="anchor"></a>FLasher 0.0.3</h1>
-<div id="bug-fixes-4" class="section level2">
+<div id="bug-fixes-5" class="section level2">
 <h2 class="hasAnchor">
-<a href="#bug-fixes-4" class="anchor"></a>BUG FIXES</h2>
+<a href="#bug-fixes-5" class="anchor"></a>BUG FIXES</h2>
 <ul>
 <li>Fixed stupid intermittant bug in projection test</li>
 <li>Added stf to Namespace</li>

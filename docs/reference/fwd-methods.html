@@ -73,7 +73,7 @@ targets by finding the appropriate fishing effort." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.7</span>
       </span>
     </div>
 
@@ -181,7 +181,6 @@ targets by finding the appropriate fishing effort.</p>
   maxF <span class='op'>=</span> <span class='fl'>4</span>,
   deviances <span class='op'>=</span> <span class='va'>residuals</span>,
   residuals <span class='op'>=</span> <span class='fu'>FLQuant</span><span class='op'>(</span><span class='fl'>1</span>, dimnames <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/dimnames.html'>dimnames</a></span><span class='op'>(</span><span class='fu'>rec</span><span class='op'>(</span><span class='va'>object</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>,
-  quiet <span class='op'>=</span> <span class='cn'>FALSE</span>,
   <span class='va'>...</span>
 <span class='op'>)</span>
 
@@ -265,7 +264,8 @@ tutorial at: http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_a
 <span class='va'>hind</span> <span class='op'>&lt;-</span> <span class='fu'>fwd</span><span class='op'>(</span><span class='va'>ple4</span>, sr<span class='op'>=</span><span class='fu'>rec</span><span class='op'>(</span><span class='va'>ple4</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'>ac</span><span class='op'>(</span><span class='fl'>1980</span><span class='op'>:</span><span class='fl'>2017</span><span class='op'>)</span><span class='op'>]</span>,
   control<span class='op'>=</span><span class='fu'><a href='fwdControl.html'>fwdControl</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>1980</span><span class='op'>:</span><span class='fl'>2017</span>, value<span class='op'>=</span><span class='fu'>fbar</span><span class='op'>(</span><span class='va'>ple4</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'>ac</span><span class='op'>(</span><span class='fl'>1980</span><span class='op'>:</span><span class='fl'>2017</span><span class='op'>)</span><span class='op'>]</span>,
   quant<span class='op'>=</span><span class='st'>"fbar"</span><span class='op'>)</span><span class='op'>)</span>
-<span class='co'>#' Hindcast with past rec and catch</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='fu'>FLStocks</span><span class='op'>(</span>PLE<span class='op'>=</span><span class='va'>ple4</span>, FWD<span class='op'>=</span><span class='va'>hind</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='fwd-methods-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'>#' Hindcast with past rec and catch</span>
 <span class='va'>hind</span> <span class='op'>&lt;-</span> <span class='fu'>fwd</span><span class='op'>(</span><span class='va'>ple4</span>, sr<span class='op'>=</span><span class='fu'>rec</span><span class='op'>(</span><span class='va'>ple4</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'>ac</span><span class='op'>(</span><span class='fl'>1980</span><span class='op'>:</span><span class='fl'>2017</span><span class='op'>)</span><span class='op'>]</span>,
   catch<span class='op'>=</span><span class='fu'>catch</span><span class='op'>(</span><span class='va'>ple4</span><span class='op'>)</span><span class='op'>[</span>, <span class='fu'>ac</span><span class='op'>(</span><span class='fl'>1980</span><span class='op'>:</span><span class='fl'>2017</span><span class='op'>)</span><span class='op'>]</span><span class='op'>)</span>
 </div></pre>
