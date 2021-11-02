@@ -170,16 +170,26 @@ setMethod('fwdControl', signature(target='data.frame', iters='missing'),
 #' fwdControl(list(year=2010:2014, quant='catch', value=seq(2900, 3500, length=5)))  
 #' # With 40 values (iters) in each target
 #' fwdControl(list(year=2010:2014, quant='catch',
-#'   value=rnorm(200, seq(2900, 3500, length=5))))  
+#'   value=rnorm(200, seq(2900, 3500, length=5))))
+#' # lapply can be used to constructs a list
+#' fwdControl(lapply(2005:2020, function(x) list(quant="catch",
+#'   value=runif(1, 1e5, 1e6), year=x)))
+#' fwdControl(lapply(2005, function(x) list(quant="catch",
+#'   value=runif(1, 1e5, 1e6), year=x)))
 
 setMethod('fwdControl', signature(target='list', iters='missing'),
   function(target, ...) {
-    
+ 
     # target is LIST of LISTS
     if(is(target[[1]], 'list')) {
-      
+
       inp <- lapply(target, function(x) do.call('parsefwdList', x))
-      
+
+      # target LIST of length 1
+      if(length(inp) == 1) {
+        return(do.call('fwdControl', c(inp[[1]], list(...))))
+      }
+
       # target
       trg <- do.call('rbind', c(lapply(inp, '[[', 'target'),
         stringsAsFactors=FALSE))
@@ -211,13 +221,12 @@ setMethod('fwdControl', signature(target='list', iters='missing'),
       ite <- aperm(ite, c(3, 1, 2))
 
       return(fwdControl(target=trg, iters=ite, ...))
+    }
 
-    } else {
- 
-      inp <- do.call('parsefwdList', target)
+    inp <- do.call('parsefwdList', target)
  
     return(do.call('fwdControl', c(inp, list(...))))
-    }
+    
   }
 ) # }}}
 
