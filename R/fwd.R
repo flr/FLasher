@@ -553,6 +553,19 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     
     # COERCE to FLFisheries
     F <- as(object, 'FLFishery')
+    
+    # MATCH effort to get harvest in year - 1
+    pyr <- ac(an(pyrs[1]) - 1)
+    eff <- effort(F)[, pyr]
+
+    foo <- function(eff) {
+      sum((calc_F(F[[1]][, pyr], as(object, 'FLBiol')[, pyr], FLQuant(eff)) -
+       harvest(object)[, pyr]) ^ 2)
+    }
+
+    eff <- optimize(foo, c(eff * 0.85, eff * 1.15))$minimum
+ 
+    effort(F)[, pyr] <- eff
 
     # ADD matching names
     name(F) <- "F"
