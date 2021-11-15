@@ -43,7 +43,7 @@ test_that("Catch target, multiple iters",{
       params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
     catch_out <- c(catch(res)[,ac(years)])
     # Test to within tolerance of 1.5e-8
-    expect_equal(catch_out, catch_val)
+    expect_equal(catch_out, catch_val, tol=1e-6)
 })
 
 test_that("Fbar target, single iter",{
@@ -157,7 +157,7 @@ test_that("Catch relative target, single iter",{
     catch_out <- c(catch(res)[,ac(years)])
     catch_trg <- c(catch(ple4)[,ac(years[1]-1)]) * cumprod(catch_rel_val)
     # Test to within tolerance of 1.5e-8
-    expect_equal(catch_out, catch_trg)
+    expect_equal(catch_out, catch_trg, tol=1.5e-6)
 })
 
 # DEBUG

@@ -54,5 +54,5 @@ LazyData: No
 NeedsCompilation: Yes
 Biarch: FALSE  
 BugReports: https://github.com/flr/FLasher/issues
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Encoding: UTF-8

@@ -119,8 +119,13 @@ fwdControl(list(year=2010:2014, quant='catch', value=2900))
 fwdControl(list(year=2010:2014, quant='catch', value=seq(2900, 3500, length=5)))  
 # With 40 values (iters) in each target
 fwdControl(list(year=2010:2014, quant='catch',
-  value=rnorm(200, seq(2900, 3500, length=5))))  
-# FLQuant, needs 'qwuant' name
+  value=rnorm(200, seq(2900, 3500, length=5))))
+# lapply can be used to constructs a list
+fwdControl(lapply(2005:2020, function(x) list(quant="catch",
+  value=runif(1, 1e5, 1e6), year=x)))
+fwdControl(lapply(2005, function(x) list(quant="catch",
+  value=runif(1, 1e5, 1e6), year=x)))
+# FLQuant, needs 'quant' name
 fwdControl(FLQuant(0.2, dimnames=list(year=2000)), quant="fbar")
 }
 \seealso{
