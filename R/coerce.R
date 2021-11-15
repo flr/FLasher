@@ -103,7 +103,7 @@ setAs("FLQuants", "fwdControl",
     names(df) <- sub("qname", "quant", names(df))
 
     # DROP season if not used
-    if(length(unique(df$season)) == 1)
+    if(identical(unique(df$season), "all"))
       df$season <- NULL
 
 		# NO ITERS
@@ -117,7 +117,7 @@ setAs("FLQuants", "fwdControl",
     # ITERS
 		} else {
 
-			target <- cbind(df[df$iter == df$iter[1],][,c('year', 'quant')])
+			target <- cbind(df[df$iter == df$iter[1],][,c('year', 'season', 'quant')])
 	
       # ARRAY iters [targets, 3, iters]    
       iters <- array(NA, dim=c(dim(target)[1], 3, its),
