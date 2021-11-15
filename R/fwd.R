@@ -554,9 +554,6 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # COERCE to FLFisheries
     F <- as(object, 'FLFishery')
     
-    # MATCH effort to get harvest in year - 1
-    effort(F) <- harvest(object)[1, ] / catch.sel(object)[1, ]
-
     # ADD matching names
     name(F) <- "F"
     names(F) <- "B"
