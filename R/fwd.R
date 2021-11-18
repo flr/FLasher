@@ -256,7 +256,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     stop("objects have a single iter and target contains only NA.")
 
   # CALCULATE max(effort) per fishery
-  effscale <- unlist(lapply(rfishery, function(x) max(x@effort)))
+  effscale <- unname(unlist(lapply(rfishery, function(x) max(x@effort))))
   
   # CALL operatingModelRun
   out <- operatingModelRun(rfishery, biolscpp, control,
@@ -479,7 +479,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   
   function(object, control, sr, maxF=4, deviances=residuals,
-    residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
+    residuals=FLQuant(1, dimnames=dimnames(rec(object))),
+    effort_max=1e12, ...) {  
     
     # COMPUTE first year and season in control
     fy <- which(ac(control$year[1]) == dimnames(m(object))$year)
@@ -637,7 +638,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     control <- add_target_order_fls(control)
 
     # RUN
-    out <- fwd(Bs, Fs, control, deviances=FLQuants(B=deviances), ...)
+    out <- fwd(Bs, Fs, control, deviances=FLQuants(B=deviances),
+      effort_max=effort_max, ...)
 
     # PARSE output
     Fc <- out$fisheries[[1]][[1]]
