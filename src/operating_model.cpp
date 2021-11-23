@@ -756,6 +756,7 @@ void operatingModel::project_biols(const int timestep){
     unsigned int year = 1;
     unsigned int season = 1;
     timestep_to_year_season(timestep, biol_dim[3], year, season);
+//Rprintf("indices year: %i season: %i\n", year, season);
     
     // timestep checks
     if ((year > biol_dim[1]) | (season > biol_dim[3])){
@@ -776,9 +777,10 @@ void operatingModel::project_biols(const int timestep){
     FLQuantAD surv = survivors(biol_counter, prev_indices_min, prev_indices_max);
     FLQuantAD new_abundance = surv;
 
-//Rprintf("Timestep: %i Year: %i Season: %i\t", timestep, year, season);
+//Rprintf("prev_indices year: %i season: %i\n", prev_year, prev_season);
+// Rprintf("Timestep: %i Year: %i Season: %i\t", timestep, year, season);
 
-//Rprintf("Age 0 survivors surv 1: %f surv 2: %f\n", Value(surv(1,1,1,1,1,1)), Value(surv(2,1,1,1,1,1)));
+// Rprintf("Age 0 survivors surv 1: %f surv 2: %f\n", Value(surv(1,1,1,1,1,1)), Value(surv(2,1,1,1,1,1)));
 
     if(verbose){Rprintf("Starting to loop over units\n");}
     for (unsigned int ucount = 1; ucount <= biol_dim[2]; ++ucount){
