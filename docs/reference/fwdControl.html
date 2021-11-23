@@ -75,7 +75,7 @@ Bare bones man pages. Better to look at the vignettes and tutorials." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.8</span>
       </span>
     </div>
 
@@ -236,98 +236,132 @@ for sizing but not stored in any slot.</p>
     <p>Iago Mosqueira, Finlay Scott - EC JRC.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='co'># CREATE targets on fishing mortality ('f') by year</span>
-
-<span class='va'>target</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2000</span><span class='op'>:</span><span class='fl'>2010</span>, value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Lognormal.html'>rlnorm</a></span><span class='op'>(</span><span class='fl'>11</span><span class='op'>)</span>, quant<span class='op'>=</span><span class='st'>'f'</span><span class='op'>)</span>
-
-<span class='va'>fwc</span> <span class='op'>&lt;-</span> <span class='fu'>fwdControl</span><span class='op'>(</span>target<span class='op'>=</span><span class='va'>target</span><span class='op'>)</span>
-
-<span class='co'># INSPECT fwdControl object</span>
-
-<span class='fu'>show</span><span class='op'>(</span><span class='va'>fwc</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; An object of class "fwdControl"
-#&gt;  (step) year quant min value max
-#&gt;       1 2000     f  NA 0.247  NA
-#&gt;       2 2001     f  NA 1.291  NA
-#&gt;       3 2002     f  NA 0.087  NA
-#&gt;       4 2003     f  NA 0.994  NA
-#&gt;       5 2004     f  NA 1.862  NA
-#&gt;       6 2005     f  NA 3.153  NA
-#&gt;       7 2006     f  NA 0.162  NA
-#&gt;       8 2007     f  NA 0.781  NA
-#&gt;       9 2008     f  NA 0.783  NA
-#&gt;      10 2009     f  NA 0.754  NA
-#&gt;      11 2010     f  NA 0.575  NA</div><div class='input'>
-<span class='co'># Construct from data.frame and array</span>
-<span class='va'>fcn</span> <span class='op'>&lt;-</span> <span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2000</span><span class='op'>:</span><span class='fl'>2005</span>, quant<span class='op'>=</span><span class='st'>'f'</span>, value<span class='op'>=</span><span class='fl'>0.5</span><span class='op'>)</span><span class='op'>)</span>
-<span class='co'># Construct a fwdControl with some targets having multiple Biols, specified using the G() function</span>
-<span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2000</span><span class='op'>:</span><span class='fl'>2001</span>, value<span class='op'>=</span><span class='fl'>200</span>, quant<span class='op'>=</span><span class='st'>"catch"</span>, biol<span class='op'>=</span><span class='fu'>G</span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>,
-  <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2002</span><span class='op'>:</span><span class='fl'>2003</span>, value<span class='op'>=</span><span class='fl'>100</span>, quant<span class='op'>=</span><span class='st'>"catch"</span>, biol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; An object of class "fwdControl"
-#&gt;  (step) year quant biol min   value max
-#&gt;       1 2000 catch 1, 2  NA 200.000  NA
-#&gt;       2 2001 catch 1, 2  NA 200.000  NA
-#&gt;       3 2002 catch    1  NA 100.000  NA
-#&gt;       4 2003 catch    2  NA 100.000  NA</div><div class='input'><span class='co'># Vector of values by year</span>
-<span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2015</span>, quant<span class='op'>=</span><span class='st'>"f"</span>, value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>1.3</span>, length<span class='op'>=</span><span class='fl'>6</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; An object of class "fwdControl"
-#&gt;  (step) year quant min value max
-#&gt;       1 2010     f  NA 1.000  NA
-#&gt;       2 2011     f  NA 1.060  NA
-#&gt;       3 2012     f  NA 1.120  NA
-#&gt;       4 2013     f  NA 1.180  NA
-#&gt;       5 2014     f  NA 1.240  NA
-#&gt;       6 2015     f  NA 1.300  NA</div><div class='input'><span class='co'># Two targets, with ranges for one</span>
-<span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2015</span>, each<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>,
-  quant<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"f"</span>, <span class='st'>"catch"</span><span class='op'>)</span>,
-  min<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>20000</span><span class='op'>)</span><span class='op'>)</span>, max<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>30000</span><span class='op'>)</span><span class='op'>)</span>,
-  value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>1.3</span>, length<span class='op'>=</span><span class='fl'>6</span><span class='op'>)</span>, <span class='cn'>NA</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; An object of class "fwdControl"
-#&gt;  (step) year quant       min value       max
-#&gt;       1 2010     f        NA 1.000        NA
-#&gt;       2 2010 catch 20000.000    NA 30000.000
-#&gt;       3 2011     f        NA 1.060        NA
-#&gt;       4 2011 catch 20000.000    NA 30000.000
-#&gt;       5 2012     f        NA 1.120        NA
-#&gt;       6 2012 catch 20000.000    NA 30000.000
-#&gt;       7 2013     f        NA 1.180        NA
-#&gt;       8 2013 catch 20000.000    NA 30000.000
-#&gt;       9 2014     f        NA 1.240        NA
-#&gt;      10 2014 catch 20000.000    NA 30000.000
-#&gt;      11 2015     f        NA 1.300        NA
-#&gt;      12 2015 catch 20000.000    NA 30000.000</div><div class='input'><span class='co'># Single target value</span>
-<span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2014</span>, quant<span class='op'>=</span><span class='st'>'catch'</span>, value<span class='op'>=</span><span class='fl'>2900</span><span class='op'>)</span><span class='op'>)</span>  
-</div><div class='output co'>#&gt; An object of class "fwdControl"
-#&gt;  (step) year quant min    value max
-#&gt;       1 2010 catch  NA 2900.000  NA
-#&gt;       2 2011 catch  NA 2900.000  NA
-#&gt;       3 2012 catch  NA 2900.000  NA
-#&gt;       4 2013 catch  NA 2900.000  NA
-#&gt;       5 2014 catch  NA 2900.000  NA</div><div class='input'><span class='co'># One value per target (year)</span>
-<span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2014</span>, quant<span class='op'>=</span><span class='st'>'catch'</span>, value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>2900</span>, <span class='fl'>3500</span>, length<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>  
-</div><div class='output co'>#&gt; An object of class "fwdControl"
-#&gt;  (step) year quant min    value max
-#&gt;       1 2010 catch  NA 2900.000  NA
-#&gt;       2 2011 catch  NA 3050.000  NA
-#&gt;       3 2012 catch  NA 3200.000  NA
-#&gt;       4 2013 catch  NA 3350.000  NA
-#&gt;       5 2014 catch  NA 3500.000  NA</div><div class='input'><span class='co'># With 40 values (iters) in each target</span>
-<span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2014</span>, quant<span class='op'>=</span><span class='st'>'catch'</span>,
-  value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>200</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>2900</span>, <span class='fl'>3500</span>, length<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>  
-</div><div class='output co'>#&gt; An object of class "fwdControl"
-#&gt;  (step) year quant min           value max
-#&gt;       1 2010 catch  NA 2899.701(1.001)  NA
-#&gt;       2 2011 catch  NA 3049.967(0.898)  NA
-#&gt;       3 2012 catch  NA 3200.145(0.811)  NA
-#&gt;       4 2013 catch  NA 3350.465(0.896)  NA
-#&gt;       5 2014 catch  NA 3500.279(1.086)  NA
-#&gt;    iters:  40 
-#&gt; </div><div class='input'><span class='co'># FLQuant, needs 'qwuant' name</span>
-<span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'>FLQuant</span><span class='op'>(</span><span class='fl'>0.2</span>, dimnames<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2000</span><span class='op'>)</span><span class='op'>)</span>, quant<span class='op'>=</span><span class='st'>"fbar"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; An object of class "fwdControl"
-#&gt;  (step) year quant biol min value max
-#&gt;       1 2000  fbar    1  NA 0.200  NA</div></pre>
+    <pre class="examples"><span class='r-in'></span>
+<span class='r-in'><span class='co'># CREATE targets on fishing mortality ('f') by year</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>target</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2000</span><span class='op'>:</span><span class='fl'>2010</span>, value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Lognormal.html'>rlnorm</a></span><span class='op'>(</span><span class='fl'>11</span><span class='op'>)</span>, quant<span class='op'>=</span><span class='st'>'f'</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>fwc</span> <span class='op'>&lt;-</span> <span class='fu'>fwdControl</span><span class='op'>(</span>target<span class='op'>=</span><span class='va'>target</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># INSPECT fwdControl object</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'>show</span><span class='op'>(</span><span class='va'>fwc</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "fwdControl"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  (step) year quant min value max</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       1 2000     f  NA 0.247  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       2 2001     f  NA 1.291  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       3 2002     f  NA 0.087  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       4 2003     f  NA 0.994  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       5 2004     f  NA 1.862  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       6 2005     f  NA 3.153  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       7 2006     f  NA 0.162  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       8 2007     f  NA 0.781  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       9 2008     f  NA 0.783  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      10 2009     f  NA 0.754  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      11 2010     f  NA 0.575  NA</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Construct from data.frame and array</span></span>
+<span class='r-in'><span class='va'>fcn</span> <span class='op'>&lt;-</span> <span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2000</span><span class='op'>:</span><span class='fl'>2005</span>, quant<span class='op'>=</span><span class='st'>'f'</span>, value<span class='op'>=</span><span class='fl'>0.5</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'># Construct a fwdControl with some targets having multiple Biols, specified using the G() function</span></span>
+<span class='r-in'><span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2000</span><span class='op'>:</span><span class='fl'>2001</span>, value<span class='op'>=</span><span class='fl'>200</span>, quant<span class='op'>=</span><span class='st'>"catch"</span>, biol<span class='op'>=</span><span class='fu'>G</span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'>  <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2002</span><span class='op'>:</span><span class='fl'>2003</span>, value<span class='op'>=</span><span class='fl'>100</span>, quant<span class='op'>=</span><span class='st'>"catch"</span>, biol<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "fwdControl"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  (step) year quant biol min   value max</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       1 2000 catch 1, 2  NA 200.000  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       2 2001 catch 1, 2  NA 200.000  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       3 2002 catch    1  NA 100.000  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       4 2003 catch    2  NA 100.000  NA</span>
+<span class='r-in'><span class='co'># Vector of values by year</span></span>
+<span class='r-in'><span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2015</span>, quant<span class='op'>=</span><span class='st'>"f"</span>, value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>1.3</span>, length<span class='op'>=</span><span class='fl'>6</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "fwdControl"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  (step) year quant min value max</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       1 2010     f  NA 1.000  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       2 2011     f  NA 1.060  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       3 2012     f  NA 1.120  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       4 2013     f  NA 1.180  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       5 2014     f  NA 1.240  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       6 2015     f  NA 1.300  NA</span>
+<span class='r-in'><span class='co'># Two targets, with ranges for one</span></span>
+<span class='r-in'><span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2015</span>, each<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>,</span>
+<span class='r-in'>  quant<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"f"</span>, <span class='st'>"catch"</span><span class='op'>)</span>,</span>
+<span class='r-in'>  min<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>20000</span><span class='op'>)</span><span class='op'>)</span>, max<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>30000</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'>  value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>1.3</span>, length<span class='op'>=</span><span class='fl'>6</span><span class='op'>)</span>, <span class='cn'>NA</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "fwdControl"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  (step) year quant       min value       max</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       1 2010     f        NA 1.000        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       2 2010 catch 20000.000    NA 30000.000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       3 2011     f        NA 1.060        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       4 2011 catch 20000.000    NA 30000.000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       5 2012     f        NA 1.120        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       6 2012 catch 20000.000    NA 30000.000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       7 2013     f        NA 1.180        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       8 2013 catch 20000.000    NA 30000.000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       9 2014     f        NA 1.240        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      10 2014 catch 20000.000    NA 30000.000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      11 2015     f        NA 1.300        NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      12 2015 catch 20000.000    NA 30000.000</span>
+<span class='r-in'><span class='co'># Single target value</span></span>
+<span class='r-in'><span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2014</span>, quant<span class='op'>=</span><span class='st'>'catch'</span>, value<span class='op'>=</span><span class='fl'>2900</span><span class='op'>)</span><span class='op'>)</span>  </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "fwdControl"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  (step) year quant min    value max</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       1 2010 catch  NA 2900.000  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       2 2011 catch  NA 2900.000  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       3 2012 catch  NA 2900.000  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       4 2013 catch  NA 2900.000  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       5 2014 catch  NA 2900.000  NA</span>
+<span class='r-in'><span class='co'># One value per target (year)</span></span>
+<span class='r-in'><span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2014</span>, quant<span class='op'>=</span><span class='st'>'catch'</span>, value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>2900</span>, <span class='fl'>3500</span>, length<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>  </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "fwdControl"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  (step) year quant min    value max</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       1 2010 catch  NA 2900.000  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       2 2011 catch  NA 3050.000  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       3 2012 catch  NA 3200.000  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       4 2013 catch  NA 3350.000  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       5 2014 catch  NA 3500.000  NA</span>
+<span class='r-in'><span class='co'># With 40 values (iters) in each target</span></span>
+<span class='r-in'><span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2014</span>, quant<span class='op'>=</span><span class='st'>'catch'</span>,</span>
+<span class='r-in'>  value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='fl'>200</span>, <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>2900</span>, <span class='fl'>3500</span>, length<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "fwdControl"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  (step) year quant min           value max</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       1 2010 catch  NA 2899.701(1.001)  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       2 2011 catch  NA 3049.967(0.898)  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       3 2012 catch  NA 3200.145(0.811)  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       4 2013 catch  NA 3350.465(0.896)  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       5 2014 catch  NA 3500.279(1.086)  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    iters:  40 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='co'># lapply can be used to constructs a list</span></span>
+<span class='r-in'><span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='fl'>2005</span><span class='op'>:</span><span class='fl'>2020</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>quant<span class='op'>=</span><span class='st'>"catch"</span>,</span>
+<span class='r-in'>  value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>1e5</span>, <span class='fl'>1e6</span><span class='op'>)</span>, year<span class='op'>=</span><span class='va'>x</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "fwdControl"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  (step) year quant min      value max</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       1 2005 catch  NA 430019.293  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       2 2006 catch  NA 523936.032  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       3 2007 catch  NA 805755.201  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       4 2008 catch  NA 541353.531  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       5 2009 catch  NA 191755.859  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       6 2010 catch  NA 949113.752  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       7 2011 catch  NA 735525.552  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       8 2012 catch  NA 552037.813  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       9 2013 catch  NA 576941.299  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      10 2014 catch  NA 332583.714  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      11 2015 catch  NA 740578.075  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      12 2016 catch  NA 971616.295  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      13 2017 catch  NA 694970.011  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      14 2018 catch  NA 816625.531  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      15 2019 catch  NA 165888.219  NA</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>      16 2020 catch  NA 896268.596  NA</span>
+<span class='r-in'><span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='fl'>2005</span>, <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>quant<span class='op'>=</span><span class='st'>"catch"</span>,</span>
+<span class='r-in'>  value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>1e5</span>, <span class='fl'>1e6</span><span class='op'>)</span>, year<span class='op'>=</span><span class='va'>x</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "fwdControl"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  (step) year quant min      value max</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       1 2005 catch  NA 844030.339  NA</span>
+<span class='r-in'><span class='co'># FLQuant, needs 'quant' name</span></span>
+<span class='r-in'><span class='fu'>fwdControl</span><span class='op'>(</span><span class='fu'>FLQuant</span><span class='op'>(</span><span class='fl'>0.2</span>, dimnames<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fl'>2000</span><span class='op'>)</span><span class='op'>)</span>, quant<span class='op'>=</span><span class='st'>"fbar"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "fwdControl"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  (step) year quant biol min value max</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       1 2000  fbar    1  NA 0.200  NA</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

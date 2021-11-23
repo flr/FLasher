@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.8</span>
       </span>
     </div>
 
@@ -152,17 +152,18 @@
     <p>summary(object)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>control</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fwdControl.html'>fwdControl</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2015</span>, each<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>,
-  quant<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"f"</span>, <span class='st'>"catch"</span><span class='op'>)</span>, min<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>20000</span><span class='op'>)</span><span class='op'>)</span>, max<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>30000</span><span class='op'>)</span><span class='op'>)</span>,
-  value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>1.3</span>, length<span class='op'>=</span><span class='fl'>6</span><span class='op'>)</span>, <span class='cn'>NA</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='fu'>summary</span><span class='op'>(</span><span class='va'>control</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; An object of class 'fwdControl' with:
-#&gt; 
-#&gt;    quant  2010  2011  2012  2013  2014  2015
-#&gt;        f     1  1.06  1.12  1.18  1.24   1.3
-#&gt;  catch &gt; 20000 20000 20000 20000 20000 20000
-#&gt;  catch &lt; 30000 30000 30000 30000 30000 30000</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>control</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fwdControl.html'>fwdControl</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>year<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>2010</span><span class='op'>:</span><span class='fl'>2015</span>, each<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span>,</span>
+<span class='r-in'>  quant<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"f"</span>, <span class='st'>"catch"</span><span class='op'>)</span>, min<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>20000</span><span class='op'>)</span><span class='op'>)</span>, max<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='cn'>NA</span>, <span class='fl'>30000</span><span class='op'>)</span><span class='op'>)</span>,</span>
+<span class='r-in'>  value<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>1.3</span>, length<span class='op'>=</span><span class='fl'>6</span><span class='op'>)</span>, <span class='cn'>NA</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'>summary</span><span class='op'>(</span><span class='va'>control</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class 'fwdControl' with:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    quant  2010  2011  2012  2013  2014  2015</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        f     1  1.06  1.12  1.18  1.24   1.3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  catch &gt; 20000 20000 20000 20000 20000 20000</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  catch &lt; 30000 30000 30000 30000 30000 30000</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

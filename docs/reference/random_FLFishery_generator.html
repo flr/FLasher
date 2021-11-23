@@ -73,7 +73,7 @@ Used for automatic testing, particularly of the FLFishery_base&amp;lt;T&amp;gt; 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.8</span>
       </span>
     </div>
 
@@ -165,48 +165,110 @@ Used for automatic testing, particularly of the FLFishery_base&lt;T&gt; class in
     <p>An FLFishery object</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>flf</span> <span class='op'>&lt;-</span> <span class='fu'>random_FLFishery_generator</span><span class='op'>(</span>fixed_dims <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='cn'>NA</span>,<span class='fl'>10</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>flf</span>, <span class='va'>summary</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; An object of class "FLCatch"
-#&gt; 
-#&gt; Name: -405 
-#&gt; Description: 1360 
-#&gt; Quant: age 
-#&gt; Dims:  age 	year	unit	season	area	iter
-#&gt; 	2	10	1	1	1	1	
-#&gt; 
-#&gt; Range:  min	max	pgroup	minyear	maxyear 
-#&gt; 	1	2	2	1	10	
-#&gt; 
-#&gt; landings.n    : [ 2 10 1 1 1 1 ], units =  10^3 
-#&gt; landings.wt   : [ 2 10 1 1 1 1 ], units =  kg 
-#&gt; discards.n    : [ 2 10 1 1 1 1 ], units =  10^3 
-#&gt; discards.wt   : [ 2 10 1 1 1 1 ], units =  kg 
-#&gt; catch.sel     : [ 2 10 1 1 1 1 ], units =  prop 
-#&gt; price         : [ 2 10 1 1 1 1 ], units =  NA 
-#&gt; An object of class "FLCatch"
-#&gt; 
-#&gt; Name: 168 
-#&gt; Description: -350 
-#&gt; Quant: age 
-#&gt; Dims:  age 	year	unit	season	area	iter
-#&gt; 	2	10	1	1	1	1	
-#&gt; 
-#&gt; Range:  min	max	pgroup	minyear	maxyear 
-#&gt; 	1	2	2	1	10	
-#&gt; 
-#&gt; landings.n    : [ 2 10 1 1 1 1 ], units =  10^3 
-#&gt; landings.wt   : [ 2 10 1 1 1 1 ], units =  kg 
-#&gt; discards.n    : [ 2 10 1 1 1 1 ], units =  10^3 
-#&gt; discards.wt   : [ 2 10 1 1 1 1 ], units =  kg 
-#&gt; catch.sel     : [ 2 10 1 1 1 1 ], units =  prop 
-#&gt; price         : [ 2 10 1 1 1 1 ], units =  NA </div><div class='output co'>#&gt; $`Catch 1`
-#&gt; NULL
-#&gt; 
-#&gt; $`Catch 2`
-#&gt; NULL
-#&gt; </div><div class='input'><span class='va'>flf</span> <span class='op'>&lt;-</span> <span class='fu'>random_FLFishery_generator</span><span class='op'>(</span>fixed_dims <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='cn'>NA</span>,<span class='fl'>10</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, max_dims <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>100</span>,<span class='cn'>NA</span>,<span class='cn'>NA</span>,<span class='cn'>NA</span>,<span class='cn'>NA</span>,<span class='cn'>NA</span><span class='op'>)</span><span class='op'>)</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>flf</span> <span class='op'>&lt;-</span> <span class='fu'>random_FLFishery_generator</span><span class='op'>(</span>fixed_dims <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='cn'>NA</span>,<span class='fl'>10</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>flf</span>, <span class='va'>summary</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "FLCatch"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Name: 453 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Description: 1510 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Quant: age </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Dims:  age 	year	unit	season	area	iter</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 	1	10	1	1	1	1	</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Range:  min	max	pgroup	minyear	maxyear </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 	1	1	1	1	10	</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> landings.n    : [ 1 10 1 1 1 1 ], units =  10^3 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> landings.wt   : [ 1 10 1 1 1 1 ], units =  kg </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> discards.n    : [ 1 10 1 1 1 1 ], units =  10^3 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> discards.wt   : [ 1 10 1 1 1 1 ], units =  kg </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> catch.sel     : [ 1 10 1 1 1 1 ], units =  prop </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> price         : [ 1 10 1 1 1 1 ], units =  NA </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "FLCatch"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Name: 649 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Description: 269 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Quant: age </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Dims:  age 	year	unit	season	area	iter</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 	1	10	1	1	1	1	</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Range:  min	max	pgroup	minyear	maxyear </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 	1	1	1	1	10	</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> landings.n    : [ 1 10 1 1 1 1 ], units =  10^3 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> landings.wt   : [ 1 10 1 1 1 1 ], units =  kg </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> discards.n    : [ 1 10 1 1 1 1 ], units =  10^3 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> discards.wt   : [ 1 10 1 1 1 1 ], units =  kg </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> catch.sel     : [ 1 10 1 1 1 1 ], units =  prop </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> price         : [ 1 10 1 1 1 1 ], units =  NA </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "FLCatch"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Name: -660 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Description: -612 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Quant: age </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Dims:  age 	year	unit	season	area	iter</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 	1	10	1	1	1	1	</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Range:  min	max	pgroup	minyear	maxyear </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 	1	1	1	1	10	</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> landings.n    : [ 1 10 1 1 1 1 ], units =  10^3 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> landings.wt   : [ 1 10 1 1 1 1 ], units =  kg </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> discards.n    : [ 1 10 1 1 1 1 ], units =  10^3 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> discards.wt   : [ 1 10 1 1 1 1 ], units =  kg </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> catch.sel     : [ 1 10 1 1 1 1 ], units =  prop </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> price         : [ 1 10 1 1 1 1 ], units =  NA </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "FLCatch"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Name: 589 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Description: -1100 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Quant: age </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Dims:  age 	year	unit	season	area	iter</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 	1	10	1	1	1	1	</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Range:  min	max	pgroup	minyear	maxyear </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 	1	1	1	1	10	</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> landings.n    : [ 1 10 1 1 1 1 ], units =  10^3 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> landings.wt   : [ 1 10 1 1 1 1 ], units =  kg </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> discards.n    : [ 1 10 1 1 1 1 ], units =  10^3 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> discards.wt   : [ 1 10 1 1 1 1 ], units =  kg </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> catch.sel     : [ 1 10 1 1 1 1 ], units =  prop </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> price         : [ 1 10 1 1 1 1 ], units =  NA </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "FLCatch"</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Name: 468 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Description: -701 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Quant: age </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Dims:  age 	year	unit	season	area	iter</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 	1	10	1	1	1	1	</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Range:  min	max	pgroup	minyear	maxyear </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 	1	1	1	1	10	</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> landings.n    : [ 1 10 1 1 1 1 ], units =  10^3 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> landings.wt   : [ 1 10 1 1 1 1 ], units =  kg </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> discards.n    : [ 1 10 1 1 1 1 ], units =  10^3 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> discards.wt   : [ 1 10 1 1 1 1 ], units =  kg </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> catch.sel     : [ 1 10 1 1 1 1 ], units =  prop </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> price         : [ 1 10 1 1 1 1 ], units =  NA </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`Catch 1`</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`Catch 2`</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`Catch 3`</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`Catch 4`</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> $`Catch 5`</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NULL</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-in'><span class='va'>flf</span> <span class='op'>&lt;-</span> <span class='fu'>random_FLFishery_generator</span><span class='op'>(</span>fixed_dims <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='cn'>NA</span>,<span class='fl'>10</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>)</span>, max_dims <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>100</span>,<span class='cn'>NA</span>,<span class='cn'>NA</span>,<span class='cn'>NA</span>,<span class='cn'>NA</span>,<span class='cn'>NA</span><span class='op'>)</span><span class='op'>)</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

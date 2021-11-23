@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.8</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <h1 data-toc-skip>FLasher reference manual</h1>
                         <h4 class="author">Finlay Scott, Iago Mosqueira - European Commission Joint Research Center</h4>
             
-            <h4 class="date">14 October, 2021</h4>
+            <h4 class="date">23 November, 2021</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/flr/FLasher/blob/master/vignettes/FLasher_reference.Rmd"><code>vignettes/FLasher_reference.Rmd</code></a></small>
       <div class="hidden name"><code>FLasher_reference.Rmd</code></div>
@@ -736,7 +736,7 @@ This is illustrated below
 <li>
 <em>ssb_spawn</em> and <em>biomass_spawn</em> is the total SSB or biomass of fish <em>at the time of spawning</em>.</li>
 <li>
-<em>ssb_flash</em> and <em>biomass_flash</em> tries to replicate the behaviour of the <strong>FLash</strong> package. If fishing occurs before spawning, the SSN or biomass at the time of spawning is returned. If the fishing occurs after spawning then fishing has no impact on SSB or biomass at the time of spawning and so the SSB or biomass at the time of spawning in the <code>next</code> time step is returned. Similarly, if there is no spawning in that time step, the SSB or biomass at the time of spawning in the <code>next</code> time step is returned (unless there is also no spawning in the next time step in which case an error occurs’. This behaviour is a bit dangerous because if we are trying to get the SSB or biomass in the next time step and fishing in the next time step happens before spawning, the SSB or biomass will be affected by the fishing effort in the current time step <code>and</code> the next time step (which is not solved for). Due to the weird nature of this target type it is better to only use if for annual models.</li>
+<em>ssb_flash</em> and <em>biomass_flash</em> tries to replicate the behaviour of the <strong>FLash</strong> package. If fishing occurs before spawning, the SSN or biomass at the time of spawning is returned. If the fishing occurs after spawning then fishing has no impact on SSB or biomass at the time of spawning and so the SSB or biomass at the time of spawning in the <code><a href="https://rdrr.io/r/base/Control.html">next</a></code> time step is returned. Similarly, if there is no spawning in that time step, the SSB or biomass at the time of spawning in the <code><a href="https://rdrr.io/r/base/Control.html">next</a></code> time step is returned (unless there is also no spawning in the next time step in which case an error occurs’. This behaviour is a bit dangerous because if we are trying to get the SSB or biomass in the next time step and fishing in the next time step happens before spawning, the SSB or biomass will be affected by the fishing effort in the current time step <code>and</code> the next time step (which is not solved for). Due to the weird nature of this target type it is better to only use if for annual models.</li>
 </ul>
 <p>Note that as <code>SRP</code> target is the SRP at the time of spawning, if the fishing periods starts after spawning then the fishing mortality in that timestep will have no impact on the SRP. The solver will fail in this case.</p>
 </div>

@@ -12,13 +12,13 @@ Projection of future population and fishery dynamics is carried out for a given 
 To install this package, start R and enter:
 
 ```
-	install.packages("FLasher", repos="http://flr-project.org/R")
+install.packages("FLasher", repos="http://flr-project.org/R")
 ```
 
 or directly from the github repository by using:
 
 ```
-  remotes::install_github("flr/FLasher")
+remotes::install_github("flr/FLasher")
 ```
 
 **WARNING**: FLasher requires a 64 bit installation of R. Installation from source in R for Windows should be carried out using `--no-multiarch` for a 64 bit-only installation if both 32 and 64 bit R are available.

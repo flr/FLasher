@@ -73,7 +73,7 @@ Used for automatic testing." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">FLasher</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.8</span>
       </span>
     </div>
 
@@ -175,35 +175,39 @@ Used for automatic testing.</p>
     <p>An FLQuant</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>flq</span> <span class='op'>&lt;-</span> <span class='fu'>random_FLQuant_generator</span><span class='op'>(</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>flq</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] 3 5 3 3 2 1</div><div class='input'><span class='fu'><a href='summary.html'>summary</a></span><span class='op'>(</span><span class='va'>flq</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; An object of class "FLQuant" with:
-#&gt; dim  :  3 5 3 3 2 1 
-#&gt; quant:  age 
-#&gt; units:  1.18 
-#&gt; 
-#&gt; Min    :  -256.173 
-#&gt; 1st Qu.:  -61.47061 
-#&gt; Mean   :  -2.781357 
-#&gt; Median :  -5.374132 
-#&gt; 3rd Qu.:  59.66756 
-#&gt; Max    :  379.7615 
-#&gt; NAs    :  0 %</div><div class='input'><span class='va'>flq</span> <span class='op'>&lt;-</span> <span class='fu'>random_FLQuant_generator</span><span class='op'>(</span>fixed_dims <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='cn'>NA</span>,<span class='fl'>10</span>,<span class='fl'>1</span>,<span class='fl'>4</span>,<span class='fl'>1</span>,<span class='cn'>NA</span><span class='op'>)</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>flq</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1]  3 10  1  4  1  1</div><div class='input'><span class='fu'><a href='summary.html'>summary</a></span><span class='op'>(</span><span class='va'>flq</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; An object of class "FLQuant" with:
-#&gt; dim  :  3 10 1 4 1 1 
-#&gt; quant:  age 
-#&gt; units:  2.04 
-#&gt; 
-#&gt; Min    :  -236.2909 
-#&gt; 1st Qu.:  -59.97786 
-#&gt; Mean   :  1.378532 
-#&gt; Median :  -12.8695 
-#&gt; 3rd Qu.:  65.30138 
-#&gt; Max    :  277.3016 
-#&gt; NAs    :  0 %</div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>flq</span> <span class='op'>&lt;-</span> <span class='fu'>random_FLQuant_generator</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>flq</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 3 6 3 3 3 2</span>
+<span class='r-in'><span class='fu'><a href='summary.html'>summary</a></span><span class='op'>(</span><span class='va'>flq</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "FLQuant" with:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> dim  :  3 6 3 3 3 2 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> quant:  age </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> units:  1.9 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Min    :  -325.9823 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1st Qu.:  -70.25844 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Mean   :  0.6458963 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Median :  1.713319 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3rd Qu.:  65.3906 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Max    :  360.9937 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NAs    :  0 %</span>
+<span class='r-in'><span class='va'>flq</span> <span class='op'>&lt;-</span> <span class='fu'>random_FLQuant_generator</span><span class='op'>(</span>fixed_dims <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='cn'>NA</span>,<span class='fl'>10</span>,<span class='fl'>1</span>,<span class='fl'>4</span>,<span class='fl'>1</span>,<span class='cn'>NA</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>flq</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1]  1 10  1  4  1  4</span>
+<span class='r-in'><span class='fu'><a href='summary.html'>summary</a></span><span class='op'>(</span><span class='va'>flq</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> An object of class "FLQuant" with:</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> dim  :  1 10 1 4 1 4 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> quant:  age </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> units:  0.633 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Min    :  -255.4237 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1st Qu.:  -65.96578 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Mean   :  -3.896104 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Median :  -4.49757 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3rd Qu.:  53.15359 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Max    :  206.4432 </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> NAs    :  0 %</span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
