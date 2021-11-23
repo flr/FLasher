@@ -1,45 +1,39 @@
-# FLasher
-- Version: 0.6.8
-- Date: 15-11-2021
-- Author: Finlay Scott and Iago Mosqueira.
-- Maintainer: Iago Mosqueira <iago.mosqueira@wur.nl>
-- Repository: <https://github.com/flr/FLasher/>
-- Bug reports: <https://github.com/flr/FLasher/issues>
+# FLasher <img src="man/figures/flasher.png" align="right" width="120" />
+
+[![R-CMD-check](https://github.com/flr/FLasher/workflows/R-CMD-check/badge.svg)](https://github.com/flr/FLasher/actions)
+[![License](https://eddelbuettel.github.io/badges/GPL2+.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
+[![Codecov test coverage](https://codecov.io/gh/flr/FLasher/branch/master/graph/badge.svg)](https://codecov.io/gh/flr/FLasher?branch=master)
 
 ## Overview
 
 Projection of future population and fishery dynamics is carried out for a given set of management targets. A system of equations is solved, using Automatic Differentation (AD), for the levels of effort by fishery/fleet that will result in the required abundances, catches or fishing mortalities.
 
+## Installation
 To install this package, start R and enter:
 
+```
 	install.packages("FLasher", repos="http://flr-project.org/R")
+```
 
-To install the development version, you can use:
+or directly from the github repository by using:
 
-  devtools::install_github("flr/FLasher", INSTALL_opts=c("--no-multiarch"))
+```
+  remotes::install_github("flr/FLasher")
+```
 
-**WARNING**: FLasher requires a 64 bit installation of R. Installation from source in R for Windows should be carried out using `--no-multiarch` for a 64 bit-only installation.
+**WARNING**: FLasher requires a 64 bit installation of R. Installation from source in R for Windows should be carried out using `--no-multiarch` for a 64 bit-only installation if both 32 and 64 bit R are available.
 
 ## Documentation
+- [Forecasting on the Medium Term for advice using FLasher](https://flr-project.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html)
 - [Help pages](http://flr-project.org/FLasher)
 
-## Bibliography
-
-## Build Status
-[![Travis Build Status](https://travis-ci.org/flr/FLasher.svg?branch=master)](https://travis-ci.org/flr/FLasher)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/flr/FLasher?branch=master&svg=true)](https://ci.appveyor.com/project/flr/FLasher)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/FLasher)](https://cran.r-project.org/package=FLasher)
-
-## Code coverage
-
-[![Codecov test coverage](https://codecov.io/gh/flr/FLasher/branch/master/graph/badge.svg)](https://codecov.io/gh/flr/FLasher?branch=master)
-
 ## License
-Copyright (c) 2016-19 European Union. Released under the [EUPL v1.2](https://eupl.eu/1.2/en/).
+Copyright (c) 2016-21 European Union. Released under the [EUPL v1.2](https://eupl.eu/1.2/en/).
 
 ## Contact
 You are welcome to:
 
 - Submit suggestions and bug-reports at: <https://github.com/flr/FLasher/issues>
 - Send a pull request on: <https://github.com/flr/FLasher/>
-- Compose a friendly e-mail to: <iago.mosqueira@wur.nl>
+- Author: Finlay Scott and Iago Mosqueira (EC-JRC).
+- Maintainer: Iago Mosqueira <iago.mosqueira@wur.nl>
