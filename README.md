@@ -23,6 +23,12 @@ remotes::install_github("flr/FLasher")
 
 **WARNING**: FLasher requires a 64 bit installation of R. Installation from source in R for Windows should be carried out using `--no-multiarch` for a 64 bit-only installation if both 32 and 64 bit R are available.
 
+```
+library(devtools)
+options(devtools.install.args = "--no-multiarch")   
+install_github("flr/FLasher")
+```
+
 ## Documentation
 - [Forecasting on the Medium Term for advice using FLasher](https://flr-project.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html)
 - [Help pages](http://flr-project.org/FLasher)
