@@ -35,6 +35,7 @@ exportClasses(
 	"fwdControl")
 
 export(
+  "ffwd",
   "G",
   "get_FLQuant_element",
   "get_FLQuant_elements",
