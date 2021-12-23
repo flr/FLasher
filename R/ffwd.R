@@ -35,6 +35,7 @@ ffwd <- function(object, sr, fbar=control, control=fbar, deviances="missing") {
 
     # DIMS
     dm <- dim(object)
+    dms <- dims(object)
 
     # EXTRACT slots
     sn <- stock.n(object)
@@ -46,12 +47,15 @@ ffwd <- function(object, sr, fbar=control, control=fbar, deviances="missing") {
     if(missing(deviances)) {
       deviances <- rec(object) %=% 1
     }
+
+    # WINDOW deviances to match stock
+    deviances <- window(deviances, start=dms$minyear)
     
     # HANDLE fwdControl
     if(is(fbar, "fwdControl")) {
       # TODO CHECK single target per year & no max/min
       # TODO CHECK target is fbar/f
-      fbar <- sf[1, fbar$year] %=% fbar$value
+      fbar <- sf[1, ac(fbar$year)] %=% fbar$value
     }
 
     # SET years
@@ -69,7 +73,7 @@ ffwd <- function(object, sr, fbar=control, control=fbar, deviances="missing") {
     fs <- harvest.spwn(object)
     ep <- exp(-(sf * fs) - (sm * ms)) * sw * ma
 
-    # LOOP over years
+    # LOOP over years (i is new year)
     for (i in yrs - 1) {
       # rec * deviances
       sn[1, i + 1] <- eval(sr@model[[3]],   
