@@ -1,5 +1,5 @@
-# ffwd.R - DESC
-# /ffwd.R
+# ffwd.R - Fast fwd for simple fbar targets on FLStock only.
+# FLasher/R/ffwd.R
 
 # Copyright Iago MOSQUEIRA (WMR), 2021
 # Author: Iago MOSQUEIRA (WMR) <iago.mosqueira@wur.nl>
@@ -64,7 +64,7 @@ ffwd <- function(object, sr, fbar=control, control=fbar, deviances="missing") {
     # COMPUTE harvest
     fages <- range(object, c("minfbar", "maxfbar"))
     sf[, yrs] <- (se[, yrs] %/%
-      quantMeans(se[seq(fages[1], fages[2]), yrs])) %*% fbar
+      quantMeans(se[ac(seq(fages[1], fages[2])), yrs])) %*% fbar
 
     # COMPUTE TEP
     sw <- stock.wt(object)
