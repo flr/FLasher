@@ -35,6 +35,8 @@ void fwdSR_base<T>::init_model_map(){
     map_model_name_to_function["segreg"] = &segreg;
     map_model_name_to_function["survSRR"] = &survsrr;
     map_model_name_to_function["survsrr"] = &survsrr;
+    map_model_name_to_function["bevholtsig"] = &bevholtsig;
+    map_model_name_to_function["Bevholtsig"] = &bevholtsig;
     return;
 }
 
@@ -485,6 +487,13 @@ T survsrr(const T ssf, const std::vector<double> params){
     return rec;
 }
 
+template <typename T>
+T bevholtsig(const T srp, const std::vector<double> params){
+    T rec;
+    // rec = a / ((b / srp) ^c + 1)
+    rec = params[0] / (pow((params[1] / srp), params[2]) + 1);
+    return rec;
+}
 
 // Instantiate functions
 template double ricker(const double srp, const std::vector<double> params);
@@ -501,3 +510,5 @@ template double segreg(const double srp, const std::vector<double> params);
 template adouble segreg(const adouble srp, const std::vector<double> params);
 template double survsrr(const double srp, const std::vector<double> params);
 template adouble survsrr(const adouble srp, const std::vector<double> params);
+template double bevholtsig(const double srp, const std::vector<double> params);
+template adouble bevholtsig(const adouble srp, const std::vector<double> params);
