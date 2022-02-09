@@ -53,8 +53,18 @@ ffwd <- function(object, sr, fbar=control, control=fbar, deviances="missing") {
     
     # HANDLE fwdControl
     if(is(fbar, "fwdControl")) {
-      # TODO CHECK single target per year & no max/min
-      # TODO CHECK target is fbar/f
+      # CHECK single target per year & no max/min
+      if(length(fbar$year) != length(unique(fbar$year)))
+        stop("ffwd() can only project for yearly targets, try calling fwd().")
+
+      # CHECK no max/min
+      if(any(is.na(iters(fbar)[, "value",])))
+        stop("ffwd() can only handle targets and not min/max limits, try calling fwd().")
+      
+      # CHECK target is fbar/f
+      if(!all(fbar$quant %in% c("f", "fbar")))
+        stop("ffwd() can only project for f/fbar targets, try calling fwd().")
+
       fbar <- sf[1, ac(fbar$year)] %=% fbar$value
     }
 
@@ -66,18 +76,18 @@ ffwd <- function(object, sr, fbar=control, control=fbar, deviances="missing") {
     sf[, yrs] <- (se[, yrs] %/%
       quantMeans(se[ac(seq(fages[1], fages[2])), yrs])) %*% fbar
 
-    # COMPUTE TEP
+    # COMPUTE RP
     sw <- stock.wt(object)
     ma <- mat(object)
     ms <- m.spwn(object)
     fs <- harvest.spwn(object)
-    ep <- exp(-(sf * fs) - (sm * ms)) * sw * ma
+    rp <- exp(-(sf * fs) - (sm * ms)) * sw * ma
 
     # LOOP over years (i is new year)
     for (i in yrs - 1) {
       # rec * deviances
       sn[1, i + 1] <- eval(sr@model[[3]],   
-        c(as(sr@params, 'list'), list(ssb=c(colSums(sn[, i] * ep[, i]))))) *
+        c(as(sr@params, 'list'), list(ssb=c(colSums(sn[, i] * rp[, i]))))) *
         c(deviances[, i + 1])
       # n
       sn[-1, i + 1] <- sn[-dm[1], i] * exp(-sf[-dm[1], i] - sm[-dm[1], i])
