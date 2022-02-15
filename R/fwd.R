@@ -259,10 +259,11 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   effscale <- unname(unlist(lapply(rfishery, function(x) max(x@effort))))
   
   # CALL operatingModelRun
+  # TODO PASS to C++ only last year of rfishery and biolscpp
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max = c(effort_max * effscale), effort_mult_initial = 1.0,
     indep_min = .Machine$double.eps, indep_max = 1e12, nr_iters = 50)
-  
+ 
   # WARN of unsolved targets
   if(any(out$solver_codes != 1)) {
  
@@ -533,7 +534,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # FLQuant
     } else if(is(sr, "FLQuant")){
       rec(B) <- predictModel(model=rec~a, params=FLPar(c(sr),
-        dimnames=list(params="a", year=dimnames(sr)$year, iter=dimnames(sr)$iter)))
+        dimnames=list(params="a", year=dimnames(sr)$year,
+          unit=dimnames(sr)$unit, iter=dimnames(sr)$iter)))
     # FLSR
     } else if(is(sr, "FLSR")){
       rec(B) <- predictModel(model=model(sr), params=params(sr))
