@@ -528,7 +528,7 @@ setMethod("partialF", signature(object="FLBiols", fisheries="FLFisheries"),
     # GUESS FCB if missing
     if(missing(fcb))
       fcb <- FCB(object, fisheries)
- 
+
     # APPLY over object
     res <- lapply(setNames(biol, nm=names(object)[biol]), function(b) {
       # SUBSET fcb for biol
