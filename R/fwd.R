@@ -295,12 +295,11 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # UPDATE object w/ new biolscpp@n
   for(i in names(object)) {
     n(object[[i]])[,ac(cyrs),,,,idn] <- out$om$biols[[i]]@n[,ac(cyrs),,,,]
-    # SET NAs as 1e-8
-    n(object[[i]])[,ac(cyrs),,,,idn][is.na(n(object[[i]])[,ac(cyrs),,,,idn])] <-
-      1e-8
+    # DEBUG SET NAs as 1e-8
+    n(object[[i]])[,ac(cyrs),,,,idn][is.na(n(object[[i]])[,ac(cyrs),,,,idn])] <- 1e-8
     # SET not-run iters, on cyrs, as NA
     if(any(!idn))
-      n(object[[i]])[,ac(cyrs),,,,!idn] <- NA
+      n(object[[i]])[,ac(cyrs),,,,!idn] <- 1e-8
   }
   
   # UPDATE fisheries
@@ -509,7 +508,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 
     # DEAL with iters
     its <- max(dims(object)$iter, dim(iters(control))[3])
-    if(its > 1) {
+    if(its > 1 & dims(object)$iter == 1) {
       # TODO propagate only necessary slots (stock.n, catch.n, harvest)
       object <- propagate(object, its)
     }
