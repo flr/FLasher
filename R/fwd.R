@@ -259,7 +259,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   effscale <- unname(unlist(lapply(rfishery, function(x) max(x@effort))))
   
   # CALL operatingModelRun
-  # TODO PASS to C++ only last year of rfishery and biolscpp
+  # TODO PASS to C++ only from last year of rfishery and biolscpp
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max = c(effort_max * effscale), effort_mult_initial = 1.0,
     indep_min = .Machine$double.eps, indep_max = 1e12, nr_iters = 50)
@@ -295,6 +295,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # UPDATE object w/ new biolscpp@n
   for(i in names(object)) {
     n(object[[i]])[,ac(cyrs),,,,idn] <- out$om$biols[[i]]@n[,ac(cyrs),,,,]
+    # SET NAs as 1e-8
+    n(object[[i]])[,ac(cyrs),,,,idn][is.na(n(object[[i]])[,ac(cyrs),,,,idn])] <-
+      1e-8
     # SET not-run iters, on cyrs, as NA
     if(any(!idn))
       n(object[[i]])[,ac(cyrs),,,,!idn] <- NA
