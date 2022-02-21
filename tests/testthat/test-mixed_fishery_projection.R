@@ -192,6 +192,7 @@ test_that("Two fisheries, one catch each, joint catch",{
     expect_error(fwd(object=biols, fishery=flfs, control=ctrl))
 })
 
+# DEBUG
 test_that("Two fisheries, two catches each, joint catch",{
     data(mixed_fishery_example_om)
     rel_sol_catch <- 0.8

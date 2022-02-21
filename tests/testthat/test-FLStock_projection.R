@@ -18,8 +18,8 @@ test_that("Catch target, single iter",{
     res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
       params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
     catch_out <- c(catch(res)[,ac(years)])
-    # Test to within tolerance of 1.5e-8
-    expect_equal(catch_out, catch_val)
+    # Test to within tolerance of 1.5e-4
+    expect_equal(catch_out, catch_val, tolerance=1.5e-4)
 })
 
 test_that("Catch target, multiple iters",{
@@ -95,10 +95,12 @@ test_that("Catch target with min limit, single iter",{
     years <- min_year:(min_year+nyears-1)
     catch_val <- rlnorm(n=nyears, mean=log(min(catch(ple4)/10)), sd=0.1)
     catch_lim <- mean(catch_val)
+    
     # First project without limit
     control=fwdControl(list(year=years, quant="catch", value=catch_val))
     res <- fwd(ple4, control=control, sr=predictModel(model="geomean", params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))
     # Get resulting fbar
+    
     fout <- fbar(res)[,ac(years)]
     limit_year <- sample(years,1)
     flim <- c(fout[,ac(limit_year)] * 1.5)
@@ -109,7 +111,8 @@ test_that("Catch target with min limit, single iter",{
     # All years apart from lim_year met catch OK
     catch_out <- catch(res)[,ac(years)]
     non_lim_years <- !(years %in% limit_year)
-    expect_equal(c(catch_out[,ac(years[non_lim_years])]), catch_val[non_lim_years])
+    expect_equal(c(catch_out[,ac(years[non_lim_years])]), catch_val[non_lim_years],
+      tolerance=0.0005)
     # lim year has f = flim
     expect_equal(c(fbar(res)[,ac(limit_year)]), flim)
 })
