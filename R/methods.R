@@ -562,3 +562,38 @@ ssb_flash <- function(x) {
   stock.n(x)[] <- survivors(x)
   ssb(x)
 } # }}}
+
+# merge {{{
+
+setMethod("merge", signature(x="fwdControl", y="fwdControl"),
+  function(x, y, ...) {
+
+  # PARSE args
+  args <- c(list(x, y), list(...))
+
+  # RBIND @target
+  target <- do.call(rbind, lapply(args, slot, "target"))
+
+  # MERGE @iters
+  its <- lapply(args, slot, "iters")
+
+  # rows per ctrl
+  ros <- unlist(lapply(its, nrow))
+  pos <- c(1, ros[-length(ros)] + 1)
+  nros <- sum(ros)
+  
+  # STOP if different iters
+  nits <- unique(unlist(lapply(its, function(x) dim(x)[3])))
+  if(length(nits) > 1)
+    stop("fwdControl objects must have the same number of iters")
+
+  iters <- array(dim=c(nros, 3, nits), dimnames=list(row=seq(nros),
+      val=c("min", "value", "max"), iter=seq(nits)))
+ 
+  for(i in seq(its))
+    iters[seq(pos[i], length=ros[i]), ,]  <- c(its[[i]])
+
+  return(fwdControl(target=target, iters=iters))
+})
+
+# }}}
