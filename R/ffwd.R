@@ -28,8 +28,12 @@
 #' @examples
 #' data(ple4)
 #' sr <- predictModel(model=bevholt, params=FLPar(a=140.4e4, b=1.448e5))
+#' # Project for fixed Fbar=0.21
 #' run <- ffwd(ple4, sr=sr, fbar=FLQuant(0.21, dimnames=list(year=1958:2017)))
 #' plot(run)
+#' # Same projection with fwd()
+#' test <- fwd(ple4, sr=sr, fbar=FLQuant(0.21, dimnames=list(year=1958:2017)))
+#' plot(run, test)
 
 ffwd <- function(object, sr, fbar=control, control=fbar, deviances="missing") {
 
@@ -38,10 +42,10 @@ ffwd <- function(object, sr, fbar=control, control=fbar, deviances="missing") {
     dms <- dims(object)
 
     # EXTRACT slots
-    sn <- stock.n(object)
-    sm <- m(object)
-    sf <- harvest(object)
-    se <- catch.sel(object)
+    naa <- stock.n(object)
+    maa <- m(object)
+    faa <- harvest(object)
+    sel <- catch.sel(object)
 
     # DEVIANCES
     if(missing(deviances)) {
@@ -65,7 +69,7 @@ ffwd <- function(object, sr, fbar=control, control=fbar, deviances="missing") {
       if(!all(fbar$quant %in% c("f", "fbar")))
         stop("ffwd() can only project for f/fbar targets, try calling fwd().")
 
-      fbar <- sf[1, ac(fbar$year)] %=% fbar$value
+      fbar <- faa[1, ac(fbar$year)] %=% fbar$value
     }
 
     # SET years
@@ -73,39 +77,39 @@ ffwd <- function(object, sr, fbar=control, control=fbar, deviances="missing") {
     
     # COMPUTE harvest
     fages <- range(object, c("minfbar", "maxfbar"))
-    sf[, yrs] <- (se[, yrs] %/%
-      quantMeans(se[ac(seq(fages[1], fages[2])), yrs])) %*% fbar
+    faa[, yrs] <- (sel[, yrs] %/%
+      quantMeans(sel[ac(seq(fages[1], fages[2])), yrs])) %*% fbar
 
-    # COMPUTE RP
-    sw <- stock.wt(object)
-    ma <- mat(object)
-    ms <- m.spwn(object)
-    fs <- harvest.spwn(object)
-    rp <- exp(-(sf * fs) - (sm * ms)) * sw * ma
+    # COMPUTE SRP multiplier
+    waa <- stock.wt(object)
+    mat <- mat(object)
+    msp <- m.spwn(object)
+    fsp <- harvest.spwn(object)
+    srp <- exp(-(faa * fsp) - (maa * msp)) * waa * mat
 
     # LOOP over years (i is new year)
     for (i in yrs - 1) {
       # rec * deviances
-      sn[1, i + 1] <- eval(sr@model[[3]],   
-        c(as(sr@params, 'list'), list(ssb=c(colSums(sn[, i] * rp[, i]))))) *
+      naa[1, i + 1] <- eval(sr@model[[3]],   
+        c(as(sr@params, 'list'), list(ssb=c(colSums(naa[, i] * srp[, i]))))) *
         c(deviances[, i + 1])
       # n
-      sn[-1, i + 1] <- sn[-dm[1], i] * exp(-sf[-dm[1], i] - sm[-dm[1], i])
+      naa[-1, i + 1] <- naa[-dm[1], i] * exp(-faa[-dm[1], i] - maa[-dm[1], i])
       # pg
-      sn[dm[1], i + 1] <- sn[dm[1], i + 1] +
-        sn[dm[1], i] * exp(-sf[dm[1], i] - sm[dm[1], i])
+      naa[dm[1], i + 1] <- naa[dm[1], i + 1] +
+        naa[dm[1], i] * exp(-faa[dm[1], i] - maa[dm[1], i])
     }
 
   # UPDATE stock.n & harvest
 
-  stock.n(object) <- sn
-  harvest(object) <- sf
+  stock.n(object) <- naa
+  harvest(object) <- faa
   
   # UPDATE stock, ...
   stock(object) <- computeStock(object)
 
   # catch.n
-  catch.n(object)[,-1] <- (sn * sf / (sm + sf) * (1 - exp(-sf - sm)))[,-1]
+  catch.n(object)[,-1] <- (naa * faa / (maa + faa) * (1 - exp(-faa - maa)))[,-1]
 
   # landings.n & discards.n to 0 if NA
   landings.n(object)[is.na(landings.n(object))] <- 0
