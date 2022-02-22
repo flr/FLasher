@@ -27,8 +27,12 @@ always require the features of fwd().Fast-forward an FLStock object for a fishin
 \examples{
 data(ple4)
 sr <- predictModel(model=bevholt, params=FLPar(a=140.4e4, b=1.448e5))
+# Project for fixed Fbar=0.21
 run <- ffwd(ple4, sr=sr, fbar=FLQuant(0.21, dimnames=list(year=1958:2017)))
 plot(run)
+# Same projection with fwd()
+test <- fwd(ple4, sr=sr, fbar=FLQuant(0.21, dimnames=list(year=1958:2017)))
+plot(run, test)
 }
 \seealso{
 \link{fwd}

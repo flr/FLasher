@@ -79,8 +79,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   cyrs <- unique(control$year)
   
   ysrp <- unlist(lapply(object, function(x) {
+                          
     # GET rec@params dimnames
-    spdn <- dimnames(rec(x, "params"))$year
+    spdn <- dimnames(params(sr(x)))$year
     # IF 'year' in dimnames
     if(!is.null(spdn)){
       
@@ -253,7 +254,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
 
   # STOP if all iters have NAs in target
   if(all(!idn))
-    stop("objects have a single iter and target contains only NA.")
+    stop("all target iter contain only NA.")
 
   # CALCULATE max(effort) per fishery
   effscale <- unname(unlist(lapply(rfishery, function(x) max(x@effort))))
@@ -292,14 +293,15 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # |  \- ctrl
   # \- solver_codes: data.frame (timestep x iters)
 
+
   # UPDATE object w/ new biolscpp@n
   for(i in names(object)) {
     n(object[[i]])[,ac(cyrs),,,,idn] <- out$om$biols[[i]]@n[,ac(cyrs),,,,]
     # DEBUG SET NAs as 1e-8
-    n(object[[i]])[,ac(cyrs),,,,idn][is.na(n(object[[i]])[,ac(cyrs),,,,idn])] <- 1e-8
+    n(object[[i]])[,ac(cyrs),,,,idn][is.na(n(object[[i]])[,ac(cyrs),,,,idn])] <- 1
     # SET not-run iters, on cyrs, as NA
     if(any(!idn))
-      n(object[[i]])[,ac(cyrs),,,,!idn] <- 1e-8
+      n(object[[i]])[,ac(cyrs),,,,!idn] <- 1
   }
   
   # UPDATE fisheries
