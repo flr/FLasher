@@ -120,11 +120,15 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # FIND iters with no NAs in target
   idn <- !c(unlist(apply(is.na(control@iters), 3,
     function(x) any(rowSums(x) == 3))))
-  
-  # CONVERT biols to list(list(object, name, params, deviances, mult))
+
+  # STOP if all iters have NAs in target
+  if(all(!idn))
+    stop("all target iter contain only NA.")
+
+  # CONVERT biols to list(list(object, name, params, deviances, mult)), no NAs
   biolscpp <- lapply(object, function(x) as(iter(x, idn), "list"))
   
-  # SUBSET idn
+  # SUBSET idn on deviances
   deviances <- iter(FLQuants(deviances), idn)
   
   # deviances must be same dim 2-5 as the biol
@@ -252,11 +256,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     return(x)
   })
 
-  # STOP if all iters have NAs in target
-  if(all(!idn))
-    stop("all target iter contain only NA.")
-
-  # CALCULATE max(effort) per fishery
+    # CALCULATE max(effort) per fishery
   effscale <- unname(unlist(lapply(rfishery, function(x) max(x@effort))))
   
   # CALL operatingModelRun
@@ -264,7 +264,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max = c(effort_max * effscale), effort_mult_initial = 1.0,
     indep_min = .Machine$double.eps, indep_max = 1e12, nr_iters = 50)
- 
+
   # WARN of unsolved targets
   if(any(out$solver_codes != 1)) {
  
@@ -299,9 +299,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     n(object[[i]])[,ac(cyrs),,,,idn] <- out$om$biols[[i]]@n[,ac(cyrs),,,,]
     # DEBUG SET NAs as 1e-8
     n(object[[i]])[,ac(cyrs),,,,idn][is.na(n(object[[i]])[,ac(cyrs),,,,idn])] <- 1
-    # SET not-run iters, on cyrs, as NA
+    # SET not-run iters, on cyrs, as 1e-8
     if(any(!idn))
-      n(object[[i]])[,ac(cyrs),,,,!idn] <- 1
+      n(object[[i]])[,ac(cyrs),,,,!idn] <- 1e-8
   }
   
   # UPDATE fisheries
@@ -314,9 +314,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
       fsh@effort <- propagate(fsh@effort, length(idn))
     
     # UPDATE effort scaled by capacity
-    fsh@effort[,ac(cyrs),,,,idn] <-
-      effort(out$om$fisheries[[i]])[, ac(cyrs),,,,idn] /
-      iter(fsh@capacity[,ac(cyrs),,,,], idn)
+    fsh@effort[,ac(cyrs),,,,which(idn)] <-
+      effort(out$om$fisheries[[i]])[, ac(cyrs)] /
+      iter(fsh@capacity[,ac(cyrs),,,,], which(idn))
     
     # SET not-run iters, on cyrs, as NA
     if(any(!idn))
@@ -328,7 +328,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
       for(sl in c("landings.n", "discards.n")) {
         if(dim(slot(fsh[[j]], sl))[6] != dim(slot(out$om$fisheries[[i]][[j]], sl))[6])
         slot(fsh[[j]], sl) <- propagate(slot(fsh[[j]], sl), length(idn))
-        slot(fsh[[j]], sl)[,ac(cyrs),,,,] <-
+        slot(fsh[[j]], sl)[,ac(cyrs),,,,idn] <-
           slot(out$om$fisheries[[i]][[j]], sl)[,ac(cyrs),,,,]
       # SET landings.n and discards.n of not-run iters, on cyrs, as NA
         if(any(!idn))
