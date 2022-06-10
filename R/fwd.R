@@ -299,9 +299,10 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     n(object[[i]])[,ac(cyrs),,,,idn] <- out$om$biols[[i]]@n[,ac(cyrs),,,,]
     # DEBUG SET NAs as 1e-8
     n(object[[i]])[,ac(cyrs),,,,idn][is.na(n(object[[i]])[,ac(cyrs),,,,idn])] <- 1
-    # SET not-run iters, on cyrs, as 1e-8
-    if(any(!idn))
+    # SET n on not-run iters, on cyrs, as 1e-8
+    if(any(!idn)) {
       n(object[[i]])[,ac(cyrs),,,,!idn] <- 1e-8
+    }
   }
   
   # UPDATE fisheries
@@ -314,7 +315,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
       fsh@effort <- propagate(fsh@effort, length(idn))
     
     # UPDATE effort scaled by capacity
-    fsh@effort[,ac(cyrs),,,,idn] <-
+    fsh@effort[,ac(cyrs),,,, idn] <-
       effort(out$om$fisheries[[i]])[, ac(cyrs)] /
       iter(fsh@capacity[,ac(cyrs),,,,], idn)
     
@@ -343,7 +344,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
     flag=out$solver_codes)
 
   # WARNING for effort_max
-  if(any(unlist(lapply(fishery,
+   if(any(unlist(lapply(fishery,
     function(x) max(x@effort, na.rm=TRUE))) == effort_max))
     warning("Maximum effort limit reached in one or more fisheries")
 
@@ -761,8 +762,7 @@ setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
 
     # NAMES in qlevels?
     if(any(!names(args) %in% .qlevels))
-      stop(paste0("Names of input FLQuant(s) do not match current allowed targets: ",
-            paste(.qlevels, collapse=", ")))
+      stop(paste0("Names of input FLQuant(s) do not match current allowed targets: ", paste(.qlevels, collapse=", ")))
 
     args <- FLQuants(args)
 
