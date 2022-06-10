@@ -81,7 +81,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   ysrp <- unlist(lapply(object, function(x) {
                           
     # GET rec@params dimnames
-    spdn <- dimnames(params(sr(x)))$year
+    spdn <- dimnames(rec(x, "params"))$year
     # IF 'year' in dimnames
     if(!is.null(spdn)){
       
@@ -264,7 +264,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max = c(effort_max * effscale), effort_mult_initial = 1.0,
     indep_min = .Machine$double.eps, indep_max = 1e12, nr_iters = 50)
-
+  
   # WARN of unsolved targets
   if(any(out$solver_codes != 1)) {
  
@@ -314,9 +314,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
       fsh@effort <- propagate(fsh@effort, length(idn))
     
     # UPDATE effort scaled by capacity
-    fsh@effort[,ac(cyrs),,,,which(idn)] <-
+    fsh@effort[,ac(cyrs),,,,idn] <-
       effort(out$om$fisheries[[i]])[, ac(cyrs)] /
-      iter(fsh@capacity[,ac(cyrs),,,,], which(idn))
+      iter(fsh@capacity[,ac(cyrs),,,,], idn)
     
     # SET not-run iters, on cyrs, as NA
     if(any(!idn))
@@ -510,8 +510,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 
     # DEAL with iters
     its <- max(dims(object)$iter, dim(iters(control))[3])
-    if(its > 1 & dims(object)$iter == 1) {
-      # TODO propagate only necessary slots (stock.n, catch.n, harvest)
+    if(its > 1) {
       object <- propagate(object, its)
     }
 
@@ -522,7 +521,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 
     # CHECK for missing discards ratio info
     dnas <- verify(object[,pyrs,,], report=FALSE,
-      rules=list(discards.n=~!is.na(discards.n), discards.wt=~!is.na(discards.wt)))
+      rules=list(discards.n=~!is.na(discards.n),
+        discards.wt=~!is.na(discards.wt)))
 
     if(!all(dnas))
       stop(paste("NAs present in the 'discards.n' or 'discards.wt' slots in
@@ -560,7 +560,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     
     # COERCE to FLFisheries
     F <- as(object, 'FLFishery')
-    
+
     # ADD matching names
     name(F) <- "F"
     names(F) <- "B"
@@ -687,6 +687,9 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     object@stock.n[,pyrs] <- Bo@n[,pyrs]
     # stock
     object@stock <- quantSums(object@stock.n * object@stock.wt)
+
+    # SLIM object for slots with no iters in input
+    slim(object, exclude=c("catch", "catch.n", "catch.wt", "discards", "discards.n", "landings", "landings.n", "stock", "stock.n"))
 
     return(object)
   }
