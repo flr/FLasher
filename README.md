@@ -3,6 +3,7 @@
 [![R-CMD-check](https://github.com/flr/FLasher/workflows/R-CMD-check/badge.svg)](https://github.com/flr/FLasher/actions)
 [![License](https://eddelbuettel.github.io/badges/GPL2+.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![Codecov test coverage](https://codecov.io/gh/flr/FLasher/branch/master/graph/badge.svg)](https://codecov.io/gh/flr/FLasher?branch=master)
+![r-universe](https://flr.r-universe.dev/badges/FLasher)
 
 ## Overview
 
