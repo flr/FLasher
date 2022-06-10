@@ -6,7 +6,7 @@ Description: Projection of future population and fishery dynamics is carried
   (fleet) that will result in the required abundances, catches or fishing
   mortalities.
 X-schema.org-keywords: forecast, fisheries, flr, R
-Version: 0.6.8.9003
+Version: 0.6.8.9004
 Authors@R: c(
 	person(given = 'Iago', family = 'Mosqueira', role = c('aut', 'cre'),
     email = 'iago.mosqueira@wur.nl'),
