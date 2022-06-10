@@ -193,7 +193,7 @@ setMethod("cfwd", signature(object="FLStock", fisheries="missing"),
         stop("cfwd() can only project for catch targets, try calling fwd().")
 
       # COERCE to FLQuant
-      catch <- faa[1, ac(catch$year)] %=% catch$value
+      # catch <- faa[1, ac(catch$year)] %=% catch$value
     }
     
     # SET years as position

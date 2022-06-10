@@ -81,7 +81,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   ysrp <- unlist(lapply(object, function(x) {
                           
     # GET rec@params dimnames
-    spdn <- dimnames(rec(x, "params"))$year
+    spdn <- dimnames(params(sr(x)))$year
     # IF 'year' in dimnames
     if(!is.null(spdn)){
       
@@ -90,7 +90,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
       # the biol in the final+1 control year
       # e.g. if there is room to update biol in final control year +1
       if (max(cyrs) < max(as.numeric(dimnames(x@n)$year))){
-          cyrs <- c(cyrs, max(cyrs)+1)
+        cyrs <- c(cyrs, max(cyrs) + 1)
       }
       allyrs <- all(cyrs %in% as.numeric(spdn))
 
