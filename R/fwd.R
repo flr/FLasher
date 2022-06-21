@@ -690,10 +690,10 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     object@stock <- quantSums(object@stock.n * object@stock.wt)
 
     # SLIM object for slots with no iters in input
-    if(its > 1) {
-    object <- slim(object, exclude=c("catch", "catch.n", "catch.wt",
-      "discards", "discards.n", "landings", "landings.n", "stock", "stock.n"))
-    }
+    #if(its > 1) {
+    #  object <- slim(object, exclude=c("catch", "catch.n", "catch.wt",
+    #    "discards", "discards.n", "landings", "landings.n", "stock", "stock.n"))
+    #}
 
     return(object)
   }
