@@ -98,40 +98,152 @@ Used for automatic testing, particularly of the FLQuant7_base&lt;T&gt; class in 
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">flq_list</span> <span class="op">&lt;-</span> <span class="fu">random_FLQuant_list_generator</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">flq_list</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 9</span>
 <span class="r-in"><span><span class="fu"><a href="summary.html">summary</a></span><span class="op">(</span><span class="va">flq_list</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      Length Class   Mode   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]  480   FLQuant numeric</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] 1440   FLQuant numeric</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Length Class   Mode   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] 1296   FLQuant numeric</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]  432   FLQuant numeric</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 1920   FLQuant numeric</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]  810   FLQuant numeric</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]  768   FLQuant numeric</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] 1620   FLQuant numeric</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]  288   FLQuant numeric</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] 1350   FLQuant numeric</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]  768   FLQuant numeric</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">flq_list</span>, <span class="va">summary</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> An object of class "FLQuant" with:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  2 5 3 2 2 4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  3 6 3 3 2 4 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> quant:  age </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> units:  1.96 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> units:  0.293 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -377.6272 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -66.34417 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  5.227695 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  13.71356 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  76.09332 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  321.0083 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -327.6326 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -64.66422 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  0.02826029 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  -0.1698827 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  65.81411 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  351.7334 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NAs    :  0 %</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> An object of class "FLQuant" with:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  3 10 2 2 4 3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  2 8 3 3 3 1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> quant:  age </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> units:  0.385 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> units:  0.261 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -312.3454 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -68.69336 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  1.125096 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  -1.324185 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  66.93075 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  308.8585 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -306.0353 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -53.56096 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  2.048558 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  1.183758 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  59.67682 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  258.6045 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NAs    :  0 %</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> An object of class "FLQuant" with:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  1 8 5 4 4 3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> quant:  age </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> units:  1.9 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -391.518 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -75.15779 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  -4.135184 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  -4.505855 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  64.10013 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  271.5969 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NAs    :  0 %</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> An object of class "FLQuant" with:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  3 10 1 3 3 3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> quant:  age </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> units:  1.49 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -264.4179 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -67.79442 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  1.620565 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  -3.615611 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  74.21189 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  332.7672 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NAs    :  0 %</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> An object of class "FLQuant" with:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  2 8 4 1 3 4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> quant:  age </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> units:  0.814 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -295.7087 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -65.34747 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  2.083515 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  6.997486 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  74.32511 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  347.3052 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NAs    :  0 %</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> An object of class "FLQuant" with:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  5 6 2 3 3 3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> quant:  age </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> units:  0.169 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -363.976 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -63.92527 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  3.967118 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  4.582356 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  73.59307 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  311.5998 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NAs    :  0 %</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> An object of class "FLQuant" with:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  3 2 4 2 2 3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> quant:  age </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> units:  1.78 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -299.7302 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -62.15069 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  4.376122 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  12.72197 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  71.861 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  344.0222 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NAs    :  0 %</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> An object of class "FLQuant" with:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  3 5 2 3 3 5 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> quant:  age </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> units:  0.38 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -284.5852 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -68.56712 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  -4.787184 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  -5.129524 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  64.01942 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  346.0432 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NAs    :  0 %</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> An object of class "FLQuant" with:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  2 2 4 4 3 4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> quant:  age </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> units:  0.755 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -366.0362 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -67.34602 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  -1.656538 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  -3.287767 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  65.01579 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  287.2658 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NAs    :  0 %</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[4]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[5]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[6]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[7]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[8]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[9]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>

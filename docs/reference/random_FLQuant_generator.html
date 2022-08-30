@@ -110,35 +110,35 @@ Used for automatic testing.</p>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">flq</span> <span class="op">&lt;-</span> <span class="fu">random_FLQuant_generator</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">flq</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4 5 1 4 2 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4 9 2 4 4 1</span>
 <span class="r-in"><span><span class="fu"><a href="summary.html">summary</a></span><span class="op">(</span><span class="va">flq</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> An object of class "FLQuant" with:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  4 5 1 4 2 3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  4 9 2 4 4 1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> quant:  age </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> units:  1.22 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> units:  1.44 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -391.2557 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -56.62918 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  7.892456 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  6.626629 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  72.11682 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  388.1729 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -331.0632 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -70.11992 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  1.572883 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  0.6193255 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  76.13671 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  373.4765 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NAs    :  0 %</span>
 <span class="r-in"><span><span class="va">flq</span> <span class="op">&lt;-</span> <span class="fu">random_FLQuant_generator</span><span class="op">(</span>fixed_dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>,<span class="fl">10</span>,<span class="fl">1</span>,<span class="fl">4</span>,<span class="fl">1</span>,<span class="cn">NA</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">flq</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1]  4 10  1  4  1  3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1]  4 10  1  4  1  4</span>
 <span class="r-in"><span><span class="fu"><a href="summary.html">summary</a></span><span class="op">(</span><span class="va">flq</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> An object of class "FLQuant" with:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  4 10 1 4 1 3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dim  :  4 10 1 4 1 4 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> quant:  age </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> units:  1.7 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> units:  0.0564 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -316.4707 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -71.2861 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  -5.396841 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  -6.14952 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  67.66942 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  431.1843 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Min    :  -313.1656 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1st Qu.:  -63.69352 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Mean   :  -0.3926469 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Median :  -0.2099425 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3rd Qu.:  60.00334 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max    :  329.0644 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NAs    :  0 %</span>
 </code></pre></div>
     </div>
