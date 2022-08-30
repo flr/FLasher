@@ -72,7 +72,7 @@ ffwd <- function(object, sr, fbar=control, control=fbar, deviances="missing") {
       fbar <- faa[1, ac(fbar$year)] %=% fbar$value
     }
 
-    # SET years
+    # EXTRACT projection years
     yrs <- match(dimnames(fbar)$year, dimnames(object)$year)
     
     # COMPUTE harvest
@@ -105,24 +105,24 @@ ffwd <- function(object, sr, fbar=control, control=fbar, deviances="missing") {
   stock.n(object) <- naa
   harvest(object) <- faa
   
-  # UPDATE stock, ...
+  # UPDATE stock,
   stock(object) <- computeStock(object)
 
-  # catch.n
+  # and catch.n
   catch.n(object)[,-1] <- (naa * faa / (maa + faa) * (1 - exp(-faa - maa)))[,-1]
 
-  # landings.n & discards.n to 0 if NA
+  # SET landings.n & discards.n to 0 if NA
   landings.n(object)[is.na(landings.n(object))] <- 0
   discards.n(object)[is.na(discards.n(object))] <- 0
   
-  # landings.n from catch.n and ratio
+  # CALCULATE landings.n from catch.n and ratio
   landings.n(object) <- catch.n(object) * (landings.n(object) / 
     (discards.n(object) + landings.n(object)))
 
-  # discards
+  # CALCULATE discards
   discards.n(object) <- catch.n(object) - landings.n(object)
 
-  # catch.wt
+  # COMPUTE average catch.wt
   catch.wt(object) <- (landings.wt(object) * landings.n(object) + 
     discards.wt(object) * discards.n(object)) / catch.n(object)
 
@@ -193,7 +193,7 @@ setMethod("cfwd", signature(object="FLStock", fisheries="missing"),
         stop("cfwd() can only project for catch targets, try calling fwd().")
 
       # COERCE to FLQuant
-      catch <- faa[1, ac(catch$year)] %=% catch$value
+      # catch <- faa[1, ac(catch$year)] %=% catch$value
     }
     
     # SET years as position

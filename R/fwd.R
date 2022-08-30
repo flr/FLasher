@@ -90,7 +90,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
       # the biol in the final+1 control year
       # e.g. if there is room to update biol in final control year +1
       if (max(cyrs) < max(as.numeric(dimnames(x@n)$year))){
-          cyrs <- c(cyrs, max(cyrs)+1)
+        cyrs <- c(cyrs, max(cyrs) + 1)
       }
       allyrs <- all(cyrs %in% as.numeric(spdn))
 
@@ -511,8 +511,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 
     # DEAL with iters
     its <- max(dims(object)$iter, dim(iters(control))[3])
-    if(its > 1 & dims(object)$iter == 1) {
-      # TODO propagate only necessary slots (stock.n, catch.n, harvest)
+    if(its > 1) {
       object <- propagate(object, its)
     }
 
@@ -523,7 +522,8 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 
     # CHECK for missing discards ratio info
     dnas <- verify(object[,pyrs,,], report=FALSE,
-      rules=list(discards.n=~!is.na(discards.n), discards.wt=~!is.na(discards.wt)))
+      rules=list(discards.n=~!is.na(discards.n),
+        discards.wt=~!is.na(discards.wt)))
 
     if(!all(dnas))
       stop(paste("NAs present in the 'discards.n' or 'discards.wt' slots in
@@ -561,7 +561,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     
     # COERCE to FLFisheries
     F <- as(object, 'FLFishery')
-    
+
     # ADD matching names
     name(F) <- "F"
     names(F) <- "B"
@@ -688,6 +688,12 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     object@stock.n[,pyrs] <- Bo@n[,pyrs]
     # stock
     object@stock <- quantSums(object@stock.n * object@stock.wt)
+
+    # SLIM object for slots with no iters in input
+    #if(its > 1) {
+    #  object <- slim(object, exclude=c("catch", "catch.n", "catch.wt",
+    #    "discards", "discards.n", "landings", "landings.n", "stock", "stock.n"))
+    #}
 
     return(object)
   }
