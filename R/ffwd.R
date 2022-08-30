@@ -254,7 +254,8 @@ setMethod("cfwd", signature(object="FLStock", fisheries="missing"),
   stock(object) <- computeStock(object)
 
   # catch.n, uses 0.5 * m
-  catch.n(object)[, yrs] <- (naa * (hr %*% sel) / (0.5 * maa + (hr %*% sel)) * 
+  catch.n(object)[, yrs] <- (naa * (hr %*% sel) /
+    (0.5 * maa + (hr %*% sel)) * 
     (1 - exp(-(hr %*% sel) - 0.5 * maa)))[,yrs]
 
   # caa = naa * sel * hr * wt
@@ -282,4 +283,3 @@ setMethod("cfwd", signature(object="FLStock", fisheries="missing"),
   }
 )
 # }}}
-

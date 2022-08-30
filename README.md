@@ -34,7 +34,7 @@ install_github("flr/FLasher")
 - [Help pages](http://flr-project.org/FLasher)
 
 ## License
-Copyright (c) 2016-21 European Union. Released under the [EUPL v1.2](https://eupl.eu/1.2/en/).
+Copyright (c) 2016-2022 European Union. Released under the [EUPL v1.2](https://eupl.eu/1.2/en/).
 
 ## Contact
 You are welcome to:
