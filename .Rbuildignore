@@ -12,6 +12,6 @@ TODO.md
 _pkgdown.yml
 appveyor.yml
 data-raw/
-docs/
+docs/*
 man-roxygen/
 src/Doxyfile
