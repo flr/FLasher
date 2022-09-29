@@ -83,7 +83,8 @@ setAs("FLQuants", "fwdControl",
       make.row.names = FALSE))[,c(qua, "year", "iter", "data", "season")]
     df$qname <- rep(names(from), times=unlist(lapply(from, length)))
  
-    # DEBUG as.data.frame(FLQuants) should accept qnames being equal if dims differ   
+    # DEBUG: as.data.frame(FLQuants) should accept qnames being equal
+    # if dims differ   
     # df <- as.data.frame(from)[,c(qua, "year", "iter",
     #   "data", "qname", "season")]
     
@@ -140,6 +141,33 @@ setAs("FLQuants", "fwdControl",
 			return(fwdControl(target=target, iters=iters))
 		}
 } ) # }}}
+
+
+# list(FLQuants) -> fwdControl {{{
+setAs("list", "fwdControl",
+  function(from) {
+
+    if(length(from) > 1)
+      stop("list must contain a single element of class 'FLQuants'")
+
+    res <- Map(function(x, n) {
+      Reduce(merge,
+        Map(function(y, fi) {
+          fq <- FLQuants(quant=y)
+          names(fq) <- n
+          fwc <- as(fq, 'fwdControl')
+          fwc$fishery <- fi
+          fwc$biol <- NA
+          fwc$catch <- 1
+          return(fwc)
+        }, y=x, fi=names(x))
+        )
+    }, x=from, n=names(from))
+
+    res[[1]]
+  }
+)
+# }}}
 
 # FLBiol -> FLBiolcpp list {{{
 setAs("FLBiol", "list",
