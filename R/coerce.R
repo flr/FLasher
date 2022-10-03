@@ -142,7 +142,6 @@ setAs("FLQuants", "fwdControl",
 		}
 } ) # }}}
 
-
 # list(FLQuants) -> fwdControl {{{
 setAs("list", "fwdControl",
   function(from) {
