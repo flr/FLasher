@@ -46,6 +46,8 @@
 
 # fwd(FLBiols, FLFisheries, fwdControl) {{{
 
+#trace("fwd", browser, exit=browser, signature = c("FLBiols", "FLFisheries", "fwdControl"))
+
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
     function(object, fishery, control, effort_max=rep(100, length(fishery)),
       deviances=residuals, residuals=lapply(lapply(object, spwn),
@@ -130,7 +132,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   
   # SUBSET idn on deviances
   deviances <- iter(FLQuants(deviances), idn)
-  
+
   # deviances must be same dim 2-5 as the biol
   # ADD deviances
   for(i in names(biolscpp)) {
@@ -261,6 +263,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   
   # CALL operatingModelRun
   # TODO PASS to C++ only from last year of rfishery and biolscpp
+  
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max = c(effort_max * effscale), effort_mult_initial = 1.0,
     indep_min = .Machine$double.eps, indep_max = 1e12, nr_iters = 50)
@@ -475,11 +478,11 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 #' @aliases fwd,FLStock,missing,fwdControl-method
 #' @examples
 #' data(ple4)
-#' # Hindcast with past rec and catch
-#' hind <- fwd(ple4, sr=rec(ple4)[, ac(1980:2017)],
+#' # Hindcast with past rec and fbar
+#' hinf <- fwd(ple4, sr=rec(ple4)[, ac(1980:2017)],
 #'   control=fwdControl(year=1980:2017, value=fbar(ple4)[, ac(1980:2017)],
 #'   quant="fbar"))
-#' plot(FLStocks(PLE=ple4, FWD=hind))
+#' plot(FLStocks(PLE=ple4, FWD=hinf))
 
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
@@ -647,12 +650,12 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # RUN
     out <- fwd(Bs, Fs, control, deviances=FLQuants(B=deviances),
       effort_max=effort_max, ...)
-
+    
     # PARSE output
     Fc <- out$fisheries[[1]][[1]]
     eff <- out$fisheries[[1]]@effort
     Bo <- out$biols[[1]]
-    
+
     # RETURN one more year if ssb_flash and  *.spwn == 0
     if(any(control[control$year == maxy,]$quant == "ssb_flash") &
       sum(spwn(Bo)[,ac(maxy)]) == 0) {
@@ -680,8 +683,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     object@catch.wt[,pyrs] <- catch.wt(Fc)[,pyrs]
     # harvest (F)
     object@harvest[, pyrs] <- calc_F(Fc, Bo, eff)[, pyrs]
-    # object@harvest[, pyrs] <- harvest(n(Bo)[, pyrs], catch.n(Fc)[, pyrs],
-    #   m(Bo)[, pyrs])
+    # harvest(n(Bo)[, pyrs], catch.n(Fc)[, pyrs], m(Bo)[, pyrs])
     units(object@harvest) <- "f"
 
     # stock.n
