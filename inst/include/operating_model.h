@@ -84,6 +84,7 @@ class operatingModel {
         FLQuantAD ssb_start(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD biomass_start(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD ssb_end(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
+        FLQuantAD inmb_end(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD biomass_end(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD ssb_spawn(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
         FLQuantAD biomass_spawn(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const;
