@@ -721,6 +721,7 @@ FLQuantAD operatingModel::get_nunit_f(const int fishery_no, const int catch_no, 
  * \param indices_min minimum indices for subsetting (quant - iter, vector of length 6)
  * \param indices_max maximum indices for subsetting (quant - iter, vector of length 6)
  */
+// TODO: ADD point in time
 FLQuantAD operatingModel::survivors(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const{
   bool verbose = false;
   if(verbose){Rprintf("In operatingModel::survivors\n");}
@@ -1362,6 +1363,7 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
       }
       break;
     }
+
     case target_inmb_end: {
       if(verbose){Rprintf("target_inmb_end\n");}
       if (!biol_na & fishery_na & catch_na){
@@ -1372,6 +1374,18 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
       }
       break;
     }
+
+    case target_indb: {
+      if(verbose){Rprintf("target_indb\n");}
+      if (!biol_na & fishery_na & catch_na){
+        out = unit_sum(indb(biol_no, indices_min, indices_max)); 
+      }
+      else {
+        Rcpp::stop("In operatingModel::eval_om. Asking for indb target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
+      }
+      break;
+    }
+
 
     case target_biomass_end: {
       if(verbose){Rprintf("target_biomass_end\n");}
@@ -2138,11 +2152,44 @@ FLQuantAD operatingModel::inmb_end(const int biol_no,  const std::vector<unsigne
   qindices_min.insert(qindices_min.begin(), 1);
   std::vector<unsigned int> qindices_max = indices_max;
   qindices_max.insert(qindices_max.begin(), dim[0]);
+  // survivors
   FLQuantAD surv = survivors(biol_no, qindices_min, qindices_max);
   // ISB = survivors * wt * (1 - mat)
   // Calc ISB - without unit sum - done in eval_om
   FLQuantAD isb = quant_sum(surv * biols(biol_no).wt(qindices_min, qindices_max) * (1.0 - biols(biol_no).mat(qindices_min, qindices_max)));
   return isb;
+}
+
+/*! \brief Subset the SSB at the end of the timestep
+ *
+ * Calculates the SSB at the end of the timestep, not at the time of spawning.
+ * It is used for the target calculation.
+ * SSB = sum (N * wt * mat)
+ * Where N is the abundance at the end of the timestep.
+ * Units not collapsed.
+ *
+ * \param biol_no Position of the chosen biol in the biols list
+ * \param indices_min minimum indices for subsetting (year - iter, integer vector of length 5)
+ * \param indices_max maximum indices for subsetting (year - iter, integer vector of length 5)
+ */
+FLQuantAD operatingModel::indb(const int biol_no,  const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
+  if((indices_min.size() != 5) | (indices_max.size() != 5)){
+    Rcpp::stop("In operatingModel indb. indices_min and max must be of length 6\n");
+  }
+  // Need bigger indices
+  std::vector<unsigned int> dim = biols(biol_no).n().get_dim();
+  std::vector<unsigned int> qindices_min = indices_min;
+  qindices_min.insert(qindices_min.begin(), 1);
+  std::vector<unsigned int> qindices_max = indices_max;
+  qindices_max.insert(qindices_max.begin(), dim[0]);
+  // z
+  FLQuantAD z_temp = get_f(biol_no, qindices_min, qindices_max) + biols(biol_no).m(qindices_min, qindices_max);
+  FLQuantAD survivors = biols(biol_no).n(qindices_min, qindices_max) * exp(-0.6 * z_temp);
+  // indexB = surv (0.6) * wt * fec/selex
+  FLQuantAD indb = quant_sum(survivors *
+    biols(biol_no).wt(qindices_min, qindices_max) * 
+    biols(biol_no).fec(qindices_min, qindices_max));
+  return indb;
 }
 
 /*! \brief Subset the biomass at the end of the timestep

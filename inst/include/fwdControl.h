@@ -27,6 +27,7 @@ enum fwdControlTargetType {
     target_ssb_start,
     target_ssb_end,
     target_inmb_end,
+    target_indb,
     target_ssb_spawn,
     target_ssb_flash,
     target_biomass_start,

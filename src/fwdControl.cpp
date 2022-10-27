@@ -17,6 +17,7 @@ void fwdControl::init_target_map(){
     target_map["ssb_start"] = target_ssb_start; 
     target_map["ssb_end"] = target_ssb_end; 
     target_map["inmb_end"] = target_inmb_end; 
+    target_map["indb"] = target_indb; 
     target_map["ssb_spawn"] = target_ssb_spawn; 
     target_map["ssb_flash"] = target_ssb_flash; 
     target_map["biomass_start"] = target_biomass_start; 
