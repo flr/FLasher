@@ -587,29 +587,36 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
         rep(c(1, NA, NA), each=sum(!brow))
     }
     
-    # ADD maxF to control, only in years with no fbar target
-    idx <- by(control@target[, c("quant", "year")],
-      control@target$year, function(x) any(c("f", "fbar") %in% x$quant))
+    # -- ADD maxF to control, only in timesteps with no fbar target
 
-    yrs <- names(idx)[!idx]
-    iseas <- length(unique(control$season)) > 1
+    # FLAG fbar target timesteps
+    idx <- by(control@target[, c("quant", "year", "season")],
+      list(year=control@target$year, season=control@target$season),
+      function(x) any(c("f", "fbar") %in% x$quant))
     
-    if(length(yrs) > 0 & !is.null(maxF) & !iseas) {
-      
-      # MERGE controls
-      maxFc <- fwdControl(year=yrs, quant="fbar", min=0, max=maxF, biol=1)
-     
+    # APPLY if any non-fbar
+    if(any(!idx) & !is.null(maxF)) {
+
+      # CREATE data.frame for idx rows + min, max, quant, biol
+      didx <- dimnames(idx)
+      maxFd <- cbind(expand.grid(year=an(didx$year),
+        season=didx$season)[c(!idx),],
+        data.frame(quant="fbar", min=0, max=maxF, biol=1))
+      maxFc <- fwdControl(maxFd)
+
+      # MERGE controls' target
       target <- rbind(control@target, maxFc@target)
 
+      # AND iters
       diters <- c(dim(target)[1], 3, dim(control@iters)[3])
       iters <- array(NA, dim=diters, dimnames=list(
         row=seq(diters[1]), val=c("min", "value", "max"),
         iter=seq(diters[3])))
-
       dlim <- dim(control@iters)[1]
       iters[seq(1, dlim) ,,] <- control@iters
       iters[seq(dlim + 1, diters[1]),,] <- maxFc@iters
 
+      # ASSIGN new target & iters
       control@target <- target
       control@iters <- iters
     }
@@ -621,15 +628,17 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     age_range_targets <- c("f", "fbar")
 
     control@target[,"minAge"] <- ifelse(
-      is.na(control@target[,"minAge"]) & (control@target[,"quant"] %in% age_range_targets),
+      is.na(control@target[,"minAge"]) &
+        (control@target[,"quant"] %in% age_range_targets),
         range(object, "minfbar"), control@target[,"minAge"])
 
     control@target[,"maxAge"] <- ifelse(
-      is.na(control@target[,"maxAge"]) & (control@target[,"quant"] %in% age_range_targets),
+      is.na(control@target[,"maxAge"]) &
+        (control@target[,"quant"] %in% age_range_targets),
         range(object, "maxfbar"), control@target[,"maxAge"])
 
     # CHECK relBiol or relFishery if relYear
-    if (any(!is.na(control@target$relYear))){
+    if (any(!is.na(control@target$relYear))) {
       
       # BIOL target
       control@target[!control@target$quant %in% c("effort","revenue") & 
