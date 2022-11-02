@@ -595,6 +595,9 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     # APPLY if any non-fbar
     if(any(!idx) & !is.null(maxF)) {
 
+      if(!is.numeric(maxF) | length(maxF) > 1)
+        stop("maxF must be a single numeric value")
+
       # CREATE data.frame for idx rows + min, max, quant, biol
       
       maxFd <- cbind(id[!idx, c("year", "season")],
