@@ -587,24 +587,22 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
         rep(c(1, NA, NA), each=sum(!brow))
     }
     
-    # -- ADD maxF to control, only in timesteps with no fbar target
-
     # FLAG fbar target timesteps
-    idx <- by(control@target[, c("quant", "year", "season")],
-      list(year=control@target$year, season=control@target$season),
-      function(x) any(c("f", "fbar") %in% x$quant))
-    
+
+    id <- target(control)[, c("quant", "year", "season")]
+    idx <- id$quant %in% c("f", "fbar")
+
     # APPLY if any non-fbar
     if(any(!idx) & !is.null(maxF)) {
 
       # CREATE data.frame for idx rows + min, max, quant, biol
-      didx <- dimnames(idx)
-      maxFd <- cbind(expand.grid(year=an(didx$year),
-        season=didx$season)[c(!idx),],
+      
+      maxFd <- cbind(id[!idx, c("year", "season")],
         data.frame(quant="fbar", min=0, max=maxF, biol=1))
+
       maxFc <- fwdControl(maxFd)
 
-      # MERGE controls' target
+      # MERGE controls' target ...
       target <- rbind(control@target, maxFc@target)
 
       # AND iters
