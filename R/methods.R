@@ -582,13 +582,18 @@ setMethod("merge", signature(x="fwdControl", y="fwdControl"),
   pos <- c(1, ros[-length(ros)] + 1)
   nros <- sum(ros)
   
-  # STOP if different iters
+  # DEAL with different iters
   nits <- unique(unlist(lapply(its, function(x) dim(x)[3])))
-  if(length(nits) > 1)
-    stop("fwdControl objects must have the same number of iters")
 
-  iters <- array(dim=c(nros, 3, nits), dimnames=list(row=seq(nros),
-      val=c("min", "value", "max"), iter=seq(nits)))
+  # IF 1 Vs N, propagate
+  if(length(nits) == 2 & min(nits) == 1) {
+    args <- lapply(args, propagate, max(nits))
+  } else if(length(unique(nits)) > 2 & min(nits) != 1) {
+    stop("fwdControl objects must have compatible (1 &| N) iters, ", nits[nits>1], " found.")
+  }
+
+  iters <- array(dim=c(nros, 3, max(nits)), dimnames=list(row=seq(nros),
+      val=c("min", "value", "max"), iter=seq(max(nits))))
  
   for(i in seq(its))
     iters[seq(pos[i], length=ros[i]), ,]  <- c(its[[i]])
