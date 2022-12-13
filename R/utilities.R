@@ -7,7 +7,7 @@
 # Distributed under the terms of the European Union Public Licence (EUPL) V.1.1.
 
 # calc_F {{{
-# F = alpha * Biomass ^ -beta * sel * effort
+# F = effort * selectivity * alpha * biomass ^ -beta
 # operating_model.cpp: * F = effort * selectivity * alpha * biomass ^ -beta
 #' Calculate fishing mortality
 #'
@@ -17,8 +17,10 @@
 #' @param effort The fishing effort
 calc_F <- function(catch, biol, effort){
     biomass <- biol@n * biol@wt
-    F <- catch@catch.q['alpha',] %*% biomass %^% (-catch@catch.q['beta',]) %*%
-      effort %*% catch@catch.sel
+    F <- effort %*% catch@catch.sel %*% catch@catch.q['alpha',] %*%
+      (biomass %^% -catch@catch.q['beta',])
+    quant(F) <- "age"
+    units(F) <- "f"
     return(F)
 } # }}}
 
@@ -327,54 +329,3 @@ targetOrder <- function(target, iters) {
   return(idx)
 }
 # }}}
-
-# guessfcb {{{
-
-#' Generate an FCB matrix from FLBiols and FLFisheries
-#'
-#' Tries to generate FCB matrix based on names.
-#' Internal function. Ignore.
-#' @param biols The FLBiols.
-#' @param fisheries The FLFisheries.
-
-guessfcb <- function(biols, fisheries) {
-
-  # GET names
-  nmf <- names(fisheries)
-  nmc <- lapply(fisheries, names)
-  nmb <- names(biols)
-
-  fc <- do.call(rbind, lapply(names(nmc), function(x) unlist(cbind(x, nmc[[x]]))))
-  b <- nmb[match(fc[,2], nmb)]
-
-  fcb <- cbind(fc[!is.na(b),, drop=FALSE], b[!is.na(b)])
-  colnames(fcb) <- c("f", "c", "b")
-  rownames(fcb) <- seq(nrow(fcb))
-
-  return(fcb)
-}
-
-# fcb2int(fcb, biols, fisheries)
-#' fcb2int function
-#'
-#' Internal function not for public consumption
-#' @param fcb The FCB matrix
-#' @param biols The biols
-#' @param fisheries The fisheries
-fcb2int <- function(fcb, biols, fisheries) {
-  
-  # GET names
-  nmf <- names(fisheries)
-  nmc <- lapply(fisheries, names)
-  nmb <- names(biols)
-
-  fcbint <- array(NA, dim=dim(fcb), dimnames=dimnames(fcb))
-
-  fcbint[,"f"] <- as.integer(match(fcb[,"f"], nmf))
-  fcbint[,"b"] <- as.integer(match(fcb[,"b"], nmb))
-
-  for(i in names(nmc))
-    fcbint[fcb[,"f"] == i, "c"] <- match(fcb[fcb[,"f"] == i, "c"], nmc[[i]])
-
-  return(fcbint)
-} # }}}

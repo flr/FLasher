@@ -48,7 +48,8 @@
 
 #trace("fwd", browser, exit=browser, signature = c("FLBiols", "FLFisheries", "fwdControl"))
 
-setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwdControl"),
+setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", 
+  control="fwdControl"),
     function(object, fishery, control, effort_max=rep(100, length(fishery)),
       deviances=residuals, residuals=lapply(lapply(object, spwn),
       "[<-", value=1)) {
@@ -249,9 +250,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   # SUBSET fishery, new object TODO iter(FLFishery)<-
   rfishery <- lapply(fishery, iter, idn)
 
-  # CHANGE zero effort to small value
+  # CHANGE zero or negative effort to small value
   rfishery <- lapply(rfishery, function(x){
-    x@effort[x@effort == 0] <- sqrt(.Machine$double.eps)
+    x@effort[x@effort <= 0] <- sqrt(.Machine$double.eps)
     # SET effort to solve as total effort
     x@effort  <- x@effort * x@capacity
     x@capacity[]  <- 1
@@ -262,8 +263,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", control="fwd
   effscale <- unname(unlist(lapply(rfishery, function(x) max(x@effort))))
   
   # CALL operatingModelRun
-  # TODO PASS to C++ only from last year of rfishery and biolscpp
-  
+  # TODO: PASS to C++ only from last year of rfishery and biolscpp
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max = c(effort_max * effscale), effort_mult_initial = 1.0,
     indep_min = .Machine$double.eps, indep_max = 1e12, nr_iters = 50)

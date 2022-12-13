@@ -107,11 +107,11 @@ tutorial at: http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_a
 }
 \examples{
 data(ple4)
-# Hindcast with past rec and catch
-hind <- fwd(ple4, sr=rec(ple4)[, ac(1980:2017)],
+# Hindcast with past rec and fbar
+hinf <- fwd(ple4, sr=rec(ple4)[, ac(1980:2017)],
   control=fwdControl(year=1980:2017, value=fbar(ple4)[, ac(1980:2017)],
   quant="fbar"))
-plot(FLStocks(PLE=ple4, FWD=hind))
+plot(FLStocks(PLE=ple4, FWD=hinf))
 #' Hindcast with past rec and catch
 hind <- fwd(ple4, sr=rec(ple4)[, ac(1980:2017)],
   catch=catch(ple4)[, ac(1980:2017)])

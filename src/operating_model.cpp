@@ -1848,6 +1848,9 @@ FLQuantAD operatingModel::fbar(const int fishery_no, const int catch_no, const i
 FLQuantAD operatingModel::fbar(const int biol_no, const std::vector<unsigned int> indices_min, const std::vector<unsigned int> indices_max) const {
   bool verbose = false;
   if(verbose){Rprintf("\nIn operatingModel::fbar biol only\n");}
+  
+  // DEBUG Rprintf("%i\n", indices_max.size());
+
   if((indices_min.size() != 6) | (indices_max.size() != 6)){
     Rcpp::stop("In operatingModel fbar B method. indices_min and max must be of length 6\n");
   }

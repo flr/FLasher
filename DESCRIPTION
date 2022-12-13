@@ -41,20 +41,21 @@ Collate:
   fwd.R
   ffwd.R
   constructors.R
+  fcb_draw.R
   RcppExports.R
   test_helper_functions.R
   rcpp_plugin.R
   data.R
   coerce.R
   window.R
-  fcb_draw.R
   FLasherLib.R
   plot.R
+  zzz.R
 License: EUPL
 VignetteBuilder: knitr
 LazyData: No
 NeedsCompilation: Yes
 Biarch: FALSE  
 BugReports: https://github.com/flr/FLasher/issues
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2
 Encoding: UTF-8
