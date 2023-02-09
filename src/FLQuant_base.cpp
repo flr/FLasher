@@ -13,7 +13,7 @@
 template <typename T>
 FLQuant_base<T>::FLQuant_base(){
     data = std::vector<T>();
-	units = std::string(); 
+	  units = std::string(); 
     dim = std::vector<unsigned int>();
     dimnames = Rcpp::List();
 }
@@ -79,12 +79,12 @@ FLQuant_base<T>::FLQuant_base(const std::vector<unsigned int> dims, const T valu
     // Just of the right size at the moment.
     // Could use ::create to pass in actual characters, but then do we want just 1:nage, 1:nyear etc?
     dimnames = Rcpp::List::create(
-            Rcpp::Named("quant", Rcpp::CharacterVector(dims[0])),
-            Rcpp::Named("year", Rcpp::CharacterVector(dims[1])),
-            Rcpp::Named("unit", Rcpp::CharacterVector(dims[2])),
-            Rcpp::Named("season", Rcpp::CharacterVector(dims[3])),
-            Rcpp::Named("area", Rcpp::CharacterVector(dims[4])),
-            Rcpp::Named("iter", Rcpp::CharacterVector(dims[5])));
+      Rcpp::Named("quant", Rcpp::CharacterVector(dims[0])),
+      Rcpp::Named("year", Rcpp::CharacterVector(dims[1])),
+      Rcpp::Named("unit", Rcpp::CharacterVector(dims[2])),
+      Rcpp::Named("season", Rcpp::CharacterVector(dims[3])),
+      Rcpp::Named("area", Rcpp::CharacterVector(dims[4])),
+      Rcpp::Named("iter", Rcpp::CharacterVector(dims[5])));
 }
 
 /*! \brief Used as generic intrusive wrap to return FLQuant to R

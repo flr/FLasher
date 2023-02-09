@@ -46,8 +46,6 @@
 
 # fwd(FLBiols, FLFisheries, fwdControl) {{{
 
-#trace("fwd", browser, exit=browser, signature = c("FLBiols", "FLFisheries", "fwdControl"))
-
 setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries", 
   control="fwdControl"),
     function(object, fishery, control, effort_max=rep(100, length(fishery)),
@@ -259,15 +257,15 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
     return(x)
   })
 
-    # CALCULATE max(effort) per fishery
+  # CALCULATE max(effort) per fishery
   effscale <- unname(unlist(lapply(rfishery, function(x) max(x@effort))))
   
   # CALL operatingModelRun
-  # TODO: PASS to C++ only from last year of rfishery and biolscpp
+  # TODO: PASS to C++ only projection years of rfishery and biolscpp
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max = c(effort_max * effscale), effort_mult_initial = 1.0,
     indep_min = .Machine$double.eps, indep_max = 1e12, nr_iters = 50)
-  
+
   # WARN of unsolved targets
   if(any(out$solver_codes != 1)) {
  
