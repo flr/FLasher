@@ -257,8 +257,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
     return(x)
   })
 
-  # CALCULATE max(effort) per fishery
-  effscale <- unname(unlist(lapply(rfishery, function(x) max(x@effort))))
+  # CALCULATE max(effort) per fishery, using 1st year - 1
+  effscale <- unname(unlist(lapply(rfishery, function(x)
+    max(x@effort[, min(control$year) - 1]))))
   
   # CALL operatingModelRun
   # TODO: PASS to C++ only projection years of rfishery and biolscpp
@@ -346,7 +347,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
 
   # WARNING for effort_max
    if(any(unlist(lapply(fishery,
-    function(x) max(x@effort, na.rm=TRUE))) == effort_max))
+    function(x) max(x@effort, na.rm=TRUE))) > 0.99 * effort_max))
     warning("Maximum effort limit reached in one or more fisheries")
 
   return(out)
@@ -487,7 +488,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
   
   function(object, control, sr, maxF=4, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))),
-    effort_max=1e12, ...) {  
+    effort_max=100, ...) {  
     
     # COMPUTE first year and season in control
     fy <- which(ac(control$year[1]) == dimnames(m(object))$year)
