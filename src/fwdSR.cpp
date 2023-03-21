@@ -37,6 +37,8 @@ void fwdSR_base<T>::init_model_map(){
     map_model_name_to_function["survsrr"] = &survsrr;
     map_model_name_to_function["bevholtsig"] = &bevholtsig;
     map_model_name_to_function["Bevholtsig"] = &bevholtsig;
+    map_model_name_to_function["mixedsrr"] = &mixedsrr;
+    map_model_name_to_function["mixedSRR"] = &mixedsrr;
     return;
 }
 
@@ -429,10 +431,10 @@ T bevholtSS3(const T srp, const std::vector<double> params){
     }
 
     // TODO ssbp is the prop of ssb active in a season, 1 if single rec
-    double ssbp = 1.0;
-    if (params.size() > 5) {
-      ssbp = params[5];
-    }
+    //double ssbp = 1.0;
+    //if (params.size() > 5) {
+    //  ssbp = params[5];
+    //}
 
     rec = (4.0 * s * R0 * srp) / (v * (1.0 - s) + srp * (5 * s - 1.0)) * sratio * seasp;
 
@@ -495,6 +497,31 @@ T bevholtsig(const T srp, const std::vector<double> params){
     return rec;
 }
 
+template <typename T>
+T mixedsrr(const T srp, const std::vector<double> params){
+    T rec;
+    
+    double a = params[0];
+    double b = params[1];
+    int mod = params[2];
+
+    // 1 Bevholt, rec = a * srp / (b + srp)
+    if (mod == 1) {
+      rec = a * srp / (b + srp);
+    } else if (mod == 2) {
+    // 2 Ricker, rec = a * srp * exp (-b * srp)
+      rec = a * srp * exp(-b * srp);
+    // 3 Segreg, rec = if(ssb < b) a * ssb else a * b
+    } else if (mod == 3) {
+      if(srp <= b) {
+        rec = a * srp;
+      } else {
+        rec = a * b;
+      }
+    }
+    return rec;
+}
+
 // Instantiate functions
 template double ricker(const double srp, const std::vector<double> params);
 template adouble ricker(const adouble srp, const std::vector<double> params);
@@ -512,3 +539,5 @@ template double survsrr(const double srp, const std::vector<double> params);
 template adouble survsrr(const adouble srp, const std::vector<double> params);
 template double bevholtsig(const double srp, const std::vector<double> params);
 template adouble bevholtsig(const adouble srp, const std::vector<double> params);
+template double mixedsrr(const double srp, const std::vector<double> params);
+template adouble mixedsrr(const adouble srp, const std::vector<double> params);
