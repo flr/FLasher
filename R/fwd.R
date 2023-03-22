@@ -161,7 +161,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   # CONVERT NA and 0 (< sqrt(.Machine$double.eps)) targets to 1e-6
   t0s <- !is.na(iters(control)[, "value",]) &
     iters(control)[, "value",] < .Machine$double.eps
-  iters(control)[,"value",][t0s] <- 1e-6
+  iters(control)[,"value",][t0s] <- sqrt(.Machine$double.eps)
 
   # CONVERT to numeric 'season', 'area', 'unit'
   if (!is.numeric(trg$season))
