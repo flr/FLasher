@@ -90,3 +90,6 @@ T survsrr(const T srp, const std::vector<double> params);
 
 template <typename T>
 T bevholtsig(const T srp, const std::vector<double> params);
+
+template <typename T>
+T mixedsrr(const T srp, const std::vector<double> params);

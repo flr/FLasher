@@ -51,7 +51,7 @@
   maxF = 4,
   deviances = residuals,
   residuals = FLQuant(1, dimnames = dimnames(rec(object))),
-  effort_max = 1e+12,
+  effort_max = 100,
   ...
 )
 
