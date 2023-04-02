@@ -485,7 +485,6 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
-  
   function(object, control, sr, maxF=4, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))),
     effort_max=100, ...) {  
@@ -720,7 +719,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
 #'   catch=catch(ple4)[, ac(1980:2017)])
 
 setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
-  function(object, fishery=missing, sr, maxF=4, deviances=residuals,
+  function(object, fishery=NULL, sr, maxF=4, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
     
     # PARSE ...
@@ -786,3 +785,19 @@ setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
     return(fwd(object=object, control=control, deviances=deviances, sr=sr, maxF=maxF))
   }
 ) # }}}
+
+# fwd(FLStockR) {{{
+
+setMethod("fwd", signature(object="FLStockR", fishery="missing",
+  control="fwdControl"),
+  function(object, control, ...) { 
+    fwd(as(object, 'FLStock'), sr=sr(object), control=control, ...)
+  }
+)
+
+setMethod("fwd", signature(object="FLStockR", fishery="ANY", control="missing"),
+  function(object, fishery=NULL, ...) {  
+    fwd(as(object, 'FLStock'), sr=sr(object), ...)
+  }
+)
+# }}}
