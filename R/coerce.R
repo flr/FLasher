@@ -126,13 +126,13 @@ setAs("FLQuants", "fwdControl",
         iter=seq(its)))
       
       # RESHAPE to assign from df
-      # iters <- aperm(iters, c(3,1,2))
-      iters[, "value", ] <- df$value
+      iters <- aperm(iters, c(3,1,2))
+      iters[, , "value"] <- c(df$value)
       if("min" %in% colnames(df))
         iters[, "min", ] <- df$min
       if("max" %in% colnames(df))
         iters[, "max", ] <- df$max
-      # iters <- aperm(iters, c(2,3,1))
+      iters <- aperm(iters, c(2,3,1))
 
       # ADD fishery, catch and biol indices
       target <- cbind(target, fishery=as.numeric(NA), catch=as.numeric(NA),
