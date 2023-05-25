@@ -133,6 +133,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   deviances <- iter(FLQuants(deviances), idn)
 
   # deviances must be same dim 2-5 as the biol
+  
   # ADD deviances
   for(i in names(biolscpp)) {
     bdnms <- dimnames(n(biolscpp[[i]][["biol"]]))
@@ -142,6 +143,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
       end=year_range[2])
     # No NAs
     deviances[[i]][is.na(deviances[[i]])] <- 1
+    # EXTEND to units if needed
+    deviances[[i]] <- expand(deviances[[i]],
+      unit=dimnames(biolscpp[[i]]$biol)$unit)
     biolscpp[[i]][["srr_deviances"]] <- deviances[[i]]
   }
   
@@ -205,7 +209,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
 
   # Check if we if have any relYears AND it is an annual model
   # If so, check relSeason is NA or 1
+
   annual_model <- dim(n(object[[1]]))[4] == 1
+  
   if (any(relYear) & annual_model) {
     # If relSeason is not NA or 1 throw an error
     if (!all(trg$relSeason[relYear] %in% c(NA, 1))){

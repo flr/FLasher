@@ -249,6 +249,12 @@ FLQuant_base<T> fwdSR_base<T>::predict_recruitment(const FLQuant_base<T> srp, co
     // Empty output object
     FLQuant_base<T> rec = srp;
     rec.fill(0.0);
+    // SET sex ratio
+    //FLQuant_base<T> sratio = srp;
+    T sratio = 1.0;
+    if (res_dim[2] == 2){
+      sratio = 0.5;
+    } 
     // Going to have to loop over the dimensions and update the params and deviances indices - not nice
     std::vector<unsigned int> params_indices = initial_params_indices;
     //std::vector<unsigned int> deviances_indices = initial_deviances_indices;
@@ -268,6 +274,7 @@ FLQuant_base<T> fwdSR_base<T>::predict_recruitment(const FLQuant_base<T> srp, co
                         params_indices[4] = initial_params_indices[4] + iter_counter - 1;
                         //deviances_indices[4] = initial_deviances_indices[4] + iter_counter - 1;
                         T rec_temp = eval_model(srp(1, year_counter, unit_counter, season_counter, area_counter, iter_counter), params_indices);
+                        rec_temp *= sratio;
                         if (deviances_mult == true){
                             rec_temp *= deviances(1, params_indices[0], params_indices[1], params_indices[2], params_indices[3], params_indices[4]);
                         }
