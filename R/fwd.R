@@ -796,14 +796,14 @@ setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
 
 setMethod("fwd", signature(object="FLStockR", fishery="missing",
   control="fwdControl"),
-  function(object, control, ...) { 
-    fwd(as(object, 'FLStock'), sr=sr(object), control=control, ...)
+  function(object, control, sr=sr(object), ...) { 
+    fwd(as(object, 'FLStock'), sr=sr, control=control, ...)
   }
 )
 
 setMethod("fwd", signature(object="FLStockR", fishery="ANY", control="missing"),
-  function(object, fishery=NULL, ...) {  
-    fwd(as(object, 'FLStock'), sr=sr(object), ...)
+  function(object, fishery=NULL, sr=sr(object), ...) {  
+    fwd(as(object, 'FLStock'), sr=sr, ...)
   }
 )
 # }}}
