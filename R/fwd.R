@@ -60,10 +60,29 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   if(!all.equal(names(object), names(deviances)))
     stop("Names of biols and deviances must match exactly")
 
+  # CONTROL years
+  cyrs <- unique(control$year)
+
   # TODO CHECK iters biols, fisheries, control
   
   # TODO years
-  # CHECK for NAs in biol: m, n, wt
+  # CHECK for NAs in biol & cyears: m, wt, mat
+  for(ob in names(object)) {
+    objectnas <- findNAs(object[[ob]][, ac(cyrs)], c("m", "mat", "wt"))
+    if(!is.null(objectnas))
+      stop(paste0("NAs found in FLBiol '", ob, "', slot(s): "), objectnas)
+  }
+
+  # CHECK for NAs in fisheries: landings.n, landings.wt, discards.n, discards.wt
+  for(fi in names(fishery)) {
+    for(ca in names(fishery[[fi]])) {
+      objectnas <- findNAs(fishery[[fi]][[ca]][, ac(cyrs)],
+      c("landings.n", "landings.wt", "discards.n", "discards.wt", "catch.sel"))
+    if(!is.null(objectnas))
+      stop(paste0("NAs found in FLCatch '", ca, "', FLFishery '", fi, "', slot(s): ", paste(objectnas, collapse= ", ")))
+    }
+  }
+
   # bnas <- unlist(lapply(object, verify,
   #   m=~!is.na(m), n=~!is.na(n), wt=~!is.na(wt), report=FALSE))
  
@@ -77,7 +96,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   dnb <- dimnames(n(object[[1]]))
 
   # CHECK srparams years match control years
-  cyrs <- unique(control$year)
   
   ysrp <- unlist(lapply(object, function(x) {
                           

@@ -329,3 +329,20 @@ targetOrder <- function(target, iters) {
   return(idx)
 }
 # }}}
+
+  findNAs <- function(x, slots) {
+
+    # GET values
+    vals <- lapply(setNames(nm=slots), function(s) do.call(s, list(x)))
+
+    # IS there any NA?
+    nas <- unlist(lapply(vals, anyNA))
+
+    # RETURN slot name(s) if any NA
+    if(any(nas))
+      return(names(nas)[nas])
+
+    return(NULL)
+  }
+
+
