@@ -96,7 +96,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   dnb <- dimnames(n(object[[1]]))
 
   # CHECK srparams years match control years
-  
+
   ysrp <- unlist(lapply(object, function(x) {
                           
     # GET rec@params dimnames
@@ -124,7 +124,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
     else
       TRUE
   }))
-  
+
   if(!all(ysrp))
     stop("'years' specified in params(rec) do not match those in control or are NA (note that the 'final control year + 1' is projected if there is room)")
   
