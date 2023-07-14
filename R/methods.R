@@ -602,3 +602,13 @@ setMethod("merge", signature(x="fwdControl", y="fwdControl"),
 })
 
 # }}}
+
+# iter(fwdControl) {{{
+setMethod('iter', signature(obj="fwdControl"),
+  function(obj, iter) {
+
+    iters(obj) <- iters(obj)[,, iter]
+
+    return(obj)
+  }
+) # }}}

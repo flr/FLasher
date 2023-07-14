@@ -816,6 +816,7 @@ void operatingModel::project_biols(const int timestep){
       }
 
       // Update biol with survivors
+      // TODO: argument to avoid updating if first year and not NA
       if(verbose){Rprintf("Update abundance with new abundance\n");}
       for (unsigned int icount = 1; icount <= niter; ++icount){
         for (unsigned int qcount = 1; qcount <= biol_dim[0]; ++qcount){
