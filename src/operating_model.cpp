@@ -487,7 +487,11 @@ std::vector<adouble> operatingModel::calc_rec(const unsigned int biol_no, const 
   timestep_to_year_season(rec_timestep, biol_dim[3], initial_params_year, initial_params_season);
   std::vector<unsigned int> initial_params_indices{initial_params_year, unit, initial_params_season, area, 1};
   FLQuantAD rec = biols(biol_no).predict_recruitment(srpq, initial_params_indices);
-  if(verbose){Rprintf("rec: %f\n", Value(rec(1,1,1,1,1,1)));}
+  if(verbose) {
+    for (unsigned int i=1; i<=niter; ++i){
+      Rprintf("rec: %f\n", Value(rec(1,1,1,1,1,i)));
+    }
+  }
   if(verbose){Rprintf("Leaving operatingModel::calc_rec\n");}
   return rec.get_data();
 }

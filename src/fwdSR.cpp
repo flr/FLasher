@@ -442,7 +442,7 @@ T bevholtSS3(const T srp, const std::vector<double> params){
     //if (params.size() > 5) {
     //  ssbp = params[5];
     //}
-
+  
     rec = (4.0 * s * R0 * srp) / (v * (1.0 - s) + srp * (5 * s - 1.0)) * sratio * seasp;
 
     return rec;
