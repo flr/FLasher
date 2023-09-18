@@ -607,7 +607,9 @@ setMethod("merge", signature(x="fwdControl", y="fwdControl"),
 setMethod('iter', signature(obj="fwdControl"),
   function(obj, iter) {
 
-    iters(obj) <- iters(obj)[,, iter]
+    if(dim(obj@iters)[3] > 1) {
+      iters(obj) <- iters(obj)[,, iter]
+    }
 
     return(obj)
   }

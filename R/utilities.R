@@ -330,6 +330,7 @@ targetOrder <- function(target, iters) {
 }
 # }}}
 
+# findNAs {{{
   findNAs <- function(x, slots) {
 
     # GET values
@@ -344,5 +345,4 @@ targetOrder <- function(target, iters) {
 
     return(NULL)
   }
-
-
+# }}}
