@@ -296,7 +296,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max = c(effort_max * effscale), effort_mult_initial = 1.0,
     indep_min = .Machine$double.xmin, indep_max = 1e12, nr_iters = 50)
-
   # WARN of unsolved targets
   if(any(out$solver_codes != 1)) {
  
@@ -375,8 +374,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
     flag=out$solver_codes)
 
   # WARNING for effort_max
-  if(any(unlist(lapply(fishery,
-    function(x) max(x@effort[, ac(cyrs)], na.rm=TRUE))) > effort_max))
+  if(any(mapply(function(x, y) max(x@effort[, ac(cyrs)], na.rm=TRUE) > y,
+    x=fishery, y=c(effort_max * effscale), SIMPLIFY=TRUE)))
     warning("Maximum effort limit reached in one or more fisheries")
 
   return(out)
