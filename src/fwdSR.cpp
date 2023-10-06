@@ -249,12 +249,23 @@ FLQuant_base<T> fwdSR_base<T>::predict_recruitment(const FLQuant_base<T> srp, co
     // Empty output object
     FLQuant_base<T> rec = srp;
     rec.fill(0.0);
+
     // SET sex ratio
-    //FLQuant_base<T> sratio = srp;
     T sratio = 1.0;
-    if (res_dim[2] == 2){
-      sratio = 0.5;
+
+    // GET unit dimnames, sorted
+    std::vector<std::string> unit_names;
+    unit_names = Rcpp::as<std::vector<std::string> >(deviances.get_dimnames()[2]);
+    std::sort(unit_names.begin(), unit_names.end());
+    std::vector<std::string> sex = { "F", "M" };
+
+    // IF two unit(s) & unit_names %in% c('F','M'), sratio=0.5
+    if (res_dim[2] == 2) {
+      if(unit_names == sex) {
+        sratio = 0.5;
+      }
     } 
+
     // Going to have to loop over the dimensions and update the params and deviances indices - not nice
     std::vector<unsigned int> params_indices = initial_params_indices;
     //std::vector<unsigned int> deviances_indices = initial_deviances_indices;
@@ -425,17 +436,17 @@ T bevholtSS3(const T srp, const std::vector<double> params){
     double v = params[2];
     
     // sratio is the recruits sex ratio, 1 if single sex model
-    double sratio = 1.0;
-    if (params.size() > 3) {
-      sratio = params[3];
-    }
+    //double sratio = 1.0;
+    //if (params.size() > 3) {
+    //  sratio = params[3];
+    //}
     
     // seasp is the prop of rec for the season, 1 if single rec
     // TODO BUT srp needs to come from spwn season
-    double seasp = 1.0;
-    if (params.size() > 4) {
-      seasp = params[4];
-    }
+    //double seasp = 1.0;
+    //if (params.size() > 4) {
+    //  seasp = params[4];
+    //}
 
     // TODO ssbp is the prop of ssb active in a season, 1 if single rec
     //double ssbp = 1.0;
@@ -443,7 +454,7 @@ T bevholtSS3(const T srp, const std::vector<double> params){
     //  ssbp = params[5];
     //}
   
-    rec = (4.0 * s * R0 * srp) / (v * (1.0 - s) + srp * (5 * s - 1.0)) * sratio * seasp;
+    rec = (4.0 * s * R0 * srp) / (v * (1.0 - s) + srp * (5 * s - 1.0));
 
     return rec;
 }

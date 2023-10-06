@@ -298,7 +298,7 @@ FLQuantAD operatingModel::total_srp(const int biol_no, const std::vector<unsigne
   // TODO: CHANGE srp metric
   //FLQuantAD usrp = ssf(biol_no, indices_min, indices_max);
   FLQuantAD usrp = srp(biol_no, indices_min, indices_max);
-  for (int unit_count=1; unit_count <= (indices_max[1] - indices_min[1] + 1); ++unit_count){
+  for (unsigned int unit_count=1; unit_count <= (indices_max[1] - indices_min[1] + 1); ++unit_count){
     if(verbose){Rprintf("unit: %i usrp: %f\n", unit_count, Value(usrp(1,1,unit_count,1,1,1)));}
   }
   // Sum over units
