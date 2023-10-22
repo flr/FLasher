@@ -82,7 +82,6 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
       stop(paste0("NAs found in FLCatch '", ca, "', FLFishery '", fi, "', slot(s): ", paste(objectnas, collapse= ", ")))
     }
   }
-
   # bnas <- unlist(lapply(object, verify,
   #   m=~!is.na(m), n=~!is.na(n), wt=~!is.na(wt), report=FALSE))
  
@@ -296,6 +295,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max = c(effort_max * effscale), effort_mult_initial = 1.0,
     indep_min = .Machine$double.xmin, indep_max = 1e12, nr_iters = 50)
+
   # WARN of unsolved targets
   if(any(out$solver_codes != 1)) {
  
@@ -717,21 +717,22 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     object@catch.n[,pyrs] <- catch.n(Fc)[,pyrs]
     # catch.wt
     object@catch.wt[,pyrs] <- catch.wt(Fc)[,pyrs]
-    # harvest (F)
-    object@harvest[, pyrs] <- calc_F(Fc, Bo, eff)[, pyrs]
-    # harvest(n(Bo)[, pyrs], catch.n(Fc)[, pyrs], m(Bo)[, pyrs])
-    units(object@harvest) <- "f"
 
     # stock.n
     object@stock.n[,pyrs] <- Bo@n[,pyrs]
     # stock
     object@stock <- quantSums(object@stock.n * object@stock.wt)
 
-    # SLIM object for slots with no iters in input
-    #if(its > 1) {
-    #  object <- slim(object, exclude=c("catch", "catch.n", "catch.wt",
-    #    "discards", "discards.n", "landings", "landings.n", "stock", "stock.n"))
-    #}
+    # harvest (f / hr)
+    if(units(object@harvest) == "f") {
+      object@harvest[, pyrs] <- calc_F(Fc, Bo, eff)[, pyrs]
+    } else if (units(object@harvest) == "hr") {
+      object@harvest[, pyrs] <- 
+        (object@catch.n[,pyrs] * object@catch.wt[,pyrs]) /
+        (object@stock.n[,pyrs] * object@stock.wt[,pyrs])
+    }
+
+    # TODO: SLIM object for slots with no iters in input
 
     return(object)
   }
