@@ -481,7 +481,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
     # Does ... exist?
     if(length(args) < 1)
       stop("No fwdControl provided and no FLQuant targets given, cannot do anything!")
-
+    
     # NAMES in qlevels?
     if(!names(args) %in% .qlevels)
       stop(
