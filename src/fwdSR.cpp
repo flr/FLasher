@@ -420,6 +420,7 @@ T bevholt(const T srp, const std::vector<double> params){
     rec = params[0] * srp / (params[1] + srp);
 
     if (params.size() > 2) {
+      // rec = a / (1 + (b / srp) ^ d)
       rec = params[0] / (1 + pow(params[1] / srp, params[2]));
     }
     

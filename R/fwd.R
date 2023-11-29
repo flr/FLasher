@@ -288,13 +288,13 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
 
   # CALCULATE max(effort) per fishery, using 1st year - 1
   effscale <- unname(unlist(lapply(rfishery, function(x)
-    max(x@effort[, min(control$year) - 1]))))
-
+    max(c(x@effort[, min(control$year) - 1], 1)))))
+  
   # CALL operatingModelRun
   # TODO: PASS to C++ only projection years of rfishery and biolscpp
   out <- operatingModelRun(rfishery, biolscpp, control,
     effort_max = c(effort_max * effscale), effort_mult_initial = 1.0,
-    indep_min = .Machine$double.xmin, indep_max = 1e12, nr_iters = 50)
+    indep_min = sqrt(.Machine$double.xmin), indep_max = 1e12, nr_iters = 50)
 
   # WARN of unsolved targets
   if(any(out$solver_codes != 1)) {
@@ -682,15 +682,15 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     }
 
     control <- add_target_order_fls(control)
-
+    
     # RUN
     out <- fwd(Bs, Fs, control, deviances=FLQuants(B=deviances),
       effort_max=effort_max, ...)
     
     # PARSE output
     Fc <- out$fisheries[[1]][[1]]
-    eff <- out$fisheries[[1]]@effort
     Bo <- out$biols[[1]]
+    eff <- out$fisheries[[1]]@effort
 
     # RETURN one more year if ssb_flash and  *.spwn == 0
     if(any(control[control$year == maxy,]$quant == "ssb_flash") &
