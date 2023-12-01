@@ -286,7 +286,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
     return(x)
   })
 
-  # CALCULATE max(effort) per fishery, using 1st year - 1
+  # CALCULATE max(effort) per fishery, using 1st year - 1, or 1
   effscale <- unname(unlist(lapply(rfishery, function(x)
     max(c(x@effort[, min(control$year) - 1], 1)))))
   
@@ -514,8 +514,7 @@ setMethod("fwd", signature(object="FLBiol", fishery="FLFishery",
 setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   function(object, control, sr, maxF=4, deviances=residuals,
-    residuals=FLQuant(1, dimnames=dimnames(rec(object))),
-    effort_max=100, ...) {  
+    residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
     
     # COMPUTE first year and season in control
     fy <- which(ac(control$year[1]) == dimnames(m(object))$year)
@@ -685,7 +684,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     
     # RUN
     out <- fwd(Bs, Fs, control, deviances=FLQuants(B=deviances),
-      effort_max=effort_max, ...)
+      effort_max=1e12, ...)
     
     # PARSE output
     Fc <- out$fisheries[[1]][[1]]
