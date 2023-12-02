@@ -74,6 +74,9 @@ template <typename T>
 T bevholt(const T srp, const std::vector<double> params);
 
 template <typename T>
+T bevholtDa(const T srp, const std::vector<double> params);
+
+template <typename T>
 T constant(const T srp, const std::vector<double> params);
 
 template <typename T>

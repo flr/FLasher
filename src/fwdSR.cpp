@@ -20,7 +20,8 @@ void fwdSR_base<T>::init_model_map(){
     map_model_name_to_function["Ricker"] = &ricker;
     map_model_name_to_function["bevholt"] = &bevholt;
     map_model_name_to_function["Bevholt"] = &bevholt;
-    map_model_name_to_function["bevholtDa"] = &bevholt;
+    map_model_name_to_function["bevholtDa"] = &bevholtDa;
+    map_model_name_to_function["bevholtda"] = &bevholtDa;
     map_model_name_to_function["constant"] = &constant;
     map_model_name_to_function["Constant"] = &constant;
     map_model_name_to_function["mean"] = &constant;
@@ -423,6 +424,16 @@ T bevholt(const T srp, const std::vector<double> params){
       // rec = a / (1 + (b / srp) ^ d)
       rec = params[0] / (1 + pow(params[1] / srp, params[2]));
     }
+    
+    return rec;
+}
+
+template <typename T>
+T bevholtDa(const T srp, const std::vector<double> params){
+    T rec;
+
+    // rec = a / (1 + (b / srp) ^ d)
+    rec = params[0] / (1 + pow(params[1] / srp, params[2]));
     
     return rec;
 }
