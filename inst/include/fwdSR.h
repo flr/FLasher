@@ -89,6 +89,9 @@ template <typename T>
 T segreg(const T srp, const std::vector<double> params);
 
 template <typename T>
+T segregDa(const T srp, const std::vector<double> params);
+
+template <typename T>
 T survsrr(const T srp, const std::vector<double> params);
 
 template <typename T>

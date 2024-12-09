@@ -34,6 +34,8 @@ void fwdSR_base<T>::init_model_map(){
     map_model_name_to_function["cushing"] = &cushing;
     map_model_name_to_function["Cushing"] = &cushing;
     map_model_name_to_function["Segreg"] = &segreg;
+    map_model_name_to_function["segregDa"] = &segregDa;
+    map_model_name_to_function["SegregDa"] = &segregDa;
     map_model_name_to_function["segreg"] = &segreg;
     map_model_name_to_function["survSRR"] = &survsrr;
     map_model_name_to_function["survsrr"] = &survsrr;
@@ -498,6 +500,21 @@ T segreg(const T srp, const std::vector<double> params){
     }
     return rec;
 }
+
+template <typename T>
+T segregDa(const T srp, const std::vector<double> params){
+    T rec;
+    // rec = if(ssb < b) a * ssb else a * b
+    if(pow(srp, params[2]) <= params[1]) {
+      rec = params[0] * pow(srp, params[2]);
+    }
+    else {
+      rec = params[0] * params[1];
+    }
+    return rec;
+}
+
+
 
 template <typename T>
 T survsrr(const T ssf, const std::vector<double> params){

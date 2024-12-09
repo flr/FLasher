@@ -50,7 +50,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   control="fwdControl"),
     function(object, fishery, control, effort_max=rep(100, length(fishery)),
       deviances=residuals, residuals=lapply(lapply(object, spwn),
-      "[<-", value=1)) {
+      "[<-", value=1), verbose=FALSE) {
   
   # CHECK valid fwdControl
   if(!validObject(control))
@@ -301,8 +301,9 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
  
     ids <- which(out$solver_codes != 1, arr.ind=TRUE)
 
-    warning(paste("Unsolved targets at control rows: ",
-      paste(unique(ids[,"row"]), collapse=", ")))
+    if(verbose)
+      warning(paste("Unsolved targets at control rows: ",
+        paste(unique(ids[,"row"]), collapse=", ")))
   }
 
   # STRUCTURE of out

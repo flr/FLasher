@@ -500,7 +500,7 @@ std::vector<adouble> operatingModel::calc_rec(const unsigned int biol_no, const 
  * Calculate the instantaneous fishing mortality 
  * This method is the workhorse fishing mortality method that is called by other fishing mortality methods that do make checks.
  * F = effort * selectivity * catchability.
- * F = effort * selectivity * alpha * biomass ^ -beta
+ * F = effort %*% selectivity * alpha * biomass ^ -beta
  * Selectivity and biomass are disaggregated across all the FLQ dimensions (biomass has length 1 in the quant dimension), i.e. they will have seasons and units.
  * Effort always has length 1 in the unit and quant dimension and is disaggregated across other dimensions.
  * The catchability parameters can be disaggreated across dimensions 2 to 6. If not, they are recycled.
