@@ -1011,11 +1011,11 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::v
   unsigned int first_target_season = ctrl.get_target_int_col(1,1, "season");
   unsigned int min_target_timestep = 0;
   year_season_to_timestep(first_target_year, first_target_season, biols(1).n().get_nseason(), min_target_timestep);
-  if(verbose){Rprintf("Min target timestep: %i\n", min_target_timestep);}
-  if(verbose){Rprintf("Projecting biols for the first timestep to update abundances\n"); }
+  //if(verbose){Rprintf("Min target timestep: %i\n", min_target_timestep);}
+  //if(verbose){Rprintf("Projecting biols for the first timestep to update abundances\n"); }
   project_biols(min_target_timestep);
   // Get maximum timestep of OM. If room, we update Biol in final timestep at the end
-  if(verbose){Rprintf("Back from projecting biols\n");}
+  //if(verbose){Rprintf("Back from projecting biols\n");}
   std::vector<unsigned int> biol1_dim = biols(1).n().get_dim();
   unsigned int max_timestep = biol1_dim[1] * biol1_dim[3];
   // Each target is solved independently (but a target can be made up of multiple simultaneous targets)
@@ -1029,7 +1029,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::v
   for (unsigned int target_count = 1; target_count <= ntarget; ++target_count){
     if(verbose){Rprintf("\nProcessing target: %i\n", target_count);}
     auto nsim_targets = ctrl.get_nsim_target(target_count);
-    if(verbose){Rprintf("Number of simultaneous targets: %i\n", nsim_targets);}
+    //if(verbose){Rprintf("Number of simultaneous targets: %i\n", nsim_targets);}
     // Timestep in which we find effort is the same for all simultaneous targets in a target set
     // Get time step of first sim target and use this for all sim targets.
     // Get Y/S from control - convert to timestep
@@ -1039,23 +1039,40 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::v
     year_season_to_timestep(target_effort_year, target_effort_season, biols(1).n().get_nseason(), target_effort_timestep);
     // Get the target value based on control object and current value in the OM (if Max / Min)
     // This is not part of the operation sequence so is evaluated before we turn on the tape
-    if(verbose){Rprintf("Getting desired target values from control object\n");}
+    //if(verbose){Rprintf("Getting desired target values from control object\n");}
     std::vector<double> target_value = get_target_value(target_count); // values of all sim targets for the target
     // Set up effort multipliers - do all efforts and iters at same time (keep timesteps, areas separate)
     if(verbose){Rprintf("Effort_mult_initial: %f\n", effort_mult_initial);}
     std::vector<adouble> effort_mult_ad(neffort * niter, effort_mult_initial);
     std::fill(effort_mult_ad.begin(), effort_mult_ad.end(), effort_mult_initial); // Do we need this fill?
     if(verbose){Rprintf("Effort_mult_ad: %f\n", Value(effort_mult_ad[0]));}
+    if(verbose){Rprintf("Initial effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));}
+    
+    // Problem (stemming from conversation with Ernesto Jardim, 15/01/2025):
+    // If final effort from target t was 0 (e.g. if SSB target is too high, and even setting 0 effort does not achieve it), then initial effort for target t+1 will also be at 0.
+    // Leads to failure for all subsequent targets as effort is only adjusted by effort multiplier
+    // Add check if effort is close to 0, if so return effort to something > 0 so at least the effort multiplier has something to work with.
+    for (unsigned int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
+      for (unsigned int iter_count = 1; iter_count <= niter; ++ iter_count){
+        double small_effort = 1e-3;
+        double current_effort = Value(fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count));
+        if(current_effort < small_effort){
+          if(verbose){Rprintf("Tiny initial effort - adjusting.\n");}
+          fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) = small_effort;
+        }
+      }
+    }
+    if(verbose){Rprintf("New initial effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));}
 
     // Turn tape on
     CppAD::Independent(effort_mult_ad);
-    if(verbose){Rprintf("Turned on tape\n");}
-    if(verbose){Rprintf("target_effort_year: %i\n", target_effort_year);}
-    if(verbose){Rprintf("target_effort_season: %i\n", target_effort_season);}
+    //if(verbose){Rprintf("Turned on tape\n");}
+    //if(verbose){Rprintf("target_effort_year: %i\n", target_effort_year);}
+    //if(verbose){Rprintf("target_effort_season: %i\n", target_effort_season);}
     // Update fisheries.effort() with effort multiplier in the effort timestep (area and unit effectively ignored)
     if(verbose){Rprintf("Updating effort with multipler\n");}
-    if(verbose){Rprintf("Effort before updating: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));}
-    //if(verbose){Rprintf("Effort_mult_ad: %f\n", Value(effort_mult_ad[0]));} // Accessing effort_mult_ad crashes this
+    //if(verbose){Rprintf("Effort before updating: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));}
+    // Note that using Rprintf on Value(effort_mult_ad) while tape is on crashes FLasher - so don't do it!
     for (unsigned int fisheries_count = 1; fisheries_count <= fisheries.get_nfisheries(); ++fisheries_count){
       for (unsigned int iter_count = 1; iter_count <= niter; ++ iter_count){
         fisheries(fisheries_count).effort()(1, target_effort_year, 1, target_effort_season, 1, iter_count) = 
@@ -1063,51 +1080,46 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::v
           effort_mult_ad[(fisheries_count - 1) * niter + iter_count - 1];
       }
     }
-    if(verbose){Rprintf("Effort after updating : %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));}
+    //if(verbose){Rprintf("Effort after updating: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));}
     //auto tpreproject = std::chrono::high_resolution_clock::now();
     if(verbose){Rprintf("Projecting\n");}
     // Project fisheries in the target effort timestep
     // (landings and discards are functions of effort in the effort timestep)
-    if(verbose){Rprintf("Projecting fisheries\n");}
+    //if(verbose){Rprintf("Projecting fisheries\n");}
     project_fisheries(target_effort_timestep); 
     // Project biology in the target effort timestep plus 1
     // (biology abundances are functions of effort in the previous timestep)
     // Only update if there is room
     if ((target_effort_timestep+1) <= max_timestep){
-      if(verbose){Rprintf("Projecting biols on tape\n");}
+      //if(verbose){Rprintf("Projecting biols on tape\n");}
       project_biols(target_effort_timestep+1); 
     }
-    if(verbose){Rprintf("Back from projecting\n");}
+    //if(verbose){Rprintf("Back from projecting\n");}
     // Calc error
-    if(verbose){Rprintf("Getting current state of operating model\n");}
+    //if(verbose){Rprintf("Getting current state of operating model\n");}
     // Get current state of operating model
     std::vector<adouble> target_value_hat = get_target_value_hat(target_count); 
-    if(verbose){
-      Rprintf("target_value_hat [0]: %f\n", Value(target_value_hat[0]));
-      //Rprintf("target_value_hat [1]: %f\n", Value(target_value_hat[1]));
-    }
     // Check they are the same length? 
     if (target_value_hat.size() != target_value.size()){
       Rcpp::stop("In operatingModel run. target_value_hat and target_value are not the same size. Something has gone wrong.\n");
     }
     std::vector<adouble> error(target_value_hat.size());
-    if(verbose){Rprintf("Calculating error\n");}
-    if(verbose){Rprintf("target_value: %f\n", target_value[0]);}
-    if(verbose){Rprintf("target_value_hat: %f\n", Value(target_value_hat[0]));}
+    //if(verbose){Rprintf("Calculating error\n");}
     std::transform(target_value.begin(), target_value.end(), target_value_hat.begin(), error.begin(),
         //[](double x, adouble y){return x - y;});
         [](double x, adouble y){return y - x;});
         //[](adouble x, adouble y){return (x - y) * (x - y);}); // squared error - not as effective
-    if(verbose){
-      Rprintf("target 1. target_value: %f target_value_hat: %f error: %f\n", target_value[0], Value(target_value_hat[0]), Value(error[0]));
-      //Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", target_value[1], Value(target_value_hat[1]), Value(error[1]));
-    }
-    if(verbose){Rprintf("Done calculating error\n");}
+    //if(verbose){Rprintf("Done calculating error\n");}
     // Stop recording
     // auto tpretapeoff = std::chrono::high_resolution_clock::now();
     // Use of optimize takes a long time. But solver is slightly faster
-    if(verbose){Rprintf("Turning off tape and linking effort to error\n");}
+    //if(verbose){Rprintf("Turning off tape and linking effort to error\n");}
     CppAD::ADFun<double> fun(effort_mult_ad, error);
+	// Now we have turned tape off we can inspect the AD values
+    if(verbose){
+      Rprintf("target 1. target_value: %f target_value_hat: %f error: %f\n", target_value[0], Value(target_value_hat[0]), Value(error[0]));
+    //  //Rprintf("target 2. target_value: %f target_value_hat: %f error: %f\n", target_value[1], Value(target_value_hat[1]), Value(error[1]));
+    }
     // fun.optimize();
     // Use Dependent? Makes no difference
     // CppAD::ADFun<double> fun;
@@ -1115,7 +1127,6 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::v
     // fun.optimize();
     // auto taftertapeoff = std::chrono::high_resolution_clock::now();
 
-    if(verbose){Rprintf("Turned off tape\n");}
     // Solve the target
     // double version of effort mult used in solver
     std::vector<double> effort_mult(neffort * niter, effort_mult_initial);
@@ -1157,7 +1168,7 @@ Rcpp::IntegerMatrix operatingModel::run(const double effort_mult_initial, std::v
       }}
     // ***** end of new effort bit
     if(verbose){Rprintf("Final effort: %f\n", Value(fisheries(1).effort()(1, target_effort_year, 1, target_effort_season, 1, 1)));}
-    if(verbose){Rprintf("Projecting again\n");}
+    //if(verbose){Rprintf("Projecting again\n");}
     project_fisheries(target_effort_timestep); 
     // If space, update biols too
     if ((target_effort_timestep+1) <= max_timestep){
