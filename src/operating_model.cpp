@@ -360,10 +360,8 @@ FLQuantAD operatingModel::srp(const int biol_no, const std::vector<unsigned int>
   if(verbose){Rprintf("srp 1: %f\n", Value(srp(1,1,1,1,1,1)));}
   if(verbose){Rprintf("srp 2: %f\n", Value(srp(1,1,2,1,1,1)));}
   if(verbose){Rprintf("tsrp: %f\n", Value(tsrp(1,1,1,1,1,1)));}
-
-
-  
   if(verbose){Rprintf("Leaving operatingModel::srp\n");}
+
   return srp;
 }
 

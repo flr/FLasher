@@ -614,7 +614,6 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     }
     
     # FLAG fbar target timesteps
-
     id <- target(control)[, c("quant", "year", "season")]
     idx <- id$quant %in% c("f", "fbar")
 

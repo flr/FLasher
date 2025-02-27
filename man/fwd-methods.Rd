@@ -19,7 +19,8 @@
   control,
   effort_max = rep(100, length(fishery)),
   deviances = residuals,
-  residuals = lapply(lapply(object, spwn), "[<-", value = 1)
+  residuals = lapply(lapply(object, spwn), "[<-", value = 1),
+  verbose = FALSE
 )
 
 \S4method{fwd}{FLBiols,FLFishery,fwdControl}(object, fishery, control, ...)
@@ -51,13 +52,12 @@
   maxF = 4,
   deviances = residuals,
   residuals = FLQuant(1, dimnames = dimnames(rec(object))),
-  effort_max = 100,
   ...
 )
 
 \S4method{fwd}{FLStock,ANY,missing}(
   object,
-  fishery = missing,
+  fishery = NULL,
   sr,
   maxF = 4,
   deviances = residuals,
