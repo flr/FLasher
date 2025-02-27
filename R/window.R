@@ -26,12 +26,15 @@ setMethod('stf', signature(object='FLStock'),
 
     # f.rescale
     if(f.rescale) {
+      fbar.ages <- ac(seq(range(object, 'minfbar'), range(object, 'maxfbar')))
+      fbar.years <- ac(seq(end - fbar.nyears + 1, end))
+      years <- ac(seq(dims(object)$maxyear + 1, end))
       # mean f over fbar ages and years
       fbar <- mean(apply(slot(res, 'harvest')[fbar.ages, fbar.years], c(2:6), mean,
         na.rm=na.rm))
       # fbar for last REAL year
-      lastfbar <- apply(slot(res, 'harvest')[fbar.ages, ac(dims$maxyear)], 3:6, mean,
-        na.rm=na.rm)
+      lastfbar <- apply(slot(res, 'harvest')[fbar.ages, ac(dims(object)$maxyear)],
+        3:6, mean, na.rm=na.rm)
 
       # divide by fbar and multiply by lastfbar
       slot(res, 'harvest')[, years] <- sweep(slot(res, 'harvest')[, years], 3:6, fbar, '/')
