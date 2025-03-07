@@ -1530,9 +1530,9 @@ std::vector<adouble> operatingModel::get_target_value_hat(const int target_no, c
     auto Bno = std::min(target_component, (long int) Bnos.size()) - 1; // target_component or max no of biols in that target
     auto Cno = std::min(target_component, (long int) Cnos.size()) - 1;
     auto Fno = std::min(target_component, (long int) Fnos.size()) - 1;
-    if(verbose){Rprintf("Fno: %i\n", Fno);}
-    if(verbose){Rprintf("Cno: %i\n", Cno);}
-    if(verbose){Rprintf("Bno: %i\n", Bno);}
+    if(verbose){Rprintf("Fno: %li\n", Fno);}
+    if(verbose){Rprintf("Cno: %li\n", Cno);}
+    if(verbose){Rprintf("Bno: %li\n", Bno);}
     //Rprintf("target_component: %i\n", target_component);
     // Indices of target
     get_target_hat_indices(indices_min, indices_max, target_no, sim_target_no, target_component, false);
