@@ -8,6 +8,7 @@
 // maps the quant type character string to the enumerated types
 void fwdControl::init_target_map(){
     // Fill up the map
+    // TODO: ADD hr target
     target_map["f"] = target_fbar;
     target_map["fbar"] = target_fbar;
     target_map["catch"] = target_catch;

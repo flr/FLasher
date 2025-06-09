@@ -8,7 +8,8 @@
 
 # .biol_quants - biol-based targets
 .biol_quants <- c('srp', 'ssb_end', 'biomass_end', 'ssb', 'ssb_spawn',
-  'biomass_spawn', 'ssb_flash', 'biomass_flash', 'inmb_end', 'indb') 
+  'biomass_spawn', 'ssb_flash', 'ssb_ny', 'biomass_flash', 'biomass_ny',
+  'inmb_end', 'indb') 
 
 # .qlevels - available quants for fwdControl
 .qlevels <-  c('catch', 'landings', 'discards', 'f', 'fbar', 'revenue',
@@ -52,7 +53,7 @@
 #' @slot FCB The matrix describing which FLCatch of which FLFishery catches which FLBiol. A *matrix* with 3 columns: F, C, and B.
 #'
 #' @section Validity: \describe{
-#'     \item{VALIDITY}{Neque porro quisquam est qui dolorem ipsum.}
+#'     \item{VALIDITY}{Neque porro quisquam est qui doloremd ipsum.}
 #' }
 #'
 #' @section Accessors:
@@ -70,6 +71,25 @@
 #' any of its slots. All slots are then created to match the requirements of the
 #' class validity. If an unnamed \code{FLQuant} object is provided, this is used
 #' for sizing but not stored in any slot.
+#' 
+#' @section Targets:
+#'
+#' Forecast targets can be based on a variery of stock and fishery quantities. The 
+#' following are currently available, and a corresponding function, listed at the end, 
+#' returns the same value when applied on a valid class, for example an `FLStock` 
+#' object. These targets are defined per time period, either annual or seasonal.
+#'
+#' - ssb, ssb_spawn: The Spawning Stock Biomass at spawning time, `ssb`.
+#' - ssb_end: The Spawning Stock Biomass at the end of the time period, `ssb_end`.
+#' - ssb_flash: The Spawning Stock Biomass at the beginning of the following year, `ssb`.
+#' - biomass_spawn: Total Stock Biomass at spawning time, 'tsb'.
+#' - biomass_end: Total Stock Biomass (`tsb`) at the end of the time period.
+#' - f, fbar: Fishing mortality over the time period. `fbar`.
+#' - catch: The total catch over the time period, `catch`.
+#' - landings: The total landings over the time period, 'landings'.
+#' - discards: The total discards over the time period, 'discards'.
+#' - effort: The total effort over the time period, 'effort'.
+#' - revenue: The total revenue over the time period, 'revenue'.
 #'
 #' @author Iago Mosqueira, Finlay Scott - EC JRC.
 #' @seealso \link{data.frame}

@@ -295,6 +295,11 @@ FLQuantAD operatingModel::total_srp(const int biol_no, const std::vector<unsigne
   if ((indices_min.size() != 5) | (indices_max.size() != 5)){
     Rcpp::stop("In operatingModel::total_srp subsetter. Indices not of length 5 (no age index)\n");
   }
+
+  // TODO: SET srp from a previous timestep
+  // Rprintf("season min  %i\n: ", indices_min[3]);
+  // Rprintf("season max  %i\n: ", indices_max[3]);
+
   // TODO: CHANGE srp metric
   //FLQuantAD usrp = ssf(biol_no, indices_min, indices_max);
   FLQuantAD usrp = srp(biol_no, indices_min, indices_max);

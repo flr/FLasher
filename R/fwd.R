@@ -516,7 +516,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
   control="fwdControl"),
   function(object, control, sr, maxF=4, deviances=residuals,
     residuals=FLQuant(1, dimnames=dimnames(rec(object))), ...) {  
-    
+
     # COMPUTE first year and season in control
     fy <- which(ac(control$year[1]) == dimnames(m(object))$year)
     fs <- which(ac(control$season[1]) == dimnames(m(object))$season)
