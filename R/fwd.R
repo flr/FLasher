@@ -51,7 +51,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
     function(object, fishery, control, effort_max=rep(100, length(fishery)),
       deviances=residuals, residuals=lapply(lapply(object, spwn),
       "[<-", value=1), verbose=FALSE) {
-  
+
   # CHECK valid fwdControl
   if(!validObject(control))
     stop("control object is not valid, please check")
@@ -375,8 +375,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
     flag=out$solver_codes)
 
   # WARNING for effort_max
-  if(any(mapply(function(x, y) max(x@effort[, ac(cyrs)], na.rm=TRUE) > y,
-    x=fishery, y=c(effort_max * effscale), SIMPLIFY=TRUE)))
+  if(any(Map(function(x, y) max(x@effort[, ac(cyrs)], na.rm=TRUE) > y,
+    x=fishery, y=c(effort_max * effscale))))
     warning("Maximum effort limit reached in one or more fisheries")
 
   return(out)
