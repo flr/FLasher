@@ -375,8 +375,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
     flag=out$solver_codes)
 
   # WARNING for effort_max
-  if(any(Map(function(x, y) max(x@effort[, ac(cyrs)], na.rm=TRUE) > y,
-    x=fishery, y=c(effort_max * effscale))))
+  if(any(mapply(function(x, y) max(x@effort[, ac(cyrs)], na.rm=TRUE) > y,
+    x=fishery, y=c(effort_max * effscale), SIMPLIFY=TRUE)))
     warning("Maximum effort limit reached in one or more fisheries")
 
   return(out)
