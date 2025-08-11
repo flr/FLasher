@@ -103,7 +103,7 @@ the equivalent F  multiplier if object is an FLStock) is found so that the
 targets specified in the fwdControl object are hit.
 
 For more details and examples, see the vignettes in the package and also the
-tutorial at: http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html
+tutorial at: http://www.flrproject.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html
 }
 \examples{
 data(ple4)

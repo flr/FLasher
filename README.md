@@ -1,7 +1,7 @@
 # FLasher <img src="man/figures/logo.png" align="right" width="120" />
 
 [![R-CMD-check](https://github.com/flr/FLasher/workflows/R-CMD-check/badge.svg)](https://github.com/flr/FLasher/actions)
-[![License](https://flr-project.org/img/eupl_1.1.svg)](https://joinup.ec.europa.eu/licence/european-union-public-licence-version-11-or-later-eupl)
+[![License](https://flrproject.org/img/eupl_1.1.svg)](https://joinup.ec.europa.eu/licence/european-union-public-licence-version-11-or-later-eupl)
 [![Codecov test coverage](https://codecov.io/gh/flr/FLasher/branch/master/graph/badge.svg)](https://codecov.io/gh/flr/FLasher?branch=master)
 ![r-universe](https://flr.r-universe.dev/badges/FLasher)
 
@@ -13,7 +13,7 @@ Projection of future population and fishery dynamics is carried out for a given 
 To install this package, start R and enter:
 
 ```
-install.packages("FLasher", repos="http://flr-project.org/R")
+install.packages("FLasher", repos="http://flrproject.org/R")
 ```
 
 or directly from the github repository by using:
@@ -31,8 +31,8 @@ install_github("flr/FLasher")
 ```
 
 ## Documentation
-- [Forecasting on the Medium Term for advice using FLasher](https://flr-project.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html)
-- [Help pages](http://flr-project.org/FLasher)
+- [Forecasting on the Medium Term for advice using FLasher](https://flrproject.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html)
+- [Help pages](http://flrproject.org/FLasher)
 
 ## License
 Copyright (c) 2016-2022 European Union. Released under the [EUPL v1.2](https://eupl.eu/1.2/en/).

@@ -22,7 +22,7 @@
 #' targets specified in the fwdControl object are hit.
 #'
 #' For more details and examples, see the vignettes in the package and also the
-#' tutorial at: http://www.flr-project.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html 
+#' tutorial at: http://www.flrproject.org/doc/Forecasting_on_the_Medium_Term_for_advice_using_FLasher.html 
 #'
 #' @param object An FLStock, an FLBiol or an FLBiols object.
 #' @param fishery If object is an FLBiol(s), a FLFishery(ies). Else this argument is ignored.

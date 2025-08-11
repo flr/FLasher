@@ -63,10 +63,10 @@ Other differences relate to the way some calculations are carried out and will b
 
 See the tutorials at the FLR website:
 
-* The [tutorial](http://www.flr-project.org/doc/Running_Medium_Term_Forecasts_with_FLasher.html) on running medium term projections with an **FLStock**.
-* The [tutorial](http://www.flr-project.org/doc/Setting_Stock_Recruitment_in_FLasher_Projections.html) on setting stock recruitment for __FLasher__ projections.
-* The [tutorial](http://www.flr-project.org/doc/Mixed_Fisheries_Projections_with_FLasher.html) on performing mixed fisheries projections with __FLasher__.
-* The [tutorial](http://www.flr-project.org/doc/Using_the_FLasher_Plugin.html) vignette on using the __FLasher__ plugin for accessing Automatic Differentiation capabilities in R and other nerdy things.
+* The [tutorial](http://www.flrproject.org/doc/Running_Medium_Term_Forecasts_with_FLasher.html) on running medium term projections with an **FLStock**.
+* The [tutorial](http://www.flrproject.org/doc/Setting_Stock_Recruitment_in_FLasher_Projections.html) on setting stock recruitment for __FLasher__ projections.
+* The [tutorial](http://www.flrproject.org/doc/Mixed_Fisheries_Projections_with_FLasher.html) on performing mixed fisheries projections with __FLasher__.
+* The [tutorial](http://www.flrproject.org/doc/Using_the_FLasher_Plugin.html) vignette on using the __FLasher__ plugin for accessing Automatic Differentiation capabilities in R and other nerdy things.
 
 More details of the internal workings of __FLasher__ can be found in the vignette *FLasher reference manual*.
 
