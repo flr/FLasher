@@ -1,216 +1,74 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/TODO.html</loc>
-  </url>
-  <url>
-    <loc>/articles/FLasher_intro.html</loc>
-  </url>
-  <url>
-    <loc>/articles/FLasher_mixed_fisheries.html</loc>
-  </url>
-  <url>
-    <loc>/articles/FLasher_plugin.html</loc>
-  </url>
-  <url>
-    <loc>/articles/FLasher_reference.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/news/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/FCB.html</loc>
-  </url>
-  <url>
-    <loc>/reference/FCBDrawing.html</loc>
-  </url>
-  <url>
-    <loc>/reference/FLCatch-cpp-tests.html</loc>
-  </url>
-  <url>
-    <loc>/reference/FLFishery-cpp-tests.html</loc>
-  </url>
-  <url>
-    <loc>/reference/FLQuant-cpp-tests.html</loc>
-  </url>
-  <url>
-    <loc>/reference/FLQuant7-cpp-tests.html</loc>
-  </url>
-  <url>
-    <loc>/reference/FLR-arithmetic-cpp-tests.html</loc>
-  </url>
-  <url>
-    <loc>/reference/FLStock-cpp-tests.html</loc>
-  </url>
-  <url>
-    <loc>/reference/FLasher.html</loc>
-  </url>
-  <url>
-    <loc>/reference/add_target_order.html</loc>
-  </url>
-  <url>
-    <loc>/reference/add_target_order_fls.html</loc>
-  </url>
-  <url>
-    <loc>/reference/basicBlock.html</loc>
-  </url>
-  <url>
-    <loc>/reference/biolBlock.html</loc>
-  </url>
-  <url>
-    <loc>/reference/calc_F.html</loc>
-  </url>
-  <url>
-    <loc>/reference/catchBlock.html</loc>
-  </url>
-  <url>
-    <loc>/reference/coerce.html</loc>
-  </url>
-  <url>
-    <loc>/reference/compare-methods.html</loc>
-  </url>
-  <url>
-    <loc>/reference/draw-FCB.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fcb.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fcb2int.html</loc>
-  </url>
-  <url>
-    <loc>/reference/ffwd.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fillchar.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fisheryBlock.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fwd-methods.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fwdBiol-cpp-tests.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fwdControl-accessors.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fwdControl-cpp-tests.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fwdControl.html</loc>
-  </url>
-  <url>
-    <loc>/reference/fwdSR-cpp-tests.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_FLQuant_element.html</loc>
-  </url>
-  <url>
-    <loc>/reference/get_FLQuant_elements.html</loc>
-  </url>
-  <url>
-    <loc>/reference/guessfcb.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/inlineCxxPlugin.html</loc>
-  </url>
-  <url>
-    <loc>/reference/iters.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_test_operatingModel.html</loc>
-  </url>
-  <url>
-    <loc>/reference/match_posns_names.html</loc>
-  </url>
-  <url>
-    <loc>/reference/mixed_fishery_example.html</loc>
-  </url>
-  <url>
-    <loc>/reference/operatingModel-cpp-tests.html</loc>
-  </url>
-  <url>
-    <loc>/reference/operatingModelRun.html</loc>
-  </url>
-  <url>
-    <loc>/reference/parsefwdList.html</loc>
-  </url>
-  <url>
-    <loc>/reference/partialF.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plot.html</loc>
-  </url>
-  <url>
-    <loc>/reference/plugin-tests.html</loc>
-  </url>
-  <url>
-    <loc>/reference/profiling-cpp-tests.html</loc>
-  </url>
-  <url>
-    <loc>/reference/propagate-fwdControl-method.html</loc>
-  </url>
-  <url>
-    <loc>/reference/random_FLBiolcpp_generator.html</loc>
-  </url>
-  <url>
-    <loc>/reference/random_FLCatch_generator.html</loc>
-  </url>
-  <url>
-    <loc>/reference/random_FLCatches_generator.html</loc>
-  </url>
-  <url>
-    <loc>/reference/random_FLFisheries_generator.html</loc>
-  </url>
-  <url>
-    <loc>/reference/random_FLFishery_generator.html</loc>
-  </url>
-  <url>
-    <loc>/reference/random_FLQuant_generator.html</loc>
-  </url>
-  <url>
-    <loc>/reference/random_FLQuant_list_generator.html</loc>
-  </url>
-  <url>
-    <loc>/reference/random_fwdBiols_list_generator.html</loc>
-  </url>
-  <url>
-    <loc>/reference/random_fwdControl_generator.html</loc>
-  </url>
-  <url>
-    <loc>/reference/show-fwdControl-method.html</loc>
-  </url>
-  <url>
-    <loc>/reference/solver-cpp-tests.html</loc>
-  </url>
-  <url>
-    <loc>/reference/stf.html</loc>
-  </url>
-  <url>
-    <loc>/reference/summary.html</loc>
-  </url>
-  <url>
-    <loc>/reference/target.html</loc>
-  </url>
-  <url>
-    <loc>/reference/targetOrder.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/TODO.html</loc></url>
+<url><loc>/articles/FLasher_intro.html</loc></url>
+<url><loc>/articles/FLasher_mixed_fisheries.html</loc></url>
+<url><loc>/articles/FLasher_plugin.html</loc></url>
+<url><loc>/articles/FLasher_reference.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/FCB.html</loc></url>
+<url><loc>/reference/FCBDrawing.html</loc></url>
+<url><loc>/reference/FLCatch-cpp-tests.html</loc></url>
+<url><loc>/reference/FLFishery-cpp-tests.html</loc></url>
+<url><loc>/reference/FLQuant-cpp-tests.html</loc></url>
+<url><loc>/reference/FLQuant7-cpp-tests.html</loc></url>
+<url><loc>/reference/FLR-arithmetic-cpp-tests.html</loc></url>
+<url><loc>/reference/FLStock-cpp-tests.html</loc></url>
+<url><loc>/reference/FLasher.html</loc></url>
+<url><loc>/reference/add_target_order.html</loc></url>
+<url><loc>/reference/add_target_order_fls.html</loc></url>
+<url><loc>/reference/basicBlock.html</loc></url>
+<url><loc>/reference/biolBlock.html</loc></url>
+<url><loc>/reference/calc_F.html</loc></url>
+<url><loc>/reference/catchBlock.html</loc></url>
+<url><loc>/reference/coerce.html</loc></url>
+<url><loc>/reference/compare-methods.html</loc></url>
+<url><loc>/reference/draw-FCB.html</loc></url>
+<url><loc>/reference/fcb.html</loc></url>
+<url><loc>/reference/fcb2int.html</loc></url>
+<url><loc>/reference/ffwd.html</loc></url>
+<url><loc>/reference/fillchar.html</loc></url>
+<url><loc>/reference/fisheryBlock.html</loc></url>
+<url><loc>/reference/fwd-methods.html</loc></url>
+<url><loc>/reference/fwdBiol-cpp-tests.html</loc></url>
+<url><loc>/reference/fwdControl-accessors.html</loc></url>
+<url><loc>/reference/fwdControl-cpp-tests.html</loc></url>
+<url><loc>/reference/fwdControl.html</loc></url>
+<url><loc>/reference/fwdSR-cpp-tests.html</loc></url>
+<url><loc>/reference/get_FLQuant_element.html</loc></url>
+<url><loc>/reference/get_FLQuant_elements.html</loc></url>
+<url><loc>/reference/guessfcb.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/inlineCxxPlugin.html</loc></url>
+<url><loc>/reference/iters.html</loc></url>
+<url><loc>/reference/make_test_operatingModel.html</loc></url>
+<url><loc>/reference/match_posns_names.html</loc></url>
+<url><loc>/reference/mixed_fishery_example.html</loc></url>
+<url><loc>/reference/operatingModel-cpp-tests.html</loc></url>
+<url><loc>/reference/operatingModelRun.html</loc></url>
+<url><loc>/reference/parsefwdList.html</loc></url>
+<url><loc>/reference/partialF.html</loc></url>
+<url><loc>/reference/plot.html</loc></url>
+<url><loc>/reference/plugin-tests.html</loc></url>
+<url><loc>/reference/profiling-cpp-tests.html</loc></url>
+<url><loc>/reference/propagate-fwdControl-method.html</loc></url>
+<url><loc>/reference/random_FLBiolcpp_generator.html</loc></url>
+<url><loc>/reference/random_FLCatch_generator.html</loc></url>
+<url><loc>/reference/random_FLCatches_generator.html</loc></url>
+<url><loc>/reference/random_FLFisheries_generator.html</loc></url>
+<url><loc>/reference/random_FLFishery_generator.html</loc></url>
+<url><loc>/reference/random_FLQuant_generator.html</loc></url>
+<url><loc>/reference/random_FLQuant_list_generator.html</loc></url>
+<url><loc>/reference/random_fwdBiols_list_generator.html</loc></url>
+<url><loc>/reference/random_fwdControl_generator.html</loc></url>
+<url><loc>/reference/show-fwdControl-method.html</loc></url>
+<url><loc>/reference/solver-cpp-tests.html</loc></url>
+<url><loc>/reference/stf.html</loc></url>
+<url><loc>/reference/summary.html</loc></url>
+<url><loc>/reference/target.html</loc></url>
+<url><loc>/reference/targetOrder.html</loc></url>
 </urlset>
+
