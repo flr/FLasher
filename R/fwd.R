@@ -286,10 +286,10 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
     return(x)
   })
 
-  # CALCULATE max(effort) per fishery, using 1st year - 1, or 1
+  # CALCULATE max(effort) per fishery, using 1st year - 1, or 1e-8
   effscale <- unname(unlist(lapply(rfishery, function(x)
-    max(c(x@effort[, min(control$year) - 1], 1)))))
-  
+    max(c(x@effort[, min(control$year) - 1], 1e-8)))))
+
   # CALL operatingModelRun
   # TODO: PASS to C++ only projection years of rfishery and biolscpp
   out <- operatingModelRun(rfishery, biolscpp, control,
@@ -816,8 +816,7 @@ setMethod("fwd", signature(object="FLStock", fishery="ANY", control="missing"),
 
 # fwd(FLStockR) {{{
 
-setMethod("fwd", signature(object="FLStockR", fishery="missing",
-  control="fwdControl"),
+setMethod("fwd", signature(object="FLStockR", fishery="missing", control="fwdControl"),
   function(object, control, sr=sr(object), ...) { 
     fwd(as(object, 'FLStock'), sr=sr, control=control, ...)
   }

@@ -65,7 +65,7 @@ Bare bones man pages. Better to look at the vignettes and tutorials.
 
 \section{Validity}{
  \describe{
-\item{VALIDITY}{Neque porro quisquam est qui dolorem ipsum.}
+\item{VALIDITY}{Neque porro quisquam est qui doloremd ipsum.}
 }
 }
 
@@ -87,6 +87,28 @@ A construction method exists for this class that can take named arguments for
 any of its slots. All slots are then created to match the requirements of the
 class validity. If an unnamed \code{FLQuant} object is provided, this is used
 for sizing but not stored in any slot.
+}
+
+\section{Targets}{
+
+
+Forecast targets can be based on a variery of stock and fishery quantities. The
+following are currently available, and a corresponding function, listed at the end,
+returns the same value when applied on a valid class, for example an \code{FLStock}
+object. These targets are defined per time period, either annual or seasonal.
+\itemize{
+\item ssb, ssb_spawn: The Spawning Stock Biomass at spawning time, \code{ssb}.
+\item ssb_end: The Spawning Stock Biomass at the end of the time period, \code{ssb_end}.
+\item ssb_flash: The Spawning Stock Biomass at the beginning of the following year, \code{ssb}.
+\item biomass_spawn: Total Stock Biomass at spawning time, 'tsb'.
+\item biomass_end: Total Stock Biomass (\code{tsb}) at the end of the time period.
+\item f, fbar: Fishing mortality over the time period. \code{fbar}.
+\item catch: The total catch over the time period, \code{catch}.
+\item landings: The total landings over the time period, 'landings'.
+\item discards: The total discards over the time period, 'discards'.
+\item effort: The total effort over the time period, 'effort'.
+\item revenue: The total revenue over the time period, 'revenue'.
+}
 }
 
 \examples{
