@@ -8,8 +8,8 @@
 
 # .biol_quants - biol-based targets
 .biol_quants <- c('srp', 'ssb_end', 'biomass_end', 'ssb', 'ssb_spawn',
-  'biomass_spawn', 'ssb_flash', 'ssb_ny', 'biomass_flash', 'biomass_ny',
-  'inmb_end', 'indb') 
+  'biomass_spawn', 'ssb_flash', 'ssb_nextyear', 'ssb_ny', 'biomass_flash',
+  'biomass_ny', 'inmb_end', 'indb') 
 
 # .qlevels - available quants for fwdControl
 .qlevels <-  c('catch', 'landings', 'discards', 'f', 'fbar', 'revenue',
