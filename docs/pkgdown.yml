@@ -1,7 +1,7 @@
 pandoc: 2.17.1.1
-pkgdown: 2.1.3
+pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   FLasher_intro: FLasher_intro.html
   FLasher_reference: FLasher_reference.html
-last_built: 2025-08-12T06:08Z
+last_built: 2025-11-23T17:11Z

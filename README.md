@@ -4,6 +4,8 @@
 [![License](https://flrproject.org/img/eupl_1.1.svg)](https://joinup.ec.europa.eu/licence/european-union-public-licence-version-11-or-later-eupl)
 [![Codecov test coverage](https://codecov.io/gh/flr/FLasher/branch/master/graph/badge.svg)](https://codecov.io/gh/flr/FLasher?branch=master)
 ![r-universe](https://flr.r-universe.dev/badges/FLasher)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/flr/FLasher)
+
 
 ## Overview
 
