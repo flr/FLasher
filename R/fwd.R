@@ -249,14 +249,29 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
 
   # If relYear must have relSeason and vice versa
   if (any(relYear != relSeason)){
-    stop("If you have a reYear you must also have a relSeason, and vice versa")
+    stop("If you have a relYear you must also have a relSeason, and viceversa")
   }
 
   # if relYear, must have relFishery or relBiol, or (relCatch and relFishery)
   if(any(relYear != (relFishery | relBiol | (relCatch & relFishery)))){
     stop("If relYear set must also set a relBiol or relFishery or (FLFishery and relCatch), and vice versa")
   }
-  
+
+  # CORRECT age 0 m if spwn > 0
+  for(i in names(biolscpp)) {
+
+    if(dims(object[[i]])$min == 0) {
+    
+        browser()
+
+      # APPLY settlement timing reduction in M
+      if(!is.na(range(object[[i]], 'settle')))
+        m(object[[i]])[1,] <- m(object[[i]])[1,] * (1 - range(object[[i]], 'settle'))
+      else
+        m(object[[i]])[1,] <- m(object[[i]])[1,] * (1 - spwn(object[[i]]))
+    }
+  }
+
   # REPLACE target
   target(control) <- trg
 

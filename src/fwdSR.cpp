@@ -514,8 +514,6 @@ T segregDa(const T srp, const std::vector<double> params){
     return rec;
 }
 
-
-
 template <typename T>
 T survsrr(const T ssf, const std::vector<double> params){
     T rec;
