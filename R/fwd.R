@@ -261,14 +261,11 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   for(i in names(biolscpp)) {
 
     if(dims(object[[i]])$min == 0) {
-    
-        browser()
-
       # APPLY settlement timing reduction in M
       if(!is.na(range(object[[i]], 'settle')))
-        m(object[[i]])[1,] <- m(object[[i]])[1,] * (1 - range(object[[i]], 'settle'))
+        m(biolscpp[[i]]$biol)[1,] <- m(object[[i]])[1,] * (1 - range(object[[i]], 'settle'))
       else
-        m(object[[i]])[1,] <- m(object[[i]])[1,] * (1 - spwn(object[[i]]))
+        m(biolscpp[[i]]$biol)[1,] <- m(object[[i]])[1,] * (1 - spwn(object[[i]]))
     }
   }
 
