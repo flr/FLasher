@@ -257,15 +257,19 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
     stop("If relYear set must also set a relBiol or relFishery or (FLFishery and relCatch), and vice versa")
   }
 
-  # CORRECT age 0 m if spwn > 0
+  # CORRECT age 0 M if spwn > 0
   for(i in names(biolscpp)) {
 
     if(dims(object[[i]])$min == 0) {
-      # APPLY settlement timing reduction in M
-      if(!is.na(range(object[[i]], 'settle')))
-        m(biolscpp[[i]]$biol)[1,] <- m(object[[i]])[1,] * (1 - range(object[[i]], 'settle'))
-      else
+
+      # APPLY settlement timing reduction in M from range$settle ...
+      if(!is.na(range(object[[i]], 'settle'))) {
+        m(biolscpp[[i]]$biol)[1,] <- m(object[[i]])[1,] * 
+          (1 - range(object[[i]], 'settle'))
+      # ... or m.spwn
+      } else {
         m(biolscpp[[i]]$biol)[1,] <- m(object[[i]])[1,] * (1 - spwn(object[[i]]))
+      }
     }
   }
 
