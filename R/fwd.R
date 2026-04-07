@@ -700,7 +700,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     
     # RUN
     out <- fwd(Bs, Fs, control, deviances=FLQuants(B=deviances),
-      effort_max=1e12, ...)
+      effort_max=100, ...)
     
     # PARSE output
     Fc <- out$fisheries[[1]][[1]]
