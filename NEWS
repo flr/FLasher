@@ -1,3 +1,9 @@
+ FLasher 0.7.3
+
+ BUG FIXES
+
+- Set lower max_effort for fwd(FLstock), linked to effort series created with q=1
+
  FLasher 0.6.7
 
  BUG FIXES
