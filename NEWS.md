@@ -1,3 +1,5 @@
+# FLasher 0.7.4
+
 # FLasher 0.7.3
 
 ## BUG FIXES
