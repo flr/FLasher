@@ -13,7 +13,7 @@ test_that("Rel. F and effort_max",{
 
     data(ple4)
 
-    control <- fwdControl(year=2000:2017, quant="f", value=seq(0.60, 3, length=18))
+    control <- fwdControl(year=2000:2017, quant="f", value=seq(0.60, 30, length=18))
 
     res <- fwd(ple4, control=control, sr=predictModel(model="geomean", 
       params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)]))))

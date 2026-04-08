@@ -249,14 +249,30 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
 
   # If relYear must have relSeason and vice versa
   if (any(relYear != relSeason)){
-    stop("If you have a reYear you must also have a relSeason, and vice versa")
+    stop("If you have a relYear you must also have a relSeason, and viceversa")
   }
 
   # if relYear, must have relFishery or relBiol, or (relCatch and relFishery)
   if(any(relYear != (relFishery | relBiol | (relCatch & relFishery)))){
     stop("If relYear set must also set a relBiol or relFishery or (FLFishery and relCatch), and vice versa")
   }
-  
+
+  # CORRECT age 0 M if spwn > 0
+  for(i in names(biolscpp)) {
+
+    if(dims(object[[i]])$min == 0) {
+
+      # APPLY settlement timing reduction in M from range$settle ...
+      if(!is.na(range(object[[i]], 'settle'))) {
+        m(biolscpp[[i]]$biol)[1,] <- m(object[[i]])[1,] * 
+          (1 - range(object[[i]], 'settle'))
+      # ... or m.spwn
+      } else {
+        m(biolscpp[[i]]$biol)[1,] <- m(object[[i]])[1,] * (1 - spwn(object[[i]]))
+      }
+    }
+  }
+
   # REPLACE target
   target(control) <- trg
 
@@ -684,7 +700,7 @@ setMethod("fwd", signature(object="FLStock", fishery="missing",
     
     # RUN
     out <- fwd(Bs, Fs, control, deviances=FLQuants(B=deviances),
-      effort_max=1e12, ...)
+      effort_max=100, ...)
     
     # PARSE output
     Fc <- out$fisheries[[1]][[1]]
