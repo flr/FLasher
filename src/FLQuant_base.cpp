@@ -637,7 +637,7 @@ FLQuant_base<T>& FLQuant_base<T>::operator *= (const FLQuant_base<T2>& rhs){
 template <typename T>
 FLQuant_base<T>& FLQuant_base<T>::operator *= (const T& rhs){
     //Rprintf("In scalar T=*T multiplication assignment\n");
-    std::transform((*this).data.begin(), (*this).data.end(), (*this).data.begin(), [rhs](const T& x){ return x * rhs; }); 
+    std::transform((*this).data.begin(), (*this).data.end(), (*this).data.begin(), [rhs](const T& x){ return rhs * x; }); 
     return *this;
 }
 
@@ -648,7 +648,7 @@ template <typename T>
 template <typename T2>
 FLQuant_base<T>& FLQuant_base<T>::operator *= (const T2& rhs){
     //Rprintf("In scalar T=*T2 multiplication assignment\n");
-    std::transform((*this).data.begin(), (*this).data.end(), (*this).data.begin(), [rhs](const T& x){ return x * rhs; }); 
+    std::transform((*this).data.begin(), (*this).data.end(), (*this).data.begin(), [rhs](const T& x){ return rhs * x; }); 
     return *this;
 }
 
@@ -1068,7 +1068,7 @@ FLQuant_base<T>& FLQuant_base<T>::operator += (const FLQuant_base<T2>& rhs){
 // FLQuantAdolc / CppAD += adouble
 template <typename T>
 FLQuant_base<T>& FLQuant_base<T>::operator += (const T& rhs){
-    std::transform((*this).data.begin(), (*this).data.end(), (*this).data.begin(), [rhs](const T& x){ return x + rhs; }); 
+    std::transform((*this).data.begin(), (*this).data.end(), (*this).data.begin(), [rhs](const T& x){ return rhs + x; }); 
     return *this;
 }
 
@@ -1078,7 +1078,7 @@ FLQuant_base<T>& FLQuant_base<T>::operator += (const T& rhs){
 template <typename T>
 template <typename T2>
 FLQuant_base<T>& FLQuant_base<T>::operator += (const T2& rhs){
-    std::transform((*this).data.begin(), (*this).data.end(), (*this).data.begin(), [rhs](const T& x){ return x + rhs; }); 
+    std::transform((*this).data.begin(), (*this).data.end(), (*this).data.begin(), [rhs](const T& x){ return rhs + x; }); 
     return *this;
 }
 
