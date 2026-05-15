@@ -92,6 +92,52 @@
 #
 #
 #
+# Actual constructor regression and edge-case tests
+
+context("fwdControl constructor methods")
+
+test_that("data.frame + array constructor keeps target and iters", {
+  target <- data.frame(year = 2000:2002, quant = "f")
+  iters <- array(1:9, dim = c(3, 3, 1),
+    dimnames = list(row = 1:3, val = c("min", "value", "max"), iter = 1))
+
+  ctrl <- fwdControl(target = target, iters = iters)
+
+  expect_equal(ctrl$year, 2000:2002)
+  expect_equal(as.character(ctrl$quant), rep("f", 3))
+  expect_equal(c(iters(ctrl)[, "value", ]), c(2, 5, 8))
+})
+
+test_that("data.frame + numeric iters expands iterations", {
+  target <- data.frame(year = 2000:2001, quant = "catch", value = c(100, 120))
+  ctrl <- fwdControl(target = target, iters = 4)
+
+  expect_equal(dim(iters(ctrl))[3], 4)
+  expect_equal(c(iters(ctrl)[, "value", 1]), c(100, 120))
+  expect_equal(c(iters(ctrl)[, "value", 4]), c(100, 120))
+})
+
+test_that("duplicate min/max rows are merged", {
+  target <- data.frame(
+    year = c(2000, 2000),
+    quant = c("catch", "catch"),
+    min = c(100, NA),
+    max = c(NA, 150)
+  )
+
+  ctrl <- fwdControl(target = target)
+
+  expect_equal(nrow(target(ctrl)), 1)
+  expect_equal(c(iters(ctrl)[1, "min", ]), 100)
+  expect_equal(c(iters(ctrl)[1, "max", ]), 150)
+})
+
+test_that("numeric iters argument rejects vectors longer than one", {
+  expect_error(
+    fwdControl(target = data.frame(year = 2000, quant = "f", value = 0.2), iters = c(2, 3)),
+    "'iters' must be of length 1"
+  )
+})
 ##
 #
 #target <- list(list(year=1990, quant='f', value=runif(10, 0.1, 0.2)),

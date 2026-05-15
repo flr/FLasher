@@ -386,3 +386,28 @@ test_that("control as FLQuants works", {
         params=FLPar(a=yearMeans(rec(ple4)[, ac(2000:2008)]))))
     expect_equal(fbar(ple4)[,ac(2000:2008)], fbar(res)[,ac(2000:2008)])
 })
+
+test_that("fwd() stock results match stored reference outputs", {
+    ref_results <- load_fwd_reference_results()
+    data(ple4)
+    geomean_sr <- predictModel(model="geomean",
+      params=FLPar(a=yearMeans(rec(ple4)[, ac(2006:2008)])))
+    ple4_mtf <- stf(ple4, nyears=3)
+
+    catch_res <- fwd(
+      ple4_mtf,
+      control=fwdControl(list(year=2009:2011, quant="catch",
+        value=c(catch(ple4)[,"2008"]) * c(0.95, 0.9, 0.85))),
+      sr=geomean_sr)
+    expect_equal(c(catch(catch_res)[,ac(2009:2011)]),
+      c(catch(ref_results$stock_catch_target)[,ac(2009:2011)]),
+      tolerance=1e-6)
+
+    fbar_res <- fwd(
+      ple4_mtf,
+      control=fwdControl(list(year=2009:2011, quant="fbar", value=0.25)),
+      sr=geomean_sr)
+    expect_equal(c(fbar(fbar_res)[,ac(2009:2011)]),
+      c(fbar(ref_results$stock_fbar_target)[,ac(2009:2011)]),
+      tolerance=1e-6)
+})
