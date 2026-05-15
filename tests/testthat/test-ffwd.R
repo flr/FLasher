@@ -1,4 +1,4 @@
-context("ffwd and cfwd methods")
+context("cfwd methods")
 
 test_that("cfwd catches match explicit catch target", {
   data(ple4)

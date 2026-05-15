@@ -1,4 +1,4 @@
-context("stf function")
+context("window stf methods")
 
 test_that("stf extends FLStock to requested years", {
   data(ple4)
