@@ -784,17 +784,19 @@ FLQuant_base<T>& FLQuant_base<T>::operator /= (const FLQuant_base<T2>& rhs){
 // FLQuantAdolc / CppAD /= adouble
 template <typename T>
 FLQuant_base<T>& FLQuant_base<T>::operator /= (const T& rhs){
-    std::transform((*this).data.begin(), (*this).data.end(), (*this).data.begin(), std::bind2nd(std::divides<T>(),rhs)); 
+    std::transform((*this).data.begin(), (*this).data.end(), (*this).data.begin(),
+        [&rhs](const T& val) { return val / rhs; });
     return *this;
 }
 
-// Special case of division assignment 
+// Special case of division assignment
 // Used for FLQuantAdolc / CppAD /= double
-// Needs to be instanitated due to extra template class, T2
+// Needs to be instantiated due to extra template class, T2
 template <typename T>
 template <typename T2>
 FLQuant_base<T>& FLQuant_base<T>::operator /= (const T2& rhs){
-    std::transform((*this).data.begin(), (*this).data.end(), (*this).data.begin(), std::bind2nd(std::divides<T>(),rhs)); 
+    std::transform((*this).data.begin(), (*this).data.end(), (*this).data.begin(),
+        [&rhs](const T& val) { return val / rhs; });
     return *this;
 }
 
