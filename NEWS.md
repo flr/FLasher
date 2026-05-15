@@ -1,5 +1,10 @@
 # FLasher 0.7.4
 
+
+## BUG FIXES
+
+- Params of SRR models in C++ are extracted by order. They are mow reordered to make order match that of arguments to R logl function for that model.
+
 # FLasher 0.7.3
 
 ## BUG FIXES

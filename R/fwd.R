@@ -131,7 +131,7 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   if(!all(c(dib$season, dif$season) == dib$season[1]))
     stop("All FLBiol and FLFishery objects must have the same number of seasons")
 
-  # ERROR if multiple areas
+  # ERRORif multiple areas
   if(max(dib$area) > 1 | max(dif$area > 1))
     stop("fwd() cannot deal (yet) with multiple areas")
 
@@ -145,7 +145,27 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
 
   # CONVERT biols to list(list(object, name, params, deviances, mult)), no NAs
   biolscpp <- lapply(object, function(x) as(iter(x, idn), "list"))
-  
+
+  # TODO: CORRECT srparams order, to match R functions
+  biolscpp <- lapply(biolscpp, function(x) {
+    # GET names from function$logl
+    tryCatch({
+
+      fnms <- names(formals(do.call(x[[1]]@srmodel, list())$logl))
+
+      # GET reordering vector
+      ids <- match(fnms, dimnames(x[[1]]@srparams)$params)
+
+      # REORDER @srparams as in fnms
+      x[[1]]@srparams <- x[[1]]@srparams[ids[!is.na(ids)]]
+
+      return(x)
+      # IF error keep going without reordering
+      }, error = function(e) {
+          return(x)
+    })
+  })  
+
   # SUBSET idn on deviances
   deviances <- iter(FLQuants(deviances), idn)
 
