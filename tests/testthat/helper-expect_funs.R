@@ -56,5 +56,3 @@ expect_FLBiolcpps_equal <- function(flbs1, flbs2, ignore_srr = FALSE){
         expect_FLBiolcpp_equal(flbs1[[i]], flbs2[[i]], ignore_srr=ignore_srr)
     }
 }
-
-

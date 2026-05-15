@@ -4,8 +4,6 @@
 context("Checking the SR is evaluated correctly")
 # Based on the tutorial Setting_Stock_Recruitment....
 # If these don't work we are in trouble!
-source("expect_funs.R")
-
 
 test_that("SR models with FLStock",{
     data(ple4)

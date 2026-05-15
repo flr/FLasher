@@ -3,9 +3,6 @@
 
 context("fwdControl constructors")
 
-source("expect_funs.R")
-
-
 test_that("list constructor - single iter",{
     nyears <- round(runif(1,min=5,max=15))
     inityear <- round(runif(1,min=1990,max=2000)) 

@@ -4,7 +4,6 @@
 context("Mixed fishery projections")
 # If these don't work we are in trouble!
 # Adapted from the Mixed Fisheries tutorial
-source("expect_funs.R")
 
 test_that("Single fishery, single biol",{
     data(mixed_fishery_example_om)
