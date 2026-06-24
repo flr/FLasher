@@ -64,6 +64,8 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   cyrs <- unique(control$year)
 
   # TODO CHECK iters biols, fisheries, control
+  if(any(sapply(deviances, function(x) any(!cyrs %in% dimnames(x)$year))))
+    warning("years in 'deviances' do not include all years in 'control'")
   
   # TODO years
   # CHECK for NAs in biol & cyears: m, wt, mat
