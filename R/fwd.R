@@ -148,25 +148,35 @@ setMethod("fwd", signature(object="FLBiols", fishery="FLFisheries",
   # CONVERT biols to list(list(object, name, params, deviances, mult)), no NAs
   biolscpp <- lapply(object, function(x) as(iter(x, idn), "list"))
 
-  # TODO: CORRECT srparams order, to match R functions
+  # CORRECT srparams order, to match R functions
   biolscpp <- lapply(biolscpp, function(x) {
-    # GET names from function$logl
     tryCatch({
 
+      # GET names from function$logl
       fnms <- names(formals(do.call(x[[1]]@srmodel, list())$logl))
+      pnms <- dimnames(x[[1]]@srparams)$params
 
-      # GET reordering vector
-      ids <- match(fnms, dimnames(x[[1]]@srparams)$params)
+      # GET reordering vector, model params first, in logl order
+      ids <- match(fnms, pnms)
+      ids <- ids[!is.na(ids)]
 
-      # REORDER @srparams as in fnms
-      x[[1]]@srparams <- x[[1]]@srparams[ids[!is.na(ids)]]
+      # FIND extra params to keep, and put them last (even if also in logl)
+      kid <- which(pnms %in% "ratio")
+      ids <- c(setdiff(ids, kid), kid)
+
+      # REORDER @srparams, unless nothing matched
+      if(length(ids) > 0)
+        x[[1]]@srparams <- x[[1]]@srparams[ids]
 
       return(x)
       # IF error keep going without reordering
-      }, error = function(e) {
-          return(x)
+    }, error = function(e) {
+      return(x)
     })
-  })  
+  })
+
+
+
 
   # SUBSET idn on deviances
   deviances <- iter(FLQuants(deviances), idn)
