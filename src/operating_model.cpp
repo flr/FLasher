@@ -1351,27 +1351,6 @@ FLQuantAD operatingModel::eval_om(const fwdControlTargetType target_type, const 
       }
       break;
      }
-// Makes no sense to have SSB at start - cannot affect it with F in current time step
-//    case target_ssb_start: {
-//      if(verbose){Rprintf("target_ssb_start\n");}
-//      if (!biol_na & fishery_na & catch_na){
-//        out = unit_sum(ssb_start(biol_no, indices_min, indices_max)); 
-//      }
-//      else {
-//        Rcpp::stop("In operatingModel::eval_om. Asking for SSB_start target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
-//      }
-//      break;
-//    }
-//    case target_biomass_start: {
-//      if(verbose){Rprintf("target_biomass_start\n");}
-//      if (!biol_na & fishery_na & catch_na){
-//        out = unit_sum(biomass_start(biol_no, indices_min, indices_max)); 
-//      }
-//      else {
-//        Rcpp::stop("In operatingModel::eval_om. Asking for biomass_start target but Fishery, Catch and Biol not specified correctly. You must only specify the Biol (not a Fishery or a Catch).\n");
-//      }
-//      break;
-//    }
     case target_ssb_end: {
       if(verbose){Rprintf("target_ssb_end\n");}
       if (!biol_na & fishery_na & catch_na){
