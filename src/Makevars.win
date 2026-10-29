@@ -1,2 +1,9 @@
-PKG_CXXFLAGS=-I../inst/include -DRCPP_USE_UNWIND_PROTECT
-CXX_STD=CXX17
+CXX_STD = CXX17
+PKG_CXXFLAGS = -O2 -g0 -I../inst/include -DRCPP_USE_UNWIND_PROTECT
+
+all: $(SHLIB) strippedLib
+
+strippedLib: $(SHLIB)
+	@if test -e "/usr/bin/strip"; then /usr/bin/strip --strip-debug $(SHLIB); fi
+
+.PHONY: strippedLib
