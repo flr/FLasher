@@ -4,6 +4,6 @@ PKG_CXXFLAGS = -O2 -g0 -I../inst/include -DRCPP_USE_UNWIND_PROTECT
 all: $(SHLIB) strippedLib
 
 strippedLib: $(SHLIB)
-	@if test -e "/usr/bin/strip"; then /usr/bin/strip --strip-debug $(SHLIB); fi
+	@if test -n "$(STRIP_SHARED_LIB)"; then $(STRIP_SHARED_LIB) $(SHLIB); fi
 
 .PHONY: strippedLib
