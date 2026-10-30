@@ -1,9 +1,11 @@
 CXX_STD = CXX17
 PKG_CXXFLAGS = -O2 -g0 -I../inst/include -DRCPP_USE_UNWIND_PROTECT
 
-all: $(SHLIB) strippedLib
+all: $(SHLIB) strip-shlib
 
-strippedLib: $(SHLIB)
-	@if test -n "$(STRIP_SHARED_LIB)"; then $(STRIP_SHARED_LIB) $(SHLIB); fi
+strip-shlib: $(SHLIB)
+	@if [ -z "$(NO_STRIP)" ] && [ -n "$(STRIP_SHARED_LIB)" ]; then \
+		$(STRIP_SHARED_LIB) $(SHLIB) || echo "NOTE: strip failed, continuing with unstripped library"; \
+	fi
 
-.PHONY: strippedLib
+.PHONY: all strip-shlib
