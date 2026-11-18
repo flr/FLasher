@@ -380,7 +380,7 @@ setMethod("summary", signature(object="fwdControl"),
 #' compare(run, control, simplify=TRUE)
 
 setMethod("compare", signature(result="FLStock", target="fwdControl"),
-  function(result, target, simplify=FALSE) {
+  function(result, target, simplify=FALSE, tolerance=1e-7) {
 
     out <- target(target)[, c("year", "season", "unit", "quant")]
 
@@ -419,8 +419,10 @@ setMethod("compare", signature(result="FLStock", target="fwdControl"),
       quants, years, seasons)
       
     # COMPARE value
-    out[, "achieved"] <- mapply(function(x, y) isTRUE(all.equal(x, y)),
-      unname(split(unname(values), row(as.matrix(values)))), unname(lapply(res, c)))
+    out[, "achieved"] <- mapply(function(x, y)
+      isTRUE(all.equal(x, y, tolerance=tolerance)),
+      unname(split(unname(values), row(as.matrix(values)))),
+      unname(lapply(res, c)))
 
     # COMPARE limits
     idx <- is.na(iters(target)[, "value",])
