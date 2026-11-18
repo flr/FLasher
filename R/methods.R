@@ -444,15 +444,15 @@ setMethod("compare", signature(result="FLStock", target="fwdControl"),
 #' @rdname compare-methods
 
 setMethod("compare", signature(result="fwdControl", target="FLStock"),
-  function(result, target) {
-    compare(target, result)
+  function(result, target, ...) {
+    compare(target, result, ...)
   })
 
 #' @rdname compare-methods
 #' @param fishery FLFishery oir FKFisheries object
 
 setMethod("compare", signature(result="FLBiol", target="fwdControl"),
-  function(result, target, fishery, simplify=FALSE) {
+  function(result, target, fishery, simplify=FALSE, tolerance=1e-7) {
 
     out <- target(target)[, c("year", "season", "unit", "quant", "fishery",
       "catch", "biol")]
@@ -496,8 +496,10 @@ setMethod("compare", signature(result="FLBiol", target="fwdControl"),
     # COMBINED  
 
     # COMPARE value
-    out[, "achieved"] <- mapply(function(x, y) isTRUE(all.equal(x, y)),
-      unname(split(unname(values), row(as.matrix(values)))), unname(lapply(res, c)))
+    out[, "achieved"] <- mapply(function(x, y)
+      isTRUE(all.equal(x, y, tolerance=tolerance)),
+      unname(split(unname(values), row(as.matrix(values)))),
+      unname(lapply(res, c)))
 
     # COMPARE limits
     idx <- is.na(iters(target)[,"value",])
