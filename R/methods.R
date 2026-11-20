@@ -420,9 +420,9 @@ setMethod("compare", signature(result="FLStock", target="fwdControl"),
       
     # COMPARE value
     out[, "achieved"] <- mapply(function(x, y)
-      isTRUE(all.equal(x, y, tolerance=tolerance)),
-      unname(split(unname(values), row(as.matrix(values)))),
-      unname(lapply(res, c)))
+      isTRUE(all.equal(rep(x, length.out=length(y)), y, tolerance=tolerance)),
+      x=unname(split(unname(values), row(as.matrix(values)))),
+      y=unname(lapply(res, c)))
 
     # COMPARE limits
     idx <- is.na(iters(target)[, "value",])
@@ -497,7 +497,7 @@ setMethod("compare", signature(result="FLBiol", target="fwdControl"),
 
     # COMPARE value
     out[, "achieved"] <- mapply(function(x, y)
-      isTRUE(all.equal(x, y, tolerance=tolerance)),
+      isTRUE(all.equal(rep(x, length.out=length(y)), y, tolerance=tolerance)),
       unname(split(unname(values), row(as.matrix(values)))),
       unname(lapply(res, c)))
 

@@ -1,5 +1,8 @@
 # FLasher 0.7.4
 
+## BUG FIXES
+
+- coerce from FLQuants to fwdControl, now works for objects with N vs. 1 iter
 
 ## BUG FIXES
 
@@ -54,6 +57,7 @@
 ## NEW FEATURES
 
 - fwdControl(FLQuant) also accepts extra target arguments (e.g. relYear).
+
 # FLasher 0.6.0
 
 ## NEW FEATURES
